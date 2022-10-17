@@ -1,0 +1,119 @@
+{
+    // "auto_termination_level": "1",
+    // "auto_family_member_terminate": "1",
+    // "eligibility_type": "1",
+    // "membership_processing_flag": "1",
+    // "membership_processing_willbe_done": "1",
+    // "eligibility_options": "1",
+    // "eligibility_validation_list": "",
+    // "authorization_transfer": "1",
+    "eligibility_change_log_indicator": "1"
+}
+
+{
+    // "bypass_plan_ndc_gpi": false,
+    // "bypass_plan_ndc_gpi_exception_list_process": false,
+    // "smbpp": "",
+    // "rva_list_id": "",
+    // "admin_fee": "",
+    // "admin_percentage": "",
+    // "dmr_fee": "",
+    // "ucf_claim_fee": "",
+    "elig_update_fee": "",
+    // "prior_auth_fee": "",
+    // "mail_srv_ltr": ""
+}
+03:22 PM
+//Indicators
+03:22 PM
+{
+    "Secondary_Coverage_indicator": "",
+    "Accumulated_Benefits_Indicator": "1",
+    // "max_no_of_transaction_allowed": "1",
+    // "max_no_of_days": "1",
+    "Bypass_Member_Eligibility": false,
+    // "no_of_days_to_first_fill": "",
+    // "no_of_days_to_first_fill_submit": "",
+    // "no_of_days_to_first_fill_submit_manual": "",
+    // "no_of_days_from_date_filled_to_future": "",
+    // "no_of_days_reversal": "",
+    // "tax_exempty_entity": false,
+    // "mandatory_u_c": false
+}
+03:22 PM
+//identification
+03:23 PM
+{
+    // "cutomerid": "dfgdfg",
+    // "name": "dfgdfg",
+    // "address1": "dfg",
+    // "address2": "dfgdsfgdfg",
+    // "city": "2",
+    // "country": "2",
+    // "zip": "dgfdfg",
+    // "phone": "789789789",
+    // "fax": "dfgdfg",
+    // "ediaddress": "xcvxcvxcv",
+    // "contact": "789789789",
+    // "test": "dfgdfg",
+    // "type": "dfg",
+    // "effectivedate": "2022-09-28",
+    // "terminationdate": "2022-10-14",
+    // "policyannmonth": "",
+    // "policyanday": "",
+    // "censusdate": "",
+    // "noofactivecontracts": null,
+    // "noofactivemembers": "",
+    // "nooftermedcontracts": "",
+    // "nooftermedmembers": "",
+    // "noofpendingcontracts": "",
+    // "noofpendinngmembers": ""
+}
+03:23 PM
+//strategy
+03:24 PM
+{
+    // "tier1": "",
+    // "tier2": "",
+    // "tier3": "",
+    // "plan_id_1": "",
+    // "plan_id_2": "",
+    // "plan_id_3": "",
+    // "miscellaneous_1": "",
+    // "miscellaneous_2": "",
+    // "miscellaneous_3": "",
+    // "provider_vefification_option": "1",
+    // "super_provider_network": "",
+    // "Prescriber_Verification_Options_1": "1",
+    // "Prescriber_Verification_Options_2": "",
+    "Prescriber_Grouping_id": ""
+}
+03:24 PM
+//identification
+03:26 PM
+{
+    // "cutomerid": "dfgdfg",
+    // "name": "dfgdfg",
+    // "address1": "dfg",
+    // "address2": "dfgdsfgdfg",
+    // "city": "2",
+    // "country": "2",
+    // "zip": "dgfdfg",
+    // "phone": "789789789",
+    // "fax": "dfgdfg",
+    // "ediaddress": "xcvxcvxcv",
+    // "contact": "789789789",
+    // "test": "dfgdfg",
+    // "type": "dfg",
+    // "effectivedate": "2022-09-28",
+    // "terminationdate": "2022-10-14",
+    // "policyannmonth": "",
+    // "policyanday": "",
+    // "censusdate": "",
+    // "noofactivecontracts": null,
+    // "noofactivemembers": "",
+    // "nooftermedcontracts": "",
+    // "nooftermedmembers": "",
+    // "noofpendingcontracts": "",
+    // "noofpendinngmembers": ""
+}
