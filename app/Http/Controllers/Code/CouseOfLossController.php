@@ -11,11 +11,11 @@ class CouseOfLossController extends Controller
     public function get(Request $request)
     {
         $procedurecodes = DB::table('CAUSE_OF_LOSS_CODES')
-                                ->where('REASON_CODE', 'like', '%'.$request->code.'%')
-                                ->orWhere('REASON_DESCRIPTION', 'like', '%'.$request->description.'%')
+                                ->where('CAUSE_OF_LOSS_CODE', 'like', '%'.$request->code.'%')
+                                ->orWhere('DESCRIPTION', 'like', '%'.$request->description.'%')
                                 ->get();
 
-        $this->respondWithToken($this->token(), '', $procedurecodes);
+                                return  $this->respondWithToken($this->token(), '', $procedurecodes);
 
     }
 
@@ -24,9 +24,9 @@ class CouseOfLossController extends Controller
        
         $procedurecode = DB::table('CAUSE_OF_LOSS_CODES')->insert(
             [
-                'REASON_CODE' => $request->proccodelist,
-                'REASON_DESCRIPTION' => $request->description,
-                'DATE_TIME_CREATED' => '',
+                'CAUSE_OF_LOSS_CODE' => $request->causeofloss_code,
+                'DESCRIPTION' => $request->causeofloss_description,
+                'DATE_TIME_CREATED' => date('y-m-d'),
                 'USER_ID_CREATED' => '',
                 'USER_ID' => '',
                 'DATE_TIME_MODIFIED' => '',
@@ -35,12 +35,12 @@ class CouseOfLossController extends Controller
             ]
         );
 
-        $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+        return   $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
     }
 
     public function delete(Request $request)
     {
-        DB::table('CAUSE_OF_LOSS_CODES')->where('REASON_CODE', $request->id)->delete() 
+        return DB::table('CAUSE_OF_LOSS_CODES')->where('REASON_CODE', $request->id)->delete() 
             ? $this->respondWithToken($this->token(), 'Successfully deleted')
             : $this->respondWithToken($this->token(), 'Could find data');
     }

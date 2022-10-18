@@ -15,7 +15,7 @@ class ReasonsController extends Controller
                                 ->orWhere('REASON_DESCRIPTION', 'like', '%'.$request->description.'%')
                                 ->get();
 
-        $this->respondWithToken($this->token(), '', $procedurecodes);
+       return $this->respondWithToken($this->token(), '', $procedurecodes);
 
     }
 
@@ -24,9 +24,9 @@ class ReasonsController extends Controller
        
         $procedurecode = DB::table('REASON_CODES')->insert(
             [
-                'REASON_CODE' => $request->proccodelist,
-                'REASON_DESCRIPTION' => $request->description,
-                'DATE_TIME_CREATED' => '',
+                'REASON_CODE' => $request->reason_code,
+                'REASON_DESCRIPTION' => $request->reason_description,
+                'DATE_TIME_CREATED' => date('y-m-d'),
                 'USER_ID_CREATED' => '',
                 'USER_ID' => '',
                 'DATE_TIME_MODIFIED' => '',
@@ -34,12 +34,12 @@ class ReasonsController extends Controller
             ]
         );
 
-        $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+        return  $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
     }
 
     public function delete(Request $request)
     {
-        DB::table('REASON_CODES')->where('REASON_CODE', $request->id)->delete() 
+        return DB::table('REASON_CODES')->where('REASON_CODE', $request->id)->delete() 
             ? $this->respondWithToken($this->token(), 'Successfully deleted')
             : $this->respondWithToken($this->token(), 'Could find data');
     }

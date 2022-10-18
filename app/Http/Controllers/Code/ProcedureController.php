@@ -15,7 +15,7 @@ class ProcedureController extends Controller
                                 ->orWhere('DESCRIPTION', 'like', '%'.$request->description.'%')
                                 ->get();
 
-        $this->respondWithToken($this->token(), '', $procedurecodes);
+       return $this->respondWithToken($this->token(), '', $procedurecodes);
 
     }
 
@@ -24,9 +24,9 @@ class ProcedureController extends Controller
        
         $procedurecode = DB::table('PROC_CODE_LIST_NAMES')->insert(
             [
-                'PROC_CODE_LIST_ID' => $request->proccodelist,
-                'DESCRIPTION' => $request->description,
-                'DATE_TIME_CREATED' => '',
+                'PROC_CODE_LIST_ID' => $request->procedure_code,
+                'DESCRIPTION' => $request->procedure_description,
+                'DATE_TIME_CREATED' => date('y-m-d'),
                 'USER_ID_CREATED' => '',
                 'USER_ID' => '',
                 'DATE_TIME_MODIFIED' => '',
@@ -34,12 +34,12 @@ class ProcedureController extends Controller
             ]
         );
 
-        $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+       return $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
     }
 
     public function delete(Request $request)
     {
-        DB::table('PROC_CODE_LIST_NAMES')->where('PROC_CODE_LIST_ID', $request->id)->delete() 
+        return DB::table('PROC_CODE_LIST_NAMES')->where('PROC_CODE_LIST_ID', $request->id)->delete() 
             ? $this->respondWithToken($this->token(), 'Successfully deleted')
             : $this->respondWithToken($this->token(), 'Could find data');
     }

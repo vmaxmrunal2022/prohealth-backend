@@ -12,34 +12,35 @@ class BenifitController extends Controller
     {
         // dd($request->all());
         $benefitcodes = DB::table('benefit_codes')
-                            ->where('benefit_code', 'like', '%'.$request->code.'%')
-                            ->Where('description', 'like', '%'.$request->description.'%')
-                            ->get();
+            ->where('benefit_code', 'like', '%' . $request->code . '%')
+            ->Where('description', 'like', '%' . $request->description . '%')
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $benefitcodes);
     }
 
     public function add(Request $request)
     {
-       dd($request);
+        
+        $createddate = date('y-m-d');
         $benefitcode = DB::table('benefit_codes')->insert(
             [
                 'benefit_code' => $request->benefit_code,
-                'description' => $request->descriptions,
-                'DATE_TIME_CREATED' => '',
-                'USER_ID' => '',
+                'description' => $request->benefit_description,
+                'DATE_TIME_CREATED' => $createddate,
+                'USER_ID' => '', // TODO add user id
                 'DATE_TIME_MODIFIED' => '',
                 'USER_ID_CREATED' => '',
                 'FORM_ID' => ''
             ]
         );
 
-        $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
+        return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
     }
 
     public function delete(Request $request)
     {
-        DB::table('benefit_codes')->where('benefit_code', $request->id)->delete() 
+        return  DB::table('benefit_codes')->where('benefit_code', $request->id)->delete()
             ? $this->respondWithToken($this->token(), 'Successfully deleted')
             : $this->respondWithToken($this->token(), 'Could find data');
     }
