@@ -34,7 +34,7 @@ class ProviderTypeController extends Controller
                 // 'COMPLETE_CODE_IND' => ''
             ]
         );
-
+        // 49cd477a9edf20221018112956 mobi
         return  $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
     }
 

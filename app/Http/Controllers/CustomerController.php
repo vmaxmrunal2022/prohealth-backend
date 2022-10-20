@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
@@ -79,14 +80,14 @@ class CustomerController extends Controller
             'COVERAGE_EFF_DATE_1' => $customerREQUEST['strategy']['tier1'],
             // 'COVERAGE_STRATEGY_ID_1' => $customerREQUEST['strategy'][''],
             'PLAN_ID_1' => $customerREQUEST['strategy']['plan_id_1'],
-            'MISC_DATA_1' => $customerREQUEST['strategy']['miscellaneous_1'] ,
+            'MISC_DATA_1' => $customerREQUEST['strategy']['miscellaneous_1'],
             'COVERAGE_EFF_DATE_2' => $customerREQUEST['strategy']['tier2'],
             // 'COVERAGE_STRATEGY_ID_2' => $customerREQUEST['strategy'][''],
-            'PLAN_ID_2' => $customerREQUEST['strategy']['plan_id_2'] ,
-            'MISC_DATA_2' => $customerREQUEST['strategy']['miscellaneous_2'] ,
-            'COVERAGE_EFF_DATE_3' => $customerREQUEST['strategy']['tier3'] ,
+            'PLAN_ID_2' => $customerREQUEST['strategy']['plan_id_2'],
+            'MISC_DATA_2' => $customerREQUEST['strategy']['miscellaneous_2'],
+            'COVERAGE_EFF_DATE_3' => $customerREQUEST['strategy']['tier3'],
             // 'COVERAGE_STRATEGY_ID_3' => $customerREQUEST['strategy'][''],
-            'PLAN_ID_3' => $customerREQUEST['strategy']['plan_id_3'] ,
+            'PLAN_ID_3' => $customerREQUEST['strategy']['plan_id_3'],
             'MISC_DATA_3' => $customerREQUEST['strategy']['miscellaneous_3'],
             'PHARMACY_EXCEPTIONS_FLAG' => $customerREQUEST['strategy']['provider_vefification_option'],
             'SUPER_RX_NETWORK_ID' => $customerREQUEST['strategy']['super_provider_network'],
@@ -104,13 +105,13 @@ class CustomerController extends Controller
             'SUPER_MD_NETWORK_ID' => '',
             'MD_STRATEGY_ID' => '',
             'PHYSICIAN_TEMPLATE_ID' => '',
-            'ACCUM_BENE_FAM_SUM_IND' =>'',
-            'USER_ID_CREATED'=>'',
-            'DRUG_COV_STRATEGY_ID_1'=>'',
-            'PREF_MAINT_DRUG_STRATEGY_ID_1'=>'',
-            'PRICING_STRATEGY_ID_1'=>'',
-            'COPAY_STRATEGY_ID_1'=>'',
-            'ACCUM_BENE_STRATEGY_ID_1' =>'',
+            'ACCUM_BENE_FAM_SUM_IND' => '',
+            'USER_ID_CREATED' => '',
+            'DRUG_COV_STRATEGY_ID_1' => '',
+            'PREF_MAINT_DRUG_STRATEGY_ID_1' => '',
+            'PRICING_STRATEGY_ID_1' => '',
+            'COPAY_STRATEGY_ID_1' => '',
+            'ACCUM_BENE_STRATEGY_ID_1' => '',
             'DRUG_COV_STRATEGY_ID_2' => '',
             'PREF_MAINT_DRUG_STRATEGY_ID_2' => '',
             'PRICING_STRATEGY_ID_2' => '',
@@ -142,7 +143,7 @@ class CustomerController extends Controller
             'HISTORY_XFER_IND' => ''
         ]);
 
-        
+
 
         $this->respondWithToken($this->token() ?? '', 'Successfully added', $customer);
     }
@@ -150,9 +151,9 @@ class CustomerController extends Controller
     public function generateCustomerId()
     {
         $total = Customer::count() + 1;
-        $id = $this->customerIdPrefix.sprintf("%0".$this->customerIdMaxDigits."d", $total);
+        $id = $this->customerIdPrefix . sprintf("%0" . $this->customerIdMaxDigits . "d", $total);
         // $newid = $this->_generateAndvalidate();
-        
+
         // while ($newid) {
         //     $id = $newid;
         // }
@@ -160,4 +161,24 @@ class CustomerController extends Controller
         return $id;
     }
 
+    public function searchCutomer(Request $request)
+    {
+        $customer = DB::table('customer')
+            ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
+            ->where('CUSTOMER_ID', 'like', '%' . strtoupper($request->customerid) . '%')
+            ->Where('CUSTOMER_NAME', 'like', '%' . strtoupper($request->customername) . '%')
+            ->get();
+
+        return $this->respondWithToken($this->token(), '', $customer);
+    }
+
+    public function GetCustomer($customerid)
+    {
+        $customer = DB::table('customer')
+            // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
+            ->where('CUSTOMER_ID', 'like', '%' . strtoupper($customerid) . '%')
+            ->first();
+
+        return $this->respondWithToken($this->token(), '', $customer);
+    }
 }

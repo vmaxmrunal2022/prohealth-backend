@@ -91,6 +91,10 @@ Route::group(['prefix' => 'codes'], function ($router) {
 
 Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
 Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
+Route::get('customer/get', [CustomerController::class, 'searchCutomer']);
+
+Route::get('customer/get/{customerid}', [CustomerController::class, 'GetCustomer']);
+
 
 
 // COMMOM
