@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientGroupController;
 use App\Http\Controllers\Code\BenifitController;
 use App\Http\Controllers\Code\CouseOfLossController;
 use App\Http\Controllers\Code\DiagnosisController;
@@ -10,7 +12,13 @@ use App\Http\Controllers\Code\ServiceModifierController;
 use App\Http\Controllers\Code\ServiceTypeController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\Exception\BenefitListController;
+use App\Http\Controllers\Exception\GPIExceptionController;
+use App\Http\Controllers\Exception\NDCExceptionController;
+use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
+use App\Http\Controllers\Exception\TherapyClassController;
 use App\Http\Controllers\UserController;
+use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -88,12 +96,51 @@ Route::group(['prefix' => 'codes'], function ($router) {
     
 });
 
+Route::group(['prefix' => 'exception'], function ($router) {
+
+    // NDC
+    Route::get('/ndc/search', [NDCExceptionController::class, 'search'])->name('ndsc.search'); // SEARCH
+    Route::get('/ndc/get/{ndcid}', [NDCExceptionController::class, 'getNDCList'])->name('ndsc.list.get'); // LIST ITEMS
+    Route::get('/ndc/details/{ndcid}', [NDCExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
+
+
+    // GPI 
+    Route::get('/gpi/search', [GPIExceptionController::class, 'search'])->name('gpi.search'); // SEARCH
+    Route::get('/gpi/get/{ndcid}', [GPIExceptionController::class, 'getNDCList'])->name('gpi.list.get'); // LIST ITEMS
+    Route::get('/gpi/details/{ndcid}', [GPIExceptionController::class, 'getNDCItemDetails'])->name('gpi.details.get'); // DETAILS
+
+    // THERAPY CLASS
+    Route::get('/therapy-class/search', [TherapyClassController::class, 'search'])->name('therapyclass.search'); // SEARCH
+    Route::get('/therapy-class/get/{ndcid}', [TherapyClassController::class, 'getTCList'])->name('therapyclass.list.get'); // LIST ITEMS
+    Route::get('/therapy-class/details/{ndcid}', [TherapyClassController::class, 'getTCItemDetails'])->name('therapyclass.details.get'); // DETAILS
+
+    // PROCEDURE EXCEPTION
+    Route::get('/procedure/search', [ExceptionProcedureController::class, 'search'])->name('procedure.search'); // SEARCH
+    Route::get('/procedure/get/{ndcid}', [ExceptionProcedureController::class, 'getPCList'])->name('procedure.list.get'); // LIST ITEMS
+    Route::get('/procedure/details/{ndcid}', [ExceptionProcedureController::class, 'getPCItemDetails'])->name('procedure.details.get'); // DETAILS
+
+    // BENEFIT LIST EXCEPTION
+    Route::get('/benefit/search', [BenefitListController::class, 'search'])->name('benefit.search'); // SEARCH
+    Route::get('/benefit/get/{ndcid}', [BenefitListController::class, 'getBLList'])->name('benefit.list.get'); // LIST ITEMS
+    Route::get('/benefit/details/{ndcid}', [BenefitListController::class, 'getBLItemDetails'])->name('benefit.details.get'); // DETAILS
+
+});
+
 
 Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
 Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
 Route::get('customer/get', [CustomerController::class, 'searchCutomer']);
 
 Route::get('customer/get/{customerid}', [CustomerController::class, 'GetCustomer']);
+
+
+Route::get('client/get', [ClientController::class, 'searchClient']);
+Route::get('client/get/{clientid}', [ClientController::class, 'GetOneClient']);
+
+
+Route::get('clientgroup/get', [ClientGroupController::class, 'searchClientgroup']);
+Route::get('clientgroup/get/{clientgrpid}', [ClientGroupController::class, 'GetOneClientGroup']);
+
 
 
 

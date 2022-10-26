@@ -166,7 +166,7 @@ class CustomerController extends Controller
         $customer = DB::table('customer')
             ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
             ->where('CUSTOMER_ID', 'like', '%' . strtoupper($request->customerid) . '%')
-            ->Where('CUSTOMER_NAME', 'like', '%' . strtoupper($request->customername) . '%')
+            ->orWhere('CUSTOMER_NAME', 'like', '%' . strtoupper($request->customerid) . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $customer);
