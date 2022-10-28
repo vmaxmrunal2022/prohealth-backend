@@ -12,8 +12,8 @@ class DiagnosisController extends Controller
     {
         
         $benefitcodes = DB::table('DIAGNOSIS_CODES')
-                            ->where('DIAGNOSIS_ID', 'like', '%'.$request->code.'%')
-                            ->orWhere('DESCRIPTION', 'like', '%'.$request->description.'%')
+                            ->where('DIAGNOSIS_ID', 'like', '%'.strtoupper($request->search).'%')
+                            ->orWhere('DESCRIPTION', 'like', '%'.strtoupper($request->search).'%')
                             ->get();
                             
         return $this->respondWithToken($this->token(), '', $benefitcodes);

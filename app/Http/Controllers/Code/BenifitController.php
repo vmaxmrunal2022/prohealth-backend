@@ -12,8 +12,8 @@ class BenifitController extends Controller
     {
         // dd($request->all());
         $benefitcodes = DB::table('benefit_codes')
-            ->where('benefit_code', 'like', '%' . $request->code . '%')
-            ->Where('description', 'like', '%' . $request->description . '%')
+)            ->where('benefit_code', 'like', '%' .  strtoupper($request->search) . '%'))
+            ->Where('description', 'like', '%' .  strtoupper($request->search) . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $benefitcodes);

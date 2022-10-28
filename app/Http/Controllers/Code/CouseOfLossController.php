@@ -11,8 +11,8 @@ class CouseOfLossController extends Controller
     public function get(Request $request)
     {
         $procedurecodes = DB::table('CAUSE_OF_LOSS_CODES')
-                                ->where('CAUSE_OF_LOSS_CODE', 'like', '%'.$request->code.'%')
-                                ->orWhere('DESCRIPTION', 'like', '%'.$request->description.'%')
+                                ->where('CAUSE_OF_LOSS_CODE', 'like', '%'. strtoupper($request->search).'%')
+                                ->orWhere('DESCRIPTION', 'like', '%'. strtoupper($request->search).'%')
                                 ->get();
 
                                 return  $this->respondWithToken($this->token(), '', $procedurecodes);
