@@ -15,9 +15,13 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Exception\BenefitListController;
 use App\Http\Controllers\Exception\GPIExceptionController;
 use App\Http\Controllers\Exception\NDCExceptionController;
+use App\Http\Controllers\Provider\SuperProviderNetworkController ;
+
 use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
 use App\Http\Controllers\Exception\TherapyClassController;
 use App\Http\Controllers\UserController;
+
+
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -103,6 +107,9 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/ndc/get/{ndcid}', [NDCExceptionController::class, 'getNDCList'])->name('ndsc.list.get'); // LIST ITEMS
     Route::get('/ndc/details/{ndcid}', [NDCExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
 
+    
+
+    
 
     // GPI 
     Route::get('/gpi/search', [GPIExceptionController::class, 'search'])->name('gpi.search'); // SEARCH
@@ -148,3 +155,12 @@ Route::get('clientgroup/get/{clientgrpid}', [ClientGroupController::class, 'GetO
 Route::get('/countries', [Controller::class, 'Contries'])->name('countries');
 
 Route::get('/states/{countryid}', [Controller::class, 'getStatesOfCountry'])->name('states');
+
+
+//SUPER PROVIDER NETWORK
+// Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
+// Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
+Route::get('supernetwork/search', [SuperProviderNetworkController::class, 'search']);
+
+Route::get('network/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
+Route::get('network/details/{ndcid}', [SuperProviderNetworkController::class, 'networkDetails']);
