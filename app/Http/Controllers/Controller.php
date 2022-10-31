@@ -38,12 +38,12 @@ class Controller extends BaseController
     public function Contries()
     {
         $countries = DB::table('COUNTRY_STATES')->where('country_code', 'Coun')->get();
-        return $this->respondWithToken($this->token(), $countries);
+        return $this->respondWithToken($this->token(),'', $countries);
     }
 
     public function getStatesOfCountry($countryid)
     {
         $states = DB::table('COUNTRY_STATES')->whereNot('state_code', '**')->get();
-        return $this->respondWithToken($this->token(), $states);
+        return $this->respondWithToken($this->token(), '', $states);
     }
 }
