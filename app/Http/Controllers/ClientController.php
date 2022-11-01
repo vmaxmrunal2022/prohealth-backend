@@ -38,6 +38,8 @@ class ClientController extends Controller
         $client = DB::table('client')
             // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
             ->where('CLIENT_ID', 'like', '%' . strtoupper($clientid) . '%')
+            ->orWhere('CLIENT_NAME', 'like', '%' . strtoupper($clientid) . '%')
+            ->orWhere('CUSTOMER_ID', 'like', '%' . strtoupper($clientid) . '%')
             ->first();
 
         return $this->respondWithToken($this->token(), '', $client);
