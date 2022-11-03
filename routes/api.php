@@ -138,6 +138,12 @@ Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
 Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
 Route::get('customer/get', [CustomerController::class, 'searchCutomer']);
 
+Route::get('plan/get/{planid}', [CustomerController::class, 'searchPlanId']);
+
+
+Route::get('superprovidernetwork/get/{id}', [CustomerController::class, 'searchSuperProviderNetworkId']);
+
+
 Route::get('customer/get/{customerid}', [CustomerController::class, 'GetCustomer']);
 
 

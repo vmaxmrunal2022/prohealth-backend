@@ -51,7 +51,7 @@ class CustomerController extends Controller
             'PLAN_ID_REQUIRED' => '',
             'ADMIN_FEE' => $customerREQUEST['Exceptions']['admin_fee'],
             'DMR_FEE' => $customerREQUEST['Exceptions']['dmr_fee'],
-            'ADMIN_PERCENT' => $customerREQUEST['Exceptions']['admin_percentage'],
+            'ADMIN_PERCENT' => $customerREQUEST['Exceptions']['admin_percent'],
             'OVERLAP_COVERAGE_TIE_BREAKER' => '',
             'OTHER_COV_PROC_FLAG' => '',
             'EFFECTIVE_DATE' => $customerREQUEST['identification']['effectivedate'],
@@ -67,10 +67,10 @@ class CustomerController extends Controller
             'NUM_OF_PENDING_MEMBERS' => $customerREQUEST['identification']['noofpendinngmembers'],
 
             'ELIG_DATE_EDIT_OVR_FLAG' => '',
-            'UCF_FEE' => $customerREQUEST['Exceptions']['ucf_claim_fee'],
-            'ELIG_UPD_FEE' => $customerREQUEST['Exceptions']['elig_update_fee'],
+            'UCF_FEE' => $customerREQUEST['Exceptions']['ucf_fee'],
+            'ELIG_UPD_FEE' => $customerREQUEST['Exceptions']['elig_upd_fee'],
             'PRIOR_AUTH_FEE' => $customerREQUEST['Exceptions']['prior_auth_fee'],
-            'MAIL_ORD_LETTER_FEE' => $customerREQUEST['Exceptions']['mail_srv_ltr'],
+            'MAIL_ORD_LETTER_FEE' => $customerREQUEST['Exceptions']['mail_ord_letter_fee'],
             'MSG_PRIORITY_ID' => '',
             'DUR_EXCEPTION_LIST' => '',
             'MAX_NUM_TRANS_INTERIM_ELIG' => $customerREQUEST['Indicators']['max_no_of_transaction_allowed'],
@@ -123,16 +123,16 @@ class CustomerController extends Controller
             'COPAY_STRATEGY_ID_3' => '',
             'ACCUM_BENE_STRATEGY_ID_3' => '',
             'GENERIC_CODE_CONV_ID' => '',
-            'DATE_WRITTEN_TO_FIRST_FILL' => $customerREQUEST['Indicators']['no_of_days_to_first_fill'],
-            'DATE_FILLED_TO_SUB_ONLINE' => $customerREQUEST['Indicators']['no_of_days_to_first_fill_submit'],
-            'DATE_FILLED_TO_SUB_DMR' => $customerREQUEST['Indicators']['no_of_days_to_first_fill_submit_manual'],
-            'DATE_SUB_TO_FILLED_FUTURE' => $customerREQUEST['Indicators']['no_of_days_from_date_filled_to_future'],
-            'DAYS_FOR_REVERSALS' => $customerREQUEST['Indicators']['no_of_days_reversal'],
-            'NON_PROFIT_TAX_EXEMPT_FLAG' => $customerREQUEST['Indicators']['tax_exempty_entity'],
-            'REQD_U_AND_C_FLAG' => $customerREQUEST['Indicators']['mandatory_u_c'],
-            'EXCL_PLAN_NDC_GPI_EXCEP_FLAG' => $customerREQUEST['Exceptions']['bypass_plan_ndc_gpi'],
-            'EXCL_SYS_NDC_GPI_EXCEP_FLAG' => $customerREQUEST['Exceptions']['bypass_plan_ndc_gpi_exception_list_process'],
-            'AUTH_XFER_IND' => $customerREQUEST['eligibility']['authorization_transfer'],
+            'DATE_WRITTEN_TO_FIRST_FILL' => $customerREQUEST['Indicators']['date_written_to_first_fill'],
+            'DATE_FILLED_TO_SUB_ONLINE' => $customerREQUEST['Indicators']['date_filled_to_sub_online'],
+            'DATE_FILLED_TO_SUB_DMR' => $customerREQUEST['Indicators']['date_filled_to_sub_dmr'],
+            'DATE_SUB_TO_FILLED_FUTURE' => $customerREQUEST['Indicators']['date_sub_to_filled_future'],
+            'DAYS_FOR_REVERSALS' => $customerREQUEST['Indicators']['days_for_reversals'],
+            'NON_PROFIT_TAX_EXEMPT_FLAG' => $customerREQUEST['Indicators']['non_profit_tax_exempt_flag'],
+            'REQD_U_AND_C_FLAG' => $customerREQUEST['Indicators']['reqd_u_and_c_flag'],
+            'EXCL_PLAN_NDC_GPI_EXCEP_FLAG' => $customerREQUEST['Exceptions']['excl_plan_ndc_gpi_excep_flag'],
+            'EXCL_SYS_NDC_GPI_EXCEP_FLAG' => $customerREQUEST['Exceptions']['excl_sys_ndc_gpi_excep_flag'],
+            'AUTH_XFER_IND' => $customerREQUEST['eligibility']['auth_xfer_ind'],
             'ELIG_TYPE' => $customerREQUEST['eligibility']['eligibility_type'],
             'MEMBER_CHANGE_LOG_OPT' => $customerREQUEST['eligibility']['membership_processing_willbe_done'],
             'PHYS_FILE_SRCE_ID' => '',
@@ -170,6 +170,28 @@ class CustomerController extends Controller
             ->get();
 
         return $this->respondWithToken($this->token(), '', $customer);
+    }
+
+    public function searchPlanId($planid)
+    {
+        $customer = DB::table('plan_table_extensions')
+        // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
+        ->where('PLAN_ID', 'like', '%' . strtoupper($planid) . '%')
+        ->first();
+
+        // dd($customer);
+
+    return $this->respondWithToken($this->token(),'', $customer);
+    }
+
+    public function searchSuperProviderNetworkId(Request $request)
+    {
+        // dd($request);
+        $customer = DB::table('super_rx_network_names')
+        ->where('SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($request->rva_list_id) . '%')
+        ->orWhere('SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($request->rva_list_id) . '%')
+        ->first();
+    return $this->respondWithToken($this->token(),'', $customer);
     }
 
     public function GetCustomer($customerid)
