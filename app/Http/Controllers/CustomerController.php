@@ -194,6 +194,25 @@ class CustomerController extends Controller
     return $this->respondWithToken($this->token(),'', $customer);
     }
 
+    public function ALLSuperProviderNetworkIdS(Request $request)
+    {
+        $customer = DB::table('super_rx_network_names')->get();
+        $newarray=[];
+        foreach ($customer as $row) {
+
+            $new['value'] = $row->super_rx_network_id;
+           $new['label'] = $row->super_rx_network_id_name;
+           array_push($newarray, $new);
+    }
+
+       
+       
+    return $this->respondWithToken($this->token(),'', $newarray);
+    }
+
+
+
+
     public function GetCustomer($customerid)
     {
         $customer = DB::table('customer')

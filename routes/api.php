@@ -142,6 +142,7 @@ Route::get('plan/get/{planid}', [CustomerController::class, 'searchPlanId']);
 
 
 Route::get('superprovidernetwork/get/{id}', [CustomerController::class, 'searchSuperProviderNetworkId']);
+Route::get('superprovidernetworkids', [CustomerController::class, 'ALLSuperProviderNetworkIdS']);
 
 
 Route::get('customer/get/{customerid}', [CustomerController::class, 'GetCustomer']);
