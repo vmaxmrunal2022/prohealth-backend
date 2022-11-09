@@ -17,6 +17,10 @@ use App\Http\Controllers\Exception\GPIExceptionController;
 use App\Http\Controllers\Exception\NDCExceptionController;
 
 use App\Http\Controllers\ValidationLists\ValidationListsController;
+use App\Http\Controllers\Speciality\SpecialityController;
+
+
+
 
 
 
@@ -144,15 +148,19 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     // NDC
     Route::get('/diagnosis/search', [ValidationListsController::class, 'search'])->name('diagnosis.search'); // SEARCH
     Route::get('/diagnosis/get/{ndcid}', [ValidationListsController::class, 'getDiagnosisList'])->name('diagnosis.list.get'); // LIST ITEMS
-    Route::get('/diagnosis/details/{ndcid}', [ValidationListsController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
+    Route::get('/diagnosis/details/{ndcid}', [ValidationListsController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
-    
 
-    
+    Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('diagnosis.search'); // SEARCH
+    Route::get('/speciality/get/{ndcid}', [SpecialityController::class, 'getDiagnosisList'])->name('diagnosis.list.get'); // LIST ITEMS
+    Route::get('/speciality/details/{ndcid}', [SpecialityController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
-   
+
+
 
 });
+
+
 
 
 Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
