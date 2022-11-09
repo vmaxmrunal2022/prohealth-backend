@@ -15,6 +15,12 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Exception\BenefitListController;
 use App\Http\Controllers\Exception\GPIExceptionController;
 use App\Http\Controllers\Exception\NDCExceptionController;
+
+use App\Http\Controllers\ValidationLists\ValidationListsController;
+
+
+
+
 use App\Http\Controllers\Provider\SuperProviderNetworkController ;
 
 use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
@@ -130,6 +136,21 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/benefit/search', [BenefitListController::class, 'search'])->name('benefit.search'); // SEARCH
     Route::get('/benefit/get/{ndcid}', [BenefitListController::class, 'getBLList'])->name('benefit.list.get'); // LIST ITEMS
     Route::get('/benefit/details/{ndcid}', [BenefitListController::class, 'getBLItemDetails'])->name('benefit.details.get'); // DETAILS
+
+});
+
+Route::group(['prefix' => 'validationlist'], function ($router) {
+
+    // NDC
+    Route::get('/diagnosis/search', [ValidationListsController::class, 'search'])->name('diagnosis.search'); // SEARCH
+    Route::get('/diagnosis/get/{ndcid}', [ValidationListsController::class, 'getDiagnosisList'])->name('diagnosis.list.get'); // LIST ITEMS
+    Route::get('/diagnosis/details/{ndcid}', [ValidationListsController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
+
+    
+
+    
+
+   
 
 });
 
