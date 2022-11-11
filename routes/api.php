@@ -151,8 +151,8 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/diagnosis/details/{ndcid}', [ValidationListsController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
 
-    Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('diagnosis.search'); // SEARCH
-    Route::get('/speciality/get/{ndcid}', [SpecialityController::class, 'getDiagnosisList'])->name('diagnosis.list.get'); // LIST ITEMS
+    Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('speciality.search'); // SEARCH
+    Route::get('/speciality/get/{ndcid}', [SpecialityController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
     Route::get('/speciality/details/{ndcid}', [SpecialityController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
 

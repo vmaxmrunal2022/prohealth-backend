@@ -19,12 +19,12 @@ class SpecialityController extends Controller
     return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function getDiagnosisList($ndcid)
+    public function getSpecialityList($ndcid)
     {
         $ndclist = DB::table('SPECIALTY_VALIDATIONS')
-        ->select('DIAGNOSIS_LIST', 'DIAGNOSIS_ID','PRIORITY')
-        ->where('DIAGNOSIS_ID', 'like', '%' . strtoupper($ndcid) . '%')
-                // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
+        // ->select('SPECIALTY_LIST', 'DIAGNOSIS_ID','PRIORITY')
+        ->where('SPECIALTY_ID', 'like', '%' . strtoupper($ndcid) . '%')
+                ->orWhere('SPECIALTY_LIST', 'like', '%' . strtoupper($ndcid) . '%')
                 ->get();
 
         return $this->respondWithToken($this->token(), '', $ndclist);
@@ -33,11 +33,17 @@ class SpecialityController extends Controller
     public function getNDCItemDetails($ndcid)
     {
         $ndc = DB::table('SPECIALTY_VALIDATIONS')
-                    ->join('DIAGNOSIS_CODES', 'DIAGNOSIS_CODES.DIAGNOSIS_ID', '=', 'SPECIALTY_VALIDATIONS.DIAGNOSIS_ID')
-                    ->select('SPECIALTY_VALIDATIONS.DIAGNOSIS_LIST', 'SPECIALTY_VALIDATIONS.DIAGNOSIS_ID','DIAGNOSIS_CODES.DESCRIPTION as Description','SPECIALTY_VALIDATIONS.DIAGNOSIS_STATUS','SPECIALTY_VALIDATIONS.PRIORITY')
+                    ->join('SPECIALTY_EXCEPTIONS', 'SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', '=', 'SPECIALTY_VALIDATIONS.SPECIALTY_LIST')
 
-                    // ->where('NDC_EXCEPTION_LISTS.NDC', 'like', '%' . strtoupper($ndcid) . '%')  
+                    // ->where('SPECIALTY_VALIDATIONS.SPECIALTY_LIST', 'like', '%' . strtoupper($ndcid) . '%')  
                     ->first();
+
+
+                    // $ndc = DB::table('SPECIALTY_VALIDATIONS')
+                    // ->join('SPECIALTY_EXCEPTIONS', 'SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', '=', 'SPECIALTY_VALIDATIONS.SPECIALTY_LIST')
+                    //         ->select('SPECIALTY_VALIDATIONS.SPECIALTY_LIST', 'SPECIALTY_VALIDATIONS.SPECIALTY_ID','SPECIALTY_EXCEPTIONS.EXCEPTION_NAME')
+                    //         ->where('SPECIALTY_VALIDATIONS.SPECIALTY_LIST', 'like', '%' . strtoupper($ndcid) . '%')
+                    //         ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
 
