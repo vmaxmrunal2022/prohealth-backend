@@ -21,6 +21,9 @@ use App\Http\Controllers\Speciality\SpecialityController;
 
 use App\Http\Controllers\ValidationLists\EligibilityValidationListController;
 
+use App\Http\Controllers\ValidationLists\ProviderController;
+
+
 use App\Http\Controllers\Provider\SuperProviderNetworkController ;
 
 use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
@@ -156,6 +159,12 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/eligibility/search', [EligibilityValidationListController::class, 'search'])->name('speciality.search'); // SEARCH
     // Route::get('/eligibility/get/{ndcid}', [EligibilityValidationListController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
     Route::get('/eligibility/details/{ndcid}', [EligibilityValidationListController::class, 'getNDCItemDetails'])->name('eligibility.details.get'); // DETAIL
+
+
+
+    Route::get('/provider/search', [ProviderController::class, 'search'])->name('provider.search'); // SEARCH
+    Route::get('/provider/get/{ndcid}', [ProviderController::class, 'getProviderList'])->name('provider.list.get'); // LIST ITEMS
+    Route::get('/provider/details/{ndcid}', [ProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
 
 });
