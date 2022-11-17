@@ -25,18 +25,13 @@ use App\Http\Controllers\ValidationLists\ProviderController;
 
 
 use App\Http\Controllers\ValidationLists\DiagnosisValidationListController;
-
-
-
-
-
+use App\Http\Controllers\ValidationLists\PricingStrategyController;
 
 use App\Http\Controllers\Provider\SuperProviderNetworkController ;
 
 use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
 use App\Http\Controllers\Exception\TherapyClassController;
 use App\Http\Controllers\UserController;
-
 
 use App\Models\Client;
 use Illuminate\Http\Request;
@@ -180,6 +175,13 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search'])->name('diagnosisvalidation.search'); // SEARCH
     Route::get('/diagnosisvalidation/get/{ndcid}', [DiagnosisValidationListController::class, 'getProviderList'])->name('diagnosisvalidation.list.get'); // LIST ITEMS
     Route::get('/diagnosisvalidation/details/{ndcid}', [DiagnosisValidationListController::class, 'getNDCItemDetails'])->name('diagnosisvalidation.details.get'); // DETAIL
+
+
+
+    Route::get('/pricingstrategy/search', [PricingStrategyController::class, 'search'])->name('pricingstrategy.search'); // SEARCH
+    Route::get('/pricingstrategy/get/{ndcid}', [PricingStrategyController::class, 'getProviderList'])->name('pricingstrategy.list.get'); // LIST ITEMS
+    Route::get('/pricingstrategy/details/{ndcid}', [PricingStrategyController::class, 'getNDCItemDetails'])->name('pricingstrategy.details.get'); // DETAIL
+
 
 
 });
