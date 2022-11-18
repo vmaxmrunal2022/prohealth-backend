@@ -27,6 +27,9 @@ use App\Http\Controllers\ValidationLists\ProviderController;
 use App\Http\Controllers\ValidationLists\DiagnosisValidationListController;
 use App\Http\Controllers\ValidationLists\PricingStrategyController;
 
+use App\Http\Controllers\ValidationLists\CopayStrategyController;
+use App\Http\Controllers\ValidationLists\AccumlatedController;
+
 use App\Http\Controllers\Provider\SuperProviderNetworkController ;
 
 use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
@@ -181,6 +184,19 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/pricingstrategy/search', [PricingStrategyController::class, 'search'])->name('pricingstrategy.search'); // SEARCH
     Route::get('/pricingstrategy/get/{ndcid}', [PricingStrategyController::class, 'getProviderList'])->name('pricingstrategy.list.get'); // LIST ITEMS
     Route::get('/pricingstrategy/details/{ndcid}', [PricingStrategyController::class, 'getNDCItemDetails'])->name('pricingstrategy.details.get'); // DETAIL
+
+
+
+    Route::get('/copay/search', [CopayStrategyController::class, 'search'])->name('copay.search'); // SEARCH
+    Route::get('/copay/get/{ndcid}', [CopayStrategyController::class, 'getList'])->name('copay.list.get'); // LIST ITEMS
+    Route::get('/copay/details/{ndcid}', [CopayStrategyController::class, 'getDetails'])->name('copay.details.get'); // DETAIL
+
+
+
+    Route::get('/accumulated/search', [AccumlatedController::class, 'search'])->name('accumulated.search'); // SEARCH
+    Route::get('/accumulated/get/{ndcid}', [AccumlatedController::class, 'getList'])->name('accumulated.list.get'); // LIST ITEMS
+    Route::get('/accumulated/details/{ndcid}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
+
 
 
 
