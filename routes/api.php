@@ -29,6 +29,9 @@ use App\Http\Controllers\ValidationLists\PricingStrategyController;
 
 use App\Http\Controllers\ValidationLists\CopayStrategyController;
 use App\Http\Controllers\ValidationLists\AccumlatedController;
+use App\Http\Controllers\AccumLatedBenifits\AccumlatedBenifitController;
+use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
+
 
 use App\Http\Controllers\Provider\SuperProviderNetworkController ;
 
@@ -198,6 +201,17 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/accumulated/details/{ndcid}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
 
 
+
+    Route::get('/accumulated/benifit/search', [AccumlatedBenifitController::class, 'search'])->name('accumulated.benifit.search'); // SEARCH
+    Route::get('/accumulated/benifit/get/{ndcid}', [AccumlatedBenifitController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
+    // Route::get('/accumulated/benifit/details/{ndcid}', [AccumlatedBenifitController::class, 'getDetails'])->name('accumulated.benifit.details.get'); // DETAIL
+
+    Route::get('/gpiExclusion/search', [GpiExclusionController::class, 'search'])->name('gpiExclusion.search'); // SEARCH
+
+
+    Route::get('/gpiExclusion/get/{ndcid}', [GpiExclusionController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
+
+    Route::get('/gpiExclusion/details/{ndcid}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
 
 
 });
