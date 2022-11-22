@@ -32,6 +32,12 @@ use App\Http\Controllers\ValidationLists\AccumlatedController;
 use App\Http\Controllers\AccumLatedBenifits\AccumlatedBenifitController;
 use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
 use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
+use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
+
+
+
+
+
 
 
 
@@ -227,6 +233,14 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/ndcExclusion/get/{ndcid}', [NdcExlusionController::class, 'getList'])->name('ndcExclusion.list.get'); // LIST ITEMS
 
     Route::get('/ndcExclusion/details/{ndcid}', [NdcExlusionController::class, 'getDetails'])->name('ndcExclusion.get'); // DETAIL
+
+
+
+    Route::get('customer/search', [MajorMedicalController::class, 'search']);
+    Route::get('client/get/{customerid}', [MajorMedicalController::class, 'getClient']);
+
+    Route::get('clientgroup/details/{client}', [MajorMedicalController::class, 'getClientGroup']);
+
 
 
 
