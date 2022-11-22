@@ -31,6 +31,12 @@ use App\Http\Controllers\ValidationLists\CopayStrategyController;
 use App\Http\Controllers\ValidationLists\AccumlatedController;
 use App\Http\Controllers\AccumLatedBenifits\AccumlatedBenifitController;
 use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
+use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
+
+
+
+
+
 
 
 use App\Http\Controllers\Provider\SuperProviderNetworkController ;
@@ -212,6 +218,17 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/gpiExclusion/get/{ndcid}', [GpiExclusionController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
 
     Route::get('/gpiExclusion/details/{ndcid}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
+
+
+
+    Route::get('/ndcExclusion/search', [NdcExlusionController::class, 'search'])->name('ndcExclusion.search'); // SEARCH
+
+
+    Route::get('/ndcExclusion/get/{ndcid}', [NdcExlusionController::class, 'getList'])->name('ndcExclusion.list.get'); // LIST ITEMS
+
+    Route::get('/ndcExclusion/details/{ndcid}', [NdcExlusionController::class, 'getDetails'])->name('ndcExclusion.get'); // DETAIL
+
+
 
 
 });
