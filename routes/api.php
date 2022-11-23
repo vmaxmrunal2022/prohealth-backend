@@ -10,9 +10,16 @@ use App\Http\Controllers\Code\ServiceModifierController;
 use App\Http\Controllers\Code\ServiceTypeController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\exception_list\PrcedureCodeListController;
+use App\Http\Controllers\exception_list\ProviderTypeValidationController;
+use App\Http\Controllers\exception_list\SuperBenefitControler;
+use App\Http\Controllers\third_party_pricing\CopayScheduleController;
+use App\Http\Controllers\third_party_pricing\CopayStepScheduleController;
+use App\Http\Controllers\third_party_pricing\PriceScheduleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Nette\Schema\Context;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,3 +104,32 @@ Route::post('customer/id/generate', [CustomerController::class, 'generateCustome
 Route::get('/countries', [Controller::class, 'Contries'])->name('countries');
 
 Route::get('/states/{countryid}', [Controller::class, 'getStatesOfCountry'])->name('states');
+
+//Provider Type Validation 
+Route::get('/provider-type-validation', [ProviderTypeValidationController::class, 'test']);
+Route::get('/provider-type-validation/get', [ProviderTypeValidationController::class, 'get'])->name('provider-type-validation-get');
+Route::get('/provider-type-validation/getFormData', [ProviderTypeValidationController::class, 'getFormData'])->name('provider-type-validation-getFormData');
+
+//Procedure Code List
+Route::get('/procedure-code-list/get', [PrcedureCodeListController::class, 'get'])->name('procedure-code-list-get');
+Route::get('/procedure-code-list/get-code-list', [PrcedureCodeListController::class, 'getProcCodeList'])->name('procedure-code-list-get');
+
+//Super Benefit List
+Route::get('/super-benefit-list/get', [SuperBenefitControler::class, 'get']);
+Route::get('/super-benefit-list/get-super-benefit-code', [SuperBenefitControler::class, 'getBenefitCode']);
+
+//Third Party Pricing(module)
+Route::group(['prefix' => 'third-party-pricing/'], function(){
+    //Price Schedule
+    Route::get('price-schedule/get',[PriceScheduleController::class, 'get']);
+    Route::get('price-schedule/get-price-schedule-data', [PriceScheduleController::class, 'getPriceScheduleDetails']);
+
+    //Copay Schedule
+    Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
+    Route::get('copay-schedule/get-copay-data', [CopayScheduleController::class, 'getCopayData'])->name('get.copay.single');
+
+    //Copay Step Schedule
+    Route::get('copay-step-schedule/get', [CopayStepScheduleController::class, 'get'])->name('get.copay-step');
+    Route::get('copay-step-schedule/get-copay-data', [CopayStepScheduleController::class, 'getCopayData'])->name('get.copay-step.single');
+});
+
