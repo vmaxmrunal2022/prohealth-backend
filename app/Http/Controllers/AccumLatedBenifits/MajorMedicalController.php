@@ -46,6 +46,24 @@ class MajorMedicalController extends Controller
     }
 
 
+
+    public function getDetails($ndcid)
+    {
+
+        $ndc =DB::table('CLIENT_GROUP')
+                ->where('CLIENT_GROUP_ID', 'like', '%' .$ndcid. '%')
+                ->first();
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
+
+
+
+
+    
+
+
     
 
 
