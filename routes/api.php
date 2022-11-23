@@ -46,6 +46,11 @@ use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
 
 
 use App\Http\Controllers\Provider\SuperProviderNetworkController ;
+use App\Http\Controllers\Provider\TraditionalNetworkController ;
+
+
+
+
 
 use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
 use App\Http\Controllers\Exception\TherapyClassController;
@@ -286,6 +291,13 @@ Route::get('/countries', [Controller::class, 'Contries'])->name('countries');
 Route::get('/states/{countryid}', [Controller::class, 'getStatesOfCountry'])->name('states');
 
 
+
+
+Route::group(['prefix' => 'provider'], function ($router) {
+
+
+
+    
 //SUPER PROVIDER NETWORK
 // Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
 // Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
@@ -293,3 +305,16 @@ Route::get('supernetwork/search', [SuperProviderNetworkController::class, 'searc
 
 Route::get('network/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
 Route::get('network/details/{ndcid}', [SuperProviderNetworkController::class, 'networkDetails']);
+
+
+//TRADITIONAL NETWORK 
+
+Route::get('traditionalnetwork/search', [TraditionalNetworkController::class, 'search']);
+Route::get('traditionalnetwork/get/{ndcid}', [TraditionalNetworkController::class, 'getList']);
+
+
+
+
+});
+
+
