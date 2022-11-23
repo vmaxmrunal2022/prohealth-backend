@@ -15,7 +15,9 @@ use App\Http\Controllers\exception_list\ProviderTypeValidationController;
 use App\Http\Controllers\exception_list\SuperBenefitControler;
 use App\Http\Controllers\third_party_pricing\CopayScheduleController;
 use App\Http\Controllers\third_party_pricing\CopayStepScheduleController;
+use App\Http\Controllers\third_party_pricing\MacListController;
 use App\Http\Controllers\third_party_pricing\PriceScheduleController;
+use App\Http\Controllers\third_party_pricing\TaxScheduleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -130,6 +132,13 @@ Route::group(['prefix' => 'third-party-pricing/'], function(){
 
     //Copay Step Schedule
     Route::get('copay-step-schedule/get', [CopayStepScheduleController::class, 'get'])->name('get.copay-step');
-    Route::get('copay-step-schedule/get-copay-data', [CopayStepScheduleController::class, 'getCopayData'])->name('get.copay-step.single');
+    // Route::get('copay-step-schedule/get-copay-data', [CopayStepScheduleController::class, 'getCopayData'])->name('get.copay-step.single');
+
+    //MAC List
+    Route::get('mac-list/get', [MacListController::class, 'get'])->name('get.macList');
+    Route::get('mac-list/get-mac-list', [MacListController::class, 'getMacList'])->name('get.mac-list.single');
+
+    //Tax Schedule
+    Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
 });
 
