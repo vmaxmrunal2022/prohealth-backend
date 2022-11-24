@@ -17,6 +17,7 @@ use App\Http\Controllers\third_party_pricing\CopayScheduleController;
 use App\Http\Controllers\third_party_pricing\CopayStepScheduleController;
 use App\Http\Controllers\third_party_pricing\MacListController;
 use App\Http\Controllers\third_party_pricing\PriceScheduleController;
+use App\Http\Controllers\third_party_pricing\ProcedureUcrList;
 use App\Http\Controllers\third_party_pricing\TaxScheduleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -140,5 +141,9 @@ Route::group(['prefix' => 'third-party-pricing/'], function(){
 
     //Tax Schedule
     Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
+
+    //Procedure UCR list
+    Route::get('procedure-ucr-list/get', [ProcedureUcrList::class, 'get']);
+    Route::get('procedure-ucr-list/get-procedure-list-data', [ProcedureUcrList::class, 'getProcedureListData']);
 });
 
