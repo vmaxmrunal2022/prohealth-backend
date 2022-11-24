@@ -303,8 +303,7 @@ Route::group(['prefix' => 'provider'], function ($router) {
 // Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
 Route::get('supernetwork/search', [SuperProviderNetworkController::class, 'search']);
 
-Route::get('network/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
-Route::get('network/details/{ndcid}', [SuperProviderNetworkController::class, 'networkDetails']);
+Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
 
 
 //TRADITIONAL NETWORK 
