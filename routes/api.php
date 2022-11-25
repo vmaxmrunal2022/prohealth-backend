@@ -38,6 +38,12 @@ use App\Http\Controllers\Provider\SuperProviderNetworkController ;
 use App\Http\Controllers\Provider\TraditionalNetworkController ;
 use App\Http\Controllers\Provider\PrioritiseNetworkController ;
 
+use App\Http\Controllers\PrescriberData\PrescriberController ;
+
+
+
+
+
 
 use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
 use App\Http\Controllers\Exception\TherapyClassController;
@@ -240,6 +246,18 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     // getDetails
 
 
+
+
+
+});
+
+
+Route::group(['prefix' => 'prescriberdata'], function ($router) {
+
+
+    Route::get('/prescriber/search', [PrescriberController::class, 'search'])->name('prescriber.search'); // SEARCH
+
+    Route::get('/prescriber/details/{ndcid}', [PrescriberController::class, 'getDetails'])->name('prescriber.get'); // DETAIL
 
 
 
