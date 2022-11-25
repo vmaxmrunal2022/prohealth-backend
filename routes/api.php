@@ -34,22 +34,9 @@ use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
 use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
 
-
-
-
-
-
-
-
-
-
-
-
 use App\Http\Controllers\Provider\SuperProviderNetworkController ;
 use App\Http\Controllers\Provider\TraditionalNetworkController ;
-
-
-
+use App\Http\Controllers\Provider\PrioritiseNetworkController ;
 
 
 use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
@@ -311,7 +298,11 @@ Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, '
 Route::get('traditionalnetwork/search', [TraditionalNetworkController::class, 'search']);
 Route::get('traditionalnetwork/get/{ndcid}', [TraditionalNetworkController::class, 'getList']);
 
+//Prioritize  Network
 
+Route::get('prioritize/search', [PrioritiseNetworkController::class, 'search']);
+
+Route::get('prioritize/get/{ndcid}', [PrioritiseNetworkController::class, 'networkList']);
 
 
 });
