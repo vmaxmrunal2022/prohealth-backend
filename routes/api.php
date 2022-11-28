@@ -17,6 +17,12 @@ use App\Http\Controllers\Exception\GPIExceptionController;
 use App\Http\Controllers\Exception\NDCExceptionController;
 
 use App\Http\Controllers\ValidationLists\ValidationListsController;
+
+use App\Http\Controllers\ValidationLists\PrescriberValidationController;
+
+
+
+
 use App\Http\Controllers\Speciality\SpecialityController;
 
 use App\Http\Controllers\ValidationLists\EligibilityValidationListController;
@@ -244,6 +250,11 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
 
     // getDetails
+
+
+    Route::get('/prescriber/search', [PrescriberValidationController::class, 'search'])->name('prescriber.search'); // SEARCH
+    Route::get('/prescriber/get/{ndcid}', [PrescriberValidationController::class, 'getProviderList'])->name('prescriber.list.get'); // LIST ITEMS
+    Route::get('/prescriber/details/{ndcid}', [PrescriberValidationController::class, 'getNDCItemDetails'])->name('prescriber.details.get'); // DETAIL
 
 
 
