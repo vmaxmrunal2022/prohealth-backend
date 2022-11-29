@@ -11,8 +11,8 @@ class ServiceTypeController extends Controller
     public function get(Request $request)
     {
         $procedurecodes = DB::table('SERVICE_TYPES')
-            ->where('SERVICE_TYPE', 'like', '%' . $request->code . '%')
-            ->orWhere('DESCRIPTION', 'like', '%' . $request->description . '%')
+            ->where('SERVICE_TYPE', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
         return  $this->respondWithToken($this->token(), '', $procedurecodes);
@@ -23,8 +23,8 @@ class ServiceTypeController extends Controller
 
         $procedurecode = DB::table('SERVICE_TYPES')->insert(
             [
-                'SERVICE_TYPE' => $request->service_type_code,
-                'DESCRIPTION' => $request->service_type_description,
+                'SERVICE_TYPE' => strtoupper($request->service_type_code),
+                'DESCRIPTION' => strtoupper($request->service_type_description),
                 'DATE_TIME_CREATED' => date('y-m-d'),
                 'USER_ID_CREATED' => '',
                 'USER_ID' => '',
@@ -41,6 +41,6 @@ class ServiceTypeController extends Controller
     {
         return DB::table('SERVICE_TYPES')->where('SERVICE_TYPE', $request->id)->delete()
             ? $this->respondWithToken($this->token(), 'Successfully deleted')
-            : $this->respondWithToken($this->token(), 'Could find data');
+            : $this->respondWithToken($this->token(), 'Could not find data');
     }
 }

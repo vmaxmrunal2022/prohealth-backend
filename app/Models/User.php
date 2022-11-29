@@ -18,6 +18,10 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
+    public $table = "FE_USERS";
+    protected $primaryKey = 'USER_ID';
+
     protected $fillable = [
         'name',
         'email',
@@ -42,4 +46,21 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getAuthPassword()
+    {
+        return $this->USER_PASSWORD;
+    }
+
+    public function getAuthIdentifier()
+    {
+        return $this->USER_ID;
+    }
+
+    public function setPasswordAttribute($password){
+        $this->attributes['password'] = $password;
+    }
+
+    // 
+
 }

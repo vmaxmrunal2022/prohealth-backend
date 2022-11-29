@@ -11,8 +11,8 @@ class ProviderTypeController extends Controller
     public function get(Request $request)
     {
         $procedurecodes = DB::table('PROVIDER_TYPES')
-                                ->where('PROVIDER_TYPE', 'like', '%'.$request->code.'%')
-                                ->orWhere('DESCRIPTION', 'like', '%'.$request->description.'%')
+                                ->where('PROVIDER_TYPE', 'like', '%'.strtoupper($request->search).'%')
+                                ->orWhere('DESCRIPTION', 'like', '%'.strtoupper($request->search).'%')
                                 ->get();
 
         return $this->respondWithToken($this->token(), '', $procedurecodes);
@@ -22,10 +22,13 @@ class ProviderTypeController extends Controller
     public function add(Request $request)
     {
        
-        $procedurecode = DB::table('PROVIDER_TYPES')->insert(
+        $procedurecode = DB::table('PROVIDER_TYPES')->updateOrInsert(
             [
-                'PROVIDER_TYPE' => $request->provider_type_code,
-                'DESCRIPTION' => $request->provider_type_description,
+                'PROVIDER_TYPE' => strtoupper($request->provider_type),
+            ],
+            [
+                'PROVIDER_TYPE' => strtoupper($request->provider_type),
+                'DESCRIPTION' => strtoupper($request->description),
                 'DATE_TIME_CREATED' => date('y-m-d'),
                 'USER_ID_CREATED' => '',
                 'USER_ID' => '',
@@ -34,6 +37,8 @@ class ProviderTypeController extends Controller
                 // 'COMPLETE_CODE_IND' => ''
             ]
         );
+
+        $procedurecode = DB::table('PROVIDER_TYPES')->where('PROVIDER_TYPE', $request->provider_type)->first();
         // 49cd477a9edf20221018112956 mobi
         return  $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
     }

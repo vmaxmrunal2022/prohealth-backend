@@ -11,8 +11,8 @@ class ServiceModifierController extends Controller
     public function get(Request $request)
     {
         $procedurecodes = DB::table('SERVICE_MODIFIERS')
-                                ->where('SERVICE_MODIFIER', 'like', '%'.$request->code.'%')
-                                ->orWhere('DESCRIPTION', 'like', '%'.$request->description.'%')
+                                ->where('SERVICE_MODIFIER', 'like', '%'.$request->search.'%')
+                                ->orWhere('DESCRIPTION', 'like', '%'.$request->search.'%')
                                 ->get();
 
        return $this->respondWithToken($this->token(), '', $procedurecodes);

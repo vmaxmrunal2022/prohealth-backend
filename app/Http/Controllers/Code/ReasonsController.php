@@ -11,8 +11,8 @@ class ReasonsController extends Controller
     public function get(Request $request)
     {
         $procedurecodes = DB::table('REASON_CODES')
-                                ->where('REASON_CODE', 'like', '%'.$request->code.'%')
-                                ->orWhere('REASON_DESCRIPTION', 'like', '%'.$request->description.'%')
+                                ->where('REASON_CODE', 'like', '%'.strtoupper($request->search).'%')
+                                ->orWhere('REASON_DESCRIPTION', 'like', '%'.strtoupper($request->search).'%')
                                 ->get();
 
        return $this->respondWithToken($this->token(), '', $procedurecodes);
@@ -24,8 +24,8 @@ class ReasonsController extends Controller
        
         $procedurecode = DB::table('REASON_CODES')->insert(
             [
-                'REASON_CODE' => $request->reason_code,
-                'REASON_DESCRIPTION' => $request->reason_description,
+                'REASON_CODE' => strtoupper($request->reason_code),
+                'REASON_DESCRIPTION' => strtoupper($request->reason_description),
                 'DATE_TIME_CREATED' => date('y-m-d'),
                 'USER_ID_CREATED' => '',
                 'USER_ID' => '',

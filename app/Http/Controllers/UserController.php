@@ -46,8 +46,8 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string',
-            'password' => 'required|min:6',
+            'USER_ID' => 'required|string',
+            'USER_PASSWORD' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -55,10 +55,35 @@ class UserController extends Controller
                 'message' => $validator->messages()->toArray()
             ], 500);
         }
-        $credentials = $request->only(["email", "password"]);
-        $user = User::where('email', $credentials['email'])->first();
+        $credentials = $request->only(["USER_ID", "USER_PASSWORD"]);
+        // $user = User::where('USER_ID', $credentials['USER_ID'])->first();
+
+        $user = User::where('USER_ID', $request->USER_ID)
+            ->where('USER_PASSWORD', $request->USER_PASSWORD)
+            ->first();
+
+       
+
+            // return response()->json([
+            //     'data' => Auth::check(),
+            //     "success" => false,
+            //     "message" => '',
+            //     "error" => ''
+            // ], 422);
+
+        // if ($user) {
+        //     Auth::loginUsingId($user->id);
+        //     // -- OR -- //
+        //     Auth::login($user);
+        //     return redirect()->route('account');
+        // } else {
+        //     return redirect()->back()->withInput();
+        // }
+
         if ($user) {
-            if (!auth()->attempt($credentials)) {
+            Auth::login($user);
+        //    print_r(Auth::login($user));
+            if (!Auth::check()) {
                 $responseMessage = "Invalid username or password";
                 return response()->json([
                     "success" => false,
@@ -68,7 +93,7 @@ class UserController extends Controller
             }
             $accessToken = auth()->user()->createToken('authToken')->accessToken;
             $responseMessage = "Login Successful";
-            return $this->respondWithToken($accessToken, $responseMessage, auth()->user());
+            return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
         } else {
             $responseMessage = "Sorry, this user does not exist";
             return response()->json([

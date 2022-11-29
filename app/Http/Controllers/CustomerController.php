@@ -220,6 +220,8 @@ class CustomerController extends Controller
             ->where('CUSTOMER_ID', 'like', '%' . strtoupper($customerid) . '%')
             ->first();
 
+        
+
         return $this->respondWithToken($this->token(), '', $customer);
     }
 }
