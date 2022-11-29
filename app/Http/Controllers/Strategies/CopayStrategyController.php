@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\ValidationLists;
+namespace App\Http\Controllers\Strategies;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;

@@ -31,10 +31,10 @@ use App\Http\Controllers\ValidationLists\ProviderController;
 
 
 use App\Http\Controllers\ValidationLists\DiagnosisValidationListController;
-use App\Http\Controllers\ValidationLists\PricingStrategyController;
+use App\Http\Controllers\Strategies\PricingStrategyController;
 
-use App\Http\Controllers\ValidationLists\CopayStrategyController;
-use App\Http\Controllers\ValidationLists\AccumlatedController;
+use App\Http\Controllers\Strategies\CopayStrategyController;
+use App\Http\Controllers\Strategies\AccumlatedController;
 use App\Http\Controllers\AccumLatedBenifits\AccumlatedBenifitController;
 use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
 use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
