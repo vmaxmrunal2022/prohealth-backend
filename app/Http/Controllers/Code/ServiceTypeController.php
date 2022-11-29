@@ -41,6 +41,6 @@ class ServiceTypeController extends Controller
     {
         return DB::table('SERVICE_TYPES')->where('SERVICE_TYPE', $request->id)->delete()
             ? $this->respondWithToken($this->token(), 'Successfully deleted')
-            : $this->respondWithToken($this->token(), 'Could find data');
+            : $this->respondWithToken($this->token(), 'Could not find data');
     }
 }
