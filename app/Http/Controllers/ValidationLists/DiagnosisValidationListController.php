@@ -34,13 +34,13 @@ class DiagnosisValidationListController extends Controller
     public function getNDCItemDetails ($ndcid)
         {
             $ndc = DB::table('DIAGNOSIS_VALIDATIONS')
-                        // ->join('PROVIDER_TYPE_VALIDATIONS', 'PROVIDER_TYPE_VALIDATION_NAMES.PROV_TYPE_LIST_ID', '=', 'PROVIDER_TYPE_VALIDATIONS.PROV_TYPE_LIST_ID')
+                        ->join('DIAGNOSIS_EXCEPTIONS', 'DIAGNOSIS_EXCEPTIONS.DIAGNOSIS_LIST', '=', 'DIAGNOSIS_VALIDATIONS.DIAGNOSIS_LIST')
                         // ->select('DIAGNOSIS_VALIDATIONS.DIAGNOSIS_LIST')
 
                         ->where('DIAGNOSIS_VALIDATIONS.DIAGNOSIS_LIST', 'like', '%' . strtoupper($ndcid) . '%')  
                         // ->groupBy('DIAGNOSIS_LIST')
 
-                        ->get();
+                        ->first();
 
             return $this->respondWithToken($this->token(), '', $ndc);
 
