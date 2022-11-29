@@ -15,6 +15,7 @@ use App\Http\Controllers\exception_list\PrcedureCodeListController;
 use App\Http\Controllers\exception_list\ProviderTypeValidationController;
 use App\Http\Controllers\plan_design\PlanAssociationController;
 use App\Http\Controllers\exception_list\SuperBenefitControler;
+use App\Http\Controllers\membership\MemberController;
 use App\Http\Controllers\plan_design\PlanEditController;
 use App\Http\Controllers\third_party_pricing\CopayScheduleController;
 use App\Http\Controllers\third_party_pricing\CopayStepScheduleController;
@@ -169,5 +170,11 @@ Route::group(['prefix' => 'plan-design/'], function(){
     //Plan Edit
     Route::get('plan-edit/get', [PlanEditController::class, 'get']);
     Route::get('plan-edit/get-plan-edit-data', [PlanEditController::class, 'getPlanEditData']);
+});
+
+//Membership
+Route::group(['prefix' => 'membership/'], function(){
+    //Member
+    Route::get('memberdata/get', [MemberController::class, 'get']);
 });
  
