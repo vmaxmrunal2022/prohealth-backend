@@ -10,9 +10,12 @@ use App\Http\Controllers\Code\ServiceModifierController;
 use App\Http\Controllers\Code\ServiceTypeController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\drug_information\DrugDatabaseController;
 use App\Http\Controllers\exception_list\PrcedureCodeListController;
 use App\Http\Controllers\exception_list\ProviderTypeValidationController;
+use App\Http\Controllers\plan_design\PlanAssociationController;
 use App\Http\Controllers\exception_list\SuperBenefitControler;
+use App\Http\Controllers\plan_design\PlanEditController;
 use App\Http\Controllers\third_party_pricing\CopayScheduleController;
 use App\Http\Controllers\third_party_pricing\CopayStepScheduleController;
 use App\Http\Controllers\third_party_pricing\MacListController;
@@ -152,3 +155,19 @@ Route::group(['prefix' => 'third-party-pricing/'], function(){
     Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
 });
 
+//Drug Information
+Route::group(['prefix' => "drug-information/"], function(){
+    Route::get('drug-database/get', [DrugDatabaseController::class, 'get']);
+    Route::get('drug-database/get-drug-prices', [DrugDatabaseController::class, 'getDrugPrices']);
+});
+
+
+//Plan Design
+Route::group(['prefix' => 'plan-design/'], function(){
+    //Plan Association
+    Route::get('plan-association/get', [PlanAssociationController::class, 'get']);
+    //Plan Edit
+    Route::get('plan-edit/get', [PlanEditController::class, 'get']);
+    Route::get('plan-edit/get-plan-edit-data', [PlanEditController::class, 'getPlanEditData']);
+});
+ 
