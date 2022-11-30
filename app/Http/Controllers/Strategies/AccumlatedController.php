@@ -7,6 +7,104 @@ use Illuminate\Http\Request;
 use DB;
 class AccumlatedController extends Controller
 {
+
+
+    public function add(Request $request)
+    {
+        $createddate = date('y-m-d');
+
+
+        if($request->has('new')) {
+
+            $accum_benfit_stat_names = DB::table('accum_bene_strategy_names')->insert(
+                [
+                    'accum_bene_strategy_id' => strtoupper($request->accum_bene_strategy_id),
+                    'accum_bene_strategy_name' => $request->accum_bene_strategy_name,
+                    
+                ]
+            );
+
+
+            $accum_benfit_stat= DB::table('ACCUM_BENEFIT_STRATEGY')->insert(
+                [
+                    'accum_bene_strategy_id' => strtoupper($request->accum_bene_strategy_id),
+                    'pharm_type_variation_ind'=>$request->pharm_type_variation_ind,
+                    'formulary_variation_ind'=>$request->formulary_variation_ind,
+                    'network_part_variation_ind'=>$request->network_part_variation_ind,
+                    'claim_type_variation_ind'=>$request->claim_type_variation_ind,
+                    'date_time_created'=>$createddate,
+                    'user_id'=>'',
+                    'date_time_modified'=>'',
+                    'form_id'=>'',
+                    'user_id_created'=>'',
+                    'accum_exclusion_flag'=>$request->accum_exclusion_flag,
+                    'effective_date'=>$request->effective_date,
+                    'module_exit'=>'',
+                    'plan_accum_deduct_id'=>$request->plan_accum_deduct_id,
+
+
+                    
+                ]
+            );
+
+            $benefitcode = DB::table('ACCUM_BENEFIT_STRATEGY')->where('accum_bene_strategy_id', 'like', $request->accum_bene_strategy_id )->first();
+
+
+        }
+
+        else{
+
+            $benefitcode = DB::table('accum_bene_strategy_names')
+            ->where('accum_bene_strategy_id', $request->accum_bene_strategy_id)
+            ->update(
+                [
+                    'accum_bene_strategy_id' => strtoupper($request->accum_bene_strategy_id),
+                    'accum_bene_strategy_name' => $request->accum_bene_strategy_name,
+
+                    
+                ]
+        );
+
+        $accum_benfit_stat = DB::table('ACCUM_BENEFIT_STRATEGY')
+        ->where('accum_bene_strategy_id', $request->accum_bene_strategy_id)
+        ->update(
+            [
+                'accum_bene_strategy_id' => strtoupper($request->accum_bene_strategy_id),
+                'pharm_type_variation_ind'=>$request->pharm_type_variation_ind,
+                'formulary_variation_ind'=>$request->formulary_variation_ind,
+                'network_part_variation_ind'=>$request->network_part_variation_ind,
+                'claim_type_variation_ind'=>$request->claim_type_variation_ind,
+                'date_time_created'=>$createddate,
+                'user_id'=>'',
+                'date_time_modified'=>'',
+                'form_id'=>'',
+                'user_id_created'=>'',
+                'accum_exclusion_flag'=>$request->accum_exclusion_flag,
+                'effective_date'=>$request->effective_date,
+                'plan_accum_deduct_id'=>$request->plan_accum_deduct_id,
+                'module_exit'=>'',
+                
+            ]
+    );
+
+
+$benefitcode = DB::table('ACCUM_BENEFIT_STRATEGY')->where('accum_bene_strategy_id', 'like', $request->accum_bene_strategy_id )->first();
+
+        }
+
+
+         
+
+
+            
+            // $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', $request->benefit_code )->first();
+
+        
+        
+
+        return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
+    }
+
     
     public function search(Request $request)
 
