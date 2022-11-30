@@ -176,5 +176,6 @@ Route::group(['prefix' => 'plan-design/'], function(){
 Route::group(['prefix' => 'membership/'], function(){
     //Member
     Route::get('memberdata/get', [MemberController::class, 'get']);
+    Route::get('memberdata/get-member-coverage-history-data', [MemberController::class, 'getCoverageHistory']);
 });
  
