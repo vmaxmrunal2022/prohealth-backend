@@ -18,6 +18,7 @@ class PlanAssociationController extends Controller
                            ->orWhere('PIN_NUMBER_SUFFIX', 'like', '%'. strtoupper($request->search) .'%')
                            ->get();
 
+
         return $this->respondWithToken($this->token(), '', $planAssociation);
     }
 
