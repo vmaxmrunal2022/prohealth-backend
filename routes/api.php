@@ -210,6 +210,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/copay/search', [CopayStrategyController::class, 'search'])->name('copay.search'); // SEARCH
     Route::get('/copay/get/{ndcid}', [CopayStrategyController::class, 'getList'])->name('copay.list.get'); // LIST ITEMS
     Route::get('/copay/details/{ndcid}', [CopayStrategyController::class, 'getDetails'])->name('copay.details.get'); // DETAIL
+    Route::post('/copay/add', [CopayStrategyController::class, 'add'])->name('copay.add'); // SEARCH
 
 
 
