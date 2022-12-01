@@ -66,4 +66,23 @@ class MemberController extends Controller
 
         return $this->respondWithToken($this->token(), '', $coverageHistory);
     }
+
+    public function getHealthCondition(Request $request)
+    {
+        $healthCondition = DB::table('member_diagnosis')
+                           ->join('DIAGNOSIS_CODES','member_diagnosis.diagnosis_id', '=', 'DIAGNOSIS_CODES.diagnosis_id')
+                           ->where('member_diagnosis.member_id', 'like', '%'. strtoupper($request->search) .'%')
+                           ->get();
+
+        return $this->respondWithToken($this->token(), '', $healthCondition);
+    }
+
+    public function getDiagnosisHistory(Request $request)
+    {
+        $diagnosisHistor = DB::table('MEMBER_DIAGNOSIS_HISTORY')
+                           ->where('diagnosis_id', 'like', '%'. strtoupper($request->search) .'%')
+                           ->get();
+
+        return $this->respondWithToken($this->token(), '', $diagnosisHistor);
+    }
 }

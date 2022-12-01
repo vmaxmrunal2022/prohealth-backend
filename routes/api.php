@@ -177,5 +177,7 @@ Route::group(['prefix' => 'membership/'], function(){
     //Member
     Route::get('memberdata/get', [MemberController::class, 'get']);
     Route::get('memberdata/get-member-coverage-history-data', [MemberController::class, 'getCoverageHistory']);
+    Route::get('memberdata/get-health-condition', [MemberController::class, 'getHealthCondition']);
+    Route::get('memberdata/get-diagnosis-history', [MemberController::class, 'getDiagnosisHistory']);
 });
  
