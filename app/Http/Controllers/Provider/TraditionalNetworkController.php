@@ -10,13 +10,18 @@ class TraditionalNetworkController extends Controller
 {
 
 
+    public function all(Request $request)
+
+    {
+             $ndc  = DB::select("SELECT * FROM RX_NETWORK_NAMES");
+
+    return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
     public function search(Request $request)
 
     {
-      
              $ndc  = DB::select("SELECT * FROM RX_NETWORK_NAMES");
-
-
 
     return $this->respondWithToken($this->token(), '', $ndc);
     }
