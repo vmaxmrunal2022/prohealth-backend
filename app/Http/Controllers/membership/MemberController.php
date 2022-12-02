@@ -85,4 +85,27 @@ class MemberController extends Controller
 
         return $this->respondWithToken($this->token(), '', $diagnosisHistor);
     }
+
+    public function getPriorAuthorization(Request $request)
+    {
+        $priorAuthorization = DB::table('PRIOR_AUTHORIZATIONS')
+                              ->where('member_id', 'like', '%'. strtoupper($request->member_id) .'%')
+                              ->where('client_id', 'like', '%'. strtoupper($request->client_id) .'%')
+                              ->where('client_group_id', 'like', '%'. strtoupper($request->client_group_id) .'%')
+                              ->get();
+
+        return $this->respondWithToken($this->token(), '', $priorAuthorization);
+    }
+
+    public function getLogChangeData(Request $request)
+    {
+        $logChange = DB::table('MEMBER_CHANGE_LOG')
+                              ->where('member_id', 'like', '%'. strtoupper($request->member_id) .'%')
+                              ->where('client_id', 'like', '%'. strtoupper($request->client_id) .'%')
+                              ->where('client_group_id', 'like', '%'. strtoupper($request->client_group_id) .'%')
+                              ->where('customer_id', 'like', '%'. strtoupper($request->customer_id) .'%')
+                              ->get();
+
+        return $this->respondWithToken($this->token(), '', $logChange);
+    }
 }
