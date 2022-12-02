@@ -16,6 +16,7 @@ use App\Http\Controllers\exception_list\ProviderTypeValidationController;
 use App\Http\Controllers\plan_design\PlanAssociationController;
 use App\Http\Controllers\exception_list\SuperBenefitControler;
 use App\Http\Controllers\membership\MemberController;
+use App\Http\Controllers\membership\PriorAuthController;
 use App\Http\Controllers\plan_design\PlanEditController;
 use App\Http\Controllers\third_party_pricing\CopayScheduleController;
 use App\Http\Controllers\third_party_pricing\CopayStepScheduleController;
@@ -181,5 +182,8 @@ Route::group(['prefix' => 'membership/'], function(){
     Route::get('memberdata/get-diagnosis-history', [MemberController::class, 'getDiagnosisHistory']);
     Route::get('memberdata/get-prior-authorization', [MemberController::class, 'getPriorAuthorization']);
     Route::get('memberdata/get-log-change-data', [MemberController::class, 'getLogChangeData']);
+
+    //Prior Authorization
+    Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
 });
  
