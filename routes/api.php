@@ -16,6 +16,7 @@ use App\Http\Controllers\exception_list\ProviderTypeValidationController;
 use App\Http\Controllers\plan_design\PlanAssociationController;
 use App\Http\Controllers\exception_list\SuperBenefitControler;
 use App\Http\Controllers\membership\MemberController;
+use App\Http\Controllers\membership\PlanValidationController;
 use App\Http\Controllers\membership\PriorAuthController;
 use App\Http\Controllers\plan_design\PlanEditController;
 use App\Http\Controllers\third_party_pricing\CopayScheduleController;
@@ -185,5 +186,9 @@ Route::group(['prefix' => 'membership/'], function(){
 
     //Prior Authorization
     Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
+
+    //Plan Validation
+    Route::get('plan-validation/get',[PlanValidationController::class, 'get']);
+    Route::get('plan-validation/get-client-details',[PlanValidationController::class, 'getClientDetails']);
 });
  
