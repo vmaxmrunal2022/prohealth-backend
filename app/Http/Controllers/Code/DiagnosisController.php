@@ -10,23 +10,27 @@ class DiagnosisController extends Controller
 {
     public function get(Request $request)
     {
-        
+
         $benefitcodes = DB::table('DIAGNOSIS_CODES')
-                            ->where('DIAGNOSIS_ID', 'like', '%'.$request->code.'%')
-                            ->orWhere('DESCRIPTION', 'like', '%'.$request->description.'%')
-                            ->get();
-                            
+            ->where('DIAGNOSIS_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('DESCRIPTION', 'like', '%' .$request->search . '%')
+            ->get();
+
         return $this->respondWithToken($this->token(), '', $benefitcodes);
     }
 
     public function add(Request $request)
     {
-       
-        $benefitcode = DB::table('DIAGNOSIS_CODES')->insert(
+
+
+        $benefitcode = DB::table('DIAGNOSIS_CODES')->updateOrInsert(
             [
-                'DIAGNOSIS_ID' => $request->benefit_code,
-                'DESCRIPTION' => $request->descriptions,
-                'DATE_TIME_CREATED' => '',
+                'DIAGNOSIS_ID' => strtoupper($request->diagnosis_id),
+                'DESCRIPTION' => $request->description,
+            ],
+            [
+                
+                'DATE_TIME_CREATED' => date('y-m-d'),
                 'USER_ID' => '',
                 'DATE_TIME_MODIFIED' => '',
                 'USER_ID_CREATED' => '',
@@ -35,12 +39,14 @@ class DiagnosisController extends Controller
             ]
         );
 
-        $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
+        $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION' , strtoupper($request->description))->first();
+
+        return  $this->respondWithToken($this->token(), 'Successfully added', $code);
     }
 
     public function delete(Request $request)
     {
-        DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', $request->id)->delete() 
+        return  DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', $request->id)->delete()
             ? $this->respondWithToken($this->token(), 'Successfully deleted')
             : $this->respondWithToken($this->token(), 'Could find data');
     }

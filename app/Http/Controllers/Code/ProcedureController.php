@@ -10,23 +10,25 @@ class ProcedureController extends Controller
 {
     public function get(Request $request)
     {
-        $procedurecodes = DB::table('PROC_CODE_LIST_NAMES')
-                                ->where('PROC_CODE_LIST_ID', 'like', '%'.$request->code.'%')
-                                ->orWhere('DESCRIPTION', 'like', '%'.$request->description.'%')
-                                ->get();
+        $procedurecodes = DB::table('PROCEDURE_CODES')
+            ->where('PROCEDURE_CODE', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
 
-        $this->respondWithToken($this->token(), '', $procedurecodes);
-
+        return $this->respondWithToken($this->token(), '', $procedurecodes);
     }
 
     public function add(Request $request)
     {
-       
-        $procedurecode = DB::table('PROC_CODE_LIST_NAMES')->insert(
+
+        $procedurecode = DB::table('PROCEDURE_CODES')->updateOrInsert(
             [
-                'PROC_CODE_LIST_ID' => $request->proccodelist,
+                'PROCEDURE_CODE' => strtoupper($request->procedure_code),
+            ],
+            [
+                'PROCEDURE_CODE' => strtoupper($request->procedure_code),
                 'DESCRIPTION' => $request->description,
-                'DATE_TIME_CREATED' => '',
+                'DATE_TIME_CREATED' => date('y-m-d'),
                 'USER_ID_CREATED' => '',
                 'USER_ID' => '',
                 'DATE_TIME_MODIFIED' => '',
@@ -34,12 +36,17 @@ class ProcedureController extends Controller
             ]
         );
 
-        $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+        $procedurecodes = DB::table('PROCEDURE_CODES')
+            ->where('PROCEDURE_CODE', 'like', '%' . strtoupper($request->procedure_code) . '%')
+            // ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
+            ->first();
+
+        return $this->respondWithToken($this->token(), 'Successfully added', $procedurecodes);
     }
 
     public function delete(Request $request)
     {
-        DB::table('PROC_CODE_LIST_NAMES')->where('PROC_CODE_LIST_ID', $request->id)->delete() 
+        return DB::table('PROCEDURE_CODES')->where('PROCEDURE_CODE', $request->id)->delete()
             ? $this->respondWithToken($this->token(), 'Successfully deleted')
             : $this->respondWithToken($this->token(), 'Could find data');
     }

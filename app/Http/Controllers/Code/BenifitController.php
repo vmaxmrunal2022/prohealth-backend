@@ -12,34 +12,59 @@ class BenifitController extends Controller
     {
         // dd($request->all());
         $benefitcodes = DB::table('benefit_codes')
-                            ->where('benefit_code', 'like', '%'.$request->code.'%')
-                            ->Where('description', 'like', '%'.$request->description.'%')
-                            ->get();
+            ->where('benefit_code', 'like', '%' .  strtoupper($request->search) . '%')
+            ->orWhere('description', 'like', '%' .  strtoupper($request->search) . '%')
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $benefitcodes);
     }
 
     public function add(Request $request)
     {
-       dd($request);
-        $benefitcode = DB::table('benefit_codes')->insert(
-            [
-                'benefit_code' => $request->benefit_code,
-                'description' => $request->descriptions,
-                'DATE_TIME_CREATED' => '',
-                'USER_ID' => '',
-                'DATE_TIME_MODIFIED' => '',
-                'USER_ID_CREATED' => '',
-                'FORM_ID' => ''
-            ]
-        );
+        
+        $createddate = date('y-m-d');
+        if($request->has('new')) {
+            $benefitcode = DB::table('benefit_codes')->insert(
+                [
+                    'benefit_code' => strtoupper($request->benefit_code),
+                    'description' => $request->description,
+                    'DATE_TIME_CREATED' => $createddate,
+                    'USER_ID' => '', // TODO add user id
+                    'DATE_TIME_MODIFIED' => '',
+                    'USER_ID_CREATED' => '',
+                    'FORM_ID' => ''
+                ]
+            );
 
-        $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
+            
+            $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', $request->benefit_code )->first();
+
+        } else {
+            $benefitcode = DB::table('benefit_codes')
+                                ->where('benefit_code', 'like', $request->benefit_code)
+                                ->update(
+                                    [
+                                        'benefit_code' => strtoupper($request->benefit_code),
+                                        'description' => $request->description,
+                                        'DATE_TIME_CREATED' => $createddate,
+                                        'USER_ID' => '', // TODO add user id
+                                        'DATE_TIME_MODIFIED' => '',
+                                        'USER_ID_CREATED' => '',
+                                        'FORM_ID' => ''
+                                    ]
+                            );
+
+            $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', $request->benefit_code )->first();
+
+        }
+        
+
+        return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
     }
 
     public function delete(Request $request)
     {
-        DB::table('benefit_codes')->where('benefit_code', $request->id)->delete() 
+        return  DB::table('benefit_codes')->where('benefit_code', $request->id)->delete()
             ? $this->respondWithToken($this->token(), 'Successfully deleted')
             : $this->respondWithToken($this->token(), 'Could find data');
     }
