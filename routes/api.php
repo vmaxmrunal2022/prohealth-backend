@@ -39,7 +39,7 @@ use App\Http\Controllers\AccumLatedBenifits\AccumlatedBenifitController;
 use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
 use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
-
+use App\Http\Controllers\administrator\UserDefinationController;
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
 use App\Http\Controllers\Provider\PrioritiseNetworkController;
@@ -430,4 +430,10 @@ Route::group(['prefix' => 'membership/'], function () {
     //Plan Validation
     Route::get('plan-validation/get',[PlanValidationController::class, 'get']);
     Route::get('plan-validation/get-client-details',[PlanValidationController::class, 'getClientDetails']);
+});
+
+//Administrator
+Route::group(['prefix'=>'administrator/'], function(){
+    //User Defination
+    Route::get('user-defination/get',[UserDefinationController::class, 'get']);
 });
