@@ -329,6 +329,10 @@ Route::get('traditionalnetwork/all', [TraditionalNetworkController::class, 'all'
 
 Route::get('traditionalnetwork/search', [TraditionalNetworkController::class, 'search']);
 Route::get('traditionalnetwork/get/{ndcid}', [TraditionalNetworkController::class, 'getList']);
+Route::get('traditionalnetwork/get/details/{ndcid}', [TraditionalNetworkController::class, 'getDetails']);
+Route::post('/traditionalnetwork/add', [TraditionalNetworkController::class, 'add'])->name('traditionalnetwork.add'); // SEARCH
+
+
 
 //Prioritize  Network
 
