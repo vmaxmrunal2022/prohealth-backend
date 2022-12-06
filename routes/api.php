@@ -373,6 +373,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     //Price Schedule
     Route::get('price-schedule/get', [PriceScheduleController::class, 'get']);
     Route::get('price-schedule/get-price-schedule-data', [PriceScheduleController::class, 'getPriceScheduleDetails']);
+    Route::post('price-schedule/update', [PriceScheduleController::class, 'updateBrandItem'])->name('price_schedule_update');
 
     //Copay Schedule
     Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
