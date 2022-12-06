@@ -41,6 +41,8 @@ use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
 
 use App\Http\Controllers\Provider\SuperProviderNetworkController ;
+use App\Http\Controllers\Provider\FlexibleNetworkController ;
+
 use App\Http\Controllers\Provider\TraditionalNetworkController ;
 use App\Http\Controllers\Provider\PrioritiseNetworkController ;
 use App\Http\Controllers\Provider\ProviderDataController ;
@@ -325,12 +327,17 @@ Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, '
 
 
 Route::get('traditionalnetwork/all', [TraditionalNetworkController::class, 'all']);
-
-
 Route::get('traditionalnetwork/search', [TraditionalNetworkController::class, 'search']);
 Route::get('traditionalnetwork/get/{ndcid}', [TraditionalNetworkController::class, 'getList']);
 Route::get('traditionalnetwork/get/details/{ndcid}', [TraditionalNetworkController::class, 'getDetails']);
 Route::post('/traditionalnetwork/add', [TraditionalNetworkController::class, 'add'])->name('traditionalnetwork.add'); // SEARCH
+//FLEXIBLE NETWORKS
+
+Route::get('flexiblenetwork/all', [FlexibleNetworkController::class, 'all']);
+Route::get('flexiblenetwork/search', [FlexibleNetworkController::class, 'search']);
+Route::get('flexiblenetwork/get/{ndcid}', [FlexibleNetworkController::class, 'getList']);
+Route::get('flexiblenetwork/get/details/{ndcid}', [FlexibleNetworkController::class, 'getDetails']);
+Route::post('/flexiblenetwork/add', [FlexibleNetworkController::class, 'add'])->name('traditionalnetwork.add');
 
 
 
