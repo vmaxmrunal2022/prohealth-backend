@@ -314,6 +314,9 @@ Route::group(['prefix' => 'provider'], function ($router) {
     Route::get('provider/search', [ProviderDataController::class, 'search']);
 
     Route::get('provider/get/details/{ndcid}', [ProviderDataController::class, 'networkDetails']);
+
+    Route::post('/provider/add', [ProviderDataController::class, 'add'])->name('provider.add'); // ADD
+
     
 //SUPER PROVIDER NETWORK
 // Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
