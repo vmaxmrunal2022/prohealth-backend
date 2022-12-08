@@ -350,6 +350,8 @@ Route::get('prioritize/search', [PrioritiseNetworkController::class, 'search']);
 
 Route::get('prioritize/get/{ndcid}', [PrioritiseNetworkController::class, 'networkList']);
 
+Route::post('prioritize/add', [PrioritiseNetworkController::class, 'add']);
+
 
 });
 
