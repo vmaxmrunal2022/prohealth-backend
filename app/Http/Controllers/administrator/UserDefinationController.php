@@ -59,6 +59,9 @@ class UserDefinationController extends Controller
             $addUser = DB::table('FE_USERS') 
                        ->insert([
                         'user_id' => $request->user_id,
+                        'application' => 'PBM',
+                        'SQL_SERVER_USER_ID' => 'phi',
+                        'SQL_SERVER_USER_PASSWORD' => 'comet',  
                         'user_password' => $request->user_password,
                         'user_first_name' => $request->user_first_name,
                         'user_last_name' => $request->user_last_name,
