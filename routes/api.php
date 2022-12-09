@@ -40,20 +40,39 @@ use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
 use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
 
-use App\Http\Controllers\Provider\SuperProviderNetworkController ;
-use App\Http\Controllers\Provider\FlexibleNetworkController ;
+use App\Http\Controllers\Provider\SuperProviderNetworkController;
+use App\Http\Controllers\Provider\TraditionalNetworkController;
+use App\Http\Controllers\Provider\PrioritiseNetworkController;
 
-use App\Http\Controllers\Provider\TraditionalNetworkController ;
-use App\Http\Controllers\Provider\PrioritiseNetworkController ;
-use App\Http\Controllers\Provider\ProviderDataController ;
-use App\Http\Controllers\PrescriberData\PrescriberController ;
+use App\Http\Controllers\PrescriberData\PrescriberController;
+
+
+
+
+
+
 use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
 use App\Http\Controllers\Exception\TherapyClassController;
+use App\Http\Controllers\drug_information\DrugDatabaseController;
+use App\Http\Controllers\exception_list\PrcedureCodeListController;
+use App\Http\Controllers\exception_list\ProviderTypeValidationController;
+use App\Http\Controllers\plan_design\PlanAssociationController;
+use App\Http\Controllers\exception_list\SuperBenefitControler;
+use App\Http\Controllers\membership\MemberController;
+use App\Http\Controllers\plan_design\PlanEditController;
+use App\Http\Controllers\third_party_pricing\CopayScheduleController;
+use App\Http\Controllers\third_party_pricing\CopayStepScheduleController;
+use App\Http\Controllers\third_party_pricing\MacListController;
+use App\Http\Controllers\third_party_pricing\PriceScheduleController;
+use App\Http\Controllers\third_party_pricing\ProcedureUcrList;
+use App\Http\Controllers\third_party_pricing\RvaListController;
+use App\Http\Controllers\third_party_pricing\TaxScheduleController;
 use App\Http\Controllers\UserController;
 
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Nette\Schema\Context;
 
 /*
 |--------------------------------------------------------------------------
@@ -126,7 +145,7 @@ Route::group(['prefix' => 'codes'], function ($router) {
     Route::post('/couse-of-loss/submit', [CouseOfLossController::class, 'add'])->name('couseofloss.submit'); // add
     Route::post('/couse-of-loss/delete', [CouseOfLossController::class, 'delete'])->name('couseofloss.delete'); // DELETE
 
-    
+
 });
 
 Route::group(['prefix' => 'exception'], function ($router) {
@@ -136,9 +155,9 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/ndc/get/{ndcid}', [NDCExceptionController::class, 'getNDCList'])->name('ndsc.list.get'); // LIST ITEMS
     Route::get('/ndc/details/{ndcid}', [NDCExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
 
-    
 
-    
+
+
 
     // GPI 
     Route::get('/gpi/search', [GPIExceptionController::class, 'search'])->name('gpi.search'); // SEARCH
@@ -311,48 +330,93 @@ Route::get('/states/{countryid}', [Controller::class, 'getStatesOfCountry'])->na
 Route::group(['prefix' => 'provider'], function ($router) {
 
 
-    Route::get('provider/search', [ProviderDataController::class, 'search']);
-
-    Route::get('provider/get/details/{ndcid}', [ProviderDataController::class, 'networkDetails']);
-
-    Route::post('/provider/add', [ProviderDataController::class, 'add'])->name('provider.add'); // ADD
-
-    
-//SUPER PROVIDER NETWORK
-// Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
-// Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
-Route::get('supernetwork/search', [SuperProviderNetworkController::class, 'search']);
-
-Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
 
 
-//TRADITIONAL NETWORK 
+    //SUPER PROVIDER NETWORK
+    // Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
+    // Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
+    Route::get('supernetwork/search', [SuperProviderNetworkController::class, 'search']);
+
+    Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
 
 
-Route::get('traditionalnetwork/all', [TraditionalNetworkController::class, 'all']);
-Route::get('traditionalnetwork/search', [TraditionalNetworkController::class, 'search']);
-Route::get('traditionalnetwork/get/{ndcid}', [TraditionalNetworkController::class, 'getList']);
-Route::get('traditionalnetwork/get/details/{ndcid}', [TraditionalNetworkController::class, 'getDetails']);
-Route::post('/traditionalnetwork/add', [TraditionalNetworkController::class, 'add'])->name('traditionalnetwork.add'); // SEARCH
-//FLEXIBLE NETWORKS
+    //TRADITIONAL NETWORK 
 
-Route::get('flexiblenetwork/all', [FlexibleNetworkController::class, 'all']);
-Route::get('flexiblenetwork/search', [FlexibleNetworkController::class, 'search']);
-Route::get('flexiblenetwork/get/{ndcid}', [FlexibleNetworkController::class, 'getList']);
-Route::get('flexiblenetwork/get/details/{ndcid}', [FlexibleNetworkController::class, 'getDetails']);
-Route::post('/flexiblenetwork/add', [FlexibleNetworkController::class, 'add'])->name('traditionalnetwork.add');
+    Route::get('traditionalnetwork/search', [TraditionalNetworkController::class, 'search']);
+    Route::get('traditionalnetwork/get/{ndcid}', [TraditionalNetworkController::class, 'getList']);
 
+    //Prioritize  Network
 
+    Route::get('prioritize/search', [PrioritiseNetworkController::class, 'search']);
 
-//Prioritize  Network
-
-Route::get('prioritize/search', [PrioritiseNetworkController::class, 'search']);
-
-Route::get('prioritize/get/{ndcid}', [PrioritiseNetworkController::class, 'networkList']);
-
-Route::post('prioritize/add', [PrioritiseNetworkController::class, 'add']);
-
-
+    Route::get('prioritize/get/{ndcid}', [PrioritiseNetworkController::class, 'networkList']);
 });
 
 
+//Provider Type Validation 
+Route::get('/provider-type-validation', [ProviderTypeValidationController::class, 'test']);
+Route::get('/provider-type-validation/get', [ProviderTypeValidationController::class, 'get'])->name('provider-type-validation-get');
+Route::get('/provider-type-validation/getFormData', [ProviderTypeValidationController::class, 'getFormData'])->name('provider-type-validation-getFormData');
+
+//Procedure Code List
+Route::get('/procedure-code-list/get', [PrcedureCodeListController::class, 'get'])->name('procedure-code-list-get');
+Route::get('/procedure-code-list/get-code-list', [PrcedureCodeListController::class, 'getProcCodeList'])->name('procedure-code-list-get');
+
+//Super Benefit List
+Route::get('/super-benefit-list/get', [SuperBenefitControler::class, 'get']);
+Route::get('/super-benefit-list/get-super-benefit-code', [SuperBenefitControler::class, 'getBenefitCode']);
+
+//Third Party Pricing(module)
+Route::group(['prefix' => 'third-party-pricing/'], function () {
+    //Price Schedule
+    Route::get('price-schedule/get', [PriceScheduleController::class, 'get']);
+    Route::get('price-schedule/get-price-schedule-data', [PriceScheduleController::class, 'getPriceScheduleDetails']);
+
+    //Copay Schedule
+    Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
+    Route::get('copay-schedule/get-copay-data', [CopayScheduleController::class, 'getCopayData'])->name('get.copay.single');
+
+    //Copay Step Schedule
+    Route::get('copay-step-schedule/get', [CopayStepScheduleController::class, 'get'])->name('get.copay-step');
+    // Route::get('copay-step-schedule/get-copay-data', [CopayStepScheduleController::class, 'getCopayData'])->name('get.copay-step.single');
+
+    //MAC List
+    Route::get('mac-list/get', [MacListController::class, 'get'])->name('get.macList');
+    Route::get('mac-list/get-mac-list', [MacListController::class, 'getMacList'])->name('get.mac-list.single');
+
+    //Tax Schedule
+    Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
+
+    //Procedure UCR list
+    Route::get('procedure-ucr-list/get', [ProcedureUcrList::class, 'get']);
+    Route::get('procedure-ucr-list/get-procedure-list-data', [ProcedureUcrList::class, 'getProcedureListData']);
+
+    //RVA List
+    Route::get('rva-list/get', [RvaListController::class, 'get']);
+    Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
+});
+
+//Drug Information
+Route::group(['prefix' => "drug-information/"], function () {
+    Route::get('drug-database/get', [DrugDatabaseController::class, 'get']);
+    Route::get('drug-database/get-drug-prices', [DrugDatabaseController::class, 'getDrugPrices']);
+});
+
+
+//Plan Design
+Route::group(['prefix' => 'plan-design/'], function () {
+    //Plan Association
+    Route::get('plan-association/get', [PlanAssociationController::class, 'get']);
+    //Plan Edit
+    Route::get('plan-edit/get', [PlanEditController::class, 'get']);
+    Route::get('plan-edit/get-plan-edit-data', [PlanEditController::class, 'getPlanEditData']);
+});
+
+//Membership
+Route::group(['prefix' => 'membership/'], function () {
+    //Member
+    Route::get('memberdata/get', [MemberController::class, 'get']);
+    Route::get('memberdata/get-member-coverage-history-data', [MemberController::class, 'getCoverageHistory']);
+    Route::get('memberdata/get-health-condition', [MemberController::class, 'getHealthCondition']);
+    Route::get('memberdata/get-diagnosis-history', [MemberController::class, 'getDiagnosisHistory']);
+});
