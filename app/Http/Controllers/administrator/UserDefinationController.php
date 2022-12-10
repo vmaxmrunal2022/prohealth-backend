@@ -88,4 +88,26 @@ class UserDefinationController extends Controller
             }
         }
     }
+
+    public function getCustomers(Request $request)
+    {
+        $customers = DB::table('customer')                     
+                    //  ->join('client', 'customer.user_id', '=','client.user_id')
+                    //  ->join('client_group', 'customer.user_id', '=','client_group.user_id')
+                     ->where('customer_id', 'like', '%'.$request->search.'%')
+                     ->get();
+
+        return $this->respondWithToken($this->token(), '', $customers);
+    }
+
+    public function getCustomersList(Request $request)
+    {
+        $list  = DB::table('customer')
+                 ->join('client', 'client.user_id', '=', 'customer.user_id')
+                //  ->join('CLIENT_GROUP', 'customer.user_id', '=', 'CLIENT_GROUP.user_id')
+                 ->where('customer.user_id', 'like', '%'. $request->search.'%')
+                 ->get();
+
+        return $this->respondWithToken($this->token(), '', $list);
+    }
 }

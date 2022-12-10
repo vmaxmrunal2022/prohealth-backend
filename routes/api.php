@@ -441,4 +441,6 @@ Route::group(['prefix'=>'administrator/'], function(){
     Route::get('user-defination/get-security-options',[UserDefinationController::class, 'getSecurityOptions']);
     Route::get('user-defination/validate-group',[UserDefinationController::class, 'validateGroup']);
     Route::post('user-defination/submit',[UserDefinationController::class, 'submitFormData']);
+    Route::get('user-defination/get-customers',[UserDefinationController::class, 'getCustomers']);
+    Route::get('user-defination/get-customers-list',[UserDefinationController::class, 'getCustomersList']);
 });
