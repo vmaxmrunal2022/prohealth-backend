@@ -10,62 +10,62 @@ class NDCExceptionController extends Controller
 {
 
     public function add( Request $request ) {
+
         $createddate = date( 'y-m-d' );
 
         if ( $request->has( 'new' ) ) {
 
 
-
-            $accum_benfit_stat_names = DB::table('RX_NETWORK_RULE_NAMES')->insert(
+            $accum_benfit_stat_names = DB::table('NDC_EXCEPTIONS')->insert(
                 [
-                    'rx_network_rule_id' => strtoupper( $request->rx_network_rule_id ),
+                    'ndc_exception_list' => strtoupper( $request->ndc_exception_list ),
+                    'exception_name'=>$request->exception_name,
                     
 
                 ]
             );
 
-
-            $accum_benfit_stat = DB::table('RX_NETWORKS' )->insert(
+            $accum_benfit_stat = DB::table('NDC_EXCEPTION_LISTS' )->insert(
                 [
-                    'network_id' => strtoupper( $request->network_id ),
-                    'pharmacy_nabp'=>$request->pharmacy_nabp,
-                    'effective_date'=>$request->effective_date,
-                    'termination_date'=>$request->termination_date,
-
+                    'ndc_exception_list' => strtoupper( $request->ndc_exception_list ),
+                 
                 ]
             );
-            $benefitcode = DB::table('RX_NETWORK_NAMES')->get();
+            $benefitcode = DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', 'like', '%'.$request->ndc_exception_list .'%')->first();
 
 
         } else {
 
 
-            $benefitcode = DB::table('RX_NETWORK_RULE_NAMES' )
-            ->where( 'rx_network_rule_id', $request->rx_network_rule_id )
+            // dd($request->all())
 
-
+            $benefitcode = DB::table('NDC_EXCEPTION_LISTS' )
+            ->where('ndc', $request->ndc )
             ->update(
                 [
-                    'rx_network_rule_id' =>  $request->rx_network_rule_id ,
-                    'rx_network_rule_name'=>$request->rx_network_rule_name,
+                    'ndc' => strtoupper($request->ndc),
+                    'min_rx_qty'=>$request->min_rx_qty,
+                 
 
                 ]
             );
 
-            $accum_benfit_stat = DB::table( 'RX_NETWORK_RULES' )
-            ->where('rx_network_rule_id', $request->rx_network_rule_id )
+            $benefitcode = DB::table('NDC_EXCEPTION_LISTS')->where('ndc', 'like', '%'.$request->ndc .'%')->first();
+
+
+            $accum_benfit_stat = DB::table('NDC_EXCEPTIONS' )
+            ->where('ndc_exception_list', $request->ndc_exception_list )
             ->update(
                 [
-                    'rx_network_rule_id' => $request->rx_network_rule_id,
-                    'rx_network_rule_id_number'=>$request->rx_network_rule_id_number,
-                    'price_schedule_ovrd'=>$request->price_schedule_ovrd,
-                   'exclude_rule'=>$request->exclude_rule,
+                    'ndc_exception_list' => $request->ndc_exception_list,
+                    'exception_name'=>$request->exception_name,
+                   
                   
 
                 ]
             );
 
-            $benefitcode = DB::table('RX_NETWORK_RULES')->where('rx_network_rule_id', 'like', $request->rx_network_rule_id )->first();
+            $benefitcode = DB::table('NDC_EXCEPTIONS')->where('ndc_exception_list', 'like', '%'.$request->ndc_exception_list .'%')->first();
 
         }
 

@@ -154,6 +154,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/ndc/search', [NDCExceptionController::class, 'search'])->name('ndsc.search'); // SEARCH
     Route::get('/ndc/get/{ndcid}', [NDCExceptionController::class, 'getNDCList'])->name('ndsc.list.get'); // LIST ITEMS
     Route::get('/ndc/details/{ndcid}', [NDCExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
+    Route::post('/ndc/add', [NDCExceptionController::class, 'add'])->name('ndsc.search'); // add
 
 
 
