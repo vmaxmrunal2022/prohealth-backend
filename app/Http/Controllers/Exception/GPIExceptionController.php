@@ -129,7 +129,7 @@ class GPIExceptionController extends Controller
         $ndc = DB::table('GPI_EXCEPTION_LISTS')
                     ->select('GPI_EXCEPTION_LISTS.*', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST as exception_list', 'GPI_EXCEPTIONS.EXCEPTION_NAME as exception_name')
                     ->join('GPI_EXCEPTIONS', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
-                    ->where('GPI_EXCEPTION_LISTS.generic_product_id', 'like', '%' . strtoupper($ndcid) . '%')  
+                    ->where('GPI_EXCEPTION_LISTS.generic_product_id',$ndcid)  
                     ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
