@@ -443,4 +443,6 @@ Route::group(['prefix'=>'administrator/'], function(){
     Route::post('user-defination/submit',[UserDefinationController::class, 'submitFormData']);
     Route::get('user-defination/get-customers',[UserDefinationController::class, 'getCustomers']);
     Route::get('user-defination/get-customers-list',[UserDefinationController::class, 'getCustomersList']);
+    Route::get('user-defination/get-clients',[UserDefinationController::class, 'getClients']);
+    Route::get('user-defination/get-client-groups',[UserDefinationController::class, 'getClientGroups']);
 });
