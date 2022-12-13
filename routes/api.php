@@ -39,7 +39,7 @@ use App\Http\Controllers\AccumLatedBenifits\AccumlatedBenifitController;
 use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
 use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
-
+use App\Http\Controllers\administrator\ZipCodeController;
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
 use App\Http\Controllers\Provider\PrioritiseNetworkController;
@@ -110,7 +110,7 @@ Route::group(['prefix' => 'codes'], function ($router) {
     Route::post('/reasons/delete', [ReasonsController::class, 'delete'])->name('reasons.delete'); // DELETE
 
 
-    // PROCEDURE 
+    // PROCEDURE
     Route::get('/procedure', [ProcedureController::class, 'get'])->name('procedure.get'); // SEARCH
     Route::post('/procedure/submit', [ProcedureController::class, 'add'])->name('procedure.submit');  // add
     Route::post('/procedure/delete', [ProcedureController::class, 'delete'])->name('procedure.delete'); // DELETE
@@ -159,7 +159,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
 
 
 
-    // GPI 
+    // GPI
     Route::get('/gpi/search', [GPIExceptionController::class, 'search'])->name('gpi.search'); // SEARCH
     Route::get('/gpi/get/{ndcid}', [GPIExceptionController::class, 'getNDCList'])->name('gpi.list.get'); // LIST ITEMS
     Route::get('/gpi/details/{ndcid}', [GPIExceptionController::class, 'getNDCItemDetails'])->name('gpi.details.get'); // DETAILS
@@ -340,7 +340,7 @@ Route::group(['prefix' => 'provider'], function ($router) {
     Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
 
 
-    //TRADITIONAL NETWORK 
+    //TRADITIONAL NETWORK
 
     Route::get('traditionalnetwork/search', [TraditionalNetworkController::class, 'search']);
     Route::get('traditionalnetwork/get/{ndcid}', [TraditionalNetworkController::class, 'getList']);
@@ -353,7 +353,7 @@ Route::group(['prefix' => 'provider'], function ($router) {
 });
 
 
-//Provider Type Validation 
+//Provider Type Validation
 Route::get('/provider-type-validation', [ProviderTypeValidationController::class, 'test']);
 Route::get('/provider-type-validation/get', [ProviderTypeValidationController::class, 'get'])->name('provider-type-validation-get');
 Route::get('/provider-type-validation/getFormData', [ProviderTypeValidationController::class, 'getFormData'])->name('provider-type-validation-getFormData');
@@ -419,4 +419,12 @@ Route::group(['prefix' => 'membership/'], function () {
     Route::get('memberdata/get-member-coverage-history-data', [MemberController::class, 'getCoverageHistory']);
     Route::get('memberdata/get-health-condition', [MemberController::class, 'getHealthCondition']);
     Route::get('memberdata/get-diagnosis-history', [MemberController::class, 'getDiagnosisHistory']);
+});
+
+
+//Administrator
+Route::group(['prefix'=>'administrator/'], function(){
+    //Zip Codes
+    Route::get('zipcode/search',[ZipCodeController::class, 'search']);
+    Route::get('zipcode/get/{zip_code}', [ZipCodeController::class, 'getZipCodeList']);
 });
