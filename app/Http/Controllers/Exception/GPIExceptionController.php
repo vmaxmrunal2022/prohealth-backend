@@ -27,7 +27,8 @@ class GPIExceptionController extends Controller
 
             $accum_benfit_stat = DB::table('GPI_EXCEPTION_LISTS' )->insert(
                 [
-                    'gpi_exception_list' => strtoupper($request->ndc),
+                    'gpi_exception_list' => strtoupper($request->gpi_exception_list),
+                    'generic_product_id'=>$request->generic_product_id,
                     'min_rx_qty'=>$request->min_rx_qty,
                     'acute_dosing_days'=>$request->acute_dosing_days,
                     'alternate_price_schedule'=>$request->alternate_price_schedule,
@@ -67,7 +68,7 @@ class GPIExceptionController extends Controller
             ->where('gpi_exception_list', $request->gpi_exception_list )
             ->update(
                 [
-                    'gpi_exception_list' => strtoupper($request->ndc),
+                    'gpi_exception_list' => strtoupper($request->gpi_exception_list),
                     'min_rx_qty'=>$request->min_rx_qty,
                     'acute_dosing_days'=>$request->acute_dosing_days,
                     'alternate_price_schedule'=>$request->alternate_price_schedule,
