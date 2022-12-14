@@ -19,45 +19,48 @@ class TherapyClassController extends Controller
 
             $accum_benfit_stat_names = DB::table('TC_EXCEPTIONS')->insert(
                 [
-                    'ther_class_exception_list' => strtoupper( $request->ther_class_exception_list ),
+                    'ther_class_exception_list' => strtoupper($request->ther_class_exception_list ),
                     'exception_name'=>$request->exception_name,
                     
 
                 ]
             );
 
-            $accum_benfit_stat = DB::table('TC_EXCEPTION_LISTS' )->insert(
+            $accum_benfit_stat = DB::table('TC_EXCEPTION_LISTS')->insert(
                 [
                     'ther_class_exception_list' => strtoupper($request->ther_class_exception_list),
-                    'generic_product_id'=>$request->generic_product_id,
-                    'min_rx_qty'=>$request->min_rx_qty,
                     'acute_dosing_days'=>$request->acute_dosing_days,
+                    'alternate_copay_sched'=>$request->alternate_copay_sched,
                     'alternate_price_schedule'=>$request->alternate_price_schedule,
-                    'bga_inc_exc_ind'=>$request->bga_inc_exc_ind,
-                    'bng_multi_inc_exc_ind'=>$request->bng_multi_inc_exc_ind,
-                    'bng_sngl_inc_exc_ind'=>$request->bng_sngl_inc_exc_ind,
-                    'brand_copay_amt'=>$request->brand_copay_amt,
-                    'conversion_product_ndc'=>$request->conversion_product_ndc,
-                    'copay_network_ovrd'=>$request->copay_network_ovrd,
-                    'days_supply_opt_multiplier'=>$request->days_supply_opt_multiplier,
-                    'denial_override'=>$request->denial_override,
-                    'diagnosis_list'=>$request->diagnosis_list,
-                    'drug_cov_start_days'=>$request->drug_cov_start_days,
-                    'effective_date'=>$request->effective_date,
+                    'therapy_class'=>$request->therapy_class,
+                    'message'=>$request->message,
+                    // 'bga_inc_exc_ind'=>$request->bga_inc_exc_ind,
+                    // 'bng_multi_inc_exc_ind'=>$request->bng_multi_inc_exc_ind,
+                    // 'bng_sngl_inc_exc_ind'=>$request->bng_sngl_inc_exc_ind,
+                    // 'brand_copay_amt'=>$request->brand_copay_amt,
+                    // 'conversion_product_ndc'=>$request->conversion_product_ndc,
+                    // 'copay_network_ovrd'=>$request->copay_network_ovrd,
+                    // 'denial_override'=>$request->denial_override,
+                    // 'diagnosis_list'=>$request->diagnosis_list,
+                    // 'drug_cov_start_days'=>$request->drug_cov_start_days,
+                    // 'effective_date'=>$request->effective_date,
+                    // 'exception_list'=>$request->exception_list,
+                    // 'gen_inc_exc_ind'=>$request->gen_inc_exc_ind,
+                    // 'generic_copay_amt'=>$request->generic_copay_amt,
+                    // 'message_stop_date'=>$request->message_stop_date,
+                    // 'module_exit'=>$request->module_exit,
+                    // 'new_drug_status'=>$request->new_drug_status,
+                    // 'reject_only_msg_flag'=>$request->reject_only_msg_flag,
+                    // 'sex_restriction'=>$request->sex_restriction,
+                    // 'termination_date'=>$request->termination_date,
 
-                    'gen_inc_exc_ind'=>$request->gen_inc_exc_ind,
-                    'generic_copay_amt'=>$request->generic_copay_amt,
-                    'generic_product_id'=>$request->generic_product_id,
-                    'message_stop_date'=>$request->message_stop_date,
-                    'module_exit'=>$request->module_exit,
-                    'new_drug_status'=>$request->new_drug_status,
-                    'reject_only_msg_flag'=>$request->reject_only_msg_flag,
-                    'sex_restriction'=>$request->sex_restriction,
-                    'termination_date'=>$request->termination_date,
+        
                  
                 ]
             );
-            $benefitcode = DB::table('TC_EXCEPTION_LISTS')->where('gpi_exception_list', 'like', '%'.$request->gpi_exception_list .'%')->first();
+            // print_r($accum_benfit_stat);
+            // exit();
+            $benefitcode = DB::table('TC_EXCEPTION_LISTS')->where('ther_class_exception_list', 'like', '%'.$request->ther_class_exception_list .'%')->first();
 
 
         } else {
@@ -66,7 +69,7 @@ class TherapyClassController extends Controller
             // dd($request->all())
 
             $benefitcode = DB::table('TC_EXCEPTION_LISTS' )
-            ->where('ther_class_exception_list', $request->ther_class_exception_list )
+            ->where('therapy_class', $request->therapy_class )
             ->update(
                 [
                     'ther_class_exception_list' => strtoupper($request->ther_class_exception_list),
