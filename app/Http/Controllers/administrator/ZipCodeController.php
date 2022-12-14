@@ -4,7 +4,7 @@ namespace App\Http\Controllers\administrator;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class ZipCodeController extends Controller
 {
@@ -12,7 +12,7 @@ class ZipCodeController extends Controller
         // dd($request->search);
         $zip_code_list = DB::table('ZIP_CODES')
         ->where('ZIP_CODE','like', '%' .$request->search. '%')
-        ->orWhere('CITY','like', '%' .$request->search. '%')
+        ->orWhere(DB::raw('UPPER(CITY)'),'like', '%' .strtoupper($request->search). '%')
         ->get();
         return $this->respondWithToken($this->token(), '', $zip_code_list);
 
