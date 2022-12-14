@@ -173,6 +173,8 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/therapy-class/search', [TherapyClassController::class, 'search'])->name('therapyclass.search'); // SEARCH
     Route::get('/therapy-class/get/{ndcid}', [TherapyClassController::class, 'getTCList'])->name('therapyclass.list.get'); // LIST ITEMS
     Route::get('/therapy-class/details/{ndcid}', [TherapyClassController::class, 'getTCItemDetails'])->name('therapyclass.details.get'); // DETAILS
+    Route::post('/therapy/add', [TherapyClassController::class, 'add'])->name('therapy.add'); // add
+
 
     // PROCEDURE EXCEPTION
     Route::get('/procedure/search', [ExceptionProcedureController::class, 'search'])->name('procedure.search'); // SEARCH
