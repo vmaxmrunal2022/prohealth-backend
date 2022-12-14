@@ -39,7 +39,7 @@ use App\Http\Controllers\AccumLatedBenifits\AccumlatedBenifitController;
 use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
 use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
-use App\Http\Controllers\administrator\ZipCodeController;
+use App\Http\Controllers\administrator\ZipCodeController;use App\Http\Controllers\administrator\UserDefinationController;
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
 use App\Http\Controllers\Provider\PrioritiseNetworkController;
@@ -59,6 +59,8 @@ use App\Http\Controllers\exception_list\ProviderTypeValidationController;
 use App\Http\Controllers\plan_design\PlanAssociationController;
 use App\Http\Controllers\exception_list\SuperBenefitControler;
 use App\Http\Controllers\membership\MemberController;
+use App\Http\Controllers\membership\PlanValidationController;
+use App\Http\Controllers\membership\PriorAuthController;
 use App\Http\Controllers\plan_design\PlanEditController;
 use App\Http\Controllers\third_party_pricing\CopayScheduleController;
 use App\Http\Controllers\third_party_pricing\CopayStepScheduleController;
@@ -371,6 +373,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     //Price Schedule
     Route::get('price-schedule/get', [PriceScheduleController::class, 'get']);
     Route::get('price-schedule/get-price-schedule-data', [PriceScheduleController::class, 'getPriceScheduleDetails']);
+    Route::post('price-schedule/update', [PriceScheduleController::class, 'updateBrandItem'])->name('price_schedule_update');
 
     //Copay Schedule
     Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
@@ -378,7 +381,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
 
     //Copay Step Schedule
     Route::get('copay-step-schedule/get', [CopayStepScheduleController::class, 'get'])->name('get.copay-step');
-    // Route::get('copay-step-schedule/get-copay-data', [CopayStepScheduleController::class, 'getCopayData'])->name('get.copay-step.single');
+    Route::post('copay-step-schedule/submit', [CopayStepScheduleController::class, 'submit'])->name('submit.copay-step');
 
     //MAC List
     Route::get('mac-list/get', [MacListController::class, 'get'])->name('get.macList');
@@ -419,6 +422,29 @@ Route::group(['prefix' => 'membership/'], function () {
     Route::get('memberdata/get-member-coverage-history-data', [MemberController::class, 'getCoverageHistory']);
     Route::get('memberdata/get-health-condition', [MemberController::class, 'getHealthCondition']);
     Route::get('memberdata/get-diagnosis-history', [MemberController::class, 'getDiagnosisHistory']);
+    Route::get('memberdata/get-prior-authorization', [MemberController::class, 'getPriorAuthorization']);
+    Route::get('memberdata/get-log-change-data', [MemberController::class, 'getLogChangeData']);
+
+    //Prior Authorization
+    Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
+
+    //Plan Validation
+    Route::get('plan-validation/get',[PlanValidationController::class, 'get']);
+    Route::get('plan-validation/get-client-details',[PlanValidationController::class, 'getClientDetails']);
+});
+
+//Administrator
+Route::group(['prefix'=>'administrator/'], function(){
+    //User Defination
+    Route::get('user-defination/get',[UserDefinationController::class, 'get']);
+    Route::get('user-defination/get-group-data',[UserDefinationController::class, 'getGroupData']);
+    Route::get('user-defination/get-security-options',[UserDefinationController::class, 'getSecurityOptions']);
+    Route::get('user-defination/validate-group',[UserDefinationController::class, 'validateGroup']);
+    Route::post('user-defination/submit',[UserDefinationController::class, 'submitFormData']);
+    Route::get('user-defination/get-customers',[UserDefinationController::class, 'getCustomers']);
+    Route::get('user-defination/get-customers-list',[UserDefinationController::class, 'getCustomersList']);
+    Route::get('user-defination/get-clients',[UserDefinationController::class, 'getClients']);
+    Route::get('user-defination/get-client-groups',[UserDefinationController::class, 'getClientGroups']);
 });
 
 

@@ -23,4 +23,53 @@ class CopayStepScheduleController extends Controller
        }
        return $this->respondWithToken($this->token(), '', $copayStepData);
     }
+
+    public function submit(Request $request)
+    {
+        if ($request->has('new')) {
+            if($request->cost_max)
+            {
+                $days_supply = "0";
+                $cost_max = $request->cost_max;
+                $step_schedule_indicator = "m";
+            }else{
+                $days_supply =  $request->days_supply;
+                $cost_max = "0";
+                $step_schedule_indicator = "d";
+            }
+
+            $addCopay =  DB::table('COPAY_MATRIX') 
+                         ->insert([
+                            'copay_amount' => $request->copay_amount,
+                            'copay_list' => $request->copay_list,
+                            'copay_percentage' => $request->copay_percentage,
+                            'days_supply' => $days_supply,
+                            'cost_max' => $cost_max,
+                            'step_schedule_indicator' => $step_schedule_indicator
+                         ]);
+            return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addCopay);
+        }else{
+            if($request->cost_max)
+            {
+                $days_supply = "0";
+                $cost_max = $request->cost_max;
+                $step_schedule_indicator = "m";
+            }else{
+                $days_supply =  $request->days_supply;
+                $cost_max = "0";
+                $step_schedule_indicator = "d";
+            }
+            $addCopay =  DB::table('COPAY_MATRIX') 
+                         ->where('copay_list', 'like', '%'.$request->copay_list.'%')
+                         ->update([
+                            'copay_amount' => $request->copay_amount,
+                            // 'copay_list' => $request->copay_list,
+                            'copay_percentage' => $request->copay_percentage,
+                            'days_supply' => $days_supply,
+                            'cost_max' => $cost_max,
+                            'step_schedule_indicator' => $step_schedule_indicator
+                         ]);
+            return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $addCopay);
+        }
+    }
 }
