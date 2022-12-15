@@ -185,6 +185,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/benefit/search', [BenefitListController::class, 'search'])->name('benefit.search'); // SEARCH
     Route::get('/benefit/get/{ndcid}', [BenefitListController::class, 'getBLList'])->name('benefit.list.get'); // LIST ITEMS
     Route::get('/benefit/details/{ndcid}', [BenefitListController::class, 'getBLItemDetails'])->name('benefit.details.get'); // DETAILS
+    Route::post('/benefit/add', [BenefitListController::class, 'add'])->name('benefit.search'); // SEARCH
 
 });
 
