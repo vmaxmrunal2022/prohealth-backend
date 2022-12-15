@@ -324,8 +324,10 @@ Route::get('clientgroup/get/{clientgrpid}', [ClientGroupController::class, 'GetO
 
 // COMMOM
 Route::get('/countries', [Controller::class, 'Contries'])->name('countries');
+Route::get('/countries/search/{c_id?}', [Controller::class, 'ContriesSearch'])->name('countries.search');
 
 Route::get('/states/{countryid}', [Controller::class, 'getStatesOfCountry'])->name('states');
+Route::get('/state/search/{stateid?}', [Controller::class, 'getStatesOfCountrySearch'])->name('state.search');
 
 
 
@@ -454,4 +456,5 @@ Route::group(['prefix'=>'administrator/'], function(){
     //Zip Codes
     Route::get('zipcode/search',[ZipCodeController::class, 'search']);
     Route::get('zipcode/get/{zip_code}', [ZipCodeController::class, 'getZipCodeList']);
+    Route::post('zipcode/submit',[ZipCodeController::class, 'submitFormData']);
 });
