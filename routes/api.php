@@ -92,6 +92,10 @@ use Nette\Schema\Context;
 //     return $request->user();
 // });
 
+Route::group([ 'middleware' => 'apisession'], function ($router){
+
+
+
 Route::group(['prefix' => 'users'], function ($router) {
     Route::post('/register', [UserController::class, 'register'])->name('register.user');
     Route::post('/login', [UserController::class, 'login'])->name('login.user');
@@ -457,4 +461,6 @@ Route::group(['prefix'=>'administrator/'], function(){
     Route::get('zipcode/search',[ZipCodeController::class, 'search']);
     Route::get('zipcode/get/{zip_code}', [ZipCodeController::class, 'getZipCodeList']);
     Route::post('zipcode/submit',[ZipCodeController::class, 'submitFormData']);
+});
+
 });

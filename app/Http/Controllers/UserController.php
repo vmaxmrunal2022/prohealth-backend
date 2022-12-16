@@ -8,6 +8,7 @@ use Auth;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
 
 class UserController extends Controller
@@ -45,6 +46,7 @@ class UserController extends Controller
     }
     public function login(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'USER_ID' => 'required|string',
             'USER_PASSWORD' => 'required',
@@ -62,7 +64,6 @@ class UserController extends Controller
             ->where('USER_PASSWORD', $request->USER_PASSWORD)
             ->first();
 
-       
 
             // return response()->json([
             //     'data' => Auth::check(),
@@ -81,6 +82,7 @@ class UserController extends Controller
         // }
 
         if ($user) {
+
             Auth::login($user);
         //    print_r(Auth::login($user));
             if (!Auth::check()) {
@@ -91,8 +93,10 @@ class UserController extends Controller
                     "error" => $responseMessage
                 ], 422);
             }
+
             $accessToken = auth()->user()->createToken('authToken')->accessToken;
             $responseMessage = "Login Successful";
+            Session::put('user', auth()->user()->user_id);
             return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
         } else {
             $responseMessage = "Sorry, this user does not exist";
