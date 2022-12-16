@@ -20,7 +20,7 @@ class BenefitListController extends Controller
             $accum_benfit_stat_names = DB::table('BENEFIT_LIST_NAMES')->insert(
                 [
                     'benefit_list_id' => strtoupper( $request->benefit_list_id ),
-                    'description'=>$request->description,
+                    'description'=>$request->description
                     
 
                 ]
@@ -36,7 +36,7 @@ class BenefitListController extends Controller
                 ]
             );
 
-            $benefitcode = DB::table('BENEFIT_LIST')->where('benefit_code', 'like', '%'.$request->benefit_code .'%')->first();
+            $benefitcode = DB::table('BENEFIT_LIST')->where('benefit_list_id', 'like', '%'.$request->benefit_list_id .'%')->first();
 
         } else {
 
