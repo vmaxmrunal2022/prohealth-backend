@@ -27,16 +27,17 @@ class BenefitDerivationController extends Controller
             );
 
 
-            $accum_benfit_stat = DB::table('BENEFIT_LIST' )->insert(
+            $accum_benfit_stat = DB::table('BENEFIT_DERIVATION' )->insert(
                 [
-                    'benefit_code'=>$request->benefit_code,
-                    'effective_date'=>$request->effective_date,
-                    'termination_date'=>$request->termination_date,
+                    'benefit_derivation_id' => strtoupper( $request->benefit_derivation_id ),
+                    'service_type'=>$request->service_type,
+
+                  
 
                 ]
             );
 
-            $benefitcode = DB::table('BENEFIT_LIST')->where('benefit_code', 'like', '%'.$request->benefit_code .'%')->first();
+            $benefitcode = DB::table('BENEFIT_DERIVATION_NAMES')->where('benefit_derivation_id', 'like', '%'.$request->benefit_derivation_id .'%')->first();
 
         } else {
 
@@ -58,9 +59,6 @@ class BenefitDerivationController extends Controller
             ->update(
                 [
                     'service_type'=>$request->service_type,
-                    
-
-
                 
                 ]
             );
