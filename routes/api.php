@@ -13,6 +13,10 @@ use App\Http\Controllers\Code\ServiceTypeController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Exception\BenefitListController;
+
+use App\Http\Controllers\Exception\BenefitDerivationController;
+
+
 use App\Http\Controllers\Exception\GPIExceptionController;
 use App\Http\Controllers\Exception\NDCExceptionController;
 
@@ -186,6 +190,13 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/benefit/get/{ndcid}', [BenefitListController::class, 'getBLList'])->name('benefit.list.get'); // LIST ITEMS
     Route::get('/benefit/details/{ndcid}', [BenefitListController::class, 'getBLItemDetails'])->name('benefit.details.get'); // DETAILS
     Route::post('/benefit/add', [BenefitListController::class, 'add'])->name('benefit.search'); // SEARCH
+
+
+    Route::get('/benefitderivation/search', [BenefitDerivationController::class, 'search'])->name('benefit.search'); // SEARCH
+    Route::get('/benefitderivation/get/{ndcid}', [BenefitDerivationController::class, 'getBLList'])->name('benefit.list.get'); // LIST ITEMS
+    Route::get('/benefitderivation/details/{ndcid}/{ndcid2}', [BenefitDerivationController::class, 'getBLItemDetails'])->name('benefit.details.get'); // DETAILS
+    Route::post('/benefitderivation/add', [BenefitDerivationController::class, 'add'])->name('benefit.search'); // SEARCH
+
 
 });
 
