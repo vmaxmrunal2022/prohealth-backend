@@ -39,6 +39,7 @@ use App\Http\Controllers\AccumLatedBenifits\AccumlatedBenifitController;
 use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
 use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
+use App\Http\Controllers\administrator\AuditTrailController;
 use App\Http\Controllers\administrator\UserDefinationController;
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
@@ -445,4 +446,10 @@ Route::group(['prefix'=>'administrator/'], function(){
     Route::get('user-defination/get-customers-list',[UserDefinationController::class, 'getCustomersList']);
     Route::get('user-defination/get-clients',[UserDefinationController::class, 'getClients']);
     Route::get('user-defination/get-client-groups',[UserDefinationController::class, 'getClientGroups']);
+
+    //Search Audit Trail
+    Route::get('search-audit-trial/get-tables',[AuditTrailController::class, 'getTables'])->name('getAllTables');
+    Route::get('search-audit-trial/get-user_ids',[AuditTrailController::class, 'getUserIds'])->name('getUserIds');
+    Route::get('search-audit-trial/get-record-actions',[AuditTrailController::class, 'getRecordAction'])->name('getRecordAction');
+    Route::post('search-audit-trial/search-user-log',[AuditTrailController::class, 'searchUserLog'])->name('searchUserLog');
 });

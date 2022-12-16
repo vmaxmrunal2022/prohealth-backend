@@ -4,6 +4,7 @@ namespace App\Http\Controllers\administrator;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class UserDefinationController extends Controller
@@ -143,6 +144,7 @@ class UserDefinationController extends Controller
 
     public function getClientGroups(Request $request)
     {
+        // print_r(Auth::id());exit();
         if ($request->user_id == 'undefined') {
             $client_groups = DB::table('CLIENT_GROUP')
                 ->select('CLIENT_GROUP_ID as value', 'GROUP_NAME as label')
