@@ -17,9 +17,9 @@ class BenefitDerivationController extends Controller
 
 
 
-            $accum_benfit_stat_names = DB::table('BENEFIT_LIST_NAMES')->insert(
+            $accum_benfit_stat_names = DB::table('BENEFIT_DERIVATION_NAMES')->insert(
                 [
-                    'benefit_list_id' => strtoupper( $request->benefit_list_id ),
+                    'benefit_derivation_id' => strtoupper( $request->benefit_derivation_id ),
                     'description'=>$request->description,
                     
 
@@ -41,9 +41,8 @@ class BenefitDerivationController extends Controller
         } else {
 
 
-            $benefitcode = DB::table('BENEFIT_LIST_NAMES' )
-            ->where('benefit_list_id', $request->benefit_list_id )
-
+            $benefitcode = DB::table('BENEFIT_DERIVATION_NAMES' )
+            ->where('benefit_derivation_id', $request->benefit_derivation_id )
 
             ->update(
                 [
@@ -52,20 +51,21 @@ class BenefitDerivationController extends Controller
                 ]
             );
 
-            $accum_benfit_stat = DB::table( 'BENEFIT_LIST' )
-            ->where('benefit_list_id', $request->benefit_list_id )
+            $accum_benfit_stat = DB::table('BENEFIT_DERIVATION' )
+            ->where('benefit_derivation_id', $request->benefit_derivation_id )
+            ->where('benefit_code', $request->benefit_code )
+
             ->update(
                 [
-                    'benefit_code'=>$request->benefit_code,
-                    'effective_date'=>$request->effective_date,
-                    'termination_date'=>$request->termination_date,
-                  
-                  
+                    'service_type'=>$request->service_type,
+                    
 
+
+                
                 ]
             );
 
-            $benefitcode = DB::table('BENEFIT_LIST')->where('benefit_list_id', 'like', $request->benefit_list_id )->first();
+            $benefitcode = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', $request->benefit_derivation_id )->first();
 
         }
 
