@@ -41,6 +41,7 @@ use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
 use App\Http\Controllers\administrator\ZipCodeController;
 use App\Http\Controllers\administrator\UserDefinationController;
+
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
 use App\Http\Controllers\Provider\PrioritiseNetworkController;
@@ -60,8 +61,6 @@ use App\Http\Controllers\exception_list\ProviderTypeValidationController;
 use App\Http\Controllers\plan_design\PlanAssociationController;
 use App\Http\Controllers\exception_list\SuperBenefitControler;
 use App\Http\Controllers\membership\MemberController;
-use App\Http\Controllers\membership\PlanValidationController;
-use App\Http\Controllers\membership\PriorAuthController;
 use App\Http\Controllers\plan_design\PlanEditController;
 use App\Http\Controllers\third_party_pricing\CopayScheduleController;
 use App\Http\Controllers\third_party_pricing\CopayStepScheduleController;
@@ -161,20 +160,27 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/ndc/search', [NDCExceptionController::class, 'search'])->name('ndsc.search'); // SEARCH
     Route::get('/ndc/get/{ndcid}', [NDCExceptionController::class, 'getNDCList'])->name('ndsc.list.get'); // LIST ITEMS
     Route::get('/ndc/details/{ndcid}', [NDCExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
+    Route::post('/ndc/add', [NDCExceptionController::class, 'add'])->name('ndsc.search'); // add
 
 
 
 
 
     // GPI
+
+    Route::post('/gpi/add', [GPIExceptionController::class, 'add'])->name('gpi.search'); // SEARCH
     Route::get('/gpi/search', [GPIExceptionController::class, 'search'])->name('gpi.search'); // SEARCH
     Route::get('/gpi/get/{ndcid}', [GPIExceptionController::class, 'getNDCList'])->name('gpi.list.get'); // LIST ITEMS
     Route::get('/gpi/details/{ndcid}', [GPIExceptionController::class, 'getNDCItemDetails'])->name('gpi.details.get'); // DETAILS
+    Route::post('/gpi/add', [GPIExceptionController::class, 'add'])->name('gpi.add'); // add
+
 
     // THERAPY CLASS
     Route::get('/therapy-class/search', [TherapyClassController::class, 'search'])->name('therapyclass.search'); // SEARCH
     Route::get('/therapy-class/get/{ndcid}', [TherapyClassController::class, 'getTCList'])->name('therapyclass.list.get'); // LIST ITEMS
     Route::get('/therapy-class/details/{ndcid}', [TherapyClassController::class, 'getTCItemDetails'])->name('therapyclass.details.get'); // DETAILS
+    Route::post('/therapy/add', [TherapyClassController::class, 'add'])->name('therapy.add'); // add
+
 
     // PROCEDURE EXCEPTION
     Route::get('/procedure/search', [ExceptionProcedureController::class, 'search'])->name('procedure.search'); // SEARCH
@@ -380,7 +386,6 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     //Price Schedule
     Route::get('price-schedule/get', [PriceScheduleController::class, 'get']);
     Route::get('price-schedule/get-price-schedule-data', [PriceScheduleController::class, 'getPriceScheduleDetails']);
-    Route::post('price-schedule/update', [PriceScheduleController::class, 'updateBrandItem'])->name('price_schedule_update');
 
     //Copay Schedule
     Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
@@ -388,7 +393,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
 
     //Copay Step Schedule
     Route::get('copay-step-schedule/get', [CopayStepScheduleController::class, 'get'])->name('get.copay-step');
-    Route::post('copay-step-schedule/submit', [CopayStepScheduleController::class, 'submit'])->name('submit.copay-step');
+    // Route::get('copay-step-schedule/get-copay-data', [CopayStepScheduleController::class, 'getCopayData'])->name('get.copay-step.single');
 
     //MAC List
     Route::get('mac-list/get', [MacListController::class, 'get'])->name('get.macList');

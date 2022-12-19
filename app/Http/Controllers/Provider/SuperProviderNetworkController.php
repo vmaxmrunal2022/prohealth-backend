@@ -36,6 +36,18 @@ class SuperProviderNetworkController extends Controller
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
+
+    public function getDetails( $ndcid ) {
+       
+        $ndc=  DB::table('SUPER_RX_NETWORK_NAMES')
+        ->join('SUPER_RX_NETWORKS','SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID','=','SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
+     ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($ndcid) . '%')  
+     ->first();
+
+        return $this->respondWithToken( $this->token(), '', $ndc );
+
+    }
+
    
 
 }
