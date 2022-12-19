@@ -47,6 +47,10 @@ use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
 use App\Http\Controllers\Provider\PrioritiseNetworkController;
+use App\Http\Controllers\Provider\ProviderDataProviderController;
+
+
+
 
 use App\Http\Controllers\PrescriberData\PrescriberController;
 
@@ -196,6 +200,15 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/benefitderivation/get/{ndcid}', [BenefitDerivationController::class, 'getBLList'])->name('benefit.list.get'); // LIST ITEMS
     Route::get('/benefitderivation/details/{ndcid}/{ndcid2}', [BenefitDerivationController::class, 'getBLItemDetails'])->name('benefit.details.get'); // DETAILS
     Route::post('/benefitderivation/add', [BenefitDerivationController::class, 'add'])->name('benefit.search'); // SEARCH
+    Route::get('/benifitcodes/all', [BenefitListController::class, 'index']);
+
+
+    
+//Provider Type Validation 
+Route::get('/provider-type-validation/get', [ProviderTypeValidationController::class, 'get'])->name('provider-type-validation-get');
+Route::get('/provider-type-validation/getList/{ncdid}', [ProviderTypeValidationController::class, 'getList'])->name('provider-type-validation-get');
+Route::post('/provider-type-validation/add', [ProviderTypeValidationController::class, 'add'])->name('provider-type-validation-get');
+Route::get('/provider-type-validation/getDetails/{ncdid}/{ndcid2}', [ProviderTypeValidationController::class, 'getNDCItemDetails'])->name('provider-type-validation-getFormData');
 
 
 });
@@ -349,7 +362,9 @@ Route::get('/states/{countryid}', [Controller::class, 'getStatesOfCountry'])->na
 Route::group(['prefix' => 'provider'], function ($router) {
 
 
-
+    Route::get('/provider/search', [ProviderDataProviderController::class, 'search'])->name('provider.search'); // SEARCH
+    Route::get('/provider/get/{ndcid}', [ProviderDataProviderController::class, 'getProviderList'])->name('provider.list.get'); // LIST ITEMS
+    Route::get('/provider/details/{ndcid}', [ProviderDataProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
     //SUPER PROVIDER NETWORK
     // Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
@@ -364,18 +379,16 @@ Route::group(['prefix' => 'provider'], function ($router) {
     Route::get('traditionalnetwork/search', [TraditionalNetworkController::class, 'search']);
     Route::get('traditionalnetwork/get/{ndcid}', [TraditionalNetworkController::class, 'getList']);
 
+
     //Prioritize  Network
 
     Route::get('prioritize/search', [PrioritiseNetworkController::class, 'search']);
 
     Route::get('prioritize/get/{ndcid}', [PrioritiseNetworkController::class, 'networkList']);
+    
 });
 
 
-//Provider Type Validation 
-Route::get('/provider-type-validation', [ProviderTypeValidationController::class, 'test']);
-Route::get('/provider-type-validation/get', [ProviderTypeValidationController::class, 'get'])->name('provider-type-validation-get');
-Route::get('/provider-type-validation/getFormData', [ProviderTypeValidationController::class, 'getFormData'])->name('provider-type-validation-getFormData');
 
 //Procedure Code List
 Route::get('/procedure-code-list/get', [PrcedureCodeListController::class, 'get'])->name('procedure-code-list-get');

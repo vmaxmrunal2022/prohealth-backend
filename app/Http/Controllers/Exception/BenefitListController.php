@@ -8,7 +8,13 @@ use Illuminate\Support\Facades\DB;
 
 class BenefitListController extends Controller
 {
-    
+   
+    public function index(Request $request)
+    {
+        $ndc = DB::table('BENEFIT_CODES')->get();
+
+    return $this->respondWithToken($this->token(), '', $ndc);
+    }
 
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
