@@ -211,6 +211,13 @@ Route::post('/provider-type-validation/add', [ProviderTypeValidationController::
 Route::get('/provider-type-validation/getDetails/{ncdid}/{ndcid2}', [ProviderTypeValidationController::class, 'getNDCItemDetails'])->name('provider-type-validation-getFormData');
 
 
+
+//Procedure Code List
+Route::get('/procedure-code-list/get', [PrcedureCodeListController::class, 'get'])->name('procedure-code-list-get');
+Route::get('/procedure-code-list/get-code-list', [PrcedureCodeListController::class, 'getProcCodeList'])->name('procedure-code-list-get');
+Route::post('/procedure-code-list/add', [PrcedureCodeListController::class, 'add'])->name('procedure-code-add');
+
+
 });
 
 Route::group(['prefix' => 'validationlist'], function ($router) {
@@ -390,9 +397,8 @@ Route::group(['prefix' => 'provider'], function ($router) {
 
 
 
-//Procedure Code List
-Route::get('/procedure-code-list/get', [PrcedureCodeListController::class, 'get'])->name('procedure-code-list-get');
-Route::get('/procedure-code-list/get-code-list', [PrcedureCodeListController::class, 'getProcCodeList'])->name('procedure-code-list-get');
+
+
 
 //Super Benefit List
 Route::get('/super-benefit-list/get', [SuperBenefitControler::class, 'get']);
