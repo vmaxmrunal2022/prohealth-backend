@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -35,15 +36,28 @@ class Controller extends BaseController
         return Auth::check() ? $this->defaultAuthGuard()->user()->token() : 'dfsdvf';
     }
 
-    public function Contries()
+    public function Contries(Request $request)
     {
-        $countries = DB::table('COUNTRY_STATES')->where('country_code', 'Coun')->get();
-        return $this->respondWithToken($this->token(),'', $countries);
+        //$countries = DB::table('COUNTRY_STATES')->where('country_code', 'Coun')->get();
+        $countries = DB::table('COUNTRY_STATES')
+            ->select('country_code', 'description')
+            ->where(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $countries);
     }
 
-    public function getStatesOfCountry($countryid)
+    //public function getStatesOfCountry($countryid)
+    public function getStatesOfCountry(Request $request)
     {
         $states = DB::table('COUNTRY_STATES')->whereNot('state_code', '**')->get();
         return $this->respondWithToken($this->token(), '', $states);
+
+        // $states = DB::table('COUNTRY_STATES')
+        //     ->select('COUNTRY_STATES.state_code', 'ZIP_CODES.ZIP_CODE')
+        //     ->join('ZIP_CODES', 'ZIP_CODES.state', '=', 'COUNTRY_STATES.state_code')
+        //     ->where(DB::raw('UPPER(COUNTRY_STATES.state_code)'), 'like', '%' . strtoupper($request->search) . '%')
+        //     ->get();
+
+        // return $this->respondWithToken($this->token(), '', $states);
     }
 }

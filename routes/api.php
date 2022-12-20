@@ -40,6 +40,7 @@ use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
 use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
 use App\Http\Controllers\administrator\AuditTrailController;
+use App\Http\Controllers\administrator\SystemParameterController;
 use App\Http\Controllers\administrator\UserDefinationController;
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
@@ -325,7 +326,8 @@ Route::get('clientgroup/get/{clientgrpid}', [ClientGroupController::class, 'GetO
 // COMMOM
 Route::get('/countries', [Controller::class, 'Contries'])->name('countries');
 
-Route::get('/states/{countryid}', [Controller::class, 'getStatesOfCountry'])->name('states');
+//Route::get('/states/{countryid}', [Controller::class, 'getStatesOfCountry'])->name('states');
+Route::get('/states', [Controller::class, 'getStatesOfCountry'])->name('states');
 
 
 
@@ -452,4 +454,9 @@ Route::group(['prefix'=>'administrator/'], function(){
     Route::get('search-audit-trial/get-user_ids',[AuditTrailController::class, 'getUserIds'])->name('getUserIds');
     Route::get('search-audit-trial/get-record-actions',[AuditTrailController::class, 'getRecordAction'])->name('getRecordAction');
     Route::post('search-audit-trial/search-user-log',[AuditTrailController::class, 'searchUserLog'])->name('searchUserLog');
+
+    //System parameters
+    Route::get('system-parameter/get-parameters',[SystemParameterController::class, 'getSystemParameters'])->name('getSystemParameters');
+    Route::get('system-parameters/get-states',[SystemParameterController::class, 'getState'])->name('getState');
+    Route::get('system-parameters/get-countries',[SystemParameterController::class, 'getCountries'])->name('getCountries');
 });
