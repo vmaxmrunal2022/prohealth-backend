@@ -37,31 +37,48 @@ class AuditTrailController extends Controller
 
     public function searchUserLog(Request $request)
     {
-        if ($request->to_date != null) {
-            $toDate = str_replace('-', '', $request->to_Date);
-        } else {
-            $toDate = '';
-        }
         if ($request->from_date != null) {
             $fromDate = str_replace('-', '', $request->from_date);
         } else {
-            $fromDate = '';
+            $fromDate = null;
         }
 
-        // print($fromDate);
-        // print($toDate);
-        // $countries = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(DESCRIPTION)'), 'like','%'.strtoupper($c_id).'%')->get();
+        if($request->to_date != null)
+        {
+            $toDate = str_replace('-', '', $request->to_date);
+        }else{
+            $toDate = null;
+        }
+
+        if ($request->user_id != null) {
+            $user_id = $request->user_id['uvalue'];
+        } else {
+            $user_id = null;
+        }
+
+        if ($request->record_action != null) {
+            $record_action = $request->record_action['rvalue'];
+        } else {
+            $record_action = null;
+        }
         $search = DB::table('FE_RECORD_LOG')
             ->where('table_name', $request->table_name['value'])
-            ->where('user_id', $request->user_id['uvalue'])
-            ->where('record_action', $request->record_action['rvalue'])
-            // ->where('DATE_CREATED', '>=', $fromDate)
-            // ->where('DATE_CREATED', '<=', $toDate)
-            // ->Where(DB::raw('date("Y-m-d", DATE_CREATED)'), '>=', $request->from_date)
-            // ->Where(DB::raw('date("Y-m-d", DATE_CREATED)'), '<=', $request->to_date)
-            // ->whereBetween('DATE_CREATED',[$fromDate, $toDate])
+            ->when($user_id, function ($query) use ($user_id) {
+                return $query->where('user_id', 'like', '%' . $user_id . '%');
+            })
+
+            ->when($record_action, function ($query) use ($record_action) {
+                return $query->where('record_action', 'like', '%' . $record_action . '%');
+            })
+
+            ->when($fromDate, function ($query) use ($fromDate) {
+               return $query->where('date_created', '>=', $fromDate);
+            })
+
+            ->when($toDate, function ($query) use ($toDate) {
+                return $query->where('date_created', '<=', $toDate);
+             })
             ->get();
-        // print_r($search);
 
         return $this->respondWithToken($this->token(), '', $search);
     }
