@@ -218,6 +218,13 @@ Route::get('/procedure-code-list/get-code-list', [PrcedureCodeListController::cl
 Route::post('/procedure-code-list/add', [PrcedureCodeListController::class, 'add'])->name('procedure-code-add');
 
 
+
+//Super Benefit List
+Route::get('/super-benefit-list/get', [SuperBenefitControler::class, 'get']);
+Route::get('/super-benefit-list/get-super-benefit-code', [SuperBenefitControler::class, 'getBenefitCode']);
+Route::post('/super-benefit-list/add', [SuperBenefitControler::class, 'add']);
+
+
 });
 
 Route::group(['prefix' => 'validationlist'], function ($router) {
@@ -400,9 +407,8 @@ Route::group(['prefix' => 'provider'], function ($router) {
 
 
 
-//Super Benefit List
-Route::get('/super-benefit-list/get', [SuperBenefitControler::class, 'get']);
-Route::get('/super-benefit-list/get-super-benefit-code', [SuperBenefitControler::class, 'getBenefitCode']);
+
+
 
 //Third Party Pricing(module)
 Route::group(['prefix' => 'third-party-pricing/'], function () {
