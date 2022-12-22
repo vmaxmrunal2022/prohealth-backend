@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\exception_list;
+namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
