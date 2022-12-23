@@ -66,6 +66,8 @@ use App\Http\Controllers\Exception\PrcedureCodeListController;
 use App\Http\Controllers\Exception\ProviderTypeValidationController;
 use App\Http\Controllers\plan_design\PlanAssociationController;
 use App\Http\Controllers\Exception\SuperBenefitControler;
+use App\Http\Controllers\Exception\DrugClassController;
+
 use App\Http\Controllers\membership\MemberController;
 use App\Http\Controllers\plan_design\PlanEditController;
 use App\Http\Controllers\third_party_pricing\CopayScheduleController;
@@ -165,6 +167,13 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::post('/ndc/add', [NDCExceptionController::class, 'add'])->name('ndsc.search'); // add
 
 
+
+
+     // NDC
+     Route::get('/drugcalss/search', [DrugClassController::class, 'search'])->name('drugclass.search'); // SEARCH
+     Route::get('/drugcalss/get/{ndcid}', [DrugClassController::class, 'getNDCList'])->name('drugclass.list.get'); // LIST ITEMS
+     Route::get('/drugcalss/details/{ndcid}', [DrugClassController::class, 'getNDCItemDetails'])->name('drugclass.details.get'); // DETAILS
+     Route::post('/drugcalss/add', [DrugClassController::class, 'add'])->name('drugclass.search'); // add
 
 
 
@@ -373,7 +382,7 @@ Route::get('/states/{countryid}', [Controller::class, 'getStatesOfCountry'])->na
 
 
 
-Route::group(['prefix' => 'provider'], function ($router) {
+Route::group(['prefix' => 'providerdata'], function ($router) {
 
 
     Route::get('/provider/search', [ProviderDataProviderController::class, 'search'])->name('provider.search'); // SEARCH

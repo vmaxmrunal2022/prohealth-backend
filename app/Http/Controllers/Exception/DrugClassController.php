@@ -10,10 +10,9 @@ class DrugClassController extends Controller
 {
     public function search(Request $request)
     {
-        $ndc = DB::table('TC_EXCEPTIONS')
-                ->select('THER_CLASS_EXCEPTION_LIST', 'EXCEPTION_NAME')
-                ->where('THER_CLASS_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
+        $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+                ->where('DRUG_CATGY_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere('DRUG_CATGY_EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
     return $this->respondWithToken($this->token(), '', $ndc);
@@ -21,9 +20,9 @@ class DrugClassController extends Controller
 
     public function getTCList($ndcid)
     {
-        $ndclist = DB::table('TC_EXCEPTION_LISTS')
+        $ndclist = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
                 // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
-                ->where('THER_CLASS_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
+                ->where('DRUG_CATGY_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
                 // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
                 ->get();
 
