@@ -277,6 +277,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/prescriber/search', [PrescriberValidationController::class, 'search'])->name('prescriber.search'); // SEARCH
     Route::get('/prescriber/get/{ndcid}', [PrescriberValidationController::class, 'getProviderList'])->name('prescriber.list.get'); // LIST ITEMS
     Route::get('/prescriber/details/{ndcid}', [PrescriberValidationController::class, 'getNDCItemDetails'])->name('prescriber.details.get'); // DETAIL
+    
 
 
 
@@ -292,6 +293,7 @@ Route::group(['prefix' => 'prescriberdata'], function ($router) {
 
     Route::get('/prescriber/details/{ndcid}', [PrescriberController::class, 'getDetails'])->name('prescriber.get'); // DETAIL
 
+    Route::post('/prescriber/update/{pres_id}', [PrescriberController::class, 'updatePrescriber'])->name('prescriber.update'); // UPDATE
 
 
 });
