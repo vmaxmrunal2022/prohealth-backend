@@ -40,6 +40,7 @@ use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
 use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
 use App\Http\Controllers\administrator\AuditTrailController;
+use App\Http\Controllers\administrator\ClaimHistoryController;
 use App\Http\Controllers\administrator\SystemParameterController;
 use App\Http\Controllers\administrator\UserDefinationController;
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
@@ -461,4 +462,7 @@ Route::group(['prefix'=>'administrator/'], function(){
     Route::get('system-parameter/get-parameters',[SystemParameterController::class, 'getSystemParameters'])->name('getSystemParameters');
     Route::get('system-parameters/get-states',[SystemParameterController::class, 'getState'])->name('getState');
     Route::get('system-parameters/get-countries',[SystemParameterController::class, 'getCountries'])->name('getCountries');
+
+    //Claim History
+    Route::post('claim-history/search', [ClaimHistoryController::class, 'searchHistory']);
 });
