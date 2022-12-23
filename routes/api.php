@@ -39,6 +39,7 @@ use App\Http\Controllers\AccumLatedBenifits\AccumlatedBenifitController;
 use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
 use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
+use App\Http\Controllers\administrator\ClaimHistoryController;
 use App\Http\Controllers\administrator\ZipCodeController;
 use App\Http\Controllers\administrator\UserDefinationController;
 
@@ -218,12 +219,9 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/provider/get/{ndcid}', [ProviderController::class, 'getProviderList'])->name('provider.list.get'); // LIST ITEMS
     Route::get('/provider/details/{ndcid}', [ProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
-
-
-
-
+//DIAGNOSIS VALIDATION LIST
     Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search'])->name('diagnosisvalidation.search'); // SEARCH
-    Route::get('/diagnosisvalidation/get/{ndcid}', [DiagnosisValidationListController::class, 'getProviderList'])->name('diagnosisvalidation.list.get'); // LIST ITEMS
+    Route::get('/diagnosisvalidation/get/{diagnosis_list}', [DiagnosisValidationListController::class, 'getDiagnosisLimitations'])->name('diagnosisvalidation.list.get'); // LIST ITEMS
     Route::get('/diagnosisvalidation/details/{ndcid}', [DiagnosisValidationListController::class, 'getNDCItemDetails'])->name('diagnosisvalidation.details.get'); // DETAIL
 
 
@@ -466,6 +464,9 @@ Route::group(['prefix'=>'administrator/'], function(){
     Route::get('zipcode/search',[ZipCodeController::class, 'search']);
     Route::get('zipcode/get/{zip_code}', [ZipCodeController::class, 'getZipCodeList']);
     Route::post('zipcode/submit',[ZipCodeController::class, 'submitFormData']);
+
+    //claim history
+    Route::get('claim-history',[ClaimHistoryController::class,'get']);
 });
 
 });

@@ -4,19 +4,18 @@ namespace App\Http\Controllers\ValidationLists;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class DiagnosisValidationListController extends Controller
 {
     public function search(Request $request)
     {
-
-        $ndc = DB::table('DIAGNOSIS_EXCEPTIONS')
-        ->where('DIAGNOSIS_EXCEPTIONS.DIAGNOSIS_LIST', 'like', '%' .strtoupper($request->search). '%')
-       
+        $data = DB::table('DIAGNOSIS_EXCEPTIONS as a')
+        ->where(DB::raw('UPPER(a.DIAGNOSIS_LIST)'), 'like', '%' .strtoupper($request->search). '%')
+        ->orWhere(DB::raw('UPPER(a.EXCEPTION_NAME)'), 'like', '%' .strtoupper($request->search). '%')
         ->get();
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+    return $this->respondWithToken($this->token(), '', $data);
     }
 
 
@@ -31,26 +30,21 @@ class DiagnosisValidationListController extends Controller
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
-    public function getNDCItemDetails ($ndcid)
+    public function getDiagnosisLimitations ($diagnosis_list)
         {
-            $ndc = DB::table('DIAGNOSIS_VALIDATIONS')
-                        ->join('DIAGNOSIS_EXCEPTIONS', 'DIAGNOSIS_EXCEPTIONS.DIAGNOSIS_LIST', '=', 'DIAGNOSIS_VALIDATIONS.DIAGNOSIS_LIST')
-                        // ->select('DIAGNOSIS_VALIDATIONS.DIAGNOSIS_LIST')
+            $data = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                        ->where('DIAGNOSIS_LIST', 'like', '%' . $diagnosis_list . '%')
+                        ->get();
 
-                        ->where('DIAGNOSIS_VALIDATIONS.DIAGNOSIS_LIST', 'like', '%' . strtoupper($ndcid) . '%')  
-                        // ->groupBy('DIAGNOSIS_LIST')
-
-                        ->first();
-
-            return $this->respondWithToken($this->token(), '', $ndc);
+            return $this->respondWithToken($this->token(), '', $data);
 
         }
 
 
-                   
 
 
-             
-        
+
+
+
 
 }
