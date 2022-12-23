@@ -402,6 +402,7 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('traditionalnetwork/search', [TraditionalNetworkController::class, 'search']);
     Route::get('traditionalnetwork/get/{ndcid}', [TraditionalNetworkController::class, 'getList']);
 
+    Route::get('traditionalnetwork/details/{ndcid}', [TraditionalNetworkController::class, 'getDetails']);
 
     //Prioritize  Network
 

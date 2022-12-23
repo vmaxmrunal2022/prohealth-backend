@@ -91,21 +91,14 @@ class TraditionalNetworkController extends Controller
     }
 
 
-    public function getDetails( $ndcid ) {
-        $ndc = DB::table('RX_NETWORKS' )
-        ->where( 'PHARMACY_NABP', 'like', '%' .$ndcid. '%' )
-        ->first();
-
-        return $this->respondWithToken( $this->token(), '', $ndc );
-
-    }
+   
 
 
 
     public function search(Request $request)
 
     {
-             $ndc  = DB::select("SELECT * FROM RX_NETWORK_NAMES");
+      $ndc  = DB::select("SELECT * FROM RX_NETWORK_NAMES");
 
     return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -116,11 +109,24 @@ class TraditionalNetworkController extends Controller
     {
         $ndc =DB::table('RX_NETWORK_NAMES')
         ->join('RX_NETWORKS', 'RX_NETWORKS.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
+        ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
+
+
         ->where('RX_NETWORK_NAMES.NETWORK_NAME', 'like', '%' .$ndcid. '%')
         ->orWhere('RX_NETWORKS.NETWORK_ID', 'like', '%' .$ndcid. '%')
-        ->first();
+        ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
+
+
+    public function getDetails( $ndcid ) {
+        $ndc = DB::table('RX_NETWORKS' )
+        ->where( 'PHARMACY_NABP', 'like', '%' .$ndcid. '%' )
+        ->first();
+
+        return $this->respondWithToken( $this->token(), '', $ndc );
 
     }
 
