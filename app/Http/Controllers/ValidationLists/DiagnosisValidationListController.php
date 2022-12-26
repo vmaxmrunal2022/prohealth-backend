@@ -18,18 +18,6 @@ class DiagnosisValidationListController extends Controller
     return $this->respondWithToken($this->token(), '', $data);
     }
 
-
-
-    public function getDiagnosisList($ndcid)
-    {
-        $ndclist = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
-        ->where('PROV_TYPE_LIST_ID', 'like', '%' . strtoupper($ndcid) . '%')
-                // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
-                ->get();
-
-        return $this->respondWithToken($this->token(), '', $ndclist);
-    }
-
     public function getDiagnosisLimitations ($diagnosis_list)
         {
             $data = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
@@ -38,6 +26,32 @@ class DiagnosisValidationListController extends Controller
 
             return $this->respondWithToken($this->token(), '', $data);
 
+        }
+
+        public function getDiagnosisCodeList($search=''){
+            $data = DB::table('DIAGNOSIS_CODES')
+            ->where(DB::raw('UPPER(DIAGNOSIS_ID)'),'like','%'.strtoupper($search).'%')
+            ->orWhere(DB::raw('UPPER(DESCRIPTION)'),'like','%'.strtoupper($search).'%')
+            ->get();
+            return $this->respondWithToken($this->token(), '', $data);
+        }
+
+        public function getLimitationsCode($search=''){
+            $data = DB::table('LIMITATIONS_LIST')
+            ->where(DB::raw('UPPER(LIMITATIONS_LIST)'),'like','%'.strtoupper($search).'%')
+            ->where(DB::raw('UPPER(LIMITATIONS_LIST_NAME)'),'like','%'.strtoupper($search).'%')
+            ->get();
+            return $this->respondWithToken($this->token(),'',$data);
+        }
+
+        public function getPriorityDiagnosis($diagnosis_list,$diagnosis_id){
+
+            $data = DB::table('DIAGNOSIS_VALIDATIONS as a')
+                        ->join('DIAGNOSIS_EXCEPTIONS as b','b.DIAGNOSIS_LIST','=','a.DIAGNOSIS_LIST')
+                        ->where('a.DIAGNOSIS_LIST', 'like', '%' . $diagnosis_list . '%')
+                        ->where('a.DIAGNOSIS_ID', 'like', '%' . $diagnosis_id . '%')
+                        ->first();
+                return $this->respondWithToken($this->token(),'',$data);
         }
 
 
