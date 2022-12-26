@@ -465,4 +465,11 @@ Route::group(['prefix'=>'administrator/'], function(){
 
     //Claim History
     Route::post('claim-history/search', [ClaimHistoryController::class, 'searchHistory']);
+    Route::get('claim-history/get-ndcdrops', [ClaimHistoryController::class, 'getNDCDropdown']);
+    Route::get('claim-history/get-gpidrops', [ClaimHistoryController::class, 'getGPIDropdown']);
+    Route::get('claim-history/get-proceduer-code', [ClaimHistoryController::class, 'getProcedureCode']);
+    Route::get('claim-history/get-customer-id', [ClaimHistoryController::class, 'getCustomerId']);
+    Route::get('claim-history/get-client-id', [ClaimHistoryController::class, 'getClientId']);
+    Route::get('claim-history/get-client-group', [ClaimHistoryController::class, 'getClientGroup']);
+    Route::post('claim-history/search-optional-data', [ClaimHistoryController::class, 'searchOptionalData']);
 });
