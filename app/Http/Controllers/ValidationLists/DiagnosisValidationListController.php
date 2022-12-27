@@ -18,10 +18,12 @@ class DiagnosisValidationListController extends Controller
     return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function getDiagnosisLimitations ($diagnosis_list)
+    public function getPriorityDiagnosis ($diagnosis_list)
         {
-            $data = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-                        ->where('DIAGNOSIS_LIST', 'like', '%' . $diagnosis_list . '%')
+            $data = DB::table('DIAGNOSIS_VALIDATIONS as a')
+                        ->join('DIAGNOSIS_EXCEPTIONS as b','b.DIAGNOSIS_LIST','=','a.DIAGNOSIS_LIST')
+                        ->where('a.DIAGNOSIS_LIST', 'like', '%' . $diagnosis_list . '%')
+                        ->orderBy('PRIORITY','ASC')
                         ->get();
 
             return $this->respondWithToken($this->token(), '', $data);
@@ -44,13 +46,11 @@ class DiagnosisValidationListController extends Controller
             return $this->respondWithToken($this->token(),'',$data);
         }
 
-        public function getPriorityDiagnosis($diagnosis_list,$diagnosis_id){
-
-            $data = DB::table('DIAGNOSIS_VALIDATIONS as a')
-                        ->join('DIAGNOSIS_EXCEPTIONS as b','b.DIAGNOSIS_LIST','=','a.DIAGNOSIS_LIST')
-                        ->where('a.DIAGNOSIS_LIST', 'like', '%' . $diagnosis_list . '%')
-                        ->where('a.DIAGNOSIS_ID', 'like', '%' . $diagnosis_id . '%')
-                        ->first();
+        public function getDiagnosisLimitations($diagnosis_list,$diagnosis_id){
+            $data = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC as a')
+                        ->where('a.DIAGNOSIS_LIST', '=',  $diagnosis_list )
+                        ->where('a.DIAGNOSIS_ID', '=', $diagnosis_id)
+                        ->get();
                 return $this->respondWithToken($this->token(),'',$data);
         }
 

@@ -31,7 +31,7 @@ class ZipCodeController extends Controller
     }
 
     public function submitFormData(Request $request){
-
+        // dd($request->all());
         if ($request->has('new')) {
             $addUser = DB::table('ZIP_CODES')
                 ->insert([
