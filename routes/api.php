@@ -416,9 +416,20 @@ Route::group(['prefix' => "drug-information/"], function () {
 Route::group(['prefix' => 'plan-design/'], function () {
     //Plan Association
     Route::get('plan-association/get', [PlanAssociationController::class, 'get']);
+    Route::post('plan-association/submit-form', [PlanAssociationController::class, 'submitPlanAssociation']);
+    Route::get('plan-association/get-pharmacy-chain', [PlanAssociationController::class, 'getPharmacyChain']);
+    Route::get('plan-association/get-form-id', [PlanAssociationController::class, 'getFormId']);
+    Route::get('plan-association/get-membership-process-flag', [PlanAssociationController::class, 'getMemProcFlag']);
+    Route::get('plan-association/get-customer', [PlanAssociationController::class, 'getCustomer']);
+    Route::get('plan-association/get-client', [PlanAssociationController::class, 'getClient']);
+    Route::get('plan-association/get-client-group', [PlanAssociationController::class, 'getClientGroup']);
+    Route::get('plan-association/get-transaction-type', [PlanAssociationController::class, 'getTransactionType']);
+    Route::get('plan-association/get-transaction-association', [PlanAssociationController::class, 'getTransactionAssociation']);
+
     //Plan Edit
     Route::get('plan-edit/get', [PlanEditController::class, 'get']);
     Route::get('plan-edit/get-plan-edit-data', [PlanEditController::class, 'getPlanEditData']);
+    
 });
 
 //Membership
