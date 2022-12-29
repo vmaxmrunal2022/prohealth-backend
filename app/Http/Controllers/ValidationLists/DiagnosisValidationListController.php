@@ -54,6 +54,59 @@ class DiagnosisValidationListController extends Controller
                 return $this->respondWithToken($this->token(),'',$data);
         }
 
+        public function addDiagnosisValidations(Request $request){
+            // dd($request->all());
+            if($request->has('new')){
+                $addData = DB::table('DIAGNOSIS_EXCEPTIONS')
+                ->insert([
+                    'DIAGNOSIS_LIST'=>$request->diagnosis_list,
+                    'EXCEPTION_NAME'=>$request->exception_name,
+                    'USER_ID'=>$request->user_name,
+                ]);
+
+                if($addData){
+                    return $this->respondWithToken($this->token(),'Added Successfully!!!',$addData);
+                }
+            }else{
+
+                if(isset($request->diagnosis_id)){
+                    $addDataValid = DB::table('DIAGNOSIS_VALIDATIONS')
+                    ->insert([
+                        'DIAGNOSIS_LIST'=>$request->diagnosis_list,
+                        'DIAGNOSIS_ID'=> $request->diagnosis_id['value'],
+                        'DIAGNOSIS_STATUS' => $request->diagnosis_status,
+                        'PRIORITY' => $request->priority,
+                        'USER_ID'=>$request->user_name,
+
+                    ]);
+                }
+
+
+
+                $updateData = DB::table('DIAGNOSIS_EXCEPTIONS')
+                ->where('DIAGNOSIS_LIST',$request->diagnosis_list)
+                ->update([
+                    'EXCEPTION_NAME'=>$request->exception_name,
+                ]);
+
+                if(isset($request->diagnosis_id)){
+                    $updateDataValid = DB::table('DIAGNOSIS_VALIDATIONS')
+                ->where('DIAGNOSIS_LIST',$request->diagnosis_list)
+                ->where('DIAGNOSIS_ID',$request->diagnosis_id['value'])
+                ->update([
+                    'DIAGNOSIS_STATUS' => $request->diagnosis_status,
+                    'PRIORITY' => $request->priority,
+                    'USER_ID_MODIFIED'=>$request->user_name
+                ]);
+                }
+
+                if($updateData){
+                    return $this->respondWithToken($this->token(),'Update Successfully!!!', $updateData);
+                }
+            }
+
+        }
+
 
 
 
