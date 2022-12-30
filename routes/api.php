@@ -48,17 +48,7 @@ use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
 use App\Http\Controllers\Provider\PrioritiseNetworkController;
 use App\Http\Controllers\Provider\ProviderDataProviderController;
-
-
-
-
 use App\Http\Controllers\PrescriberData\PrescriberController;
-
-
-
-
-
-
 use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
 use App\Http\Controllers\Exception\TherapyClassController;
 use App\Http\Controllers\drug_information\DrugDatabaseController;
@@ -67,7 +57,6 @@ use App\Http\Controllers\Exception\ProviderTypeValidationController;
 use App\Http\Controllers\plan_design\PlanAssociationController;
 use App\Http\Controllers\Exception\SuperBenefitControler;
 use App\Http\Controllers\Exception\DrugClassController;
-
 use App\Http\Controllers\membership\MemberController;
 use App\Http\Controllers\plan_design\PlanEditController;
 use App\Http\Controllers\third_party_pricing\CopayScheduleController;
@@ -78,7 +67,6 @@ use App\Http\Controllers\third_party_pricing\ProcedureUcrList;
 use App\Http\Controllers\third_party_pricing\RvaListController;
 use App\Http\Controllers\third_party_pricing\TaxScheduleController;
 use App\Http\Controllers\UserController;
-
 use App\Models\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -130,6 +118,7 @@ Route::group(['prefix' => 'codes'], function ($router) {
     Route::get('/provider-type', [ProviderTypeController::class, 'get'])->name('providertype.get'); // SEARCH
     Route::post('/provider-type/submit', [ProviderTypeController::class, 'add'])->name('providertype.submit');  // add
     Route::post('/provider-type/delete', [ProviderTypeController::class, 'delete'])->name('providertype.delete'); // DELETE
+    Route::get('/provider/id/search', [ProviderTypeController::class, 'IdSearch'])->name('providertype.search'); // SEARCH
 
 
     // DIAGNOSIS
@@ -388,6 +377,8 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('/provider/search', [ProviderDataProviderController::class, 'search'])->name('provider.search'); // SEARCH
     Route::get('/provider/get/{ndcid}', [ProviderDataProviderController::class, 'getProviderList'])->name('provider.list.get'); // LIST ITEMS
     Route::get('/provider/details/{ndcid}', [ProviderDataProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
+    Route::post('/provider/add', [ProviderDataProviderController::class, 'add'])->name('ndsc.details.get'); // DETAIL
+
 
     //SUPER PROVIDER NETWORK
     // Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
@@ -425,6 +416,8 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     //Price Schedule
     Route::get('price-schedule/get', [PriceScheduleController::class, 'get']);
     Route::get('price-schedule/get-price-schedule-data', [PriceScheduleController::class, 'getPriceScheduleDetails']);
+    Route::get('price-schedule/search', [PriceScheduleController::class, 'search']);
+
 
     //Copay Schedule
     Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');

@@ -104,6 +104,19 @@ class TraditionalNetworkController extends Controller
     }
 
 
+    
+    public function ProviderIdsearch(Request $request)
+    {
+        $priceShedule = DB::table('PRICE_SCHEDULE')
+            ->where('PRICE_SCHEDULE', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('PRICE_SCHEDULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('COPAY_SCHEDULE', 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $priceShedule);
+    }
+
+
+
 
     public function getList ($ndcid)
     {
@@ -123,7 +136,11 @@ class TraditionalNetworkController extends Controller
 
     public function getDetails( $ndcid ) {
         $ndc = DB::table('RX_NETWORKS' )
-        ->where( 'PHARMACY_NABP', 'like', '%' .$ndcid. '%' )
+        ->join('RX_NETWORK_NAMES', 'RX_NETWORK_NAMES.NETWORK_ID', '=', 'RX_NETWORKS.NETWORK_ID')
+        ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
+
+
+        ->where( 'PHARMACY_TABLE.PHARMACY_NABP', 'like', '%' .$ndcid. '%' )
         ->first();
 
         return $this->respondWithToken( $this->token(), '', $ndc );

@@ -19,6 +19,15 @@ class ProviderTypeController extends Controller
 
     }
 
+
+    public function IdSearch(Request $request)
+    {
+        $priceShedule = DB::table('RX_NETWORKS')
+            ->where('PHARMACY_NABP', 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $priceShedule);
+    }
+
     public function add(Request $request)
     {
        
