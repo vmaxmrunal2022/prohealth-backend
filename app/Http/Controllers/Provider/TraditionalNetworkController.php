@@ -38,7 +38,7 @@ class TraditionalNetworkController extends Controller
 
                 ]
             );
-            $benefitcode = DB::table('RX_NETWORKS')->where('network_id', 'like', $request->network_id )->first();
+            $benefitcode = DB::table( 'RX_NETWORKS' )->where( 'network_id', 'like', $request->network_id )->first();
 
 
         } else {
@@ -68,7 +68,9 @@ class TraditionalNetworkController extends Controller
                 ]
             );
 
-            $benefitcode = DB::table('RX_NETWORKS')->where('network_id', 'like', $request->network_id )->first();
+
+            $benefitcode = DB::table( 'RX_NETWORKS' )->where( 'network_id', 'like', $request->network_id )->first();
+
 
         }
 
