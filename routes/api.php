@@ -46,6 +46,11 @@ use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
 
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
+use App\Http\Controllers\Provider\FlexibleNetworkController;
+
+
+
+
 use App\Http\Controllers\Provider\PrioritiseNetworkController;
 use App\Http\Controllers\Provider\ProviderDataProviderController;
 use App\Http\Controllers\PrescriberData\PrescriberController;
@@ -396,6 +401,19 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('traditionalnetwork/details/{ndcid}', [TraditionalNetworkController::class, 'getDetails']);
 
     Route::post('traditionalnetwork/add', [TraditionalNetworkController::class, 'add']);
+
+
+
+
+
+    //Flexible Network
+
+    Route::get('flexiblenetwork/search', [FlexibleNetworkController::class, 'search']);
+    Route::get('flexiblenetwork/get/{ndcid}', [FlexibleNetworkController::class, 'getList']);
+
+    Route::get('flexiblenetwork/details/{ndcid}', [FlexibleNetworkController::class, 'getDetails']);
+
+    Route::post('flexiblenetwork/add', [FlexibleNetworkController::class, 'add']);
 
 
     //Prioritize  Network

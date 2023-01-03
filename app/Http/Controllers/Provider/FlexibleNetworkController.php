@@ -87,9 +87,15 @@ class FlexibleNetworkController extends Controller
     }
 
 
+   
+
     public function getDetails( $ndcid ) {
-        $ndc = DB::table('RX_NETWORKS' )
-        ->where( 'PHARMACY_NABP', 'like', '%' .$ndcid. '%' )
+        $ndc = DB::table('RX_NETWORK_RULES' )
+        ->join('RX_NETWORK_RULE_NAMES', 'RX_NETWORK_RULE_NAMES.RX_NETWORK_RULE_ID', '=', 'RX_NETWORK_RULES.RX_NETWORK_RULE_ID')
+        // ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
+
+
+        ->where('RX_NETWORK_RULES.RX_NETWORK_RULE_ID', $ndcid)
         ->first();
 
         return $this->respondWithToken( $this->token(), '', $ndc );
@@ -101,7 +107,10 @@ class FlexibleNetworkController extends Controller
     public function search(Request $request)
 
     {
-      $ndc  = DB::select("SELECT * FROM RX_NETWORK_RULE_NAMES");
+        $ndc = DB::table('RX_NETWORK_RULE_NAMES')
+                ->where('RX_NETWORK_RULE_ID', 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere('RX_NETWORK_RULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
+                ->get();
 
     return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -110,11 +119,9 @@ class FlexibleNetworkController extends Controller
 
     public function getList ($ndcid)
     {
-        $ndc =DB::table('RX_NETWORK_NAMES')
-        ->join('RX_NETWORKS', 'RX_NETWORKS.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
-        ->where('RX_NETWORK_NAMES.NETWORK_NAME', 'like', '%' .$ndcid. '%')
-        ->orWhere('RX_NETWORKS.NETWORK_ID', 'like', '%' .$ndcid. '%')
-        ->first();
+        $ndc =DB::table('RX_NETWORK_RULES')
+        ->Where('RX_NETWORK_RULE_ID', 'like', '%' .$ndcid. '%')
+        ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
 
