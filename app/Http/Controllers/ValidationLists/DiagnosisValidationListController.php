@@ -69,21 +69,9 @@ class DiagnosisValidationListController extends Controller
                 }
             }else{
 
-                if(isset($request->diagnosis_id)){
-                    $addDataValid = DB::table('DIAGNOSIS_VALIDATIONS')
-                    ->insert([
-                        'DIAGNOSIS_LIST'=>$request->diagnosis_list,
-                        'DIAGNOSIS_ID'=> $request->diagnosis_id['value'],
-                        'DIAGNOSIS_STATUS' => $request->diagnosis_status,
-                        'PRIORITY' => $request->priority,
-                        'USER_ID'=>$request->user_name,
+                if($request->updateForm == 'update'){
 
-                    ]);
-                }
-
-
-
-                $updateData = DB::table('DIAGNOSIS_EXCEPTIONS')
+                    $updateData = DB::table('DIAGNOSIS_EXCEPTIONS')
                 ->where('DIAGNOSIS_LIST',$request->diagnosis_list)
                 ->update([
                     'EXCEPTION_NAME'=>$request->exception_name,
@@ -99,19 +87,50 @@ class DiagnosisValidationListController extends Controller
                     'USER_ID_MODIFIED'=>$request->user_name
                 ]);
                 }
-
                 if($updateData){
                     return $this->respondWithToken($this->token(),'Update Successfully!!!', $updateData);
                 }
+                }else{
+
+                    if(isset($request->diagnosis_id)){
+                        $addDataValid = DB::table('DIAGNOSIS_VALIDATIONS')
+                        ->insert([
+                            'DIAGNOSIS_LIST'=>$request->diagnosis_list,
+                            'DIAGNOSIS_ID'=> $request->diagnosis_id['value'],
+                            'DIAGNOSIS_STATUS' => $request->diagnosis_status,
+                            'PRIORITY' => $request->priority,
+                            'USER_ID'=>$request->user_name,
+
+                        ]);
+                    }
+                    if($addDataValid){
+                        return $this->respondWithToken($this->token(),'Added Successfully Diagnosis ID!!!', $addDataValid);
+                    }
+
+                }
+
             }
 
         }
 
 
+        public function DiagnosisLimitationAdd(Request $request){
+            // if($request->has('new')){
+                $addData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                        ->insert([
+                            'DIAGNOSIS_LIST'=>$request->diagnosis_list,
+                            'DIAGNOSIS_ID'=>$request->diagnosis_id,
+                            'LIMITATIONS_LIST'=>$request->limitation_list,
+                            'EFFECTIVE_DATE'=>$request->effective_date,
+                            'TERMINATION_DATE'=>$request->termination_date,
+                            'USER_ID_CREATED'=>$request->user_name
 
-
-
-
+                        ]);
+                        if($addData){
+                            return $this->respondWithToken($this->token(),'Added Succcessfully Limitation!!!');
+                        }
+            // }
+        }
 
 
 }

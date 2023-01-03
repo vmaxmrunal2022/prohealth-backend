@@ -204,8 +204,9 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
 
     Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('speciality.search'); // SEARCH
-    Route::get('/speciality/get/{ndcid}', [SpecialityController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
-    Route::get('/speciality/details/{ndcid}', [SpecialityController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
+    Route::get('/speciality/get/{specialty_id}', [SpecialityController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
+    Route::get('/speciality/details/{specialty_id}/{specialty_list}', [SpecialityController::class, 'getSpecialityDetails'])->name('ndsc.details.get'); // DETAIL
+    Route::post('/speciality/submit-speciality-form',[SpecialityController::class, 'addSpeciality']); // add update speciality
 
 
 
@@ -227,6 +228,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('diagnosisvalidation/limitation-code-list/{limitation_code?}',[DiagnosisValidationListController::class,'getLimitationsCode']);//limitationid drop down
     Route::get('/diagnosisvalidation/diagnosis_limitations/{diagnosis_list}/{diagnosis_id}', [DiagnosisValidationListController::class, 'getDiagnosisLimitations'])->name('diagnosisvalidation.details.get'); // DETAIL
     Route::post('/diagnosisvalidation/submit-diagnosis-form',[DiagnosisValidationListController::class,'addDiagnosisValidations']);//add and update diagnosis data
+    Route::post('/diagnosisvalidation/submit-diagnosis-limitation-form',[DiagnosisValidationListController::class,'DiagnosisLimitationAdd']);
 
 
 
