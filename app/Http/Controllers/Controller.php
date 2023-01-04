@@ -40,6 +40,7 @@ class Controller extends BaseController
         $countries = DB::table('COUNTRY_STATES')->where('country_code', 'Coun')->get();
         return $this->respondWithToken($this->token(),'', $countries);
     }
+    
     public function ContriesSearch($c_id='')
     {
         if(!empty($c_id)){

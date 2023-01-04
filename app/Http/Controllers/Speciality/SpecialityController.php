@@ -39,8 +39,18 @@ class SpecialityController extends Controller
     }
 
     public function addSpeciality(Request $request){
+        $getSpecialtyExceptionData = DB::table('SPECIALTY_EXCEPTIONS')
+        ->where(DB::raw('UPPER(SPECIALTY_LIST)'),'=',strtoupper($request->specialty_list))
+        ->first();
+
+        $getSpecialtyValidationData = DB::table('SPECIALTY_VALIDATIONS')
+        ->where(DB::raw('UPPER(SPECIALTY_LIST)'),'=',strtoupper($request->specialty_list))
+        ->where(DB::raw('UPPER(SPECIALTY_ID)'),'=',strtoupper($request->specialty_id))
+        ->first();
+
         if($request->has('new')){
-            $addData = DB::table('SPECIALTY_EXCEPTIONS')
+            if(!$getSpecialtyExceptionData && !$getSpecialtyValidationData){
+                $addData = DB::table('SPECIALTY_EXCEPTIONS')
                 ->insert([
                     'SPECIALTY_LIST'=>$request->specialty_list,
                     'EXCEPTION_NAME'=>$request->exception_name,
@@ -52,11 +62,30 @@ class SpecialityController extends Controller
                 ->insert([
                     'SPECIALTY_LIST'=>$request->specialty_list,
                     'SPECIALTY_ID'=>$request->specialty_id,
+                    'SPECIALTY_STATUS'=>$request->specialty_status,
                     'USER_ID'=>$request->user_name,
                 ]);
 
                 return $this->respondWithToken($this->token(),'Added Successfully..!!!',$addData);
             }
+            }else{
+                if(!$getSpecialtyValidationData){
+                    $data = DB::table('SPECIALTY_VALIDATIONS')
+                ->insert([
+                    'SPECIALTY_LIST'=>$request->specialty_list,
+                    'SPECIALTY_ID'=>$request->specialty_id,
+                    'SPECIALTY_STATUS'=>$request->specialty_status,
+                    'USER_ID'=>$request->user_name,
+                ]);
+                return $this->respondWithToken($this->token(),'Added Successfully..!!!',$data);
+                }else{
+                    return $this->respondWithToken($this->token(),'This record already exists in the system..!!!',$getSpecialtyValidationData);
+                }
+
+
+
+            }
+
         }else{
             $updateData = DB::table('SPECIALTY_EXCEPTIONS')
             ->where('SPECIALTY_LIST',$request->specialty_list)
