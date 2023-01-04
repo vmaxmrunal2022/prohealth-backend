@@ -117,6 +117,18 @@ class FlexibleNetworkController extends Controller
 
 
 
+    public function RuleIdsearch(Request $request)
+
+    {
+        $ndc = DB::table('RX_NETWORK_RULES')
+                ->where('RX_NETWORK_RULE_ID', 'like', '%' . strtoupper($request->search) . '%')
+                ->get();
+
+    return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+
+
     public function getList ($ndcid)
     {
         $ndc =DB::table('RX_NETWORK_RULES')

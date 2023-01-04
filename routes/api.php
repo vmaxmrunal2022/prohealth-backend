@@ -415,6 +415,12 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
 
     Route::post('flexiblenetwork/add', [FlexibleNetworkController::class, 'add']);
 
+    //Rule Id 
+
+    Route::get('ruleid/search', [FlexibleNetworkController::class, 'RuleIdsearch']);
+
+
+
 
     //Prioritize  Network
 
