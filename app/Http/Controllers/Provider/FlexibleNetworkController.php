@@ -121,7 +121,7 @@ class FlexibleNetworkController extends Controller
 
     {
         $ndc = DB::table('RX_NETWORK_RULES')
-                ->where('RX_NETWORK_RULE_ID', 'like', '%' . strtoupper($request->search) . '%')
+                ->where('RX_NETWORK_RULE_ID_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
     return $this->respondWithToken($this->token(), '', $ndc);
