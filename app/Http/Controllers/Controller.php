@@ -40,10 +40,34 @@ class Controller extends BaseController
         $countries = DB::table('COUNTRY_STATES')->where('country_code', 'Coun')->get();
         return $this->respondWithToken($this->token(),'', $countries);
     }
+    
+    public function ContriesSearch($c_id='')
+    {
+        if(!empty($c_id)){
+            $countries = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(DESCRIPTION)'), 'like','%'.strtoupper($c_id).'%')->get();
+        }else{
+            $countries = DB::table('COUNTRY_STATES')->get();
+        }
+
+        return $this->respondWithToken($this->token(),'', $countries);
+        // return $countries;
+    }
 
     public function getStatesOfCountry($countryid)
     {
+
         $states = DB::table('COUNTRY_STATES')->whereNot('state_code', '**')->get();
+        return $this->respondWithToken($this->token(), '', $states);
+    }
+
+    public function getStatesOfCountrySearch($state_code='')
+    {
+        if(!empty($state_code)){
+            $states = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(STATE_CODE)'), 'like','%'.strtoupper($state_code).'%')->get();
+        }else{
+            $states = DB::table('COUNTRY_STATES')->get();
+        }
+
         return $this->respondWithToken($this->token(), '', $states);
     }
 }

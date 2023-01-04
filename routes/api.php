@@ -43,6 +43,9 @@ use App\Http\Controllers\AccumLatedBenifits\AccumlatedBenifitController;
 use App\Http\Controllers\AccumLatedBenifits\GpiExclusionController;
 use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
+use App\Http\Controllers\administrator\ClaimHistoryController;
+use App\Http\Controllers\administrator\ZipCodeController;
+use App\Http\Controllers\administrator\UserDefinationController;
 
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
@@ -92,6 +95,10 @@ use Nette\Schema\Context;
 //     return $request->user();
 // });
 
+Route::group([ 'middleware' => 'apisession'], function ($router){
+
+
+
 Route::group(['prefix' => 'users'], function ($router) {
     Route::post('/register', [UserController::class, 'register'])->name('register.user');
     Route::post('/login', [UserController::class, 'login'])->name('login.user');
@@ -113,7 +120,7 @@ Route::group(['prefix' => 'codes'], function ($router) {
     Route::post('/reasons/delete', [ReasonsController::class, 'delete'])->name('reasons.delete'); // DELETE
 
 
-    // PROCEDURE 
+    // PROCEDURE
     Route::get('/procedure', [ProcedureController::class, 'get'])->name('procedure.get'); // SEARCH
     Route::post('/procedure/submit', [ProcedureController::class, 'add'])->name('procedure.submit');  // add
     Route::post('/procedure/delete', [ProcedureController::class, 'delete'])->name('procedure.delete'); // DELETE
@@ -171,7 +178,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
 
 
 
-    // GPI 
+    // GPI
 
     Route::post('/gpi/add', [GPIExceptionController::class, 'add'])->name('gpi.search'); // SEARCH
     Route::get('/gpi/search', [GPIExceptionController::class, 'search'])->name('gpi.search'); // SEARCH
@@ -239,8 +246,9 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
 
     Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('speciality.search'); // SEARCH
-    Route::get('/speciality/get/{ndcid}', [SpecialityController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
-    Route::get('/speciality/details/{ndcid}', [SpecialityController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
+    Route::get('/speciality/get/{specialty_id}', [SpecialityController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
+    Route::get('/speciality/details/{specialty_id}/{specialty_list}', [SpecialityController::class, 'getSpecialityDetails'])->name('ndsc.details.get'); // DETAIL
+    Route::post('/speciality/submit-speciality-form',[SpecialityController::class, 'addSpeciality']); // add update speciality
 
 
 
@@ -255,12 +263,14 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/provider/details/{ndcid}', [ProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
 
-
-
-
+//DIAGNOSIS VALIDATION LIST
     Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search'])->name('diagnosisvalidation.search'); // SEARCH
-    Route::get('/diagnosisvalidation/get/{ndcid}', [DiagnosisValidationListController::class, 'getProviderList'])->name('diagnosisvalidation.list.get'); // LIST ITEMS
-    Route::get('/diagnosisvalidation/details/{ndcid}', [DiagnosisValidationListController::class, 'getNDCItemDetails'])->name('diagnosisvalidation.details.get'); // DETAIL
+    Route::get('/diagnosisvalidation/get/{diagnosis_list}', [DiagnosisValidationListController::class, 'getPriorityDiagnosis'])->name('diagnosisvalidation.list.get'); // LIST ITEMS
+    Route::get('diagnosisvalidation/diagnosis-code-list/{disgnosis_code?}',[DiagnosisValidationListController::class, 'getDiagnosisCodeList']); //diagnosis code drop down with search
+    Route::get('diagnosisvalidation/limitation-code-list/{limitation_code?}',[DiagnosisValidationListController::class,'getLimitationsCode']);//limitationid drop down
+    Route::get('/diagnosisvalidation/diagnosis_limitations/{diagnosis_list}/{diagnosis_id}', [DiagnosisValidationListController::class, 'getDiagnosisLimitations'])->name('diagnosisvalidation.details.get'); // DETAIL
+    Route::post('/diagnosisvalidation/submit-diagnosis-form',[DiagnosisValidationListController::class,'addDiagnosisValidations']);//add and update diagnosis data
+    Route::post('/diagnosisvalidation/submit-diagnosis-limitation-form',[DiagnosisValidationListController::class,'DiagnosisLimitationAdd']);
 
 
 
@@ -370,8 +380,10 @@ Route::get('clientgroup/get/{clientgrpid}', [ClientGroupController::class, 'GetO
 
 // COMMOM
 Route::get('/countries', [Controller::class, 'Contries'])->name('countries');
+Route::get('/countries/search/{c_id?}', [Controller::class, 'ContriesSearch'])->name('countries.search');
 
 Route::get('/states/{countryid}', [Controller::class, 'getStatesOfCountry'])->name('states');
+Route::get('/state/search/{stateid?}', [Controller::class, 'getStatesOfCountrySearch'])->name('state.search');
 
 
 
@@ -393,7 +405,7 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
 
 
-    //TRADITIONAL NETWORK 
+    //TRADITIONAL NETWORK
 
     Route::get('traditionalnetwork/search', [TraditionalNetworkController::class, 'search']);
     Route::get('traditionalnetwork/get/{ndcid}', [TraditionalNetworkController::class, 'getList']);
@@ -431,6 +443,10 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
 });
 
 
+//Provider Type Validation
+Route::get('/provider-type-validation', [ProviderTypeValidationController::class, 'test']);
+Route::get('/provider-type-validation/get', [ProviderTypeValidationController::class, 'get'])->name('provider-type-validation-get');
+Route::get('/provider-type-validation/getFormData', [ProviderTypeValidationController::class, 'getFormData'])->name('provider-type-validation-getFormData');
 
 
 
@@ -493,4 +509,41 @@ Route::group(['prefix' => 'membership/'], function () {
     Route::get('memberdata/get-member-coverage-history-data', [MemberController::class, 'getCoverageHistory']);
     Route::get('memberdata/get-health-condition', [MemberController::class, 'getHealthCondition']);
     Route::get('memberdata/get-diagnosis-history', [MemberController::class, 'getDiagnosisHistory']);
+    Route::get('memberdata/get-prior-authorization', [MemberController::class, 'getPriorAuthorization']);
+    Route::get('memberdata/get-log-change-data', [MemberController::class, 'getLogChangeData']);
+
+    //Prior Authorization
+    Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
+
+    //Plan Validation
+    Route::get('plan-validation/get',[PlanValidationController::class, 'get']);
+    Route::get('plan-validation/get-client-details',[PlanValidationController::class, 'getClientDetails']);
+});
+
+//Administrator
+Route::group(['prefix'=>'administrator/'], function(){
+    //User Defination
+    Route::get('user-defination/get',[UserDefinationController::class, 'get']);
+    Route::get('user-defination/get-group-data',[UserDefinationController::class, 'getGroupData']);
+    Route::get('user-defination/get-security-options',[UserDefinationController::class, 'getSecurityOptions']);
+    Route::get('user-defination/validate-group',[UserDefinationController::class, 'validateGroup']);
+    Route::post('user-defination/submit',[UserDefinationController::class, 'submitFormData']);
+    Route::get('user-defination/get-customers',[UserDefinationController::class, 'getCustomers']);
+    Route::get('user-defination/get-customers-list',[UserDefinationController::class, 'getCustomersList']);
+    Route::get('user-defination/get-clients',[UserDefinationController::class, 'getClients']);
+    Route::get('user-defination/get-client-groups',[UserDefinationController::class, 'getClientGroups']);
+});
+
+
+//Administrator
+Route::group(['prefix'=>'administrator/'], function(){
+    //Zip Codes
+    Route::get('zipcode/search',[ZipCodeController::class, 'search']);
+    Route::get('zipcode/get/{zip_code}', [ZipCodeController::class, 'getZipCodeList']);
+    Route::post('zipcode/submit',[ZipCodeController::class, 'submitFormData']);
+
+    //claim history
+    Route::get('claim-history',[ClaimHistoryController::class,'get']);
+});
+
 });

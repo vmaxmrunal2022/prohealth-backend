@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Provider;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class TraditionalNetworkController extends Controller
 {
@@ -22,7 +22,7 @@ class TraditionalNetworkController extends Controller
                 [
                     'network_id' => strtoupper( $request->network_id ),
                     'network_name' => $request->network_name,
-                    
+
 
                 ]
             );
@@ -63,7 +63,7 @@ class TraditionalNetworkController extends Controller
                     'price_schedule_ovrd'=>$request->price_schedule_ovrd,
                     'effective_date'=>$request->effective_date,
                     'termination_date'=>$request->termination_date,
-                  
+
 
                 ]
             );
@@ -82,7 +82,7 @@ class TraditionalNetworkController extends Controller
     public function all(Request $request)
 
     {
-           
+
              $ndc = DB::table('RX_NETWORK_NAMES')
         ->join('RX_NETWORKS', 'RX_NETWORK_NAMES.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
                 ->get();
