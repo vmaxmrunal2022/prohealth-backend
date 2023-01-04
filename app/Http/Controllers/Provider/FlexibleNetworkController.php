@@ -18,22 +18,32 @@ class FlexibleNetworkController extends Controller
             $accum_benfit_stat_names = DB::table('RX_NETWORK_RULE_NAMES')->insert(
                 [
                     'rx_network_rule_id' => strtoupper( $request->rx_network_rule_id ),
+                    'rx_network_rule_name'=>strtoupper( $request->rx_network_rule_name ),
                     
 
                 ]
             );
 
 
-            $accum_benfit_stat = DB::table('RX_NETWORKS' )->insert(
+            $accum_benfit_stat = DB::table('RX_NETWORK_RULES' )->insert(
                 [
-                    'network_id' => strtoupper( $request->network_id ),
-                    'pharmacy_nabp'=>$request->pharmacy_nabp,
-                    'effective_date'=>$request->effective_date,
-                    'termination_date'=>$request->termination_date,
+                    'rx_network_rule_id' => strtoupper( $request->rx_network_rule_id ),
+                    'rx_network_rule_id_number'=>$request->rx_network_rule_id_number,
+                    'pharmacy_chain'=>$request->pharmacy_chain,
+                    'state'=>$request->state,
+                    'county'=>$request->county,
+                    'zip_code'=>$request->zip_code,
+                    'area_code'=>$request->area_code,
+                    'price_schedule_ovrd'=>$request->price_schedule_ovrd,
+                   'exclude_rule'=>$request->exclude_rule,
+                  
+                   
 
                 ]
             );
-            $benefitcode = DB::table('RX_NETWORK_NAMES')->get();
+
+            $benefitcode = DB::table( 'RX_NETWORK_RULE_NAMES' )->where( 'rx_network_rule_id', 'like', $request->rx_network_rule_id )->first();
+
 
 
         } else {
@@ -55,8 +65,13 @@ class FlexibleNetworkController extends Controller
             ->where('rx_network_rule_id', $request->rx_network_rule_id )
             ->update(
                 [
-                    'rx_network_rule_id' => $request->rx_network_rule_id,
+                    'rx_network_rule_id' => strtoupper( $request->rx_network_rule_id ),
                     'rx_network_rule_id_number'=>$request->rx_network_rule_id_number,
+                    'pharmacy_chain'=>$request->pharmacy_chain,
+                    'state'=>$request->state,
+                    'county'=>$request->county,
+                    'zip_code'=>$request->zip_code,
+                    'area_code'=>$request->area_code,
                     'price_schedule_ovrd'=>$request->price_schedule_ovrd,
                    'exclude_rule'=>$request->exclude_rule,
                   
