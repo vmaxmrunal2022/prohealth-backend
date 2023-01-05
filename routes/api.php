@@ -219,7 +219,8 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/provider/search', [ProviderController::class, 'search'])->name('provider.search'); // SEARCH
     Route::get('/provider/get/{provider_list}', [ProviderController::class, 'getProviderValidationList'])->name('provider.list.get'); // LIST ITEMS
     Route::get('/provider/details/{provider_list}/{provider_nabp}', [ProviderController::class, 'getProviderDetails'])->name('ndsc.details.get'); // DETAIL
-    Route::post('/provider/submit-provider-form',[ProviderController::class,'addProvider']);
+    Route::post('/provider/submit-provider-form',[ProviderController::class,'addProviderData']);
+    Route::get('/provider/provider-list-drop-down/{search?}',[ProviderController::class,'searchDropDownProviderList']);
 
 
 //DIAGNOSIS VALIDATION LIST
@@ -291,6 +292,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/prescriber/search', [PrescriberValidationController::class, 'search'])->name('prescriber.search'); // SEARCH
     Route::get('/prescriber/get/{ndcid}', [PrescriberValidationController::class, 'getProviderList'])->name('prescriber.list.get'); // LIST ITEMS
     Route::get('/prescriber/details/{ndcid}', [PrescriberValidationController::class, 'getNDCItemDetails'])->name('prescriber.details.get'); // DETAIL
+    Route::get('prescriber/prescriber-list-drop-down',[PrescriberValidationController::class,'searchDropDownPrescriberList']);
 
 
 

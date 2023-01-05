@@ -4,19 +4,18 @@ namespace App\Http\Controllers\ValidationLists;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class PrescriberValidationController extends Controller
 {
     public function search(Request $request)
     {
-        $ndc = DB::table('PHYSICIAN_EXCEPTIONS')
-
-                ->where('PHYSICIAN_LIST', 'like', '%' .$request->search. '%')
-                ->orWhere('EXCEPTION_NAME', 'like', '%' .$request->search. '%')
+        $physicianExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
+                ->where(DB::raw('UPPER(PHYSICIAN_LIST)'), 'like', '%' .strtoupper($request->search). '%')
+                ->where(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' .strtoupper($request->search). '%')
+                ->orderBy('PHYSICIAN_LIST','ASC')
                 ->get();
-
-    return $this->respondWithToken($this->token(), '', $ndc);
+                return $this->respondWithToken($this->token(), '', $physicianExceptionData);
     }
 
 
@@ -54,5 +53,14 @@ class PrescriberValidationController extends Controller
                 ->first();
         return $this->respondWithToken($this->token(), '', $ndc);
 
+    }
+
+    public function searchDropDownPrescriberList(){
+        $data = DB::table('PHYSICIAN_TABLE')
+        // ->where('PHYSICIAN_ID','LIKE','%'.strtoupper($pharmacy_list).'%')
+        ->orWhere('PHYSICIAN_LAST_NAME','LIKE','%'.strtoupper('campB').'%')
+        ->get();
+
+        return $this->respondWithToken($this->token(),'',$data);
     }
 }
