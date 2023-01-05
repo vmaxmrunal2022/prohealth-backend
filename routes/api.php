@@ -354,7 +354,7 @@ Route::group(['prefix' => 'prescriberdata'], function ($router) {
 
 
 
-Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
+Route::post('customer/add', [CustomerController::class, 'add']);
 Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
 Route::get('customer/get', [CustomerController::class, 'searchCutomer']);
 

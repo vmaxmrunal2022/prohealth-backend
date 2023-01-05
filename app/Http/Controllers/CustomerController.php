@@ -147,6 +147,103 @@ class CustomerController extends Controller
         $this->respondWithToken($this->token() ?? '', 'Successfully added', $customer);
     }
 
+
+    public function add( Request $request ) {
+        $createddate = date( 'y-m-d' );
+
+        if ( $request->has( 'new' ) ) {
+
+            $accum_benfit_stat_names = DB::table('CUSTOMER')->insert(
+                [   'customer_id'=>$request->customer_id,
+                    'customer_name' => strtoupper( $request->customer_name ),
+                    'address_1'=>$request->address_1,
+                    'address_2'=>$request->address_2,
+                    'city'=>$request->city,
+                    'state'=>$request->state,
+                    'zip_code'=>$request->zip_code,
+                    'zip_plus_2'=>$request->zip_plus_2,
+                    'phone'=>$request->phone,
+                    'fax'=>$request->fax,
+                    'contact'=>$request->contact,
+                    'edi_address'=>$request->edi_address,
+                    'effective_date'=>$request->effective_date,
+                    'termination_date'=>$request->termination_date,
+                    'customer_type'=>$request->customer_type,
+                    'cap_amount'=>$request->cap_amount,
+                    'comm_charge_paid'=>$request->comm_charge_paid,
+                    'comm_charge_reject'=>$request->comm_charge_reject,
+                    'date_time_created'=>$request->date_time_created,
+                    'user_id'=>$request->user_id,
+                    'processing_cycle'=>$request->processing_cycle,
+                    'auto_term_days'=>$request->auto_term_days,
+                    'admin_fee'=>$request->admin_fee,
+                    'dmr_fee'=>$request->dmr_fee,
+                    'auto_term_level'=>$request->auto_term_level,
+                    'census_date'=>$request->census_date,
+                    'ucf_fee'=>$request->ucf_fee,
+                    'prior_auth_fee'=>$request->prior_auth_fee,
+                    'mail_ord_letter_fee'=>$request->mail_ord_letter_fee,
+                    'msg_priority_id'=>$request->msg_priority_id,
+                    'dur_exception_list'=>$request->dur_exception_list,
+
+                ]
+            );
+
+            $benefitcode = DB::table('CUSTOMER' ) ->where('customer_id', 'like', '%' . $request->customer_id. '%')->first();
+
+
+        } else {
+
+
+            $accum_benfit_stat = DB::table('CUSTOMER' )
+            ->where( 'CUSTOMER_ID', $request->customer_id)
+            ->update(
+                [
+                    'customer_name' => strtoupper( $request->customer_name ),
+                    'address_1'=>$request->address_1,
+                    'address_2'=>$request->address_2,
+                    'city'=>$request->city,
+                    'state'=>$request->state,
+                    'zip_code'=>$request->zip_code,
+                    'zip_plus_2'=>$request->zip_plus_2,
+                    'phone'=>$request->phone,
+                    'fax'=>$request->fax,
+                    'contact'=>$request->contact,
+                    'edi_address'=>$request->edi_address,
+                    'effective_date'=>$request->effective_date,
+                    'termination_date'=>$request->termination_date,
+                    'customer_type'=>$request->customer_type,
+                    'cap_amount'=>$request->cap_amount,
+                    'comm_charge_paid'=>$request->comm_charge_paid,
+                    'comm_charge_reject'=>$request->comm_charge_reject,
+                    'date_time_created'=>$request->date_time_created,
+                    'user_id'=>$request->user_id,
+                    'processing_cycle'=>$request->processing_cycle,
+                    'auto_term_days'=>$request->auto_term_days,
+                    'admin_fee'=>$request->admin_fee,
+                    'dmr_fee'=>$request->dmr_fee,
+                    'auto_term_level'=>$request->auto_term_level,
+                    'census_date'=>$request->census_date,
+                    'ucf_fee'=>$request->ucf_fee,
+                    'prior_auth_fee'=>$request->prior_auth_fee,
+                    'mail_ord_letter_fee'=>$request->mail_ord_letter_fee,
+                    'msg_priority_id'=>$request->msg_priority_id,
+                    'dur_exception_list'=>$request->dur_exception_list,
+                
+
+                ]
+            );
+
+
+
+            $benefitcode = DB::table('CUSTOMER' ) ->where('customer_id', 'like', '%' . $request->customer_id. '%')->first();
+
+        }
+
+
+        return $this->respondWithToken( $this->token(), 'Successfully added', $benefitcode );
+    }
+
     public function generateCustomerId()
     {
         $total = Customer::count() + 1;
