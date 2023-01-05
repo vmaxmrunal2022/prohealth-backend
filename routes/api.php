@@ -358,7 +358,11 @@ Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
 Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
 Route::get('customer/get', [CustomerController::class, 'searchCutomer']);
 
-Route::get('plan/get/{planid}', [CustomerController::class, 'searchPlanId']);
+Route::get('plan/get/{planid}', [CustomerController::class, 'getPlanId']);
+
+
+Route::get('planid/search', [CustomerController::class, 'searchPlanId']);
+
 
 
 Route::get('superprovidernetwork/get/{id}', [CustomerController::class, 'searchSuperProviderNetworkId']);
@@ -484,6 +488,8 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     //RVA List
     Route::get('rva-list/get', [RvaListController::class, 'get']);
     Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
+    Route::get('rva-list/search', [RvaListController::class, 'Search']);
+
 });
 
 //Drug Information

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use DB;
 class CustomerController extends Controller
 {
     public $customerIdPrefix = 'CN';
@@ -158,6 +158,83 @@ class CustomerController extends Controller
         // }
 
         return $id;
+    }
+    public function searchCutomer(Request $request)
+    {
+        $customer = DB::table('customer')
+            ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
+            ->where('CUSTOMER_ID', 'like', '%' . strtoupper($request->customerid) . '%')
+            ->orWhere('CUSTOMER_NAME', 'like', '%' . strtoupper($request->customerid) . '%')
+            ->get();
+
+        return $this->respondWithToken($this->token(), '', $customer);
+    }
+
+    public function getPlanId($planid)
+    {
+        $customer = DB::table('plan_table_extensions')
+        // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
+        ->where('PLAN_ID', 'like', '%' . strtoupper($planid) . '%')
+        ->first();
+
+        // dd($customer);
+
+    return $this->respondWithToken($this->token(),'', $customer);
+    }
+
+   
+
+    public function searchPlanId(Request $request)
+    {
+        $priceShedule = DB::table('plan_table_extensions')
+            ->where('PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $priceShedule);
+    }
+
+
+
+    
+
+    public function searchSuperProviderNetworkId(Request $request)
+    {
+        // dd($request);
+        $customer = DB::table('super_rx_network_names')
+        ->where('SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($request->rva_list_id) . '%')
+        ->orWhere('SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($request->rva_list_id) . '%')
+        ->first();
+    return $this->respondWithToken($this->token(),'', $customer);
+    }
+
+    public function ALLSuperProviderNetworkIdS(Request $request)
+    {
+        $customer = DB::table('super_rx_network_names')->get();
+        $newarray=[];
+        foreach ($customer as $row) {
+
+            $new['value'] = $row->super_rx_network_id;
+           $new['label'] = $row->super_rx_network_id_name;
+           array_push($newarray, $new);
+    }
+
+
+
+    return $this->respondWithToken($this->token(),'', $newarray);
+    }
+
+
+
+
+    public function GetCustomer($customerid)
+    {
+        $customer = DB::table('customer')
+            // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
+            ->where('CUSTOMER_ID', 'like', '%' . strtoupper($customerid) . '%')
+            ->first();
+
+
+
+        return $this->respondWithToken($this->token(), '', $customer);
     }
 
 }
