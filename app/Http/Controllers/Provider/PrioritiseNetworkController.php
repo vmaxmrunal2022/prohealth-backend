@@ -29,7 +29,8 @@ class PrioritiseNetworkController extends Controller
                 [
                     'super_rx_network_id' => strtoupper( $request->super_rx_network_id),
                     'rx_network_id'=>$request->rx_network_id,
-                    'effective_date'=>$request->effective_date,                    
+                    'effective_date'=>$request->effective_date,
+                    'super_rx_network_priority'=>$request->super_rx_network_priority,                    
                 ]
             );
 
@@ -57,6 +58,8 @@ class PrioritiseNetworkController extends Controller
                     'super_rx_network_id' => strtoupper($request->super_rx_network_id),
                     'rx_network_id'=>$request->rx_network_id,
                     'effective_date'=>$request->effective_date,
+                    'super_rx_network_priority'=>$request->super_rx_network_priority,
+
                    
                   
 

@@ -408,6 +408,7 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('supernetwork/search', [SuperProviderNetworkController::class, 'search']);
 
     Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
+    Route::post('superprovider/add', [SuperProviderNetworkController::class, 'add']);
 
 
     //TRADITIONAL NETWORK
@@ -418,9 +419,6 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('traditionalnetwork/details/{ndcid}', [TraditionalNetworkController::class, 'getDetails']);
 
     Route::post('traditionalnetwork/add', [TraditionalNetworkController::class, 'add']);
-
-
-
 
 
     //Flexible Network
@@ -444,6 +442,8 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('prioritize/search', [PrioritiseNetworkController::class, 'search']);
 
     Route::get('prioritize/get/{ndcid}', [PrioritiseNetworkController::class, 'networkList']);
+    Route::post('prioritize/add', [PrioritiseNetworkController::class, 'add']);
+
     
 });
 

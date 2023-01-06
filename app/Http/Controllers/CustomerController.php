@@ -151,6 +151,8 @@ class CustomerController extends Controller
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
+        dd($request->city);
+
         if ( $request->has( 'new' ) ) {
 
             $accum_benfit_stat_names = DB::table('CUSTOMER')->insert(
