@@ -374,6 +374,7 @@ Route::get('customer/get/{customerid}', [CustomerController::class, 'GetCustomer
 
 Route::get('client/get', [ClientController::class, 'searchClient']);
 Route::get('client/get/{clientid}', [ClientController::class, 'GetOneClient']);
+Route::post('client/add', [ClientController::class, 'add']);
 
 
 Route::get('clientgroup/get', [ClientGroupController::class, 'searchClientgroup']);
