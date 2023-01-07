@@ -7,6 +7,89 @@ use Illuminate\Support\Facades\DB;
 
 class ClientGroupController extends Controller
 {
+
+
+    
+    public function add( Request $request ) {
+        $createddate = date('y-m-d' );
+
+        if ( $request->has( 'new' ) ) {
+
+            $accum_benfit_stat_names = DB::table('CLIENT_GROUP')->insert(
+                [   
+
+                    'customer_id' =>$request->customer_id,
+                    'client_id'=>$request->client_id,
+                    'client_group_id'=>$request->client_group_id,
+                    'address_1'=>$request->address_1,
+                    'address_2'=>$request->address_2,
+                    'city'=>$request->city,
+                    'state'=>$request->state,
+                    'zip_code'=>$request->zip_code,
+                    'zip_plus_2'=>$request->zip_plus_2,
+                    'phone'=>$request->phone,
+                    'fax'=>$request->fax,
+                    'contact'=>$request->contact,
+                    'effective_date'=>$request->effective_date,
+                    'user_id'=>$request->user_id,
+                    'census_date'=>$request->census_date,
+                    'group_name'=>$request->group_name,
+                    'misc_data_1'=>$request->misc_data_1,
+                    'misc_data_2'=>$request->misc_data_2,
+                    'misc_data_3'=>$request->misc_data_3,
+                    'prescriber_exceptions_flag'=>$request->prescriber_exceptions_flag,
+                    'prescriber_exceptions_flag_2'=>$request->prescriber_exceptions_flag_2,
+                    // 'marketing_rep_id'=>$request->marketing_rep_id,
+
+                
+                ]
+            );
+
+            $benefitcode = DB::table('CLIENT_GROUP' ) ->where('client_group_id', 'like', '%' . $request->client_group_id. '%')->first();
+
+
+        } else {
+
+
+            $accum_benfit_stat = DB::table('CLIENT_GROUP' )
+            ->where( 'CLIENT_GROUP_ID', $request->client_group_id)
+            ->update(
+                [
+                    'customer_id' =>$request->customer_id,
+                    'client_id'=>$request->client_id,
+                    'address_1'=>$request->address_1,
+                    'address_2'=>$request->address_2,
+                    'city'=>$request->city,
+                    'state'=>$request->state,
+                    'zip_code'=>$request->zip_code,
+                    'zip_plus_2'=>$request->zip_plus_2,
+                    'phone'=>$request->phone,
+                    'fax'=>$request->fax,
+                    'contact'=>$request->contact,
+                    'effective_date'=>$request->effective_date,
+                    'user_id'=>$request->user_id,
+                    'census_date'=>$request->census_date,
+                    'group_name'=>$request->group_name,
+                    'misc_data_1'=>$request->misc_data_1,
+                    'misc_data_2'=>$request->misc_data_2,
+                    'misc_data_3'=>$request->misc_data_3,
+                    'prescriber_exceptions_flag'=>$request->prescriber_exceptions_flag,
+                    'prescriber_exceptions_flag_2'=>$request->prescriber_exceptions_flag_2,
+                    'marketing_rep_id'=>$request->marketing_rep_id,
+
+                
+
+                ]
+            );
+
+
+            $benefitcode = DB::table('CLIENT_GROUP' ) ->where('client_group_id', 'like', '%' . $request->client_group_id. '%')->first();
+
+        }
+
+
+        return $this->respondWithToken( $this->token(), 'Successfully added', $benefitcode );
+    }
     public function getClientGroup(Request $request)
     {
         $customerid = $request->customerid;

@@ -323,6 +323,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('clientgroup/get/{client}', [MajorMedicalController::class, 'getClientGroup']);
 
     Route::get('clientgroup/details/{client}', [MajorMedicalController::class, 'getDetails']);
+    Route::post('clientgroup/add', [ClientGroupController::class, 'add']);
 
 
 
