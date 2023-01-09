@@ -18,16 +18,15 @@ class NDCExceptionController extends Controller
 
             $accum_benfit_stat_names = DB::table('NDC_EXCEPTIONS')->insert(
                 [
-                    'ndc_exception_list' => strtoupper( $request->ndc_exception_list ),
+                    'ndc_exception_list' => $request->ndc_exception_list,
                     'exception_name'=>$request->exception_name,
                     
-
                 ]
             );
 
             $accum_benfit_stat = DB::table('NDC_EXCEPTION_LISTS' )->insert(
                 [
-                    'ndc_exception_list' => strtoupper( $request->ndc_exception_list ),
+                    'ndc_exception_list' => $request->ndc_exception_list,
                  
                 ]
             );
