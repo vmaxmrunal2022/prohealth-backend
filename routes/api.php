@@ -318,6 +318,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/ndcExclusion/get/{ndcid}', [NdcExlusionController::class, 'getList'])->name('ndcExclusion.list.get'); // LIST ITEMS
 
     Route::get('/ndcExclusion/details/{ndcid}', [NdcExlusionController::class, 'getDetails'])->name('ndcExclusion.get'); // DETAIL
+    Route::post('/ndcExclusion/add', [NdcExlusionController::class, 'add'])->name('ndcExclusion.add'); // SEARCH
 
 
 
