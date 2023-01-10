@@ -20,7 +20,7 @@ class GPIExceptionController extends Controller
                 [
                     'gpi_exception_list' => strtoupper( $request->gpi_exception_list ),
                     'exception_name'=>$request->exception_name,
-                    
+
 
                 ]
             );
@@ -53,7 +53,7 @@ class GPIExceptionController extends Controller
                     'reject_only_msg_flag'=>$request->reject_only_msg_flag,
                     'sex_restriction'=>$request->sex_restriction,
                     'termination_date'=>$request->termination_date,
-                 
+
                 ]
             );
             $benefitcode = DB::table('GPI_EXCEPTION_LISTS')->where('gpi_exception_list', 'like', '%'.$request->gpi_exception_list .'%')->first();
@@ -94,7 +94,7 @@ class GPIExceptionController extends Controller
                     'sex_restriction'=>$request->sex_restriction,
                     'termination_date'=>$request->termination_date,
 
-                
+
 
                 ]
             );
@@ -108,8 +108,8 @@ class GPIExceptionController extends Controller
                 [
                     'gpi_exception_list' => $request->gpi_exception_list,
                     'exception_name'=>$request->exception_name,
-                   
-                  
+
+
 
                 ]
             );
@@ -151,10 +151,15 @@ class GPIExceptionController extends Controller
         $ndc = DB::table('GPI_EXCEPTION_LISTS')
                     ->select('GPI_EXCEPTION_LISTS.*', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST as exception_list', 'GPI_EXCEPTIONS.EXCEPTION_NAME as exception_name')
                     ->join('GPI_EXCEPTIONS', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
-                    ->where('GPI_EXCEPTION_LISTS.generic_product_id',$ndcid)  
+                    ->where('GPI_EXCEPTION_LISTS.generic_product_id',$ndcid)
                     ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
 
+    }
+
+    public function getGpiDropDown(){
+        $data = DB::table('GPI_EXCEPTIONS')->get();
+        return $this->respondWithToken($this->token(),'',$data);
     }
 }

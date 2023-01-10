@@ -20,7 +20,7 @@ class NDCExceptionController extends Controller
                 [
                     'ndc_exception_list' => strtoupper( $request->ndc_exception_list ),
                     'exception_name'=>$request->exception_name,
-                    
+
 
                 ]
             );
@@ -28,7 +28,7 @@ class NDCExceptionController extends Controller
             $accum_benfit_stat = DB::table('NDC_EXCEPTION_LISTS' )->insert(
                 [
                     'ndc_exception_list' => strtoupper( $request->ndc_exception_list ),
-                 
+
                 ]
             );
             $benefitcode = DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', 'like', '%'.$request->ndc_exception_list .'%')->first();
@@ -36,16 +36,13 @@ class NDCExceptionController extends Controller
 
         } else {
 
-
-            // dd($request->all())
-
             $benefitcode = DB::table('NDC_EXCEPTION_LISTS' )
             ->where('ndc', $request->ndc )
             ->update(
                 [
                     'ndc' => strtoupper($request->ndc),
                     'min_rx_qty'=>$request->min_rx_qty,
-                 
+
 
                 ]
             );
@@ -59,8 +56,8 @@ class NDCExceptionController extends Controller
                 [
                     'ndc_exception_list' => $request->ndc_exception_list,
                     'exception_name'=>$request->exception_name,
-                   
-                  
+
+
 
                 ]
             );
@@ -103,10 +100,15 @@ class NDCExceptionController extends Controller
         $ndc = DB::table('NDC_EXCEPTION_LISTS')
                     ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list', 'NDC_EXCEPTIONS.EXCEPTION_NAME as exception_name')
                     ->leftjoin('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
-                    ->where('NDC_EXCEPTION_LISTS.NDC', 'like', '%' . strtoupper($ndcid) . '%')  
+                    ->where('NDC_EXCEPTION_LISTS.NDC', 'like', '%' . strtoupper($ndcid) . '%')
                     ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
 
+    }
+
+    public function getNdcDropDown(){
+        $data = DB::table('NDC_EXCEPTIONS')->get();
+        return $this->respondWithToken($this->token(),'',$data);
     }
 }

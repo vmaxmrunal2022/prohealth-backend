@@ -11,8 +11,10 @@ class DiagnosisValidationListController extends Controller
     public function search(Request $request)
     {
         $data = DB::table('DIAGNOSIS_EXCEPTIONS as a')
+        // ->join('DIAGNOSIS_VALIDATIONS as b','b.DIAGNOSIS_LIST','=','a.DIAGNOSIS_LIST')
         ->where(DB::raw('UPPER(a.DIAGNOSIS_LIST)'), 'like', '%' .strtoupper($request->search). '%')
         ->orWhere(DB::raw('UPPER(a.EXCEPTION_NAME)'), 'like', '%' .strtoupper($request->search). '%')
+        // ->groupBy('DIAGNOSIS_LIST')
         ->get();
 
     return $this->respondWithToken($this->token(), '', $data);
@@ -130,6 +132,35 @@ class DiagnosisValidationListController extends Controller
                             return $this->respondWithToken($this->token(),'Added Succcessfully Limitation!!!');
                         }
             // }
+        }
+
+        public function getDiagnosisValidations($diagnosis_list){
+            $getData = DB::table('DIAGNOSIS_VALIDATIONS')
+                ->where('DIAGNOSIS_LIST',$diagnosis_list)
+                ->get();
+                return $this->respondWithToken($this->token(),'',$getData);
+        }
+
+        public function getDiagnosisDetails($diagnosis_list,$diagnosis_id){
+            $data = DB::table('DIAGNOSIS_VALIDATIONS as a')
+            ->join('DIAGNOSIS_EXCEPTIONS as b','b.DIAGNOSIS_LIST','=','a.DIAGNOSIS_LIST')
+            ->where('a.DIAGNOSIS_LIST',$diagnosis_list)
+            ->where('a.DIAGNOSIS_ID',$diagnosis_id)
+            ->first();
+            return $this->respondWithToken($this->token(),'',$data);
+        }
+
+
+        public function updatePriorityDiagnosisValidation(Request $request){
+            $data = DB::table('DIAGNOSIS_VALIDATIONS')
+            ->where('DIAGNOSIS_LIST',$request->diagnosis_list)
+            ->where('DIAGNOSIS_ID',$request->diagnosis_id)
+            ->update([
+                'PRIORITY'=>$request->priority
+            ]);
+            if($data){
+                return $this->respondWithToken($this->token(),'updatd successfully',$data);
+            }
         }
 
 

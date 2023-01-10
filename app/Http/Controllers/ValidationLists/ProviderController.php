@@ -50,7 +50,7 @@ class ProviderController extends Controller
 
     public function addProviderData(Request $request){
         $getProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
-        ->where('PHARMACY_LIST',$request->pharmacy_list)
+        ->where(DB::raw('UPPER(PHARMACY_LIST)'),strtoupper($request->pharmacy_list))
         ->first();
 
         $getProviderValidationData = DB::table('PHARMACY_VALIDATIONS')
@@ -64,6 +64,7 @@ class ProviderController extends Controller
                 ->insert([
                     'PHARMACY_LIST'=>$request->pharmacy_list,
                     'EXCEPTION_NAME'=>$request->exception_name,
+                    'DATE_TIME_CREATED'=>date('d-M-y'),
                     'USER_ID'=> $request->user_name
                 ]);
 
@@ -72,6 +73,7 @@ class ProviderController extends Controller
                     'PHARMACY_LIST'=>$request->pharmacy_list,
                     'PHARMACY_NABP'=>$request->pharmacy_nabp['value'],
                     'PHARMACY_STATUS'=>$request->pharmacy_status,
+                    'DATE_TIME_CREATED'=>date('d-M-y'),
                     'USER_ID'=>$request->user_name
                 ]);
 
@@ -85,6 +87,7 @@ class ProviderController extends Controller
                         'PHARMACY_LIST'=>$request->pharmacy_list,
                         'PHARMACY_NABP'=>$request->pharmacy_nabp['value'],
                         'PHARMACY_STATUS'=>$request->pharmacy_status,
+                        'DATE_TIME_CREATED'=>date('d-M-y'),
                         'USER_ID'=>$request->user_name
                     ]);
                     if($addProviderValidationData){
@@ -99,7 +102,8 @@ class ProviderController extends Controller
             $updateProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
             ->where('PHARMACY_LIST',$request->pharmacy_list)
             ->update([
-                'EXCEPTION_NAME'=>$request->exception_name
+                'EXCEPTION_NAME'=>$request->exception_name,
+                'DATE_TIME_MODIFIED'=>date('d-M-y'),
             ]);
 
             if(!$getProviderValidationData){
@@ -108,6 +112,7 @@ class ProviderController extends Controller
                     'PHARMACY_LIST'=>$request->pharmacy_list,
                     'PHARMACY_NABP'=>$request->pharmacy_nabp['value'],
                     'PHARMACY_STATUS'=>$request->pharmacy_status,
+                    'DATE_TIME_CREATED'=>date('d-M-y'),
                     'USER_ID'=>$request->user_name
                 ]);
                 if($addProviderValidationData){
@@ -118,7 +123,8 @@ class ProviderController extends Controller
             ->where('PHARMACY_LIST',$request->pharmacy_list)
             ->where('PHARMACY_NABP',$request->pharmacy_nabp['value'])
             ->update([
-                'PHARMACY_STATUS'=>$request->pharmacy_status
+                'PHARMACY_STATUS'=>$request->pharmacy_status,
+                'DATE_TIME_MODIFIED'=>date('d-M-y')
             ]);
 
             if($updateProviderExceptionData){
