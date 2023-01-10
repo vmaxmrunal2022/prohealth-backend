@@ -307,6 +307,8 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/gpiExclusion/get/{ndcid}', [GpiExclusionController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
 
     Route::get('/gpiExclusion/details/{ndcid}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
+    Route::post('/gpiExclusion/add', [GpiExclusionController::class, 'add'])->name('gpiExclusion.add'); // ADD
+
 
 
 
