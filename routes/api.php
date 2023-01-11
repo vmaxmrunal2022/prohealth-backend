@@ -41,6 +41,8 @@ use App\Http\Controllers\AccumLatedBenifits\NdcExlusionController;
 use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
 use App\Http\Controllers\administrator\ClaimHistoryController;
 use App\Http\Controllers\administrator\ZipCodeController;
+use App\Http\Controllers\administrator\AuditTrailController;
+use App\Http\Controllers\administrator\SystemParameterController;
 use App\Http\Controllers\administrator\UserDefinationController;
 
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
@@ -469,6 +471,17 @@ Route::group(['prefix'=>'administrator/'], function(){
     Route::get('user-defination/get-customers-list',[UserDefinationController::class, 'getCustomersList']);
     Route::get('user-defination/get-clients',[UserDefinationController::class, 'getClients']);
     Route::get('user-defination/get-client-groups',[UserDefinationController::class, 'getClientGroups']);
+
+    //Search Audit Trail
+    Route::get('search-audit-trial/get-tables',[AuditTrailController::class, 'getTables'])->name('getAllTables');
+    Route::get('search-audit-trial/get-user_ids',[AuditTrailController::class, 'getUserIds'])->name('getUserIds');
+    Route::get('search-audit-trial/get-record-actions',[AuditTrailController::class, 'getRecordAction'])->name('getRecordAction');
+    Route::post('search-audit-trial/search-user-log',[AuditTrailController::class, 'searchUserLog'])->name('searchUserLog');
+
+    //System parameters
+    Route::get('system-parameter/get-parameters',[SystemParameterController::class, 'getSystemParameters'])->name('getSystemParameters');
+    Route::get('system-parameters/get-states',[SystemParameterController::class, 'getState'])->name('getState');
+    Route::get('system-parameters/get-countries',[SystemParameterController::class, 'getCountries'])->name('getCountries');
 });
 
 
