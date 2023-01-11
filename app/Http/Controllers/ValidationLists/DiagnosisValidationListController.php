@@ -63,6 +63,7 @@ class DiagnosisValidationListController extends Controller
                 ->insert([
                     'DIAGNOSIS_LIST'=>$request->diagnosis_list,
                     'EXCEPTION_NAME'=>$request->exception_name,
+                    'DATE_TIME_CREATED'=>date('d-M-y'),
                     'USER_ID'=>$request->user_name,
                 ]);
 
@@ -77,6 +78,7 @@ class DiagnosisValidationListController extends Controller
                 ->where('DIAGNOSIS_LIST',$request->diagnosis_list)
                 ->update([
                     'EXCEPTION_NAME'=>$request->exception_name,
+                    'DATE_TIME_MODIFIED'=>date('d-M-y'),
                 ]);
 
                 if(isset($request->diagnosis_id)){
@@ -86,6 +88,7 @@ class DiagnosisValidationListController extends Controller
                 ->update([
                     'DIAGNOSIS_STATUS' => $request->diagnosis_status,
                     'PRIORITY' => $request->priority,
+                    'DATE_TIME_MODIFIED'=>date('d-M-y'),
                     'USER_ID_MODIFIED'=>$request->user_name
                 ]);
                 }
@@ -101,6 +104,7 @@ class DiagnosisValidationListController extends Controller
                             'DIAGNOSIS_ID'=> $request->diagnosis_id['value'],
                             'DIAGNOSIS_STATUS' => $request->diagnosis_status,
                             'PRIORITY' => $request->priority,
+                            'DATE_TIME_CREATED'=>date('d-M-y'),
                             'USER_ID'=>$request->user_name,
 
                         ]);
@@ -123,8 +127,9 @@ class DiagnosisValidationListController extends Controller
                             'DIAGNOSIS_LIST'=>$request->diagnosis_list,
                             'DIAGNOSIS_ID'=>$request->diagnosis_id,
                             'LIMITATIONS_LIST'=>$request->limitation_list,
-                            'EFFECTIVE_DATE'=>$request->effective_date,
-                            'TERMINATION_DATE'=>$request->termination_date,
+                            'EFFECTIVE_DATE'=>date('Ydm',strtotime($request->effective_date)),
+                            'TERMINATION_DATE'=>date('Ydm',strtotime($request->termination_date)),
+                            'DATE_TIME_CREATED'=>date('d-M-y'),
                             'USER_ID_CREATED'=>$request->user_name
 
                         ]);

@@ -32,11 +32,42 @@ class EligibilityValidationListController extends Controller
                 $elig_list_data->age_limit_day='2';
 
 
-                if($elig_list_data->cardholder_covd == 1){
-                    $elig_list_data->cardholder_covd = 'true';
+                if($elig_list_data->cardholder_covd == '1'){
+                    $elig_list_data->cardholder_covd = true;
                 }else{
-                    $elig_list_data->cardholder_covd = 'false';
+                    $elig_list_data->cardholder_covd = false;
                 }
+
+                if($elig_list_data->child_covd == '1'){
+                    $elig_list_data->child_covd = true;
+                }else{
+                    $elig_list_data->child_covd = false;
+                }
+
+                if($elig_list_data->disabled_dep_covd == '1'){
+                    $elig_list_data->disabled_dep_covd = true;
+                }else{
+                    $elig_list_data->disabled_dep_covd = false;
+                }
+
+                if($elig_list_data->sig_other_covd == '1'){
+                    $elig_list_data->sig_other_covd = true;
+                }else{
+                    $elig_list_data->sig_other_covd = false;
+                }
+
+                if($elig_list_data->spouse_covd == '1'){
+                    $elig_list_data->spouse_covd = true;
+                }else{
+                    $elig_list_data->spouse_covd = false;
+                }
+
+                if($elig_list_data->student_covd == '1'){
+                    $elig_list_data->student_covd = true;
+                }else{
+                    $elig_list_data->student_covd = false;
+                }
+
 
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
@@ -45,7 +76,6 @@ class EligibilityValidationListController extends Controller
         $getEligibilityData = DB::table('ELIG_VALIDATION_LISTS')
         ->where(DB::raw('UPPER(ELIG_VALIDATION_ID)'),strtoupper($request->elig_validation_id))
         ->first();
-        dd();
         if($request->has('new')){
             if(!$getEligibilityData){
                 $addData = DB::table('ELIG_VALIDATION_LISTS')
