@@ -8,6 +8,67 @@ use DB;
 
 class MajorMedicalController extends Controller
 {
+
+
+
+    public function add( Request $request ) {
+
+
+        if ( $request->has( 'new' ) ) {
+
+
+    
+            $insert = DB::table('MM_LIFE_MAX' )->insert(
+                [
+                    'customer_id'=>$request->customer_id,
+                    'client_id'=>$request->client_id,
+                    'client_group_id'=>$request->client_group_id,
+                    'mm_life_maximum' => $request->mm_life_maximum,
+                    'grouping_type'=>$request->grouping_type,
+                    'mm_claim_max'=>$request->mm_claim_max,
+                    'effective_date'=>'19950701',
+                    'termination_date'=>'19950701'
+                  
+                   
+
+                ]
+            );
+
+            // $benefitcode = DB::table('TEMP_MM_LIFE_MAX')->where('customer_id',$request->customer_id)->first();
+        $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%'.$request->mm_life_maximum .'%')->first();
+
+
+
+        }else{
+
+           
+
+            $update = DB::table('MM_LIFE_MAX')
+            ->where('customer_id', $request->customer_id )
+            ->where('client_id',$request->client_id)
+            ->where('client_group_id',$request->client_group_id)
+            ->update(
+                [
+                    'mm_life_maximum' => $request->mm_life_maximum,
+                    'grouping_type'=>$request->grouping_type,
+                    'mm_claim_max'=>$request->mm_claim_max,
+                   
+                ]
+            );
+
+        
+
+        $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%'.$request->mm_life_maximum .'%')->first();
+
+        }
+
+       
+
+           
+
+
+        return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
+    }
     
 
 
@@ -50,8 +111,8 @@ class MajorMedicalController extends Controller
     public function getDetails($ndcid)
     {
 
-        $ndc =DB::table('CLIENT_GROUP')
-                ->where('CLIENT_GROUP_ID', 'like', '%' .$ndcid. '%')
+        $ndc =DB::table('MM_LIFE_MAX')
+                ->where('client_group_id', 'like', '%' .$ndcid. '%')
                 ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

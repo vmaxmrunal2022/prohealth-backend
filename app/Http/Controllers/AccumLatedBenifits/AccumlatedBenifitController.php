@@ -54,6 +54,9 @@ class AccumlatedBenifitController extends Controller
                     'family_sched_2'=>$request->family_sched_2,
                     'grouping_type'=>$request->grouping_type,
                     'ind_out_of_pocket_action'=>$request->ind_out_of_pocket_action,
+                    'gpi_exclusion_list'=>$request->gpi_exclusion_list,
+                    'gpi_exclusion_list_ded'=>$request->gpi_exclusion_list_ded,
+                    'gpi_exclusion_list_mop'=>$request->gpi_exclusion_list_mop
                     
                   
                    
@@ -61,7 +64,7 @@ class AccumlatedBenifitController extends Controller
                 ]
             );
 
-            $benefitcode = DB::table('PLAN_ACCUM_DEDUCT_TABLE' )->where( 'plan_accum_deduct_id', 'like', $request->plan_accum_deduct_id)->first();
+            $benefitcode = DB::table('PLAN_ACCUM_DEDUCT_TABLE' )->where('plan_accum_deduct_id', 'like', $request->plan_accum_deduct_id)->first();
 
 
 
