@@ -387,11 +387,15 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
 
     //Copay Step Schedule
     Route::get('copay-step-schedule/get', [CopayStepScheduleController::class, 'get'])->name('get.copay-step');
+    Route::get('copay-step-schedule/check-copay-list-existing', [CopayStepScheduleController::class, 'checkCopayListExist']);
     Route::post('copay-step-schedule/submit', [CopayStepScheduleController::class, 'submit'])->name('submit.copay-step');
 
     //MAC List
     Route::get('mac-list/get', [MacListController::class, 'get'])->name('get.macList');
     Route::get('mac-list/get-mac-list', [MacListController::class, 'getMacList'])->name('get.mac-list.single');
+    Route::get('mac-list/get-price-source', [MacListController::class, 'getPriceSource']);
+    Route::get('mac-list/get-price-type', [MacListController::class, 'getPriceType']);
+    Route::post('mac-list/submit', [MacListController::class, 'submit']);
 
     //Tax Schedule
     Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
@@ -425,10 +429,21 @@ Route::group(['prefix' => 'plan-design/'], function () {
     Route::get('plan-association/get-client-group', [PlanAssociationController::class, 'getClientGroup']);
     Route::get('plan-association/get-transaction-type', [PlanAssociationController::class, 'getTransactionType']);
     Route::get('plan-association/get-transaction-association', [PlanAssociationController::class, 'getTransactionAssociation']);
+    Route::get('plan-association/get-client-group-label', [PlanAssociationController::class, 'getClientGroupLabel']);
+    Route::get('plan-association/get-plan-id', [PlanAssociationController::class, 'getPlanId']);
 
     //Plan Edit
     Route::get('plan-edit/get', [PlanEditController::class, 'get']);
     Route::get('plan-edit/get-plan-edit-data', [PlanEditController::class, 'getPlanEditData']);
+    Route::get('plan-edit/get-plan-classification', [PlanEditController::class, 'getPlanClassification']);
+    Route::get('plan-edit/get-exp-flag', [PlanEditController::class, 'getExpFlag']);
+    Route::get('plan-edit/get-pharm-exp-flag', [PlanEditController::class, 'getPharmExpFlag']);
+    Route::get('plan-edit/get-prisc-exp-flag', [PlanEditController::class, 'getPriscExpFlag']);
+    Route::get('plan-edit/get-exhausted', [PlanEditController::class, 'getExhausted']);
+    Route::get('plan-edit/get-tax', [PlanEditController::class, 'getTax']);
+    Route::get('plan-edit/get-uc-plan', [PlanEditController::class, 'getUCPlan']);
+    Route::get('plan-edit/get-search-indication', [PlanEditController::class, 'getSearchIndication']);
+    Route::get('plan-edit/get-formulary', [PlanEditController::class, 'getFormulary']);
     
 });
 
@@ -444,10 +459,12 @@ Route::group(['prefix' => 'membership/'], function () {
 
     //Prior Authorization
     Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
-
+ 
     //Plan Validation
     Route::get('plan-validation/get',[PlanValidationController::class, 'get']);
     Route::get('plan-validation/get-client-details',[PlanValidationController::class, 'getClientDetails']);
+    Route::get('plan-validation/get-plan-id',[PlanValidationController::class, 'getPlanId']);
+    Route::post('plan-validation/add-plan-validaion',[PlanValidationController::class, 'addPlanValidation']);
 });
 
 //Administrator

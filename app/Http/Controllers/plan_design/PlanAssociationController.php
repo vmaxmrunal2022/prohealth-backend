@@ -10,7 +10,15 @@ class PlanAssociationController extends Controller
 {
     public function get(Request $request)
     {
-        $planAssociation = DB::table('PLAN_LOOKUP_TABLE')
+        // $planAssociation = DB::table('PLAN_LOOKUP_TABLE')        
+        //     ->where('BIN_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->orWhere('PROCESS_CONTROL_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->orWhere('GROUP_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->orWhere('PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->orWhere('PIN_NUMBER_SUFFIX', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->get();
+
+        $planAssociation = DB::table('PLAN_LOOKUP_TABLE')        
             ->where('BIN_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('PROCESS_CONTROL_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('GROUP_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
@@ -24,6 +32,7 @@ class PlanAssociationController extends Controller
 
     public function submitPlanAssociation(Request $request)
     {
+        // dd($request->use_default_ccg);exit();
         $client_group_id = is_array($request->client_group_id) != null ?  $request->client_group_id['client_group_value']  : $request->client_group_id;
 
         $client_id = is_array($request->client_id) != null ? $request->client_id['client_value'] : $request->client_id;
@@ -36,11 +45,9 @@ class PlanAssociationController extends Controller
 
         $transaction_type = is_array($request->transaction_type) != null ? $request->transaction_type['tt_value'] : $request->transaction_type;
 
-        $use_default_ccg = is_array($request->use_default_ccg) != null ? $request->use_default_ccg['ta_value'] : $request->use_default_ccg;
-
-       
-
-        if ($request->new) {
+        $use_default_ccg = is_array($request->use_default_ccg) != null ? $request->use_default_ccg['ta_value'] : $request->use_default_ccg;       
+ 
+        if ($request->add_new) {
             $planAssociation = DB::table('plan_lookup_table')
                 ->insert([
                     'bin_number' => strtoupper($request->bin_number),
@@ -60,11 +67,11 @@ class PlanAssociationController extends Controller
                     'user_id' => $request->user_id,
                 ]);
 
-            $planAssociation = DB::table('plan_lookup_table')
-                ->where('bin_number', 'like', '%' . $request->bin_number . '%')
-                ->where('process_control_number', 'like', '%' . $request->process_control_number . '%')
-                ->where('group_number', 'like', '%' . $request->group_number . '%')
-                ->first();
+            // $planAssociation = DB::table('plan_lookup_table')
+            //     ->where('bin_number', 'like', '%' . $request->bin_number . '%')
+            //     ->where('process_control_number', 'like', '%' . $request->process_control_number . '%')
+            //     ->where('group_number', 'like', '%' . $request->group_number . '%')
+            //     ->first();
 
             return $this->respondWithToken($this->token(), 'Successfully Added!!!', $planAssociation);
         } else {
@@ -116,7 +123,6 @@ class PlanAssociationController extends Controller
     public function getMemProcFlag(Request $request)
     {
         $memprocflags = [
-            ['membership_processing_flag' => '', 'label' => 'Select'],
             ['membership_processing_flag' => '0', 'label' => 'Not Required'],
             ['membership_processing_flag' => '1', 'label' => 'Required']
         ];
@@ -155,7 +161,6 @@ class PlanAssociationController extends Controller
     public function getTransactionType(Request $request)
     {
         $transaction_types = [
-            ['trans_type_value' => '', 'trans_type_label' => 'Select'],
             ['trans_type_value' => 'EV', 'trans_type_label' => 'EV - Eligibility Verification'],
             ['trans_type_value' => 'CC', 'trans_type_label' => 'CC - Claims Capture'],
             ['trans_type_value' => 'CA', 'trans_type_label' => 'CA - Claims Adjudication'],
@@ -167,11 +172,29 @@ class PlanAssociationController extends Controller
     public function getTransactionAssociation(Request $request)
     {
         $trans_association = [
-            ['trans_ass_value' => '', 'trans_ass_label' => 'Select'],
             ['trans_ass_value' => '0', 'trans_ass_label' => 'Not Applicable'],
             ['trans_ass_value' => '1', 'trans_ass_label' => 'Billable Source For Plans W/O Eligibility'],
             ['trans_ass_value' => '2', 'trans_ass_label' => 'Restrictive Eligibility'],
         ];
         return $this->respondWithToken($this->token(), '', $trans_association);
+    }
+
+    public function getClientGroupLabel(Request $request)
+    {
+        $client_group_label = DB::table('client_group')
+                              ->select('group_name')
+                              ->where('client_group_id', $request->search)
+                              ->first();
+
+        return $this->respondWithToken($this->token(), '', $client_group_label);
+    }
+
+    public function getPlanId(Request $request)
+    {
+        $planIds = DB::table('plan_table')
+                   ->select('id', )
+                   ->get();
+
+        return $this->respondWithToken($this->token(), '', $planIds);
     }
 }
