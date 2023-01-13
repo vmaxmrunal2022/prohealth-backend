@@ -8,6 +8,128 @@ use Illuminate\Support\Facades\DB;
 
 class ProcedureController extends Controller
 {
+
+
+    public function add( Request $request ) {
+
+        $createddate = date( 'y-m-d' );
+
+        if ( $request->has( 'new' ) ) {
+
+
+            $accum_benfit_stat_names = DB::table('PROCEDURE_EXCEPTION_NAMES')->insert(
+                [
+                    'procedure_exception_list' => strtoupper( $request->procedure_exception_list ),
+
+                    // 'exception_name'=>$request->exception_name,
+                    
+
+                ]
+            );
+
+            $accum_benfit_stat = DB::table('PROCEDURE_EXCEPTION_LISTS' )->insert(
+                [
+                    'procedure_exception_list'=>$request->procedure_exception_list,
+                    'accum_bene_strategy_id'=>$request->accum_bene_strategy_id,
+                    'benefit_code'=>$request->benefit_code,
+                    'copay_strategy_id'=>$request->copay_strategy_id,
+                    // 'coverage_start_days'=>$request->coverage_start_days,
+                    // 'diagnosis_id'=>$request->diagnosis_id,
+                    // 'diagnosis_list'=>$request->diagnosis_list,
+                    // 'exception_list'=>$request->exception_list,
+                    // // 'exception_name'=>$request->exception_name,
+                    // 'max_age'=>$request->max_age,
+                    // 'max_price'=>$request->max_price,
+                    // 'max_price_opt'=>$request->max_price_opt,
+                    // 'module_exit'=>$request->module_exit,
+                    // 'new_claim_status'=>$request->new_claim_status,
+                    // 'physician_list'=>$request->physician_list,
+                    // 'physician_specialty_list'=>$request->physician_specialty_list,
+                    // 'pricing_strategy_id'=>$request->pricing_strategy_id,
+                    // 'proc_code_list_id'=>$request->proc_code_list_id,
+                    // 'procedure_exception_list'=>$request->procedure_exception_list,
+                    // 'process_rule'=>$request->process_rule,
+                    // 'provider_type'=>$request->provider_type,
+                    // 'reject_only_msg_flag'=>$request->reject_only_msg_flag,
+                    // 'rx_qty_opt_multiplier'=>$request->rx_qty_opt_multiplier,
+                    // 'service_modifier'=>$request->service_modifier,
+                    // 'service_type'=>$request->service_type,
+                    // 'sex_restriction'=>$request->sex_restriction,
+                    // 'valid_relation_code'=>$request->valid_relation_code,
+
+                
+                   
+                 
+                ]
+            );
+            $benefitcode = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('procedure_exception_list', 'like', '%'.$request->procedure_exception_list .'%')->first();
+
+
+        } else {
+
+
+            // dd($request->all())
+
+            $benefitcode = DB::table('PROCEDURE_EXCEPTION_LISTS' )
+            // ->where('procudure_exception_list',$request->procudure_exception_list)
+            ->where('new_claim_status', $request->new_claim_status )
+            ->update(
+                [
+                    'accum_bene_strategy_id'=>$request->accum_bene_strategy_id,
+                    // 'benefit_code'=>$request->benefit_code,
+                    // 'copay_strategy_id'=>$request->copay_strategy_id,
+                    // 'coverage_start_days'=>$request->coverage_start_days,
+                    // 'diagnosis_id'=>$request->diagnosis_id,
+                    // 'diagnosis_list'=>$request->diagnosis_list,
+                    // 'exception_list'=>$request->exception_list,
+                    // 'exception_name'=>$request->exception_name,
+                    // 'max_age'=>$request->max_age,
+                    // 'max_price'=>$request->max_price,
+                    // 'max_price_opt'=>$request->max_price_opt,
+                    // 'module_exit'=>$request->module_exit,
+                    // 'new_claim_status'=>$request->new_claim_status,
+                    // 'physician_list'=>$request->physician_list,
+                    // 'physician_specialty_list'=>$request->physician_specialty_list,
+                    // 'pricing_strategy_id'=>$request->pricing_strategy_id,
+                    // 'proc_code_list_id'=>$request->proc_code_list_id,
+                    // 'procedure_exception_list'=>$request->procedure_exception_list,
+                    // 'process_rule'=>$request->process_rule,
+                    // 'provider_type'=>$request->provider_type,
+                    // 'reject_only_msg_flag'=>$request->reject_only_msg_flag,
+                    // 'rx_qty_opt_multiplier'=>$request->rx_qty_opt_multiplier,
+                    // 'service_modifier'=>$request->service_modifier,
+                    // 'service_type'=>$request->service_type,
+                    // 'sex_restriction'=>$request->sex_restriction,
+                
+
+                ]
+            );
+
+            $benefitcode = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('new_claim_status', 'like', '%'.$request->new_claim_status .'%')->first();
+
+
+            // $accum_benfit_stat = DB::table('PROCEDURE_EXCEPTION_NAMES' )
+            // ->where('procedure_exception_list', $request->procedure_exception_list )
+            // ->update(
+            //     [
+            //         // 'exception_name'=>$request->exception_name,
+                   
+                  
+
+            //     ]
+            // );
+
+            // $benefitcode = DB::table('PROCEDURE_EXCEPTION_NAMES')->where('proc_code_list', 'like', '%'.$request->proc_code_list .'%')->first();
+
+        }
+
+
+        return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
+    }
+
+
+   
+
     public function search(Request $request)
     {
         $ndc = DB::table('PROCEDURE_EXCEPTION_NAMES')
