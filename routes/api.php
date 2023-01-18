@@ -13,6 +13,11 @@ use App\Http\Controllers\Code\ServiceTypeController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Exception\BenefitListController;
+use App\Http\Controllers\Exception\ReasonCodeExceptionController;
+
+
+
+
 
 use App\Http\Controllers\Exception\BenefitDerivationController;
 
@@ -167,7 +172,11 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/ndc/details/{ndcid}', [NDCExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
     Route::post('/ndc/add', [NDCExceptionController::class, 'add'])->name('ndsc.search'); // add
 
+    //REASON-CODE-EXCEPTION
 
+    Route::get('/reason/exception/search', [ReasonCodeExceptionController::class, 'search'])->name('reason.exception.search'); // SEARCH
+    Route::get('/reason/exception/details/{ndcid}', [ReasonCodeExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
+    Route::post('/reason/exception/add', [ReasonCodeExceptionController::class, 'add'])->name('reason.exception.add'); // DETAILS
 
 
      // NDC
