@@ -4,12 +4,10 @@ namespace App\Http\Controllers\validationLists;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class ProviderController extends Controller
-{
-    
-
+{   
     public function search(Request $request)
     {
         $ndc = DB::table('PHARMACY_VALIDATIONS')
@@ -56,4 +54,5 @@ class ProviderController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
+    
 }

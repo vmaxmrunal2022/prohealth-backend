@@ -205,7 +205,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/eligibility/details/{ndcid}', [EligibilityValidationListController::class, 'getNDCItemDetails'])->name('eligibility.details.get'); // DETAIL
 
 
-
+    
     Route::get('/provider/search', [ProviderController::class, 'search'])->name('provider.search'); // SEARCH
     Route::get('/provider/get/{ndcid}', [ProviderController::class, 'getProviderList'])->name('provider.list.get'); // LIST ITEMS
     Route::get('/provider/details/{ndcid}', [ProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
@@ -328,17 +328,14 @@ Route::get('clientgroup/get/{clientgrpid}', [ClientGroupController::class, 'GetO
 
 // COMMOM
 Route::get('/countries', [Controller::class, 'Contries'])->name('countries');
-
-//Route::get('/states/{countryid}', [Controller::class, 'getStatesOfCountry'])->name('states');
 Route::get('/states', [Controller::class, 'getStatesOfCountry'])->name('states');
+Route::get('/member', [Controller::class, 'getMember'])->name('member');
+Route::get('/provider', [Controller::class, 'getProvider']);
 
 
 
 
 Route::group(['prefix' => 'provider'], function ($router) {
-
-
-
 
     //SUPER PROVIDER NETWORK
     // Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
@@ -455,7 +452,20 @@ Route::group(['prefix' => 'membership/'], function () {
     Route::get('memberdata/get-health-condition', [MemberController::class, 'getHealthCondition']);
     Route::get('memberdata/get-diagnosis-history', [MemberController::class, 'getDiagnosisHistory']);
     Route::get('memberdata/get-prior-authorization', [MemberController::class, 'getPriorAuthorization']);
-    Route::get('memberdata/get-log-change-data', [MemberController::class, 'getLogChangeData']);
+    Route::get('memberdata/get-log-change-data', [MemberController::class, 'getLogChangeData']);    
+    
+    Route::get('memberdata/get-eligibility', [MemberController::class, 'getEligibility'])->name('member.eligibility');
+    Route::get('memberdata/member-status', [MemberController::class, 'getMemberStatus'])->name('member.status');
+    Route::get('memberdata/member-relationship', [MemberController::class, 'getMemberRelationship'])->name('member.relationship');
+
+    Route::get('memberdata/copay-schedule-overrides', [MemberController::class, 'getCopayScheduleOverride'])->name('member.copayScheduleOverrides');
+    Route::get('memberdata/accumulated-benifit-overrides', [MemberController::class, 'getAccumulatedBenifitOverride'])->name('member.accumulatedBenifitOverride');
+    
+    Route::get('memberdata/copay-strategy-id', [MemberController::class, 'getCopayStrategyId']);
+    Route::get('memberdata/accumulated-benifit-strategy', [MemberController::class, 'getAccumulatedBenifitStrategy']);
+    Route::get('memberdata/pricing-strategy', [MemberController::class, 'getPricingStrategy']);
+
+    Route::get('memberdata/view-limitations', [MemberController::class, 'getViewLimitations']);
 
     //Prior Authorization
     Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);

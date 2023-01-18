@@ -52,6 +52,11 @@ class MacListController extends Controller
 
     public function submit(Request $request)
     {
+        $effective_date = date('Ymd', strtotime($request->effective_date));
+
+        $termination_date = date('Ymd', strtotime($request->termination_date));
+        print($effective_date);
+        print($termination_date);
         if ($request->add_new) {
             $add_mac_list = DB::table('mac_list')
                 ->insert([
@@ -63,33 +68,58 @@ class MacListController extends Controller
                 ->insert([
                     'mac_list' => $request->mac_list,
                     'gpi' => $request->gpi,
-                    'effective_date' => $request->effective_date,
-                    'termination_date' => $request->termination_date,
+                    'effective_date' => $effective_date,
+                    'termination_date' => $termination_date,
                     'price_source' => $request->price_source,
                     'price_type' => $request->price_type,
                     'mac_amount' => $request->mac_amount,
                     'allow_fee' => $request->allow_fee
                 ]);
 
-            $add = DB::table('mac_table')->where('mac_list','like', '%'.$request->mac_list.'%')->first();
-                return $this->respondWithToken($this->token(), 'Added Successfully!', $add);
-        }else{
-            $update = DB::table('mac_table')
+            $add = DB::table('mac_table')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
+            return $this->respondWithToken($this->token(), 'Added Successfully!', $add);
+        } else {
+            $update_mac_list = DB::table('mac_list')
                 ->where('mac_list', $request->mac_list)
                 ->update([
-                    // 'gpi' => $request->gpi,
-                    'effective_date' => $request->effective_date,
-                    'termination_date' => $request->termination_date,
-                    'price_source' => $request->price_source,
-                    'price_type' => $request->price_type,
-                    'mac_amount' => $request->mac_amount,
-                    'allow_fee' => $request->allow_fee
+                    'mac_desc' => $request->mac_desc,
                 ]);
-                $update = DB::table('mac_table')->where('mac_list','like', '%'.$request->mac_list.'%')->first();
-                return $this->respondWithToken($this->token(), 'Updated Successfully!', $update);
+
+            $checkGPI = DB::table('mac_table')
+                ->where('gpi', $request->gpi)
+                ->get()
+                ->count();
+
+
+            if ($checkGPI <= "0") {
+                $update = DB::table('mac_table')
+                    ->insert([
+                        'mac_list' => $request->mac_list,
+                        'gpi' => $request->gpi,
+                        'effective_date' => $effective_date,
+                        'termination_date' => $termination_date,
+                        'price_source' => $request->price_source,
+                        'price_type' => $request->price_type,
+                        'mac_amount' => $request->mac_amount,
+                        'allow_fee' => $request->allow_fee
+                    ]);
+            } else {
+                $update = DB::table('mac_table')
+                    ->where('mac_list', $request->mac_list)
+                    ->where('gpi', $request->gpi)
+                    ->update([
+                        // 'gpi' => $request->gpi,
+                        'effective_date' => $effective_date,
+                        'termination_date' => $termination_date,
+                        'price_source' => $request->price_source,
+                        'price_type' => $request->price_type,
+                        'mac_amount' => $request->mac_amount,
+                        'allow_fee' => $request->allow_fee
+                    ]);
+            }
+
+            $update = DB::table('mac_table')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
+            return $this->respondWithToken($this->token(), 'Updated Successfully!', $update);
         }
-
-
-        
     }
 }
