@@ -10,16 +10,191 @@ class PlanAssociationController extends Controller
 {
     public function get(Request $request)
     {
-        $planAssociation = DB::table('PLAN_LOOKUP_TABLE')
-                           ->where('BIN_NUMBER', 'like', '%'. strtoupper($request->search) .'%')
-                           ->orWhere('PROCESS_CONTROL_NUMBER', 'like', '%'. strtoupper($request->search) .'%')
-                           ->orWhere('GROUP_NUMBER', 'like', '%'. strtoupper($request->search) .'%')
-                           ->orWhere('PLAN_ID', 'like', '%'. strtoupper($request->search) .'%')
-                           ->orWhere('PIN_NUMBER_SUFFIX', 'like', '%'. strtoupper($request->search) .'%')
-                           ->get();
+        // $planAssociation = DB::table('PLAN_LOOKUP_TABLE')        
+        //     ->where('BIN_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->orWhere('PROCESS_CONTROL_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->orWhere('GROUP_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->orWhere('PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->orWhere('PIN_NUMBER_SUFFIX', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->get();
+
+        $planAssociation = DB::table('PLAN_LOOKUP_TABLE')        
+            ->where('BIN_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('PROCESS_CONTROL_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('GROUP_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('PIN_NUMBER_SUFFIX', 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
 
 
         return $this->respondWithToken($this->token(), '', $planAssociation);
     }
 
+    public function submitPlanAssociation(Request $request)
+    {
+        // dd($request->use_default_ccg);exit();
+        $client_group_id = is_array($request->client_group_id) != null ?  $request->client_group_id['client_group_value']  : $request->client_group_id;
+
+        $client_id = is_array($request->client_id) != null ? $request->client_id['client_value'] : $request->client_id;
+
+        $customer_id = is_array($request->customer_id) != null ? $request->customer_id['cust_value'] : $request->customer_id;
+
+        $membership_processing_flag = is_array($request->membership_processing_flag) != null ? $request->membership_processing_flag['form_id_value'] : null;
+
+        $pharmacy_chain = is_array($request->pharmacy_chain) != null ? $request->pharmacy_chain['pharm_value'] : $request->pharmacy_chain;
+
+        $transaction_type = is_array($request->transaction_type) != null ? $request->transaction_type['tt_value'] : $request->transaction_type;
+
+        $use_default_ccg = is_array($request->use_default_ccg) != null ? $request->use_default_ccg['ta_value'] : $request->use_default_ccg;       
+ 
+        if ($request->add_new) {
+            $planAssociation = DB::table('plan_lookup_table')
+                ->insert([
+                    'bin_number' => strtoupper($request->bin_number),
+                    'client_group_id' => $client_group_id,
+                    'client_id' => $client_id,
+                    'customer_id' => $customer_id,
+                    'form_id' => $request->form_id,
+                    'group_number' => strtoupper($request->group_number),
+                    'membership_processing_flag' => $membership_processing_flag,
+                    'pharmacy_chain' => $pharmacy_chain,
+                    'pin_number_suffix' => $request->pin_number_suffix,
+                    'plan_id' => $request->plan_id,
+                    'plan_id_mail_order' => $request->plan_id_mail_order,
+                    'process_control_number' => strtoupper($request->process_control_number),
+                    'transaction_type' => $transaction_type,
+                    'use_default_ccg' => $use_default_ccg,
+                    'user_id' => $request->user_id,
+                ]);
+
+            // $planAssociation = DB::table('plan_lookup_table')
+            //     ->where('bin_number', 'like', '%' . $request->bin_number . '%')
+            //     ->where('process_control_number', 'like', '%' . $request->process_control_number . '%')
+            //     ->where('group_number', 'like', '%' . $request->group_number . '%')
+            //     ->first();
+
+            return $this->respondWithToken($this->token(), 'Successfully Added!!!', $planAssociation);
+        } else {
+            $planAssociation = DB::table('plan_lookup_table')
+                ->where('bin_number', 'like', '%' . $request->bin_number . '%')
+                ->where('process_control_number', 'like', '%' . $request->process_control_number . '%')
+                ->where('group_number', 'like', '%' . $request->group_number . '%')
+                ->update([
+                    'client_group_id' => $client_group_id,
+                    'client_id' => $client_id,
+                    'customer_id' => $customer_id,
+                    'form_id' => $request->form_id,
+                    'membership_processing_flag' => $membership_processing_flag,
+                    'pharmacy_chain' => $pharmacy_chain,
+                    'pin_number_suffix' => $request->pin_number_suffix,
+                    'plan_id' => $request->plan_id,
+                    'plan_id_mail_order' => $request->plan_id_mail_order,
+                    'transaction_type' => $transaction_type,
+                    'use_default_ccg' => $use_default_ccg,
+                    'user_id' => $request->user_id,
+                ]);
+
+            // $planAssociation = DB::table('plan_lookup_table')
+            //     ->where('bin_number', 'like', '%' . $request->bin_number . '%')
+            //     ->where('process_control_number', 'like', '%' . $request->process_control_number . '%')
+            //     ->where('group_number', 'like', '%' . $request->group_number . '%')
+            //     ->first();
+            // print_r($planAssociation);
+
+            return $this->respondWithToken($this->token(), 'Successfully Updated!!!', $planAssociation);
+        }
+    }
+
+    public function getPharmacyChain(Request $request)
+    {
+        $pharmacy_chain = DB::table('PHARMACY_CHAIN')
+            ->where(DB::raw('UPPER(pharmacy_chain)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $pharmacy_chain);
+    }
+
+    public function getFormId(Request $request)
+    {
+        $formIds = null;
+
+        return $this->respondWithToken($this->token(), '', $formIds);
+    }
+
+    public function getMemProcFlag(Request $request)
+    {
+        $memprocflags = [
+            ['membership_processing_flag' => '0', 'label' => 'Not Required'],
+            ['membership_processing_flag' => '1', 'label' => 'Required']
+        ];
+
+        return $this->respondWithToken($this->token(), '', $memprocflags);
+    }
+
+    public function getCustomer(Request $rqeuest)
+    {
+        $customers = DB::table('customer')
+            ->select('customer_id', 'CUSTOMER_NAME')
+            ->where(DB::raw('UPPER(customer_id)'), 'like', '%' . strtoupper($rqeuest->sarch) . '%')
+            ->orWhere(DB::raw('UPPER(CUSTOMER_NAME)'), 'like', '%' . strtoupper($rqeuest->sarch) . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $customers);
+    }
+
+    public function getClient(Request $rqeuest)
+    {
+        $clients = DB::table('client')
+            ->where(DB::raw('UPPER(client_id)'), 'like', '%' . strtoupper($rqeuest->search) . '%')
+            ->orWhere(DB::raw('UPPER(client_name)'), 'like', '%' . strtoupper($rqeuest->search) . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $clients);
+    }
+
+    public function getClientGroup(Request $rqeuest)
+    {
+        $client_groups =  DB::table('client_group')
+            ->where(DB::raw('UPPER(client_group_id)'), 'like', '%' . strtoupper($rqeuest->search) . '%')
+            ->orWhere(DB::raw('UPPER(group_name)'), 'like', '%' . strtoupper($rqeuest->search) . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $client_groups);
+    }
+
+    public function getTransactionType(Request $request)
+    {
+        $transaction_types = [
+            ['trans_type_value' => 'EV', 'trans_type_label' => 'EV - Eligibility Verification'],
+            ['trans_type_value' => 'CC', 'trans_type_label' => 'CC - Claims Capture'],
+            ['trans_type_value' => 'CA', 'trans_type_label' => 'CA - Claims Adjudication'],
+            ['trans_type_value' => 'WC', 'trans_type_label' => 'WC - Workers Compensation Group'],
+        ];
+        return $this->respondWithToken($this->token(), '', $transaction_types);
+    }
+
+    public function getTransactionAssociation(Request $request)
+    {
+        $trans_association = [
+            ['trans_ass_value' => '0', 'trans_ass_label' => 'Not Applicable'],
+            ['trans_ass_value' => '1', 'trans_ass_label' => 'Billable Source For Plans W/O Eligibility'],
+            ['trans_ass_value' => '2', 'trans_ass_label' => 'Restrictive Eligibility'],
+        ];
+        return $this->respondWithToken($this->token(), '', $trans_association);
+    }
+
+    public function getClientGroupLabel(Request $request)
+    {
+        $client_group_label = DB::table('client_group')
+                              ->select('group_name')
+                              ->where('client_group_id', $request->search)
+                              ->first();
+
+        return $this->respondWithToken($this->token(), '', $client_group_label);
+    }
+
+    public function getPlanId(Request $request)
+    {
+        $planIds = DB::table('plan_table')
+                   ->select('id', )
+                   ->get();
+
+        return $this->respondWithToken($this->token(), '', $planIds);
+    }
 }

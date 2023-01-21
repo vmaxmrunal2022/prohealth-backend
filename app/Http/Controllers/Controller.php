@@ -84,4 +84,22 @@ class Controller extends BaseController
 
         return $this->respondWithToken($this->token(), '', $states);
     }
+      //Member
+      public function getMember(Request $request)
+      {        
+          $memberIds = DB::table('member')     
+                       ->where('member_id', 'like', '%'. $request->search .'%') 
+                       ->get();
+          return $this->respondWithToken($this->token(), '', $memberIds);
+      }
+
+      //Provider
+      public function getProvider(Request $request)
+      {
+        $providers = DB::table('pharmacy_table')
+                     ->where(DB::raw('UPPER(pharmacy_nabp)'), 'like', '%'. strtoupper($request->search) .'%')
+                     ->get();
+        return $this->respondWithToken($this->token(), '', $providers);
+      }
+
 }

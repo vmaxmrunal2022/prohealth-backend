@@ -109,9 +109,113 @@ class MemberController extends Controller
         return $this->respondWithToken($this->token(), '', $logChange);
     }
 
-    public function getMembersDropDownList(){
-        $member_data_list = DB::table('MEMBER')->get();
-        // dd($member_data_list);
-        return $this->respondWithToken($this->token(),'',$member_data_list);
+  
+
+    //Eligibility
+    public function getEligibility(Request $request)
+    {
+        $eligibility = [
+            ['eligibility_id' => '1', 'eligibility_name' => 'Member only (Individual)'],
+            ['eligibility_id' => '2', 'eligibility_name' => 'Member spouse'],
+            ['eligibility_id' => '3', 'eligibility_name' => 'Member children only'],
+            ['eligibility_id' => '4', 'eligibility_name' => 'Member family'],
+            ['eligibility_id' => '5', 'eligibility_name' => 'Dependent children'],
+            ['eligibility_id' => '6', 'eligibility_name' => 'Disabled parents'],
+            ['eligibility_id' => '7', 'eligibility_name' => 'Spouse only'],
+            ['eligibility_id' => '8', 'eligibility_name' => 'Spouse & childern'],
+        ];       
+        return $this->respondWithToken($this->token(),'', $eligibility);
     }
+
+    //Member Status
+    public function getMemberStatus(Request $request)
+    {
+        $memberStatus = [
+            ['mem_status_id' => 'A', 'mem_status_name' => 'Active', 'mem_dec' => 'Determined by effective dates'],
+            ['mem_status_id' => 'P', 'mem_status_name' => 'Pending', 'mem_dec' => 'Determined by effective dates'],
+            ['mem_status_id' => 'T', 'mem_status_name' => 'Termed', 'mem_dec' => 'Determined by effective dates'],
+            ['mem_status_id' => 'O', 'mem_status_name' => 'Other Coverge', 'mem_dec' => 'Other coverge indicated'],
+            ['mem_status_id' => 'X', 'mem_status_name' => 'Max Benifit Met', 'mem_dec' => 'Major medical met - 100% copay'],
+            ['mem_status_id' => 'I', 'mem_status_name' => 'Inetrn', 'mem_dec' => 'Temporary Eligibility'],
+        ];
+        return $this->respondWithToken($this->token(), '', $memberStatus);
+    }
+
+    //Realtionship
+    public function getMemberRelationship(Request $request)
+    {
+        $memRelationship  = [
+            ['relationship_id' => '1', 'relationship_name' => 'Cardholder'],
+            ['relationship_id' => '2', 'relationship_name' => 'Spouse'],
+            ['relationship_id' => '3', 'relationship_name' => 'Child'],
+            ['relationship_id' => '4', 'relationship_name' => 'Other'],
+            ['relationship_id' => '5', 'relationship_name' => 'Student'],
+            ['relationship_id' => '6', 'relationship_name' => 'Disable'],
+            ['relationship_id' => '7', 'relationship_name' => 'Adult Dependent'],
+            ['relationship_id' => '8', 'relationship_name' => 'Sigificant Other'],
+        ];
+
+        return $this->respondWithToken($this->token(), '', $memRelationship);
+    }
+
+    // Copay Schedule Override
+    public function getCopayScheduleOverride(Request $request)
+    {
+        $copayScheduleOverride = [
+            ['copay_schedule_ovrr_id' => 'D', 'copay_schedule_ovrr_name' => 'Override default copay schedule'],
+            ['copay_schedule_ovrr_id' => 'A', 'copay_schedule_ovrr_name' => 'Override all copay schedules except accumulated benefits'],
+        ];
+
+        return $this->respondWithToken($this->token(), '', $copayScheduleOverride);
+    }
+
+    //Accumulated benifit overrides
+    public function getAccumulatedBenifitOverride(Request $request)
+    {
+        $accumulatedBenifitOvrr = [
+            ['acc_beni_ovrr_id' => 'N', 'acc_beni_ovrr_id' => 'Override the plan and provide no accumulated benefits for this member'],
+            ['acc_beni_ovrr_id' => 'C', 'acc_beni_ovrr_id' => 'Change the accumulated benifits to the accumulated benifit plan overrides'],
+            ['acc_beni_ovrr_id' => 'A', 'acc_beni_ovrr_id' => ''],
+            ['acc_beni_ovrr_id' => 'P', 'acc_beni_ovrr_id' => ''],
+        ];
+
+        return $this->respondWithToken($this->token(), '', $accumulatedBenifitOvrr);
+    }
+
+    public function getCopayStrategyId(Request $request)
+    {
+        $copay_strategy_id = DB::table('COPAY_STRATEGY')
+                             ->get();
+        return $this->respondWithToken($this->token(), '', $copay_strategy_id);
+    }
+
+    public function getAccumulatedBenifitStrategy(Request $request)
+    {
+        $acc_beni_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
+                             ->get();
+
+        return $this->respondWithToken($this->token(), '', $acc_beni_strategy);
+    }
+
+    public function getPricingStrategy(Request $request)
+    {
+        $pricing_strategy = DB::table('PRICING_STRATEGY')
+                            ->get();
+
+        return $this->respondWithToken($this->token(), '', $pricing_strategy);
+    }
+
+    public function getViewLimitations(Request $request)
+    {
+        $view_limitations = [
+            ['limit_id' => '1', 'limit_name' => 'All Claims'],
+            ['limit_id' => '2', 'limit_name' => 'Paid Claims'],
+            ['limit_id' => '3', 'limit_name' => 'Rejected Claims'],
+            ['limit_id' => '4', 'limit_name' => 'Reversed Claim'],
+        ];
+
+        return $this->respondWithToken($this->token(), '', $view_limitations);
+    }
+
+
 }
