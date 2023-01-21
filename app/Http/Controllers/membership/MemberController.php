@@ -22,19 +22,74 @@ class MemberController extends Controller
         //     ->get();
 
         $member = DB::table('MEMBER')
-            ->select('MEMBER.CUSTOMER_ID', 'MEMBER.MEMBER_ID', 'MEMBER.MEMBER_FIRST_NAME', 'MEMBER.MEMBER_LAST_NAME', 'MEMBER.EFFECTIVE_DATE_OVERRIDE',
-                      'MEMBER.ELIG_VALIDATION_ID', 'MEMBER.ELIGIBILITY_OVRD', 'MEMBER.ELIG_LOCK_DATE', 'MEMBER.LOAD_PROCESS_DATE', 'MEMBER.PRIM_COVERAGE_INS_CARRIER', 'MEMBER.ADDRESS_1', 'MEMBER.ADDRESS_2', 'MEMBER.CITY', 'MEMBER.COUNTRY', 'MEMBER.DATE_OF_BIRTH', 'MEMBER.RELATIONSHIP', 'MEMBER.ANNIV_DATE', 'MEMBER.PATIENT_PIN_NUMBER', 'MEMBER.ALT_MEMBER_ID', 'MEMBER.SEX_OF_PATIENT', 'MEMBER.COPAY_SCHED_OVR_FLAG', 'MEMBER.COPAY_SCHED_OVR',
-                      'MEMBER.ACCUM_BENE_OVR_FLAG', 'MEMBER.ACCUM_BENE_PLAN_OVR', 'MEMBER.ACCUM_BENE_EFF_DATE_1', 'MEMBER.ACCUM_BENE_TERM_DATE_1', 'MEMBER.ACCUM_BENE_EFF_DATE_2', 'MEMBER.ACCUM_BENE_TERM_DATE_2', 'MEMBER.ACCUM_ADJMNT_MBR_PAID_MOP_1', 'MEMBER.ACCUM_ADJMNT_MBR_PAID_MOP_2', 'MEMBER.ACCUM_ADJMNT_MBR_PAID_MOP_3', 'MEMBER.ACCUM_ADJMNT_PLAN_PAID_AMT', 'MEMBER.ACCUM_ADJMNT_PLAN_PAID_AMT_2', 'MEMBER.ACCUM_ADJMNT_MBR_PAID_AMT', 'MEMBER.ACCUM_ADJMNT_MBR_PAID_AMT_2', 'MEMBER.PRIMARY_PRESCRIBER', 'MEMBER.RX_NETWORK_ID', 'MEMBER.MISC_GROUPING_1', 'MEMBER.MISC_GROUPING_2',
-                      'MEMBER.USER_DEFINED_CODE_1', 'MEMBER.USER_DEFINED_CODE_2', 'MEMBER.MISC_ID',
+            ->select(
+                'MEMBER.CUSTOMER_ID',
+                'MEMBER.MEMBER_ID',
+                'MEMBER.MEMBER_FIRST_NAME',
+                'MEMBER.MEMBER_LAST_NAME',
+                'MEMBER.EFFECTIVE_DATE_OVERRIDE',
+                'MEMBER.ELIG_VALIDATION_ID',
+                'MEMBER.ELIGIBILITY_OVRD',
+                'MEMBER.ELIG_LOCK_DATE',
+                'MEMBER.LOAD_PROCESS_DATE',
+                'MEMBER.PRIM_COVERAGE_INS_CARRIER',
+                'MEMBER.ADDRESS_1',
+                'MEMBER.ADDRESS_2',
+                'MEMBER.CITY',
+                'MEMBER.COUNTRY',
+                'MEMBER.DATE_OF_BIRTH',
+                'MEMBER.RELATIONSHIP',
+                'MEMBER.ANNIV_DATE',
+                'MEMBER.PATIENT_PIN_NUMBER',
+                'MEMBER.ALT_MEMBER_ID',
+                'MEMBER.SEX_OF_PATIENT',
+                'MEMBER.COPAY_SCHED_OVR_FLAG',
+                'MEMBER.COPAY_SCHED_OVR',
+                'MEMBER.ACCUM_BENE_OVR_FLAG',
+                'MEMBER.ACCUM_BENE_PLAN_OVR',
+                'MEMBER.ACCUM_BENE_EFF_DATE_1',
+                'MEMBER.ACCUM_BENE_TERM_DATE_1',
+                'MEMBER.ACCUM_BENE_EFF_DATE_2',
+                'MEMBER.ACCUM_BENE_TERM_DATE_2',
+                'MEMBER.ACCUM_ADJMNT_MBR_PAID_MOP_1',
+                'MEMBER.ACCUM_ADJMNT_MBR_PAID_MOP_2',
+                'MEMBER.ACCUM_ADJMNT_MBR_PAID_MOP_3',
+                'MEMBER.ACCUM_ADJMNT_PLAN_PAID_AMT',
+                'MEMBER.ACCUM_ADJMNT_PLAN_PAID_AMT_2',
+                'MEMBER.ACCUM_ADJMNT_MBR_PAID_AMT',
+                'MEMBER.ACCUM_ADJMNT_MBR_PAID_AMT_2',
+                'MEMBER.PRIMARY_PRESCRIBER',
+                'MEMBER.RX_NETWORK_ID',
+                'MEMBER.MISC_GROUPING_1',
+                'MEMBER.MISC_GROUPING_2',
+                'MEMBER.USER_DEFINED_CODE_1',
+                'MEMBER.USER_DEFINED_CODE_2',
+                'MEMBER.MISC_ID',
 
-                      'CUSTOMER.CUSTOMER_ID as cust_cust_id', 'CUSTOMER.CUSTOMER_NAME', 'CUSTOMER.EFFECTIVE_DATE as cust_eff_date', 'CUSTOMER.TERMINATION_DATE as cust_term_date',
+                'CUSTOMER.CUSTOMER_ID as cust_cust_id',
+                'CUSTOMER.CUSTOMER_NAME',
+                'CUSTOMER.EFFECTIVE_DATE as cust_eff_date',
+                'CUSTOMER.TERMINATION_DATE as cust_term_date',
 
-                      'CLIENT.CUSTOMER_ID as client_cust_id', 'CLIENT.CLIENT_ID', 'CLIENT.CLIENT_NAME', 'CLIENT.EFFECTIVE_DATE as client_eff_date', 'CLIENT.TERMINATION_DATE as client_term_date',
+                'CLIENT.CUSTOMER_ID as client_cust_id',
+                'CLIENT.CLIENT_ID',
+                'CLIENT.CLIENT_NAME',
+                'CLIENT.EFFECTIVE_DATE as client_eff_date',
+                'CLIENT.TERMINATION_DATE as client_term_date',
 
-                      'CLIENT_GROUP.CUSTOMER_ID as client_group_cust_id', 'CLIENT_GROUP.GROUP_NAME', 'CLIENT_GROUP.EFFECTIVE_DATE as client_group_eff_date', 'CLIENT_GROUP.GROUP_TERMINATION_DATE as client_group_term_date', 'CLIENT_GROUP.CLIENT_GROUP_ID',
-                      'MEMBER_COVERAGE.CUSTOMER_ID as mem_cov_cust_id', 'MEMBER_COVERAGE.EFFECTIVE_DATE', 'MEMBER_COVERAGE.TERMINATION_DATE', 'MEMBER_COVERAGE.PLAN_ID', 
-                      'MEMBER_COVERAGE.COPAY_STRATEGY_ID', 'MEMBER_COVERAGE.ACCUM_BENEFIT_STRATEGY_ID', 'MEMBER_COVERAGE.PRICING_STRATEGY_ID', 
-                      )
+                'CLIENT_GROUP.CUSTOMER_ID as client_group_cust_id',
+                'CLIENT_GROUP.GROUP_NAME',
+                'CLIENT_GROUP.EFFECTIVE_DATE as client_group_eff_date',
+                'CLIENT_GROUP.GROUP_TERMINATION_DATE as client_group_term_date',
+                'CLIENT_GROUP.CLIENT_GROUP_ID',
+                'MEMBER_COVERAGE.CUSTOMER_ID as mem_cov_cust_id',
+                'MEMBER_COVERAGE.EFFECTIVE_DATE',
+                'MEMBER_COVERAGE.TERMINATION_DATE',
+                'MEMBER_COVERAGE.PLAN_ID',
+                'MEMBER_COVERAGE.COPAY_STRATEGY_ID',
+                'MEMBER_COVERAGE.ACCUM_BENEFIT_STRATEGY_ID',
+                'MEMBER_COVERAGE.PRICING_STRATEGY_ID',
+            )
             ->join('CUSTOMER', 'MEMBER.CUSTOMER_ID', '=', 'CUSTOMER.CUSTOMER_ID')
             ->join('CLIENT', 'MEMBER.CUSTOMER_ID', '=', 'CLIENT.CUSTOMER_ID')
             ->join('CLIENT_GROUP', 'MEMBER.CUSTOMER_ID', '=', 'CLIENT_GROUP.CUSTOMER_ID')
@@ -60,9 +115,9 @@ class MemberController extends Controller
         //                    ->get();
 
         $coverageHistory = DB::table('MEMBER_COVERAGE')
-                           ->where('MEMBER_ID', 'like', '%'. strtoupper($request->search) .'%')
-                           ->limit(100)
-                           ->get();
+            ->where('MEMBER_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->limit(100)
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $coverageHistory);
     }
@@ -70,9 +125,9 @@ class MemberController extends Controller
     public function getHealthCondition(Request $request)
     {
         $healthCondition = DB::table('member_diagnosis')
-                           ->join('DIAGNOSIS_CODES','member_diagnosis.diagnosis_id', '=', 'DIAGNOSIS_CODES.diagnosis_id')
-                           ->where('member_diagnosis.member_id', 'like', '%'. strtoupper($request->search) .'%')
-                           ->get();
+            ->join('DIAGNOSIS_CODES', 'member_diagnosis.diagnosis_id', '=', 'DIAGNOSIS_CODES.diagnosis_id')
+            ->where('member_diagnosis.member_id', 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $healthCondition);
     }
@@ -80,8 +135,8 @@ class MemberController extends Controller
     public function getDiagnosisHistory(Request $request)
     {
         $diagnosisHistor = DB::table('MEMBER_DIAGNOSIS_HISTORY')
-                           ->where('diagnosis_id', 'like', '%'. strtoupper($request->search) .'%')
-                           ->get();
+            ->where('diagnosis_id', 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $diagnosisHistor);
     }
@@ -89,10 +144,10 @@ class MemberController extends Controller
     public function getPriorAuthorization(Request $request)
     {
         $priorAuthorization = DB::table('PRIOR_AUTHORIZATIONS')
-                              ->where('member_id', 'like', '%'. strtoupper($request->member_id) .'%')
-                              ->where('client_id', 'like', '%'. strtoupper($request->client_id) .'%')
-                              ->where('client_group_id', 'like', '%'. strtoupper($request->client_group_id) .'%')
-                              ->get();
+            ->where('member_id', 'like', '%' . strtoupper($request->member_id) . '%')
+            ->where('client_id', 'like', '%' . strtoupper($request->client_id) . '%')
+            ->where('client_group_id', 'like', '%' . strtoupper($request->client_group_id) . '%')
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $priorAuthorization);
     }
@@ -100,16 +155,16 @@ class MemberController extends Controller
     public function getLogChangeData(Request $request)
     {
         $logChange = DB::table('MEMBER_CHANGE_LOG')
-                              ->where('member_id', 'like', '%'. strtoupper($request->member_id) .'%')
-                              ->where('client_id', 'like', '%'. strtoupper($request->client_id) .'%')
-                              ->where('client_group_id', 'like', '%'. strtoupper($request->client_group_id) .'%')
-                              ->where('customer_id', 'like', '%'. strtoupper($request->customer_id) .'%')
-                              ->get();
+            ->where('member_id', 'like', '%' . strtoupper($request->member_id) . '%')
+            ->where('client_id', 'like', '%' . strtoupper($request->client_id) . '%')
+            ->where('client_group_id', 'like', '%' . strtoupper($request->client_group_id) . '%')
+            ->where('customer_id', 'like', '%' . strtoupper($request->customer_id) . '%')
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $logChange);
     }
 
-  
+
 
     //Eligibility
     public function getEligibility(Request $request)
@@ -123,8 +178,8 @@ class MemberController extends Controller
             ['eligibility_id' => '6', 'eligibility_name' => 'Disabled parents'],
             ['eligibility_id' => '7', 'eligibility_name' => 'Spouse only'],
             ['eligibility_id' => '8', 'eligibility_name' => 'Spouse & childern'],
-        ];       
-        return $this->respondWithToken($this->token(),'', $eligibility);
+        ];
+        return $this->respondWithToken($this->token(), '', $eligibility);
     }
 
     //Member Status
@@ -185,14 +240,14 @@ class MemberController extends Controller
     public function getCopayStrategyId(Request $request)
     {
         $copay_strategy_id = DB::table('COPAY_STRATEGY')
-                             ->get();
+            ->get();
         return $this->respondWithToken($this->token(), '', $copay_strategy_id);
     }
 
     public function getAccumulatedBenifitStrategy(Request $request)
     {
         $acc_beni_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
-                             ->get();
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $acc_beni_strategy);
     }
@@ -200,7 +255,7 @@ class MemberController extends Controller
     public function getPricingStrategy(Request $request)
     {
         $pricing_strategy = DB::table('PRICING_STRATEGY')
-                            ->get();
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $pricing_strategy);
     }
@@ -217,5 +272,107 @@ class MemberController extends Controller
         return $this->respondWithToken($this->token(), '', $view_limitations);
     }
 
+    //Coverage Information Table
+    public function getCoverageInformationTable(Request $request)
+    {
+        $coverageInformationTable = DB::table('MEMBER_COVERAGE')
+            ->where('customer_id', $request->customer_id)
+            ->where('client_id', $request->client_id)
+            ->where('client_group_id', $request->client_group_id)
+            ->get();
+        return $this->respondWithToken($this->token(), '', $coverageInformationTable);
+    }
 
+    // Health Condition -> Diagnosis
+    public function getDiagnosisTable(Request $request)
+    {
+        $diagnosisTable = DB::table('MEMBER_DIAGNOSIS')
+            ->where('customer_id', $request->customer_id)
+            ->where('client_id', $request->client_id)
+            ->where('client_group_id', $request->client_group_id)
+            ->get();
+        return $this->respondWithToken($this->token(), '', $diagnosisTable);
+    }
+
+    // Health Condition -> Diagnosis Details
+    public function getDiagnosisDetailsTable(Request $request)
+    {
+        $diagnosisDetailsTable = DB::table('MEMBER_DIAGNOSIS_HISTORY')
+            ->where('diagnosis_id', $request->diagnosis_id)
+            ->get();
+        return $this->respondWithToken($this->token(), '', $diagnosisDetailsTable);
+    }
+
+    //Claim History Table
+    public function getClaimHistoryTable(Request $request)
+    {
+        $claim_history_table = DB::table('RX_TRANSACTION_LOG')
+            ->where('customer_id', $request->customer_id)
+            ->where('client_id', $request->client_id)
+            ->where('client_group_id', $request->client_group_id)
+            ->get();
+
+        return $this->respondWithToken($this->token(), '', $claim_history_table);
+        // return $claim_history_table;
+    }
+
+    //Prior Auth Table
+    public function getPriorAuthTable(Request $request)
+    {
+        $prior_auth = DB::table('PRIOR_AUTHORIZATIONS')
+            ->where('customer_id', $request->customer_id)
+            ->where('client_id', $request->client_id)
+            ->where('client_group_id', $request->client_group_id)
+            ->get();
+
+        return $this->respondWithToken($this->token(), '', $prior_auth);
+    }
+
+    //Provider Search Table
+    public function getProviderSearch(Request $request)
+    {
+    }
+
+    //Change Log Table 
+    public function getChangeLogTable(Request $request)
+    {
+        $change_log = DB::table('MEMBER_CHANGE_LOG')
+            ->where('customer_id', $request->customer_id)
+            ->where('client_id', $request->client_id)
+            ->where('client_group_id', $request->client_group_id)
+            ->get();
+
+        return $this->respondWithToken($this->token(), '', $change_log);
+    }
+
+    public function submitMemberForm(Request $request)
+    {
+        if ($request->add_new) {
+            $add_member = DB::table('member')
+                ->insert([
+                    'customer_id' => $request->customer_id,
+                    'client_id' => $request->client_id,
+                    'client_group_id' => $request->client_group_id,
+                    'member_id' => $request->member_id,
+                    'eligibility_ovrd' => $request->eligibility_ovrd,
+                    'status' => $request->status,
+                    'elig_lock_date' => $request->elig_lock_date,
+                    'load_process_date' => $request->load_process_date,
+                    'prim_coverage_ins_carrier' => $request->prim_coverage_ins_carrier,
+                    'member_first_name' => $request->member_first_name,
+                    'member_last_name' => $request->member_last_name,
+                    'address_1' => $request->address_1,
+                    'address_2' => $request->address_2,
+                    'city' => $request->city,
+                    'state' => $request->state,
+                    'country' => $request->country,
+                    'date_of_birth' => $request->date_of_birth,
+                    'relationship' => $request->relationship,
+                    'anniv_date' => $request->anniv_date,
+                    'patient_id_number' => $request->patient_id_number,
+                    'alt_member_id' => $request->alt_member_id,
+                    'sex_of_patient' => $request->sex_of_patient,
+                ]);
+        }
+    }
 }

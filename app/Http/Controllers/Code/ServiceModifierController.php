@@ -11,37 +11,63 @@ class ServiceModifierController extends Controller
     public function get(Request $request)
     {
         $procedurecodes = DB::table('SERVICE_MODIFIERS')
-                                ->where('SERVICE_MODIFIER', 'like', '%'.$request->search.'%')
-                                ->orWhere('DESCRIPTION', 'like', '%'.$request->search.'%')
-                                ->get();
+            ->where('SERVICE_MODIFIER', 'like', '%' . $request->search . '%')
+            ->orWhere('DESCRIPTION', 'like', '%' . $request->search . '%')
+            ->get();
 
-       return $this->respondWithToken($this->token(), '', $procedurecodes);
-
+        return $this->respondWithToken($this->token(), '', $procedurecodes);
     }
 
     public function add(Request $request)
     {
-       
-        $procedurecode = DB::table('SERVICE_MODIFIERS')->insert(
-            [
-                'SERVICE_MODIFIER' => $request->service_modifier_code,
-                'DESCRIPTION' => $request->service_modifier_description,
-                'DATE_TIME_CREATED' => date('y-m-d'),
-                'USER_ID_CREATED' => '',
-                'USER_ID' => '',
-                'DATE_TIME_MODIFIED' => '',
-                'FORM_ID' => '',
-                // 'COMPLETE_CODE_IND' => ''
-            ]
-        );
+        if ($request->new) {
+            $procedurecode = DB::table('SERVICE_MODIFIERS')->insert(
+                [
+                    'SERVICE_MODIFIER' => $request->service_modifier,
+                    'DESCRIPTION' => $request->description,
+                    'DATE_TIME_CREATED' => date('y-m-d'),
+                    'USER_ID_CREATED' => $request->user_id_created,
+                    'USER_ID' => $request->user_id,
+                    'DATE_TIME_MODIFIED' => $request->date_time_modified,
+                    'FORM_ID' => $request->form_id,
+                    // 'COMPLETE_CODE_IND' => ''
+                ]
+            );
+            return  $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+        } else {
+            $procedurecode = DB::table('SERVICE_MODIFIERS')
+                ->where('SERVICE_MODIFIER', $request->service_modifier)
+                ->update(
+                    [
+                        // 'SERVICE_MODIFIER' => $request->service_modifier,
+                        'DESCRIPTION' => $request->description,
+                        'DATE_TIME_CREATED' => date('y-m-d'),
+                        'USER_ID_CREATED' => $request->user_id_created,
+                        'USER_ID' => $request->user_id,
+                        'DATE_TIME_MODIFIED' => $request->date_time_modified,
+                        'FORM_ID' => $request->form_id,
+                        // 'COMPLETE_CODE_IND' => ''
+                    ]
+                );
 
-        return  $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+            return  $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+        }
     }
 
     public function delete(Request $request)
     {
-        return  DB::table('SERVICE_MODIFIERS')->where('SERVICE_MODIFIER', $request->id)->delete() 
+        return  DB::table('SERVICE_MODIFIERS')->where('SERVICE_MODIFIER', $request->id)->delete()
             ? $this->respondWithToken($this->token(), 'Successfully deleted')
             : $this->respondWithToken($this->token(), 'Could find data');
+    }
+
+    public function checkServiceExist(Request $request)
+    {
+        $check_service_exist = DB::table('SERVICE_MODIFIERS')
+            ->where('SERVICE_MODIFIER', $request->search)
+            ->get()
+            ->count();
+
+        return $this->respondWithToken($this->token(), '', $check_service_exist);
     }
 }

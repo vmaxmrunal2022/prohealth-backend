@@ -53,8 +53,8 @@ class MacListController extends Controller
     public function submit(Request $request)
     {
         $effective_date = date('Ymd', strtotime($request->effective_date));
-
         $termination_date = date('Ymd', strtotime($request->termination_date));
+        
         print($effective_date);
         print($termination_date);
         if ($request->add_new) {
