@@ -101,14 +101,7 @@ class UserDefinationController extends Controller
 
         public function get( Request $request )
  {
-            // $userDefination = DB::table( 'FE_USERS' )
-            //                   ->join( 'FE_USER_GROUPS', 'FE_USER_GROUPS.group_id', '=', 'FE_USERS.group_id' )
-            //                   ->join( 'customer', 'customer.user_id', '=', 'fe_users.user_id' )
-            //                   ->join( 'CLIENT_GROUP', 'CLIENT_GROUP.user_id', '=', 'fe_users.user_id' )
-            //                   ->where( 'FE_USERS.user_id', 'like', '%'. $request->search .'%' )
-            //                   ->orWhere( 'FE_USERS.USER_FIRST_NAME', 'like', '%'. $request->search .'%' )
-            //                   ->orWhere( 'FE_USERS.USER_LAST_NAME', 'like', '%'. $request->search .'%' )
-            //                   ->get();
+           
 
             $userDefination = DB::table( 'FE_USERS' )
             // ->join( 'FE_USER_GROUPS', 'FE_USER_GROUPS.group_id', '=', 'FE_USERS.group_id' )
@@ -123,18 +116,18 @@ class UserDefinationController extends Controller
         }
 
         public function getGroupData( Request $request )
- {
+         {
             $groupData = DB::table( 'FE_USER_GROUPS' )->get();
 
             return $this->respondWithToken( $this->token(), '', $groupData );
         }
 
         public function getSecurityOptions( Request $request )
- {
+      {
         }
 
         public function validateGroup( Request $request )
- {
+        {
             $validate = DB::table( 'FE_USER_GROUPS' )
             ->where( 'group_id', 'like', '%' . $request->search . '%' )
             ->get()
@@ -143,7 +136,7 @@ class UserDefinationController extends Controller
         }
 
         public function submitFormData( Request $request )
- {
+        {
             if ( $request->has( 'new' ) ) {
                 $addUser = DB::table( 'FE_USERS' )
                 ->insert( [
@@ -177,7 +170,7 @@ class UserDefinationController extends Controller
         }
 
         public function getCustomers( Request $request )
- {
+         {
             if ( $request->user_id == 'undefined' ) {
                 $customers = DB::table( 'customer' )
                 ->select( 'customer_id as value', 'customer_name as label' )
@@ -235,7 +228,7 @@ class UserDefinationController extends Controller
     public function getClientGroups( Request $request )
  {
         // print_r( Auth::id() );
-        exit();
+        // exit();
         if ( $request->user_id == 'undefined' ) {
             $client_groups = DB::table( 'CLIENT_GROUP' )
             ->select( 'CLIENT_GROUP_ID as value', 'GROUP_NAME as label' )
