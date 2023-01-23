@@ -129,7 +129,7 @@ Route::group(['prefix' => 'codes'], function ($router) {
     Route::get('/provider-type', [ProviderTypeController::class, 'get'])->name('providertype.get'); // SEARCH
     Route::post('/provider-type/submit', [ProviderTypeController::class, 'add'])->name('providertype.submit');  // add
     Route::post('/provider-type/delete', [ProviderTypeController::class, 'delete'])->name('providertype.delete'); // DELETE
-
+    Route::get('/check-provider-type-exist', [ProviderTypeController::class, 'checkProviderTypeExist']);
 
     // DIAGNOSIS
     Route::get('/diagnosis', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH

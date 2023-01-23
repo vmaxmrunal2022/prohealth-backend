@@ -80,4 +80,14 @@ class ProviderTypeController extends Controller
             ? $this->respondWithToken($this->token(), 'Successfully deleted')
             : $this->respondWithToken($this->token(), 'Could find data');
     }
+
+    public function checkProviderTypeExist(Request $request)
+    {
+        $check = DB::table('PROVIDER_TYPES')
+            ->where(DB::raw('UPPER(PROVIDER_TYPE)'), strtoupper($request->search))
+            ->get()
+            ->count();
+
+        return $this->respondWithToken($this->token(), '', $check);
+    }
 }
