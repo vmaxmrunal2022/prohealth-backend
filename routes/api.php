@@ -624,6 +624,8 @@ Route::group(['prefix'=>'administrator/'], function(){
 
     //System parameters
     Route::get('system-parameter/get-parameters',[SystemParameterController::class, 'getSystemParameters'])->name('getSystemParameters');
+    Route::get('system-parameter/add',[SystemParameterController::class, 'add'])->name('add.SystemParameters');
+
     Route::get('system-parameters/get-states',[SystemParameterController::class, 'getState'])->name('getState');
     Route::get('system-parameters/get-countries',[SystemParameterController::class, 'getCountries'])->name('getCountries');
 
