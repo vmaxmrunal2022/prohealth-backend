@@ -51,7 +51,6 @@ use App\Http\Controllers\AccumLatedBenifits\MajorMedicalController;
 use App\Http\Controllers\administrator\ClaimHistoryController;
 use App\Http\Controllers\administrator\ZipCodeController;
 use App\Http\Controllers\administrator\AuditTrailController;
-use App\Http\Controllers\administrator\ClaimHistoryController;
 use App\Http\Controllers\administrator\SystemParameterController;
 use App\Http\Controllers\administrator\UserDefinationController;
 
@@ -614,6 +613,8 @@ Route::group(['prefix'=>'administrator/'], function(){
     Route::get('user-defination/get-customers-list',[UserDefinationController::class, 'getCustomersList']);
     Route::get('user-defination/get-clients',[UserDefinationController::class, 'getClients']);
     Route::get('user-defination/get-client-groups',[UserDefinationController::class, 'getClientGroups']);
+    Route::post('user-defination',[UserDefinationController::class, 'addUserDefinition']);
+
 
     //Search Audit Trail
     Route::get('search-audit-trial/get-tables',[AuditTrailController::class, 'getTables'])->name('getAllTables');
@@ -635,12 +636,7 @@ Route::group(['prefix'=>'administrator/'], function(){
     Route::get('claim-history/get-client-id', [ClaimHistoryController::class, 'getClientId']);
     Route::get('claim-history/get-client-group', [ClaimHistoryController::class, 'getClientGroup']);
     Route::post('claim-history/search-optional-data', [ClaimHistoryController::class, 'searchOptionalData']);
-});
 
-
-//Administrator
-Route::group(['prefix'=>'administrator/'], function(){
-    //Zip Codes
     Route::get('zipcode/search',[ZipCodeController::class, 'search']);
     Route::get('zipcode/get/{zip_code}', [ZipCodeController::class, 'getZipCodeList']);
     Route::post('zipcode/submit',[ZipCodeController::class, 'submitFormData']);
@@ -648,5 +644,8 @@ Route::group(['prefix'=>'administrator/'], function(){
     //claim history
     Route::get('claim-history',[ClaimHistoryController::class,'get']);
 });
+
+
+
 
 });
