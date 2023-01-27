@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Code;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Nette\Utils\Json;
+use Symfony\Component\HttpFoundation\Response;
 
 class ProviderTypeController extends Controller
 {
@@ -19,23 +21,7 @@ class ProviderTypeController extends Controller
     }
 
     public function add(Request $request)
-    {
-
-        // $procedurecode = DB::table('PROVIDER_TYPES')->updateOrInsert(
-        //     [
-        //         'PROVIDER_TYPE' => strtoupper($request->provider_type),
-        //     ],
-        //     [
-        //         'PROVIDER_TYPE' => strtoupper($request->provider_type),
-        //         'DESCRIPTION' => strtoupper($request->description),
-        //         'DATE_TIME_CREATED' => date('y-m-d'),
-        //         'USER_ID_CREATED' => '',
-        //         'USER_ID' => '',
-        //         'DATE_TIME_MODIFIED' => '',
-        //         'FORM_ID' => '',
-        //         // 'COMPLETE_CODE_IND' => ''
-        //     ]
-        // );
+    {       
         if ($request->new) {
             $procedurecode = DB::table('PROVIDER_TYPES')->insert(
                 [
@@ -65,6 +51,7 @@ class ProviderTypeController extends Controller
                         // 'COMPLETE_CODE_IND' => ''
                     ]
                 );
+            // dd($procedurecode);
             return  $this->respondWithToken($this->token(), 'Updated successfully!', $procedurecode);
         }
 

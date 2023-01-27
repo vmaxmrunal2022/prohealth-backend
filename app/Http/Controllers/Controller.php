@@ -22,7 +22,8 @@ class Controller extends BaseController
             "message" => $responseMessage,
             "data" => $data,
             "token" => $token ?? '',
-            "token_type" => "bearer",
+            // "token_type" => "bearer",
+            "status_code" => $code,
         ], $code);
     }
 
@@ -61,22 +62,21 @@ class Controller extends BaseController
         // return $this->respondWithToken($this->token(), '', $states);
     }
 
-      //Member
-      public function getMember(Request $request)
-      {        
-          $memberIds = DB::table('member')     
-                       ->where('member_id', 'like', '%'. $request->search .'%') 
-                       ->get();
-          return $this->respondWithToken($this->token(), '', $memberIds);
-      }
+    //Member
+    public function getMember(Request $request)
+    {
+        $memberIds = DB::table('member')
+            ->where('member_id', 'like', '%' . $request->search . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $memberIds);
+    }
 
-      //Provider
-      public function getProvider(Request $request)
-      {
+    //Provider
+    public function getProvider(Request $request)
+    {
         $providers = DB::table('pharmacy_table')
-                     ->where(DB::raw('UPPER(pharmacy_nabp)'), 'like', '%'. strtoupper($request->search) .'%')
-                     ->get();
+            ->where(DB::raw('UPPER(pharmacy_nabp)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
         return $this->respondWithToken($this->token(), '', $providers);
-      }
-
+    }
 }
