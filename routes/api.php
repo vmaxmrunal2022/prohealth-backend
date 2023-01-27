@@ -362,10 +362,10 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
 
     Route::get('/prescriber/search', [PrescriberValidationController::class, 'search'])->name('prescriber.search'); // SEARCH
-    Route::get('/prescriber/get/{ndcid}', [PrescriberValidationController::class, 'getProviderList'])->name('prescriber.list.get'); // LIST ITEMS
-    Route::get('/prescriber/details/{ndcid}', [PrescriberValidationController::class, 'getNDCItemDetails'])->name('prescriber.details.get'); // DETAIL
-    
-
+    Route::get('/prescriber/get/{physicain_list}', [PrescriberValidationController::class, 'getProviderValidationList'])->name('prescriber.list.get'); // LIST ITEMS
+    Route::get('/prescriber/details/{physicain_list}/{physicain_id}', [PrescriberValidationController::class, 'getProviderDetails'])->name('prescriber.details.get'); // DETAIL
+    Route::get('prescriber/prescriber-list-drop-down',[PrescriberValidationController::class,'searchDropDownPrescriberList']);
+    Route::post('/prescriber/submit-prescriber-form',[PrescriberValidationController::class,'addPrescriberData']);
 
 
 
