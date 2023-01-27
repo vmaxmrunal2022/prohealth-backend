@@ -20,21 +20,37 @@ class ServiceTypeController extends Controller
 
     public function add(Request $request)
     {
-
-        $procedurecode = DB::table('SERVICE_TYPES')->insert(
-            [
-                'SERVICE_TYPE' => strtoupper($request->service_type_code),
-                'DESCRIPTION' => strtoupper($request->service_type_description),
-                'DATE_TIME_CREATED' => date('y-m-d'),
-                'USER_ID_CREATED' => '',
-                'USER_ID' => '',
-                'DATE_TIME_MODIFIED' => '',
-                'FORM_ID' => '',
-                // 'COMPLETE_CODE_IND' => ''
-            ]
-        );
-
-        return $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+        if ($request->new) {
+            $procedurecode = DB::table('SERVICE_TYPES')->insert(
+                [
+                    'SERVICE_TYPE' => strtoupper($request->service_type),
+                    'DESCRIPTION' => strtoupper($request->description),
+                    'DATE_TIME_CREATED' => date('y-m-d'),
+                    'USER_ID_CREATED' => $request->user_id_created,
+                    'USER_ID' => $request->user_id,
+                    'DATE_TIME_MODIFIED' => $request->date_time_modified,
+                    'FORM_ID' => $request->form_id,
+                    // 'COMPLETE_CODE_IND' => ''
+                ]
+            );
+            return $this->respondWithToken($this->token(), 'Added successfully!', $procedurecode);
+        } else {
+            $procedurecode = DB::table('SERVICE_TYPES')
+                ->where(DB::raw('UPPER(SERVICE_TYPE)'), strtoupper($request->service_type))
+                ->update(
+                    [
+                        // 'SERVICE_TYPE' => strtoupper($request->service_type),
+                        'DESCRIPTION' => strtoupper($request->description),
+                        'DATE_TIME_CREATED' => date('y-m-d'),
+                        'USER_ID_CREATED' => $request->user_id_created,
+                        'USER_ID' => $request->user_id,
+                        'DATE_TIME_MODIFIED' => $request->date_time_modified,
+                        'FORM_ID' => $request->form_id,
+                        // 'COMPLETE_CODE_IND' => ''
+                    ]
+                );
+            return $this->respondWithToken($this->token(), 'Updated successfully!', $procedurecode);
+        }
     }
 
     public function delete(Request $request)
@@ -42,5 +58,14 @@ class ServiceTypeController extends Controller
         return DB::table('SERVICE_TYPES')->where('SERVICE_TYPE', $request->id)->delete()
             ? $this->respondWithToken($this->token(), 'Successfully deleted')
             : $this->respondWithToken($this->token(), 'Could not find data');
+    }
+
+    public function checkServiceTypeExist(Request $request)
+    {
+        $check_service_type_exist = DB::table('SERVICE_TYPES')
+            ->where(DB::raw('UPPER(SERVICE_TYPE)'), strtoupper($request->search))
+            ->get()
+            ->count();
+        return $this->respondWithToken($this->token(), '', $check_service_type_exist);  
     }
 }
