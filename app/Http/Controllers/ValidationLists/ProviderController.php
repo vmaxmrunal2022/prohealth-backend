@@ -55,7 +55,7 @@ class ProviderController extends Controller
 
         $getProviderValidationData = DB::table('PHARMACY_VALIDATIONS')
         ->where('PHARMACY_LIST',$request->pharmacy_list)
-        ->where('PHARMACY_NABP',$request->pharmacy_nabp['value'])
+        ->where('PHARMACY_NABP',$request->pharmacy_nabp)
         ->first();
 
         if($request->has('new')){
@@ -71,7 +71,7 @@ class ProviderController extends Controller
                 $addProviderValidationData = DB::table('PHARMACY_VALIDATIONS')
                 ->insert([
                     'PHARMACY_LIST'=>$request->pharmacy_list,
-                    'PHARMACY_NABP'=>$request->pharmacy_nabp['value'],
+                    'PHARMACY_NABP'=>$request->pharmacy_nabp,
                     'PHARMACY_STATUS'=>$request->pharmacy_status,
                     'DATE_TIME_CREATED'=>date('d-M-y'),
                     'USER_ID'=>$request->user_name
@@ -85,7 +85,7 @@ class ProviderController extends Controller
                     $addProviderValidationData = DB::table('PHARMACY_VALIDATIONS')
                     ->insert([
                         'PHARMACY_LIST'=>$request->pharmacy_list,
-                        'PHARMACY_NABP'=>$request->pharmacy_nabp['value'],
+                        'PHARMACY_NABP'=>$request->pharmacy_nabp,
                         'PHARMACY_STATUS'=>$request->pharmacy_status,
                         'DATE_TIME_CREATED'=>date('d-M-y'),
                         'USER_ID'=>$request->user_name
@@ -110,7 +110,7 @@ class ProviderController extends Controller
                 $addProviderValidationData = DB::table('PHARMACY_VALIDATIONS')
                 ->insert([
                     'PHARMACY_LIST'=>$request->pharmacy_list,
-                    'PHARMACY_NABP'=>$request->pharmacy_nabp['value'],
+                    'PHARMACY_NABP'=>$request->pharmacy_nabp,
                     'PHARMACY_STATUS'=>$request->pharmacy_status,
                     'DATE_TIME_CREATED'=>date('d-M-y'),
                     'USER_ID'=>$request->user_name
@@ -121,7 +121,7 @@ class ProviderController extends Controller
             }else{
                 $updateProviderExceptionData = DB::table('PHARMACY_VALIDATIONS')
             ->where('PHARMACY_LIST',$request->pharmacy_list)
-            ->where('PHARMACY_NABP',$request->pharmacy_nabp['value'])
+            ->where('PHARMACY_NABP',$request->pharmacy_nabp)
             ->update([
                 'PHARMACY_STATUS'=>$request->pharmacy_status,
                 'DATE_TIME_MODIFIED'=>date('d-M-y')

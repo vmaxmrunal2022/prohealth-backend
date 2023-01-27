@@ -22,6 +22,8 @@ class BenifitController extends Controller
     public function add(Request $request)
     {
 
+        dd($request);
+
         $createddate = date('y-m-d');
         if ($request->has('new')) {
             $benefitcode = DB::table('benefit_codes')->insert(

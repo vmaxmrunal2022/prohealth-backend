@@ -286,7 +286,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/provider/get/{provider_list}', [ProviderController::class, 'getProviderValidationList'])->name('provider.list.get'); // LIST ITEMS
     Route::get('/provider/details/{provider_list}/{provider_nabp}', [ProviderController::class, 'getProviderDetails'])->name('ndsc.details.get'); // DETAIL
     Route::post('/provider/submit-provider-form',[ProviderController::class,'addProviderData']);
-    Route::get('/provider/provider-list-drop-down/{search?}',[ProviderController::class,'searchDropDownProviderList']);
+    Route::get('/provider/provider-list-drop-down/',[ProviderController::class,'searchDropDownProviderList']);
 
 
 //DIAGNOSIS VALIDATION LIST

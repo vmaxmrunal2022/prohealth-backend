@@ -52,7 +52,7 @@ class PrescriberValidationController extends Controller
 
         $getProviderValidationData = DB::table('PHYSICIAN_VALIDATIONS')
         ->where('PHYSICIAN_LIST',$request->physician_list)
-        ->where('PHYSICIAN_ID',$request->physician_id['value'])
+        ->where('PHYSICIAN_ID',$request->physician_id)
         ->first();
 
         if($request->has('new')){
@@ -107,7 +107,7 @@ class PrescriberValidationController extends Controller
                 $addProviderValidationData = DB::table('PHYSICIAN_VALIDATIONS')
                 ->insert([
                     'PHYSICIAN_LIST'=>$request->physician_list,
-                    'PHYSICIAN_ID'=>$request->physician_id['value'],
+                    'PHYSICIAN_ID'=>$request->physician_id,
                     'PHYSICIAN_STATUS'=>$request->physician_status,
                     'DATE_TIME_CREATED'=>date('d-M-y'),
                     'USER_ID'=>$request->user_name
@@ -118,7 +118,7 @@ class PrescriberValidationController extends Controller
             }else{
                 $updateProviderExceptionData = DB::table('PHYSICIAN_VALIDATIONS')
             ->where('PHYSICIAN_LIST',$request->physician_list)
-            ->where('PHYSICIAN_ID',$request->physician_id['value'])
+            ->where('PHYSICIAN_ID',$request->physician_id)
             ->update([
                 'PHYSICIAN_STATUS'=>$request->physician_status,
                 'DATE_TIME_MODIFIED'=>date('d-M-y'),

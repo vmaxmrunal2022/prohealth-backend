@@ -70,7 +70,8 @@ class DiagnosisValidationListController extends Controller
                 
 
                 if(isset($request->diagnosis_id)){
-                    $diagnosis_id=$request->diagnosis_id['value'];
+                $diagnosis_id = $request->diagnosis_id;
+                    // $diagnosis_id=$request->diagnosis_id['value'];
                 }else{
                     $diagnosis_id='';
                 }
