@@ -20,18 +20,12 @@ class NDCExceptionController extends Controller
                 [
                     'ndc_exception_list' => $request->ndc_exception_list,
                     'exception_name'=>$request->exception_name,
-<<<<<<< HEAD
                     
-=======
-
-
->>>>>>> origin/prasheesh
                 ]
             );
 
             $accum_benfit_stat = DB::table('NDC_EXCEPTION_LISTS' )->insert(
                 [
-<<<<<<< HEAD
                     'ndc_exception_list' => $request->ndc_exception_list,
                     'min_rx_qty'=>$request->min_rx_qty,
 
@@ -103,10 +97,6 @@ class NDCExceptionController extends Controller
                     'starter_dose_maint_bypass_days'=>$request->starter_dose_maint_bypass_days,
                     'valid_relation_code'=>$request->valid_relation_code,
                  
-=======
-                    'ndc_exception_list' => strtoupper( $request->ndc_exception_list ),
-
->>>>>>> origin/prasheesh
                 ]
             );
             $benefitcode = DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', 'like', '%'.$request->ndc_exception_list .'%')->first();
@@ -120,7 +110,6 @@ class NDCExceptionController extends Controller
                 [
                     'min_rx_qty'=>$request->min_rx_qty,
 
-<<<<<<< HEAD
                     'acute_dosing_days'=>$request->acute_dosing_days,
                     'alternate_copay_sched'=>$request->alternate_copay_sched,
                     'alternate_price_schedule'=>$request->alternate_price_schedule,
@@ -189,8 +178,6 @@ class NDCExceptionController extends Controller
                     'starter_dose_maint_bypass_days'=>$request->starter_dose_maint_bypass_days,
                     'valid_relation_code'=>$request->valid_relation_code,
                   
-=======
->>>>>>> origin/prasheesh
 
                 ]
             );
