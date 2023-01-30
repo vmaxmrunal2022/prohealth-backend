@@ -468,6 +468,7 @@ Route::group(['prefix' => 'membership/'], function () {
     Route::get('memberdata/pricing-strategy', [MemberController::class, 'getPricingStrategy']);
     Route::get('memberdata/view-limitations', [MemberController::class, 'getViewLimitations']);
     Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
+    Route::post('memberdata/submit', [MemberController::class, 'submitMemberForm']);
 
     //tab table routes
     Route::get('memberdata/get-coverage-information-table', [MemberController::class, 'getCoverageInformationTable']);

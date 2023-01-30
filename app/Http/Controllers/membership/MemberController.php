@@ -82,6 +82,7 @@ class MemberController extends Controller
                 'CLIENT_GROUP.EFFECTIVE_DATE as client_group_eff_date',
                 'CLIENT_GROUP.GROUP_TERMINATION_DATE as client_group_term_date',
                 'CLIENT_GROUP.CLIENT_GROUP_ID',
+
                 'MEMBER_COVERAGE.CUSTOMER_ID as mem_cov_cust_id',
                 'MEMBER_COVERAGE.EFFECTIVE_DATE',
                 'MEMBER_COVERAGE.TERMINATION_DATE',
@@ -347,9 +348,12 @@ class MemberController extends Controller
 
     public function submitMemberForm(Request $request)
     {
+        // dd($request->all());
         if ($request->add_new) {
+            //Member Tab and Override Tab
             $add_member = DB::table('member')
                 ->insert([
+                    //member tab
                     'customer_id' => $request->customer_id,
                     'client_id' => $request->client_id,
                     'client_group_id' => $request->client_group_id,
@@ -369,10 +373,143 @@ class MemberController extends Controller
                     'date_of_birth' => $request->date_of_birth,
                     'relationship' => $request->relationship,
                     'anniv_date' => $request->anniv_date,
-                    'patient_id_number' => $request->patient_id_number,
+                    'patient_pin_number' => $request->patient_pin_number,
                     'alt_member_id' => $request->alt_member_id,
                     'sex_of_patient' => $request->sex_of_patient,
+
+                    //Overrides
+                    'copay_sched_ovr_flag' => $request->copay_sched_ovr_flag,
+                    'copay_sched_ovr' => $request->copay_sched_ovr,
+                    'accum_bene_ovr_flag' => $request->accum_bene_ovr_flag,
+                    'accum_bene_plan_ovr' => $request->accum_bene_plan_ovr,
+                    'ACCUM_BENE_EFF_DATE_1' => $request->accum_bene_eff_date_1,
+                    'ACCUM_BENE_EFF_DATE_2' => $request->accum_bene_eff_date_2,
+                    'ACCUM_BENE_EFF_DATE_3' => $request->accum_bene_eff_date_3,
+                    'ACCUM_BENE_TERM_DATE_1' => $request->ACCUM_BENE_TERM_DATE_1,
+                    'ACCUM_BENE_TERM_DATE_2' => $request->ACCUM_BENE_TERM_DATE_2,
+                    'ACCUM_BENE_TERM_DATE_3' => $request->ACCUM_BENE_TERM_DATE_3,
+                    // 'provider_id' => $request->provider_id,
+                    'PRIMARY_PRESCRIBER' => $request->prescriber_id,
+                    'MISC_GROUPING_1' => $request->misc_grouping_1,
+                    'MISC_GROUPING_2' => $request->misc_grouping_2,
+                    'misc_id' => $request->misc_id,
+                    'USER_DEFINED_CODE_1' => $request->user_defined_code_1,
+                    'USER_DEFINED_CODE_2' => $request->user_defined_code_2,
                 ]);
+
+            //Coverage Tab
+            $add_member_coverage = DB::table('MEMBER_COVERAGE')
+                ->insert([
+                    'customer_id' => $request->customer_id,
+                    'client_id' => $request->client_id,
+                    'client_group_id' => $request->client_group_id,
+                    'member_id' => $request->member_id,
+                    'EFFECTIVE_DATE' => $request->coverage_effective_date,
+                    'TERMINATION_DATE' => $request->coverage_termination_date,
+                    'plan_id' => $request->coverage_plan_id,
+                    'COPAY_STRATEGY_ID' => $request->coverage_copay_strategy_id,
+                    'ACCUM_BENEFIT_STRATEGY_ID' => $request->coverage_accum_benefit_strategy_id,
+                    'PRICING_STRATEGY_ID' => $request->coverage_pricing_strategy_id,
+                ]);
+
+            //Diagnosis Tab
+            $add_diagnosis = DB::table('MEMBER_DIAGNOSIS')
+                ->insert([
+                    'customer_id' => $request->customer_id,
+                    'client_id' => $request->client_id,
+                    'client_group_id' => $request->client_group_id,
+                    'member_id' => $request->member_id,
+                    'DIAGNOSIS_ID' => $request->diagnosis_id,
+                    'EFFECTIVE_DATE' => $request->effective_date,
+                    'PERSON_CODE' => $request->person_code,
+                    'TERMINATION_DATE' => $request->termination_date,
+                ]);
+
+            //Claim History Tab
+
+            //Provider Search Tab
+
+            return $this->respondWithToken($this->token(), 'Added successfully!', $add_member);
+        } else {
+            $update_member = DB::table('member')
+                ->where('customer_id', $request->customer_id)
+                ->where('client_id', $request->client_id)
+                ->where('client_group_id', $request->client_group_id)
+                ->where('member_id', $request->member_id)
+                ->update([
+                    //member tab
+                    'customer_id' => $request->customer_id,
+                    'client_id' => $request->client_id,
+                    'client_group_id' => $request->client_group_id,
+                    'member_id' => $request->member_id,
+                    'eligibility_ovrd' => $request->eligibility_ovrd,
+                    'status' => $request->status,
+                    'elig_lock_date' => $request->elig_lock_date,
+                    'load_process_date' => $request->load_process_date,
+                    'prim_coverage_ins_carrier' => $request->prim_coverage_ins_carrier,
+                    'member_first_name' => $request->member_first_name,
+                    'member_last_name' => $request->member_last_name,
+                    'address_1' => $request->address_1,
+                    'address_2' => $request->address_2,
+                    'city' => $request->city,
+                    'state' => $request->state,
+                    'country' => $request->country,
+                    'date_of_birth' => $request->date_of_birth,
+                    'relationship' => $request->relationship,
+                    'anniv_date' => $request->anniv_date,
+                    'patient_pin_number' => $request->patient_pin_number,
+                    'alt_member_id' => $request->alt_member_id,
+                    'sex_of_patient' => $request->sex_of_patient,
+
+                    //Overrides
+                    'copay_sched_ovr_flag' => $request->copay_sched_ovr_flag,
+                    'copay_sched_ovr' => $request->copay_sched_ovr,
+                    'accum_bene_ovr_flag' => $request->accum_bene_ovr_flag,
+                    'accum_bene_plan_ovr' => $request->accum_bene_plan_ovr,
+                    'ACCUM_BENE_EFF_DATE_1' => $request->accum_bene_eff_date_1,
+                    'ACCUM_BENE_EFF_DATE_2' => $request->accum_bene_eff_date_2,
+                    'ACCUM_BENE_EFF_DATE_3' => $request->accum_bene_eff_date_3,
+                    'ACCUM_BENE_TERM_DATE_1' => $request->ACCUM_BENE_TERM_DATE_1,
+                    'ACCUM_BENE_TERM_DATE_2' => $request->ACCUM_BENE_TERM_DATE_2,
+                    'ACCUM_BENE_TERM_DATE_3' => $request->ACCUM_BENE_TERM_DATE_3,
+                    // 'provider_id' => $request->provider_id,
+                    'PRIMARY_PRESCRIBER' => $request->prescriber_id,
+                    'MISC_GROUPING_1' => $request->misc_grouping_1,
+                    'MISC_GROUPING_2' => $request->misc_grouping_2,
+                    'misc_id' => $request->misc_id,
+                    'USER_DEFINED_CODE_1' => $request->user_defined_code_1,
+                    'USER_DEFINED_CODE_2' => $request->user_defined_code_2,
+                ]);
+
+            //Coverage Tab
+            $update_member_coverage = DB::table('MEMBER_COVERAGE')
+                ->where('customer_id', $request->customer_id)
+                ->where('client_id', $request->client_id)
+                ->where('client_group_id', $request->client_group_id)
+                ->where('member_id', $request->member_id)
+                ->update([
+                    'EFFECTIVE_DATE' => $request->coverage_effective_date,
+                    'TERMINATION_DATE' => $request->coverage_termination_date,
+                    'plan_id' => $request->coverage_plan_id,
+                    'COPAY_STRATEGY_ID' => $request->coverage_copay_strategy_id,
+                    'ACCUM_BENEFIT_STRATEGY_ID' => $request->coverage_accum_benefit_strategy_id,
+                    'PRICING_STRATEGY_ID' => $request->coverage_pricing_strategy_id,
+                ]);
+
+            //Diagnosis Tab
+            $update_diagnosis = DB::table('MEMBER_DIAGNOSIS')
+                ->where('customer_id', $request->customer_id)
+                ->where('client_id', $request->client_id)
+                ->where('client_group_id', $request->client_group_id)
+                ->where('member_id', $request->member_id)
+                ->update([
+                    'PERSON_CODE' => $request->person_code,
+                    'DIAGNOSIS_ID' => $request->diagnosis_id,
+                    'EFFECTIVE_DATE' => $request->effective_date,
+                    'termination_date' => $request->termination_date,
+                ]);
+
+            return $this->respondWithToken($this->token(), 'Updated successfully!', $update_member);
         }
     }
 }
