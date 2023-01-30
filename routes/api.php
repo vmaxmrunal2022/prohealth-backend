@@ -267,6 +267,9 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/diagnosis/get/{ndcid}', [ValidationListsController::class, 'getDiagnosisList'])->name('diagnosis.list.get'); // LIST ITEMS
     Route::get('/diagnosis/details/{ndcid}', [ValidationListsController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
+    Route::get('/limitations', [DiagnosisController::class, 'getLimitations'])->name('diagnosis.get'); // SEARCH
+
+
 
     Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('speciality.search'); // SEARCH
     Route::get('/speciality/get/{specialty_id}', [SpecialityController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS

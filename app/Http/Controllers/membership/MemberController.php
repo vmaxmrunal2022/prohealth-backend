@@ -77,12 +77,6 @@ class MemberController extends Controller
                 'CLIENT.EFFECTIVE_DATE as client_eff_date',
                 'CLIENT.TERMINATION_DATE as client_term_date',
 
-<<<<<<< HEAD
-                      'CLIENT_GROUP.CUSTOMER_ID as client_group_cust_id', 'CLIENT_GROUP.GROUP_NAME', 'CLIENT_GROUP.EFFECTIVE_DATE as client_group_eff_date', 'CLIENT_GROUP.GROUP_TERMINATION_DATE as client_group_term_date', 'CLIENT_GROUP.CLIENT_GROUP_ID',
-                      'MEMBER_COVERAGE.CUSTOMER_ID as mem_cov_cust_id', 'MEMBER_COVERAGE.EFFECTIVE_DATE', 'MEMBER_COVERAGE.TERMINATION_DATE', 'MEMBER_COVERAGE.PLAN_ID',
-                      'MEMBER_COVERAGE.COPAY_STRATEGY_ID', 'MEMBER_COVERAGE.ACCUM_BENEFIT_STRATEGY_ID', 'MEMBER_COVERAGE.PRICING_STRATEGY_ID',
-                      )
-=======
                 'CLIENT_GROUP.CUSTOMER_ID as client_group_cust_id',
                 'CLIENT_GROUP.GROUP_NAME',
                 'CLIENT_GROUP.EFFECTIVE_DATE as client_group_eff_date',
@@ -96,7 +90,6 @@ class MemberController extends Controller
                 'MEMBER_COVERAGE.ACCUM_BENEFIT_STRATEGY_ID',
                 'MEMBER_COVERAGE.PRICING_STRATEGY_ID',
             )
->>>>>>> origin/mrunal
             ->join('CUSTOMER', 'MEMBER.CUSTOMER_ID', '=', 'CUSTOMER.CUSTOMER_ID')
             ->join('CLIENT', 'MEMBER.CUSTOMER_ID', '=', 'CLIENT.CUSTOMER_ID')
             ->join('CLIENT_GROUP', 'MEMBER.CUSTOMER_ID', '=', 'CLIENT_GROUP.CUSTOMER_ID')

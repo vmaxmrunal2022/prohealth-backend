@@ -19,6 +19,19 @@ class DiagnosisController extends Controller
         return $this->respondWithToken($this->token(), '', $benefitcodes);
     }
 
+
+    public function getLimitations(Request $request){
+
+
+        $benefitcodes = DB::table('LIMITATIONS_LIST')
+            ->where('LIMITATIONS_LIST', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('LIMITATIONS_LIST_NAME', 'like', '%' . $request->search . '%')
+            ->get();
+
+        return $this->respondWithToken($this->token(), '', $benefitcodes);
+
+    }
+
     public function add(Request $request)
     {
         // $benefitcode = DB::table('DIAGNOSIS_CODES')->updateOrInsert(
