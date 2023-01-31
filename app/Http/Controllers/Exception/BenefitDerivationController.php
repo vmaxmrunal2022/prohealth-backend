@@ -98,7 +98,6 @@ class BenefitDerivationController extends Controller {
 
         return $this->respondWithToken( $this->token(), '', $ndclist );
 
-        return $this->respondWithToken( $this->token(), '', $ndc );
 
     }
 }
