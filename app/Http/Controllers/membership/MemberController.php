@@ -228,10 +228,10 @@ class MemberController extends Controller
     public function getAccumulatedBenifitOverride(Request $request)
     {
         $accumulatedBenifitOvrr = [
-            ['acc_beni_ovrr_id' => 'N', 'acc_beni_ovrr_id' => 'Override the plan and provide no accumulated benefits for this member'],
-            ['acc_beni_ovrr_id' => 'C', 'acc_beni_ovrr_id' => 'Change the accumulated benifits to the accumulated benifit plan overrides'],
-            ['acc_beni_ovrr_id' => 'A', 'acc_beni_ovrr_id' => ''],
-            ['acc_beni_ovrr_id' => 'P', 'acc_beni_ovrr_id' => ''],
+            ['acc_beni_ovrr_id' => 'N', 'name' => 'Override the plan and provide no accumulated benefits for this member'],
+            ['acc_beni_ovrr_id' => 'C', 'name' => 'Change the accumulated benifits to the accumulated benifit plan overrides'],
+            ['acc_beni_ovrr_id' => 'A', 'name' => ''],
+            ['acc_beni_ovrr_id' => 'P', 'name' => ''],
         ];
 
         return $this->respondWithToken($this->token(), '', $accumulatedBenifitOvrr);

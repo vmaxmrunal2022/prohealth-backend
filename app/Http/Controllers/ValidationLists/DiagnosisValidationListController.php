@@ -162,7 +162,13 @@ class DiagnosisValidationListController extends Controller
                 ->where('LIMITATIONS_LIST', strtoupper($request->limitation_list))
                 ->first();
 
-            if (!$recordcheck) {
+            if ($recordcheck) {
+
+
+                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getusersData);
+
+            }else{
+
 
                 $addData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
                     ->insert([
@@ -175,17 +181,14 @@ class DiagnosisValidationListController extends Controller
                         'USER_ID_CREATED' => $request->user_name
 
                     ]);
+
+            }
+
+    
+                
                 if ($addData) {
                     return $this->respondWithToken($this->token(), 'Added Succcessfully Limitation!!!');
-                } else {
-
-                    return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getusersData);
-
-                }
-
-
-
-
+                } 
 
             } else {
                 $updateData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
@@ -199,7 +202,7 @@ class DiagnosisValidationListController extends Controller
             if ($updateData) {
                 return $this->respondWithToken($this->token(), 'Limitation Update Successfully !!!', $updateData);
             }
-        }
+        
     }
 
 
