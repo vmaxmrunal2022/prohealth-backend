@@ -14,6 +14,7 @@ class DrugDatabaseController extends Controller
             ->where('NDC', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('LABEL_NAME', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('GENERIC_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('PACKAGE_SIZE', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $data);
