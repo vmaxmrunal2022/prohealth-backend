@@ -540,8 +540,12 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
 
 //Drug Information
 Route::group(['prefix' => "drug-information/"], function () {
+    Route::post('drug-database/add', [DrugDatabaseController::class, 'add']);
+
     Route::get('drug-database/get', [DrugDatabaseController::class, 'get']);
     Route::get('drug-database/get-drug-prices', [DrugDatabaseController::class, 'getDrugPrices']);
+    Route::post('drug-price/add', [DrugDatabaseController::class, 'addDrugPrice']);
+
 });
 
 
