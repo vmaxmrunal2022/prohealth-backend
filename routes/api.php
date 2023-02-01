@@ -390,6 +390,12 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     //Copay Schedule
     Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
     Route::get('copay-schedule/get-copay-data', [CopayScheduleController::class, 'getCopayData'])->name('get.copay.single');
+    Route::get('copay-schedule/get-source', [CopayScheduleController::class, 'getSourceOptions']);
+    Route::get('copay-schedule/get-factor', [CopayScheduleController::class, 'getFactor']);
+    Route::get('copay-schedule/get-list-options', [CopayScheduleController::class, 'getListOptions']);
+    Route::get('copay-schedule/get-daw-options', [CopayScheduleController::class, 'getDawOptions']);
+    Route::get('copay-schedule/get-coinsurance-calculation-option', [CopayScheduleController::class, 'getConinsuranceCalculationOption']);
+    Route::post('copay-schedule/submit', [CopayScheduleController::class, 'submitCopaySchedule']);
 
     //Copay Step Schedule
     Route::get('copay-step-schedule/get', [CopayStepScheduleController::class, 'get'])->name('get.copay-step');

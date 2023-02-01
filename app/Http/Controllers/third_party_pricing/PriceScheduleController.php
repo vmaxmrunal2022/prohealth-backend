@@ -107,13 +107,14 @@ class PriceScheduleController extends Controller
     public function getBrandType(Request $reqeust)
     {
         $brand_type = [
-            ['type_id' => 'CALC', 'type_title' => 'Predefined Calculator (see type)'],
-            ['type_id' => 'FDB', 'type_title' => 'First Data Bank'],
-            ['type_id' => 'MDS', 'type_title' => 'MediSpan'],
-            ['type_id' => 'NATL', 'type_title' => 'National'],
-            ['type_id' => 'PLAN', 'type_title' => 'Set by the Plan'],
-            ['type_id' => 'TRX', 'type_title' => 'Inbound from the Provider'],
-            ['type_id' => 'USR', 'type_title' => 'User Defined']
+            // ['type_id' => 'CALC', 'type_title' => 'Predefined Calculator (see type)'],
+            // ['type_id' => 'FDB', 'type_title' => 'First Data Bank'],
+            // ['type_id' => 'MDS', 'type_title' => 'MediSpan'],
+            // ['type_id' => 'NATL', 'type_title' => 'National'],
+            // ['type_id' => 'PLAN', 'type_title' => 'Set by the Plan'],
+            // ['type_id' => 'TRX', 'type_title' => 'Inbound from the Provider'],
+            // ['type_id' => 'USR', 'type_title' => 'User Defined']
+            ['type_id' => 'U&C', 'type_title' => 'Usual & Customer Retail Charge'],
         ];
 
         return $this->respondWithToken($this->token(), '', $brand_type);
@@ -122,7 +123,68 @@ class PriceScheduleController extends Controller
     public function getBrandSource(Request $request)
     {
         $brand_source = [
-            ['source_id' => 'U&C', 'source_title' => 'Usual & Customer Retail Charge'],
+            //   ['source_id' => 'U&C', 'source_title' => 'Usual & Customer Retail Charge'],
+            [
+                'source_id' => 'CALC', 'source_title' => 'Predefined Calculator (see type)',
+                'type' => [
+                    ['type_id' => 'AWP', 'type_title' => 'Average Wholesale Price'],
+                    ['type_id' => 'DIR', 'type_title' => 'Published Direct Price'],
+                    ['type_id' => 'FFP', 'type_title' => 'Fed Financial Participation(MAC)'],
+                    ['type_id' => 'WAC', 'type_title' => 'Wholesale Acquisition Cost']
+                ]
+            ],
+            [
+                'source_id' => 'FDB', 'source_title' => 'First Data Bank',
+                'type' => [
+                    ['type_id' => 'AWP', 'type_title' => 'Average Wholesale Price'],
+                    ['type_id' => 'DIR', 'type_title' => 'Published Direct Price'],
+                    ['type_id' => 'FFP', 'type_title' => 'Fed Financial Participation(MAC)'],
+                    ['type_id' => 'WAC', 'type_title' => 'Wholesale Acquisition Cost']
+                ]
+            ],
+            [
+                'source_id' => 'MDS', 'source_title' => 'MediSpan',
+                'type' => [
+                    ['type_id' => 'AWP', 'type_title' => 'Average Wholesale Price'],
+                    ['type_id' => 'DIR', 'type_title' => 'Published Direct Price'],
+                    ['type_id' => 'FFP', 'type_title' => 'Fed Financial Participation(MAC)'],
+                    ['type_id' => 'WAC', 'type_title' => 'Wholesale Acquisition Cost']
+                ]
+            ],
+            [
+                'source_id' => 'NATL', 'source_title' => 'National',
+                'type' => [
+                    ['type_id' => 'REG1', 'type_title' => 'Region 1'],
+                    ['type_id' => 'REG2', 'type_title' => 'Region 2'],
+                    ['type_id' => 'REG3', 'type_title' => 'Region 3'],
+                    ['type_id' => 'REG4', 'type_title' => 'Region 4'],
+                    ['type_id' => 'REG5', 'type_title' => 'Region 5'],
+                ]
+            ],
+            [
+                'source_id' => 'PLAN', 'source_title' => 'Set by the Plan',
+                'type' => [
+                    ['type_id' => 'MAC', 'type_title' => "Plans's Own Maximum Allowed Change"],
+                    ['type_id' => 'UCR', 'type_title' => 'Usual & Customary Reimbursement'],
+                ]
+            ],
+            [
+                'source_id' => 'TRX', 'source_title' => 'Inbound from the Provider',
+                'type' => [
+                    ['type_id' => 'GRASMT', 'type_title' => 'Gross Amount Due'],
+                    ['type_id' => 'INGCST', 'type_title' => 'Ingredient Cost from Transaction'],
+                    ['type_id' => 'SBMPRC', 'type_title' => 'Total Price from Transaction'],
+                    ['type_id' => 'U&C', 'type_title' => 'Usual & Customary Reimbursement'],
+                ]
+            ],
+            [
+                'source_id' => 'USR', 'source_title' => 'User Defined', 'type' => [
+                    ['type_id' => 'SBC', 'type_title' => 'Store Biling(Acquisition) Cost'],
+                    ['type_id' => 'WAC', 'type_title' => 'Warehouse Acquisition Cost'],
+                    ['type_id' => 'UCR', 'type_title' => 'Usual and Customary Reimbursement'],
+                    ['type_id' => 'USR', 'type_title' => 'User Defined'],
+                ]
+            ]
         ];
 
         return $this->respondWithToken($this->token(), '', $brand_source);
