@@ -214,7 +214,7 @@ class DiagnosisValidationListController extends Controller
         return $this->respondWithToken($this->token(), '', $getData);
     }
 
-    public function getDiagnosisDetails($diagnosis_list, $diagnosis_id)
+    public function getDiagnosisDetails($diagnosis_list,$diagnosis_id)
     {
         $data = DB::table('DIAGNOSIS_VALIDATIONS as a')
             ->join('DIAGNOSIS_EXCEPTIONS as b', 'b.DIAGNOSIS_LIST', '=', 'a.DIAGNOSIS_LIST')

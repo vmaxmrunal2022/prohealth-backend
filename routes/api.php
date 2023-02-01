@@ -567,7 +567,9 @@ Route::group(['prefix' => 'plan-design/'], function () {
 
     //Plan Edit
     Route::get('plan-edit/get', [PlanEditController::class, 'get']);
-    Route::get('plan-edit/get-plan-edit-data', [PlanEditController::class, 'getPlanEditData']);
+    Route::get('plan-edit/add', [PlanEditController::class, 'add']);
+
+    Route::get('plan-edit/get-plan-edit-data/{planid}', [PlanEditController::class, 'getPlanEditData']);
     Route::get('plan-edit/get-plan-classification', [PlanEditController::class, 'getPlanClassification']);
     Route::get('plan-edit/get-exp-flag', [PlanEditController::class, 'getExpFlag']);
     Route::get('plan-edit/get-pharm-exp-flag', [PlanEditController::class, 'getPharmExpFlag']);
