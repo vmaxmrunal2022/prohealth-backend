@@ -103,7 +103,7 @@ class PlanEditController extends Controller
                         'SUPER_BENEFIT_LIST_ID'=>$request->super_benefit_list_id,
                         'SUPER_BENEFIT_LIST_ID_2'=>$request->super_benefit_list_id_2,
                         'PROCEDURE_UCR_ID'=>$request->procedure_ucr_id,
-                        'PROCEDURE_XREF_ID'=>$request->procedure_xref_id,
+                        // 'PROCEDURE_XREF_ID'=>$request->procedure_xref_id,
 
                     ]);
 
