@@ -195,6 +195,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
      Route::get('/drugcalss/get/{ndcid}', [DrugClassController::class, 'getNDCList'])->name('drugclass.list.get'); // LIST ITEMS
      Route::get('/drugcalss/details/{ndcid}', [DrugClassController::class, 'getNDCItemDetails'])->name('drugclass.details.get'); // DETAILS
      Route::post('/drugcalss/add', [DrugClassController::class, 'add'])->name('drugclass.search'); // add
+     Route::get('/drugcategories', [DrugClassController::class, 'DrugCategoryList'])->name('drugclass.search'); // SEARCH
 
 
 
@@ -213,6 +214,9 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/therapy-class/get/{ndcid}', [TherapyClassController::class, 'getTCList'])->name('therapyclass.list.get'); // LIST ITEMS
     Route::get('/therapy-class/details/{ndcid}', [TherapyClassController::class, 'getTCItemDetails'])->name('therapyclass.details.get'); // DETAILS
     Route::post('/therapy/add', [TherapyClassController::class, 'add'])->name('therapy.add'); // add
+
+    Route::get('/therapy-class-list', [TherapyClassController::class, 'TherapyClassList'])->name('therapyclass.search'); // SEARCH
+
 
 
     // PROCEDURE EXCEPTION

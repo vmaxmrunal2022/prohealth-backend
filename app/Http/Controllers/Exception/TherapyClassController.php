@@ -10,6 +10,13 @@ class TherapyClassController extends Controller
 {
 
 
+    public function TherapyClassList(Request $request){
+
+        $ndc = DB::table('TC_EXCEPTIONS')->get();
+        return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
+
     public function add( Request $request ) {
 
         $createddate = date( 'y-m-d' );
