@@ -206,6 +206,15 @@ class NDCExceptionController extends Controller
     }
 
 
+    public function ndcList(Request $request)
+    {
+        $ndc = DB::table('NDC_EXCEPTIONS')
+                ->get();
+
+    return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+
 
 
     public function search(Request $request)

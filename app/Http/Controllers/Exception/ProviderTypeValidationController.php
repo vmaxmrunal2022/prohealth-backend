@@ -70,6 +70,17 @@ class ProviderTypeValidationController extends Controller
         return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
     }
     
+
+    public function getAllNames(Request $request){
+
+        $data = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
+        ->where('PROV_TYPE_PROC_ASSOC_ID','LIKE','%'.strtoupper($request->search).'%')
+        ->get();
+
+        return $this->respondWithToken( $this->token(), 'data fetched  successfully',$data);
+
+
+    }
   
     public function get(Request $request)
     {

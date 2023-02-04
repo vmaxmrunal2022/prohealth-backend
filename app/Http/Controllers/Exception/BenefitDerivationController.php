@@ -67,6 +67,18 @@ class BenefitDerivationController extends Controller {
         return $this->respondWithToken( $this->token(), 'Successfully added', $benefitcode );
     }
 
+
+    public function getAll(Request $request){
+
+    
+        $data = DB::table('BENEFIT_DERIVATION_NAMES')
+        ->where('BENEFIT_DERIVATION_ID','LIKE','%'.strtoupper($request->benefit_derivation_id).'%')
+        ->get();
+
+        return $this->respondWithToken( $this->token(), 'data fetched Successfully', $data );
+
+    }
+
     public function search( Request $request ) {
         $ndc = DB::table( 'BENEFIT_DERIVATION_NAMES' )
         ->select( 'BENEFIT_DERIVATION_ID', 'DESCRIPTION' )

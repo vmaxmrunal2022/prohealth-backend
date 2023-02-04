@@ -182,6 +182,9 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/ndc/details/{ndcid}', [NDCExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
     Route::post('/ndc/add', [NDCExceptionController::class, 'add'])->name('ndsc.search'); // add
 
+    Route::get('/ndc/list', [NDCExceptionController::class, 'ndcList'])->name('ndsc.search'); // SEARCH
+
+
     //REASON-CODE-EXCEPTION
     Route::get('/ndc/ndc-drop-down', [NDCExceptionController::class, 'getNdcDropDown']); // drop down
 
@@ -207,6 +210,8 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/gpi/details/{ndcid}', [GPIExceptionController::class, 'getNDCItemDetails'])->name('gpi.details.get'); // DETAILS
     Route::post('/gpi/add', [GPIExceptionController::class, 'add'])->name('gpi.add'); // add
     Route::post('/gpi/gpi-drop-down', [GPIExceptionController::class, 'getGpiDropDown']);
+    Route::get('/gpi/list', [GPIExceptionController::class, 'GpiList'])->name('gpi.search'); // SEARCH
+
 
 
     // THERAPY CLASS
@@ -232,7 +237,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/benefit/details/{ndcid}', [BenefitListController::class, 'getBLItemDetails'])->name('benefit.details.get'); // DETAILS
     Route::post('/benefit/add', [BenefitListController::class, 'add'])->name('benefit.search'); // SEARCH
 
-
+    Route::get('/benefitderivation/all', [BenefitDerivationController::class, 'getAll'])->name('benefit.all'); // SEARCH
     Route::get('/benefitderivation/search', [BenefitDerivationController::class, 'search'])->name('benefit.search'); // SEARCH
     Route::get('/benefitderivation/get/{ndcid}', [BenefitDerivationController::class, 'getBLList'])->name('benefit.list.get'); // LIST ITEMS
     Route::get('/benefitderivation/details/{ndcid}/{ndcid2}', [BenefitDerivationController::class, 'getBLItemDetails'])->name('benefit.details.get'); // DETAILS
@@ -246,6 +251,9 @@ Route::get('/provider-type-validation/get', [ProviderTypeValidationController::c
 Route::get('/provider-type-validation/getList/{ncdid}', [ProviderTypeValidationController::class, 'getList'])->name('provider-type-validation-get');
 Route::post('/provider-type-validation/add', [ProviderTypeValidationController::class, 'add'])->name('provider-type-validation-get');
 Route::get('/provider-type-validation/getDetails/{ncdid}/{ndcid2}', [ProviderTypeValidationController::class, 'getNDCItemDetails'])->name('provider-type-validation-getFormData');
+Route::get('/provider-type-validation/list', [ProviderTypeValidationController::class, 'getAllNames'])->name('provider-type-validation-get');
+
+
 
 
 
