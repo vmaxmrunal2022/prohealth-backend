@@ -251,7 +251,7 @@ Route::get('/provider-type-validation/get', [ProviderTypeValidationController::c
 Route::get('/provider-type-validation/getList/{ncdid}', [ProviderTypeValidationController::class, 'getList'])->name('provider-type-validation-get');
 Route::post('/provider-type-validation/add', [ProviderTypeValidationController::class, 'add'])->name('provider-type-validation-get');
 Route::get('/provider-type-validation/getDetails/{ncdid}/{ndcid2}', [ProviderTypeValidationController::class, 'getNDCItemDetails'])->name('provider-type-validation-getFormData');
-Route::get('/provider-type-validation/list', [ProviderTypeValidationController::class, 'getAllNames'])->name('provider-type-validation-get');
+Route::get('/provider-type-validation-association-names/list', [ProviderTypeValidationController::class, 'getAllNames'])->name('provider-type-validation-get');
 
 
 
