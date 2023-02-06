@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Code;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpFoundation\Response;
 
 class BenifitController extends Controller
 {
@@ -22,9 +21,7 @@ class BenifitController extends Controller
 
     public function add(Request $request)
     {
-        $response  = new Response();
-        // $response = $response->setStatusCode(200);
-        // return $response;
+
         $createddate = date('y-m-d');
         if ($request->has('new')) {
             $benefitcode = DB::table('benefit_codes')->insert(
@@ -56,6 +53,7 @@ class BenifitController extends Controller
             $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', $request->benefit_code)->first();
         }
 
+
         return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
     }
 
@@ -75,4 +73,5 @@ class BenifitController extends Controller
 
         return $this->respondWithToken($this->token(), '', $isExist);
     }
+
 }
