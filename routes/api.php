@@ -402,14 +402,21 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
 
     //Tax Schedule
     Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
+    Route::get('tax-schedule/get-calculations', [TaxScheduleController::class, 'getCalculations']);
+    Route::get('tax-schedule/get-base-prices', [TaxScheduleController::class, 'getBasePrices']);
+    Route::post('tax-schedule/submit', [TaxScheduleController::class, 'submitTaxSchedule']);
+
 
     //Procedure UCR list
     Route::get('procedure-ucr-list/get', [ProcedureUcrList::class, 'get']);
     Route::get('procedure-ucr-list/get-procedure-list-data', [ProcedureUcrList::class, 'getProcedureListData']);
+    Route::get('procedure-ucr-list/get-procedure-code', [ProcedureUcrList::class, 'getProcedureCode']);
+    Route::post('procedure-ucr-list/submit', [ProcedureUcrList::class, 'submitProcedureList']);
 
     //RVA List
     Route::get('rva-list/get', [RvaListController::class, 'get']);
     Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
+    Route::post('rva-list/submit', [RvaListController::class, 'submitRva']);
 });
 
 //Drug Information
