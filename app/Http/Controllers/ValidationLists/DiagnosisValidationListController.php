@@ -66,7 +66,6 @@ class DiagnosisValidationListController extends Controller
 
 
             $recordchecklimit = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-            ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
             ->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))
 
             ->first();
