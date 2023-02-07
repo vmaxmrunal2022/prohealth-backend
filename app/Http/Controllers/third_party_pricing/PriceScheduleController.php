@@ -47,19 +47,19 @@ class PriceScheduleController extends Controller
                         'bng1_fee_amount' => $request->bng1_fee_amount,
                         'bng1_stdpkg' => $request->bng1_stdpkg,
 
-                        // 'bga1_markup_percent' => $request->bga1_markup_percent,
-                        // 'bga1_markup_amount' => $request->bga1_markup_amount,
-                        // 'bga1_type' => $request->bga1_type,
-                        // 'bga1_fee_percent' => $request->bga1_fee_percent,
-                        // 'bga1_fee_amount' => $request->bga1_fee_amount,
-                        // 'bga1_stdpkg' => $request->bga1_stdpkg,
+                        'bga1_markup_percent' => $request->bga1_markup_percent,
+                        'bga1_markup_amount' => $request->bga1_markup_amount,
+                        'bga1_type' => $request->bga1_type,
+                        'bga1_fee_percent' => $request->bga1_fee_percent,
+                        'bga1_fee_amount' => $request->bga1_fee_amount,
+                        'bga1_stdpkg' => $request->bga1_stdpkg,
 
-                        // 'gen1_markup_percent' => $request->gen1_markup_percent,
-                        // 'gen1_markup_amount' => $request->gen1_markup_amount,
-                        // 'gen1_type' => $request->gen1_type,
-                        // 'gen1_fee_percent' => $request->gen1_fee_percent,
-                        // 'gen1_fee_amount' => $request->gen1_fee_amount,
-                        // 'gen1_stdpkg' => $request->gen1_stdpkg,
+                        'gen1_markup_percent' => $request->gen1_markup_percent,
+                        'gen1_markup_amount' => $request->gen1_markup_amount,
+                        'gen1_type' => $request->gen1_type,
+                        'gen1_fee_percent' => $request->gen1_fee_percent,
+                        'gen1_fee_amount' => $request->gen1_fee_amount,
+                        'gen1_stdpkg' => $request->gen1_stdpkg,
                     ]
                 );
             $add = DB::table('PRICE_SCHEDULE')->where('price_schedule', 'like', $request->price_schedule)->first();
@@ -80,19 +80,19 @@ class PriceScheduleController extends Controller
                         'bng1_fee_amount' => $request->bng1_fee_amount,
                         'bng1_stdpkg' => $request->bng1_stdpkg,
 
-                        // 'bga1_markup_percent' => $request->bga1_markup_percent,
-                        // 'bga1_markup_amount' => $request->bga1_markup_amount,
-                        // 'bga1_type' => $request->bga1_type,
-                        // 'bga1_fee_percent' => $request->bga1_fee_percent,
-                        // 'bga1_fee_amount' => $request->bga1_fee_amount,
-                        // 'bga1_stdpkg' => $request->bga1_stdpkg,
+                        'bga1_markup_percent' => $request->bga1_markup_percent,
+                        'bga1_markup_amount' => $request->bga1_markup_amount,
+                        'bga1_type' => $request->bga1_type,
+                        'bga1_fee_percent' => $request->bga1_fee_percent,
+                        'bga1_fee_amount' => $request->bga1_fee_amount,
+                        'bga1_stdpkg' => $request->bga1_stdpkg,
 
-                        // 'gen1_markup_percent' => $request->gen1_markup_percent,
-                        // 'gen1_markup_amount' => $request->gen1_markup_amount,
-                        // 'gen1_type' => $request->gen1_type,
-                        // 'gen1_fee_percent' => $request->gen1_fee_percent,
-                        // 'gen1_fee_amount' => $request->gen1_fee_amount,
-                        // 'gen1_stdpkg' => $request->gen1_stdpkg,
+                        'gen1_markup_percent' => $request->gen1_markup_percent,
+                        'gen1_markup_amount' => $request->gen1_markup_amount,
+                        'gen1_type' => $request->gen1_type,
+                        'gen1_fee_percent' => $request->gen1_fee_percent,
+                        'gen1_fee_amount' => $request->gen1_fee_amount,
+                        'gen1_stdpkg' => $request->gen1_stdpkg,
                        
                     ]
                 );
