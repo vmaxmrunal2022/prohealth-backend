@@ -67,20 +67,6 @@ class DiagnosisValidationListController extends Controller
                         ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
                         ->first();
 
-                        if($exceptiondata){
-
-                            return $this->respondWithToken($this->token(), 'data exists!!!', $exceptiondata);
-
-
-                        }else{
-                            $exceptionAddData = DB::table('DIAGNOSIS_EXCEPTIONS')
-                            ->insert([
-                                'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                                'EXCEPTION_NAME' => $request->exception_name,
-                                'DATE_TIME_CREATED' => date('d-M-y'),
-                                'USER_ID' => $request->user_name,
-                            ]);
-                        }
 
 
                         $limitationsdata = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
@@ -109,6 +95,24 @@ class DiagnosisValidationListController extends Controller
                             ]);
 
                         }
+
+                        if($exceptiondata){
+
+                            return $this->respondWithToken($this->token(), 'data exists!!!', $exceptiondata);
+
+
+                        }else{
+                            $exceptionAddData = DB::table('DIAGNOSIS_EXCEPTIONS')
+                            ->insert([
+                                'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                'EXCEPTION_NAME' => $request->exception_name,
+                                'DATE_TIME_CREATED' => date('d-M-y'),
+                                'USER_ID' => $request->user_name,
+                            ]);
+                        }
+
+
+                    
 
 
 
