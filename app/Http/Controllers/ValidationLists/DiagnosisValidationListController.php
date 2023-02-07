@@ -76,7 +76,7 @@ class DiagnosisValidationListController extends Controller
 
                         if($limitationsdata){
 
-                return $this->respondWithToken($this->token(), 'data exists!!!', $limitationsdata);
+                return $this->respondWithToken($this->token(), 'limitation data exists!!!', $limitationsdata);
 
                             
                         }
@@ -98,7 +98,7 @@ class DiagnosisValidationListController extends Controller
 
                         if($exceptiondata){
 
-                            return $this->respondWithToken($this->token(), 'data exists!!!', $exceptiondata);
+                            return $this->respondWithToken($this->token(), 'exception data exists!!!', $exceptiondata);
 
 
                         }else{
