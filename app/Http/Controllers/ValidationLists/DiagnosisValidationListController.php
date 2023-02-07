@@ -64,6 +64,49 @@ class DiagnosisValidationListController extends Controller
         if ($request->has('new')) {
 
 
+
+            $recordchecklimit = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+            ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
+            ->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))
+
+            ->first();
+
+        if ($recordchecklimit) {
+
+            return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $recordchecklimit);
+
+
+
+        } else {
+
+            $limitdataAdd = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                ->insert([
+                    'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                    'DIAGNOSIS_ID' => $request->diagnosis_id,
+                    'LIMITATIONS_LIST' => $request->limitations_list,
+                    'EFFECTIVE_DATE' => date('Ydm', strtotime($request->effective_date)),
+                    'TERMINATION_DATE' => date('Ydm', strtotime($request->termination_date)),
+                    'DATE_TIME_CREATED' => date('d-M-y'),
+
+                ]);
+
+                if($limitdataAdd){
+
+
+                   return $this->respondWithToken($this->token(), ' Added Successfully!!!', $limitdataAdd);
+
+
+                }
+
+
+
+
+
+
+        }
+
+
+
             $recordexception = DB::table('DIAGNOSIS_EXCEPTIONS')
                 ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
                     // ->where('EXCEPTION_NAME', strtoupper($request->exception_name))
@@ -119,51 +162,7 @@ class DiagnosisValidationListController extends Controller
             // }
 
 
-            $recordchecklimit = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-                ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
-                ->first();
-
-            if ($recordchecklimit) {
-
-                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $recordchecklimit);
-
-
-
-            } else {
-
-                $limitdataAdd = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-                    ->insert([
-                        'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                        'DIAGNOSIS_ID' => $request->diagnosis_id,
-                        'LIMITATIONS_LIST' => $request->limitations_list,
-                        'EFFECTIVE_DATE' => date('Ydm', strtotime($request->effective_date)),
-                        'TERMINATION_DATE' => date('Ydm', strtotime($request->termination_date)),
-                        'DATE_TIME_CREATED' => date('d-M-y'),
-
-                    ]);
-
-                    if($limitdataAdd){
-
-
-                       return $this->respondWithToken($this->token(), ' Added Successfully!!!', $limitdataAdd);
-
-
-                    }
-
-
-
-
-
-
-            }
-
-
-
-
-
-
-
-
+           
 
 
 
