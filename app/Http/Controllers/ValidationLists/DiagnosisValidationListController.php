@@ -169,12 +169,13 @@ class DiagnosisValidationListController extends Controller
                 if (isset($request->diagnosis_id)) {
                     $updateDataValid = DB::table('DIAGNOSIS_VALIDATIONS')
                         ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
-                        ->where('DIAGNOSIS_ID', $request->diagnosis_id)
+                        // ->where('DIAGNOSIS_ID', $request->diagnosis_id)
                         ->update([
                             'DIAGNOSIS_STATUS' => $request->diagnosis_status,
                             'PRIORITY' => $request->priority,
                             'DATE_TIME_MODIFIED' => date('d-M-y'),
-                            'USER_ID_MODIFIED' => $request->user_name
+                            'USER_ID_MODIFIED' => $request->user_name,
+                            'DIAGNOSIS_ID'=>$request->diagnosis_id
                         ]);
                 }
 
