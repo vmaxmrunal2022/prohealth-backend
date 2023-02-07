@@ -23,13 +23,13 @@ class CopayStepScheduleController extends Controller
     }
 
     public function submit(Request $request)
-    {
-
-        $validate = $request->validate([
-            'copay_list' => ['required', 'unique:copay_list'],
-        ]);
-        if ($validate) {
-            if ($request->has('new')) {
+    {    
+        // dd($request->all());
+       
+        $validate =DB::table('copay_list')->where('copay_list', $request->copay_list)->get()->count();
+        // dd($validate);
+        if ($validate <= "0") { 
+            if ($request->add_new) {
                 if ($request->cost_max) {
                     $days_supply = "0";
                     $cost_max = $request->cost_max;
@@ -49,8 +49,15 @@ class CopayStepScheduleController extends Controller
                         'cost_max' => $cost_max,
                         'step_schedule_indicator' => $step_schedule_indicator
                     ]);
+
+                $copay_list_add = DB::table('copay_list')
+                                  ->insert([
+                                    'copay_list' => $request->copay_list,
+                                    'copay_desc' => $request->copay_desc
+                                  ]);
                 return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addCopay);
-            } else {
+            }
+        } else {
                 if ($request->cost_max) {
                     $days_supply = "0";
                     $cost_max = $request->cost_max;
@@ -61,7 +68,7 @@ class CopayStepScheduleController extends Controller
                     $step_schedule_indicator = "d";
                 }
                 $addCopay =  DB::table('COPAY_MATRIX')
-                    ->where('copay_list', 'like', '%' . $request->copay_list . '%')
+                    ->where('copay_list',$request->copay_list)
                     ->update([
                         'copay_amount' => $request->copay_amount,
                         // 'copay_list' => $request->copay_list,
@@ -70,9 +77,15 @@ class CopayStepScheduleController extends Controller
                         'cost_max' => $cost_max,
                         'step_schedule_indicator' => $step_schedule_indicator
                     ]);
+
+                $update_copay_list = DB::table('copay_list')
+                ->where('copay_list', $request->copay_list)
+                ->update([
+                    'copay_desc' => $request->copay_desc,
+                ]);
                 return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $addCopay);
             }
-        }
+        // }
     }
 
     public function checkCopayListExist(Request $request)
