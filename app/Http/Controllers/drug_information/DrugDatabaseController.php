@@ -82,6 +82,23 @@ class DrugDatabaseController extends Controller
                     ]);
 
 
+                    $drug_price = DB::table('DRUG_PRICE')
+                    ->insert([
+                        'NDC' => strtoupper($request->ndc),
+                        'PRICE_SOURCE' => strtoupper($request->price_source),
+                        'PRICE_TYPE' => strtoupper($request->price_type),
+                        'PRICE_EFF_DATE_1' => strtoupper($request->price_eff_date_1),
+                        'PRICE_AMT_1' => strtoupper($request->price_amt_1),
+                        'PRICE_EFF_DATE_2' => strtoupper($request->price_eff_date_2),
+                        'PRICE_AMT_2' => strtoupper($request->price_amt_2),
+                        'PRICE_EFF_DATE_3' => strtoupper($request->price_eff_date_3),
+                        'PRICE_AMT_3' => strtoupper($request->price_amt_3),
+
+
+
+                    ]);
+
+
 
                 if ($addData) {
                     return $this->respondWithToken($this->token(), 'Added Successfully!!!', $addData);
@@ -140,6 +157,21 @@ class DrugDatabaseController extends Controller
                         'OTC_EQUIV_IND' => $request->otc_equiv_ind,
                         'BRAND_NAME_CODE' => $request->brand_name_code,
                     ]);
+
+
+                    $updateUser = DB::table('DRUG_PRICE')
+                    ->where('NDC', $request->ndc)
+                    ->update([
+                        'PRICE_SOURCE' => strtoupper($request->price_source),
+                        'PRICE_TYPE' => strtoupper($request->price_type),
+                        'PRICE_EFF_DATE_1' => strtoupper($request->price_eff_date_1),
+                        'PRICE_AMT_1' => strtoupper($request->price_amt_1),
+                        'PRICE_EFF_DATE_2' => strtoupper($request->price_eff_date_2),
+                        'PRICE_AMT_2' => strtoupper($request->price_amt_2),
+                        'PRICE_EFF_DATE_3' => strtoupper($request->price_eff_date_3),
+                        'PRICE_AMT_3' => strtoupper($request->price_amt_3),
+                    ]);
+
 
 
 
