@@ -63,106 +63,91 @@ class DiagnosisValidationListController extends Controller
     {
         if ($request->has('new')) {
 
+            $exceptiondata = DB::table('DIAGNOSIS_EXCEPTIONS')
+                        ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
+                        ->first();
+
+                        if($exceptiondata){
+
+                            return $this->respondWithToken($this->token(), 'data exists!!!', $exceptiondata);
 
 
-            $recordchecklimit = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-            ->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))
-
-            ->first();
-
-        if ($recordchecklimit) {
-
-            return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $recordchecklimit);
-
-
-
-        } else {
-
-            $limitdataAdd = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-                ->insert([
-                    'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                    'DIAGNOSIS_ID' => $request->diagnosis_id,
-                    'LIMITATIONS_LIST' => $request->limitations_list,
-                    'EFFECTIVE_DATE' => date('Ydm', strtotime($request->effective_date)),
-                    'TERMINATION_DATE' => date('Ydm', strtotime($request->termination_date)),
-                    'DATE_TIME_CREATED' => date('d-M-y'),
-
-                ]);
-
-                if($limitdataAdd){
+                        }else{
+                            $exceptionAddData = DB::table('DIAGNOSIS_EXCEPTIONS')
+                            ->insert([
+                                'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                'EXCEPTION_NAME' => $request->exception_name,
+                                'DATE_TIME_CREATED' => date('d-M-y'),
+                                'USER_ID' => $request->user_name,
+                            ]);
+                        }
 
 
-                   return $this->respondWithToken($this->token(), ' Added Successfully!!!', $limitdataAdd);
+                        $limitationsdata = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                        ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
+                        ->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))
+                        ->first();
 
+                        if($limitationsdata){
 
-                }
+                return $this->respondWithToken($this->token(), 'data exists!!!', $limitationsdata);
 
+                            
+                        }
 
+                        else{
 
+                            $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                            ->insert([
+                                'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                'DIAGNOSIS_ID' => $request->diagnosis_id,
+                                'LIMITATIONS_LIST' => $request->limitations_list,
+                                'EFFECTIVE_DATE' => date('Ydm', strtotime($request->effective_date)),
+                                'TERMINATION_DATE' => date('Ydm', strtotime($request->termination_date)),
+                                'DATE_TIME_CREATED' => date('d-M-y'),
+                
+                            ]);
 
-
-
-        }
-
-
-
-            $recordexception = DB::table('DIAGNOSIS_EXCEPTIONS')
-                ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
-                    // ->where('EXCEPTION_NAME', strtoupper($request->exception_name))
-                ->first();
-
-            if ($recordexception) {
-
-                return $this->respondWithToken($this->token(), 'diagnosis_list alredy exists!!!', $recordexception);
-
-
-            } else {
-
-                $addData = DB::table('DIAGNOSIS_EXCEPTIONS')
-                    ->insert([
-                        'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                        'EXCEPTION_NAME' => $request->exception_name,
-                        'DATE_TIME_CREATED' => date('d-M-y'),
-                        'USER_ID' => $request->user_name,
-                    ]);
-
-            }
+                        }
 
 
 
 
+                        $validationsdata = DB::table('DIAGNOSIS_VALIDATIONS')
+                        ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
+                        ->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))
+                        ->first();
 
 
-            // if (isset($request->diagnosis_id)) {
-            //     $diagnosis_id = $request->diagnosis_id;
-            //     // $diagnosis_id=$request->diagnosis_id['value'];
-            // } else {
-            //     $diagnosis_id = '';
-            // }
+                        if($validationsdata){
 
-            // $addData2 = DB::table('DIAGNOSIS_VALIDATIONS')
+                            return $this->respondWithToken($this->token(), 'validations data exists!!!', $validationsdata);
 
 
+                        }
 
-            //     ->insert([
-            //         'DIAGNOSIS_LIST' => $request->diagnosis_list,
-            //         'DIAGNOSIS_ID' => $request->diagnosis_id,
-            //         'PRIORITY' => $request->priority,
-            //         'DIAGNOSIS_STATUS' => $request->diagnosis_status,
-            //         // 'DATE_TIME_CREATED'=>date('d-M-y'),
-            //         'USER_ID' => $request->user_name,
-            //     ]);
+                        else{
+
+                            $validationAddData = DB::table('DIAGNOSIS_VALIDATIONS')
+                            ->insert([
+                                'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                'DIAGNOSIS_ID' => $request->exception_name,
+                                'DIAGNOSIS_STATUS' => $request->diagnosis_status,
+                                'PRIORITY' => $request->priority,
+                            ]);
+
+                        }
+                    
+           
 
 
-
-
-            // if ($addData2) {
-            //     return $this->respondWithToken($this->token(), 'Added Successfully!!!', $addData2);
-            // }
+          
 
 
            
 
+
+            return $this->respondWithToken($this->token(), 'data added Successfully!!!', $validationAddData);
 
 
 
