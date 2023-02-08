@@ -38,22 +38,33 @@ class BenifitController extends Controller
                     'FORM_ID' => ''
                 ]
             );
-            $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', $request->benefit_code)->first();
+
+            
+
+            $benefitcode = DB::table('benefit_codes') ->where('benefit_code', 'like', '%' . $request->benefit_code. '%')->first();
+
+
         } else {
             $benefitcode = DB::table('benefit_codes')
-                ->where('benefit_code', 'like', $request->benefit_code)
-                ->update(
-                    [
-                        'benefit_code' => strtoupper($request->benefit_code),
-                        'description' => $request->description,
-                        'DATE_TIME_CREATED' => $createddate,
-                        'USER_ID' => '', // TODO add user id
-                        'DATE_TIME_MODIFIED' => '',
-                        'USER_ID_CREATED' => '',
-                        'FORM_ID' => ''
-                    ]
-                );
-            $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', $request->benefit_code)->first();
+                                ->where('benefit_code', $request->benefit_code)
+                                ->update(
+                                    [
+                                        'benefit_code' => strtoupper($request->benefit_code),
+                                        'description' => $request->description,
+                                        'DATE_TIME_CREATED' => $createddate,
+                                        'USER_ID' => '', // TODO add user id
+                                        'DATE_TIME_MODIFIED' => '',
+                                        'USER_ID_CREATED' => '',
+                                        'FORM_ID' => ''
+                                    ]
+                            );
+
+            // $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', $request->benefit_code )->first();
+
+            $benefitcode = DB::table('benefit_codes' ) ->where('benefit_code', 'like', '%' . $request->benefit_code. '%')->first();
+
+
+        
         }
 
         return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);

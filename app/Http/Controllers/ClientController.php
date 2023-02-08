@@ -7,6 +7,80 @@ use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
 {
+
+
+
+    public function add( Request $request ) {
+        $createddate = date('y-m-d' );
+
+        if ( $request->has( 'new' ) ) {
+
+            $accum_benfit_stat_names = DB::table('CLIENT')->insert(
+                [   
+
+                'client_name' =>$request->client_name,
+                'customer_id'=>$request->customer_id,
+                'client_id'=>$request->client_id,
+                'address_1'=>$request->address_1,
+                'address_2'=>$request->address_2,
+                'city'=>$request->city,
+                'state'=>$request->state,
+                'zip_code'=>$request->zip_code,
+                'zip_plus_2'=>$request->zip_plus_2,
+                'phone'=>$request->phone,
+                'fax'=>$request->fax,
+                'contact'=>$request->contact,
+                'effective_date'=>$request->effective_date,
+                'termination_date'=>$request->termination_date,
+                'date_time_created'=>'19-FEB-20',
+                'user_id'=>'1',
+                'date_time_modified'=>'19-FEB-20',
+                'form_id'=>'1',
+                // 'auto_term_level'=>$request->auto_term_level,
+                // 'census_date'=>$request->census_date,
+                ]
+            );
+
+            $benefitcode = DB::table('CLIENT' ) ->where('client_id', 'like', '%' . $request->client_id. '%')->first();
+
+
+        } else {
+
+
+            $accum_benfit_stat = DB::table('CLIENT' )
+            ->where( 'CLIENT_ID', $request->client_id)
+            ->update(
+                [
+                    'client_name' =>$request->client_name,
+                    'address_1'=>$request->address_1,
+                    'address_2'=>$request->address_2,
+                    'city'=>$request->city,
+                    'state'=>$request->state,
+                    'zip_code'=>$request->zip_code,
+                    'zip_plus_2'=>$request->zip_plus_2,
+                    'phone'=>$request->phone,
+                    'fax'=>$request->fax,
+                    'contact'=>$request->contact,
+                    'effective_date'=>$request->effective_date,
+                    'termination_date'=>$request->termination_date,
+                    'user_id'=>$request->user_id,
+                    'auto_term_level'=>$request->auto_term_level,
+                    'census_date'=>$request->census_date,
+                
+
+                ]
+            );
+
+
+            $benefitcode = DB::table('CLIENT' ) ->where('client_id', 'like', '%' . $request->client_id. '%')->first();
+
+        }
+
+
+        return $this->respondWithToken( $this->token(), 'Successfully added', $benefitcode );
+    }
+     
+
     public function getClient(Request $request)
     {
         // $customerid = $request->customerid;
