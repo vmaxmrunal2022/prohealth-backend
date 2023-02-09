@@ -48,4 +48,9 @@ class DrugClassController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
+
+    public function submit(Request $request)
+    {
+        dd($request->all());
+    }
 }
