@@ -37,4 +37,24 @@ class VerifyDrugVCoverage extends Controller
         ];
         return $this->respondWithToken($this->token(), '', $claim_var_ind);
     }
+
+    public function submitVerifyDrugCoverage(Request $request)
+    {
+        //TODO -> functionality not clear
+        if ($request->add_new) {
+            $add_newVerify_drug = [
+                'customer_id' => $request->customer_id,
+                'client_id' => $request->client_id,
+                'client_group_id' => $request->client_group_id,
+                'member_id' => $request->member_id,
+                'person_code' => $request->person_code,
+                'relationship' => $request->relationship,
+                'ndc' => $request->ndc,
+                'date_of_service' => $request->date_of_service,
+                'pharmacy_type_var_ind' => $request->pharmacy_type_var_ind,
+                'network_part_var_ind' => $request->network_part_var_ind,
+                'claim_type_var_ind' => $request->claim_type_var_ind,
+            ];
+        }
+    }
 }

@@ -659,6 +659,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('verify-drug-coverage/get-pharmacy-var-ind', [VerifyDrugVCoverage::class, 'getPharmacyVarInd']);
         Route::get('verify-drug-coverage/get-network-var-ind', [VerifyDrugVCoverage::class, 'getNetworkVarInd']);
         Route::get('verify-drug-coverage/get-claim-var-ind', [VerifyDrugVCoverage::class, 'getClaimVarInd']);
+        Route::post('verify-drug-coverage/submit', [VerifyDrugVCoverage::class, 'submitVerifyDrugCoverage']);
 
         //Search Audit Trail
         Route::get('search-audit-trial/get-tables', [AuditTrailController::class, 'getTables'])->name('getAllTables');
