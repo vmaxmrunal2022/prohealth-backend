@@ -25,6 +25,8 @@ use App\Http\Controllers\Exception\BenefitDerivationController;
 use App\Http\Controllers\Exception\GPIExceptionController;
 use App\Http\Controllers\Exception\NDCExceptionController;
 
+use App\Http\Controllers\membership\PlanValidationController;
+use App\Http\Controllers\membership\PriorAuthController;
 use App\Http\Controllers\ValidationLists\ValidationListsController;
 
 use App\Http\Controllers\ValidationLists\PrescriberValidationController;

@@ -185,6 +185,8 @@ class DiagnosisValidationListController extends Controller
                 ->where('DIAGNOSIS_ID', $request->diagnosis_id)
                 ->update([
                     'LIMITATIONS_LIST' => $request->limitations_list,
+                    'EFFECTIVE_DATE' => date('Ydm', strtotime($request->effective_date)),
+                    'TERMINATION_DATE' => date('Ydm', strtotime($request->termination_date)),
 
                 ]);
 
