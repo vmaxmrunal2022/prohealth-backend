@@ -518,16 +518,23 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         //Price Schedule
         Route::get('price-schedule/get', [PriceScheduleController::class, 'get']);
         Route::get('price-schedule/get-price-schedule-data', [PriceScheduleController::class, 'getPriceScheduleDetails']);
-        Route::get('price-schedule/search', [PriceScheduleController::class, 'search']);
-
+        // Route::post('price-schedule/update', [PriceScheduleController::class, 'updateBrandItem'])->name('price_schedule_update');
+        Route::get('price-schedule/get-brand-type', [PriceScheduleController::class, 'getBrandType']);
+        Route::get('price-schedule/get-brand-source', [PriceScheduleController::class, 'getBrandSource']);
+        Route::post('price-schedule/submit', [PriceScheduleController::class, 'submitPriceSchedule']);
 
         //Copay Schedule
         Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
         Route::get('copay-schedule/get-copay-data', [CopayScheduleController::class, 'getCopayData'])->name('get.copay.single');
+        Route::get('copay-schedule/get-source', [CopayScheduleController::class, 'getSourceOptions']);
+        Route::get('copay-schedule/get-factor', [CopayScheduleController::class, 'getFactor']);
+        Route::get('copay-schedule/get-list-options', [CopayScheduleController::class, 'getListOptions']);
+        Route::get('copay-schedule/get-daw-options', [CopayScheduleController::class, 'getDawOptions']);
+        Route::get('copay-schedule/get-coinsurance-calculation-option', [CopayScheduleController::class, 'getConinsuranceCalculationOption']);
+        Route::post('copay-schedule/submit', [CopayScheduleController::class, 'submitCopaySchedule']);
 
         //Copay Step Schedule
         Route::get('copay-step-schedule/get', [CopayStepScheduleController::class, 'get'])->name('get.copay-step');
-        // Route::get('copay-step-schedule/get-copay-data', [CopayStepScheduleController::class, 'getCopayData'])->name('get.copay-step.single');
         Route::get('copay-step-schedule/check-copay-list-existing', [CopayStepScheduleController::class, 'checkCopayListExist']);
         Route::post('copay-step-schedule/submit', [CopayStepScheduleController::class, 'submit'])->name('submit.copay-step');
 
@@ -540,22 +547,14 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //Tax Schedule
         Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
-        Route::get('tax-schedule/get-calculations', [TaxScheduleController::class, 'getCalculations']);
-        Route::get('tax-schedule/get-base-prices', [TaxScheduleController::class, 'getBasePrices']);
-        Route::post('tax-schedule/submit', [TaxScheduleController::class, 'submitTaxSchedule']);
-
 
         //Procedure UCR list
         Route::get('procedure-ucr-list/get', [ProcedureUcrList::class, 'get']);
         Route::get('procedure-ucr-list/get-procedure-list-data', [ProcedureUcrList::class, 'getProcedureListData']);
-        Route::get('procedure-ucr-list/get-procedure-code', [ProcedureUcrList::class, 'getProcedureCode']);
-        Route::post('procedure-ucr-list/submit', [ProcedureUcrList::class, 'submitProcedureList']);
 
         //RVA List
         Route::get('rva-list/get', [RvaListController::class, 'get']);
         Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
-        Route::post('rva-list/submit', [RvaListController::class, 'submitRva']);
-        Route::get('rva-list/search', [RvaListController::class, 'Search']);
     });
 
     //Drug Information
@@ -668,11 +667,19 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('search-audit-trial/search-user-log', [AuditTrailController::class, 'searchUserLog'])->name('searchUserLog');
 
         //System parameters
-        Route::get('system-parameter/get-parameters', [SystemParameterController::class, 'getSystemParameters'])->name('getSystemParameters');
-        Route::get('system-parameter/add', [SystemParameterController::class, 'add'])->name('add.SystemParameters');
+        Route::get('system-parameter/get-parameters', [SystemParameterController::class, 'getSystemParameters']);
+        Route::post('system-parameter/add', [SystemParameterController::class, 'updateSystemParameter'])->name('add.SystemParameters');
 
         Route::get('system-parameters/get-states', [SystemParameterController::class, 'getState'])->name('getState');
         Route::get('system-parameters/get-countries', [SystemParameterController::class, 'getCountries'])->name('getCountries');
+        Route::get('system-parameters/get-third-party-types', [SystemParameterController::class, 'getThirdPartyPrice']);
+
+        Route::get('system-parameters/get-UC-plan', [SystemParameterController::class, 'getUCPlan']);
+        Route::get('system-parameters/get-tax-status', [SystemParameterController::class, 'getTaxStatus']);
+        Route::get('system-parameters/get-automated-termination', [SystemParameterController::class, 'getAutomatedTermination']);
+        Route::get('system-parameters/get-overlap-coverage-tie', [SystemParameterController::class, 'getOverlapCoverageTie']);
+        Route::get('system-parameters/get-processor-control-flag', [SystemParameterController::class, 'getProcessorControlFlag']);
+        Route::get('system-parameters/get-eligibility-change-log', [SystemParameterController::class, 'getEligibilityChangeLog']);
 
         //Claim History
         Route::post('claim-history/search', [ClaimHistoryController::class, 'searchHistory']);

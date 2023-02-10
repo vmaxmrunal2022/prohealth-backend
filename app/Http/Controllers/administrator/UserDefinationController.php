@@ -255,7 +255,7 @@ class UserDefinationController extends Controller
 
                 return $this->respondWithToken($this->token(), 'Added Successfully!', $add_fe_group);
             } else {
-                return $this->respondWithToken($this->token(), 'Something went wrong!', $add_fe_group);
+                return $this->respondWithToken($this->token(), 'Something went wrong!');
             }
         } else {
             $update_fe_group = DB::table('FE_USER_GROUPS')
@@ -264,7 +264,7 @@ class UserDefinationController extends Controller
                     'group_name' => $request->group_name,
                     'user_profile' => $request->user_profile
                 ]);
-            return $this->respondWithToken($this->token(), 'Updated Successfully!', $add_fe_group);
+            return $this->respondWithToken($this->token(), 'Updated Successfully!', $update_fe_group);
         }
     }
 
