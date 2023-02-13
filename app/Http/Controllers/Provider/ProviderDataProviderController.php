@@ -327,6 +327,7 @@ class ProviderDataProviderController extends Controller
 
         }else{
             $updateData = DB::table('RX_NETWORKS')
+            ->where('network_id',$request->network_id)
             ->where('pharmacy_nabp',$request->pharmacy_nabp)
             ->update([
                     'PHARMACY_NABP'=>($request->pharmacy_nabp),
@@ -363,6 +364,7 @@ class ProviderDataProviderController extends Controller
 
         }else{
             $updateData = DB::table('RX_NETWORK_RULES')
+            ->where('rx_network_rule_id',$request->rx_network_rule_id)
             ->where('PHARMACY_CHAIN',$request->pharmacy_chain)
             ->update([
                'EFFECTIVE_DATE'=>$request->effective_date,
