@@ -585,6 +585,8 @@ Route::group(['prefix' => "drug-information/"], function () {
     Route::get('drug-database/get-drug-prices', [DrugDatabaseController::class, 'getDrugPrices']);
     Route::post('drug-price/add', [DrugDatabaseController::class, 'addDrugPrice']);
     Route::get('ndc-gpi/search', [NdcGpiController::class, 'search']);
+    Route::get('ndc-gpi/details/{ndcid}', [NdcGpiController::class, 'getDetails']);
+
 
 });
 

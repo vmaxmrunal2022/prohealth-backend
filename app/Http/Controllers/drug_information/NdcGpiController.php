@@ -47,9 +47,15 @@ class NdcGpiController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function getDetails($ndcid)
     {
-        //
+
+        $ndc =DB::table('DRUG_MASTER')
+                ->where('NDC', $ndcid)
+                ->first();
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+
     }
 
     /**
