@@ -464,6 +464,7 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('/provider/traditionalid/search', [ProviderDataProviderController::class, 'TraditionalIdsearch'])->name('provider.traditionalid.search'); // SEARCH
     Route::post('/provider/traditionalnetwork/add', [ProviderDataProviderController::class, 'addTraditionalNetwork'])->name('traditinal.add'); // DETAIL
     Route::get('/provider/flexiblelid/search', [ProviderDataProviderController::class, 'FlexibleIdsearch'])->name('provider.traditionalid.search'); // SEARCH
+    Route::post('/provider/flexiblenetwork/add', [ProviderDataProviderController::class, 'addFlexibleNetwork'])->name('flexi.add'); // DETAIL
 
 
     //SUPER PROVIDER NETWORK

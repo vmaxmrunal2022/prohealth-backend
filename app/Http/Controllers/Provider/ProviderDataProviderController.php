@@ -340,6 +340,39 @@ class ProviderDataProviderController extends Controller
         }
     }
 
+    public function addFlexibleNetwork(Request $request){
+        $getEligibilityData = DB::table('RX_NETWORK_RULES')
+        ->where('PHARMACY_CHAIN',$request->pharmacy_chain)
+        ->where('RX_NETWORK_RULE_ID',$request->rx_network_rule_id)
+        ->first();
+        if($request->has('new')){
+            if(!$getEligibilityData){
+                $addData = DB::table('RX_NETWORK_RULES')
+                ->insert([
+                    'RX_NETWORK_RULE_ID'=>strtoupper($request->rx_network_rule_id),
+                    'PHARMACY_CHAIN'=>($request->pharmacy_chain),
+                   'EFFECTIVE_DATE'=>$request->effective_date,
+                   'TERMINATION_DATE'=>$request->termination_date,
+                    
+            
+                ]);
+                return $this->respondWithToken($this->token(),'Added Successfully...!!!', $addData);
+            }else{
+                return $this->respondWithToken($this->token(),'This record is already exists ..!!!');
+            }
+
+        }else{
+            $updateData = DB::table('RX_NETWORK_RULES')
+            ->where('PHARMACY_CHAIN',$request->pharmacy_chain)
+            ->update([
+               'EFFECTIVE_DATE'=>$request->effective_date,
+               'TERMINATION_DATE'=>$request->termination_date,
+                               
+            ]);
+            return $this->respondWithToken($this->token(),'Updated Successfully...!!!', $updateData);
+        }
+    }
+
 
 
 }
