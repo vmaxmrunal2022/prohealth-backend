@@ -73,6 +73,8 @@ use App\Http\Controllers\plan_design\PlanAssociationController;
 use App\Http\Controllers\Exception\SuperBenefitControler;
 use App\Http\Controllers\Exception\DrugClassController;
 use App\Http\Controllers\membership\MemberController;
+use App\Http\Controllers\membership\PlanValidationController;
+use App\Http\Controllers\membership\PriorAuthController;
 use App\Http\Controllers\plan_design\PlanEditController;
 use App\Http\Controllers\third_party_pricing\CopayScheduleController;
 use App\Http\Controllers\third_party_pricing\CopayStepScheduleController;
@@ -547,15 +549,22 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //Tax Schedule
         Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
+        Route::get('tax-schedule/get-calculations', [TaxScheduleController::class, 'getCalculations']);
+        Route::get('tax-schedule/get-base-prices', [TaxScheduleController::class, 'getBasePrices']);
+        Route::post('tax-schedule/submit', [TaxScheduleController::class, 'submitTaxSchedule']);
 
         //Procedure UCR list
         Route::get('procedure-ucr-list/get', [ProcedureUcrList::class, 'get']);
         Route::get('procedure-ucr-list/get-procedure-list-data', [ProcedureUcrList::class, 'getProcedureListData']);
+        Route::get('procedure-ucr-list/get-procedure-code', [ProcedureUcrList::class, 'getProcedureCode']);
+        Route::post('procedure-ucr-list/submit', [ProcedureUcrList::class, 'submitProcedureList']);
 
         //RVA List
         Route::get('rva-list/get', [RvaListController::class, 'get']);
         Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
+        Route::post('rva-list/submit', [RvaListController::class, 'submitRva']);
     });
+
 
     //Drug Information
     Route::group(['prefix' => "drug-information/"], function () {
@@ -691,11 +700,13 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('claim-history/get-client-group', [ClaimHistoryController::class, 'getClientGroup']);
         Route::post('claim-history/search-optional-data', [ClaimHistoryController::class, 'searchOptionalData']);
 
+        //Zip Codes
         Route::get('zipcode/search', [ZipCodeController::class, 'search']);
         Route::get('zipcode/get/{zip_code}', [ZipCodeController::class, 'getZipCodeList']);
         Route::post('zipcode/submit', [ZipCodeController::class, 'submitFormData']);
 
         //claim history
         Route::get('claim-history', [ClaimHistoryController::class, 'get']);
+        Route::post('search-claim-history', [ClaimHistoryController::class, 'searchClaimHistory']);
     });
 });
