@@ -462,6 +462,7 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('/provider/details/{ndcid}', [ProviderDataProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
     Route::post('/provider/add', [ProviderDataProviderController::class, 'add'])->name('ndsc.details.get'); // DETAIL
     Route::get('/provider/traditionalid/search', [ProviderDataProviderController::class, 'TraditionalIdsearch'])->name('provider.traditionalid.search'); // SEARCH
+    Route::post('/provider/traditionalnetwork/add', [ProviderDataProviderController::class, 'addTraditionalNetwork'])->name('traditinal.add'); // DETAIL
 
 
     //SUPER PROVIDER NETWORK
