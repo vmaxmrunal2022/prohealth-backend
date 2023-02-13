@@ -248,6 +248,16 @@ class ProviderDataProviderController extends Controller
 
         return $this->respondWithToken( $this->token(), '', $ndc );
     }
+
+
+    public function FlexibleIdsearch( Request $request ) {
+        $ndc = DB::table( 'RX_NETWORK_RULE_NAMES' )
+        ->select( 'RX_NETWORK_RULE_ID', 'RX_NETWORK_RULE_NAME' )
+        ->where( 'RX_NETWORK_RULE_ID', 'like', '%' . strtoupper( $request->search ) . '%' )
+        ->get();
+
+        return $this->respondWithToken( $this->token(), '', $ndc );
+    }
     
     public function search(Request $request)
     {
