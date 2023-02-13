@@ -166,7 +166,7 @@ class DiagnosisValidationListController extends Controller
                         'DATE_TIME_MODIFIED' => date('d-M-y'),
                     ]);
 
-                if (isset($request->diagnosis_id)) {
+                if (isset($request->diagnosis_list)) {
                     $updateDataValid = DB::table('DIAGNOSIS_VALIDATIONS')
                         ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
                         // ->where('DIAGNOSIS_ID', $request->diagnosis_id)
