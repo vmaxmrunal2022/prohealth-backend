@@ -37,18 +37,21 @@ class AuditTrailController extends Controller
 
     public function searchUserLog(Request $request)
     {
+        // print_r($request->to_date);
         if ($request->from_date != null) {
             $fromDate = str_replace('-', '', $request->from_date);
         } else {
             $fromDate = null;
         }
 
-        if($request->to_date != null)
-        {
-            $toDate = str_replace('-', '', $request->to_date);
-        }else{
-            $toDate = null;
-        }
+        // if ($request->to_date) {
+        //     $toDate = str_replace('-', '', $request->to_date);
+        //     print_r($toDate, "toDate");
+        // } else {
+        //     $toDate = null;
+        //     // $toDate = str_replace('-', '', $request->to_date);
+        // }
+        $toDate = str_replace('-', '', $request->to_date);
 
         if ($request->user_id != null) {
             $user_id = $request->user_id['uvalue'];
@@ -61,6 +64,9 @@ class AuditTrailController extends Controller
         } else {
             $record_action = null;
         }
+        // print_r($toDate);
+        // print_r($request->to_date, "todate");
+
         $search = DB::table('FE_RECORD_LOG')
             ->where('table_name', $request->table_name['value'])
             ->when($user_id, function ($query) use ($user_id) {
@@ -72,12 +78,14 @@ class AuditTrailController extends Controller
             })
 
             ->when($fromDate, function ($query) use ($fromDate) {
-               return $query->where('date_created', '>=', $fromDate);
+                return $query->where('date_created', '>=', $fromDate);
             })
 
             ->when($toDate, function ($query) use ($toDate) {
                 return $query->where('date_created', '<=', $toDate);
-             })
+            })
+
+
             ->get();
 
         return $this->respondWithToken($this->token(), '', $search);

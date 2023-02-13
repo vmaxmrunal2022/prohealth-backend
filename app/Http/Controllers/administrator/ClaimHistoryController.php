@@ -104,7 +104,7 @@ class ClaimHistoryController extends Controller
             // ->get();
 
             ->select('procedure_code')
-            ->where('procedure_code', 'like', '%'. $request->search .'%')
+            ->where('procedure_code', 'like', '%' . $request->search . '%')
             ->get();
         return $this->respondWithToken($this->token(), '', $procedureCodes);
     }
@@ -112,10 +112,10 @@ class ClaimHistoryController extends Controller
     public function getCustomerId(Request $request)
     {
         $customerIds = DB::table('CUSTOMER')
-                           ->select('customer_id', 'customer_name')
-                           ->where('customer_id', 'like', '%'. $request->search .'%')
-                           ->orWhere(DB::raw('UPPER(customer_name)'), 'like', '%'. strtoupper($request->search) .'%')
-                           ->get();
+            ->select('customer_id', 'customer_name')
+            ->where('customer_id', 'like', '%' . $request->search . '%')
+            ->orWhere(DB::raw('UPPER(customer_name)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $customerIds);
     }
@@ -123,25 +123,25 @@ class ClaimHistoryController extends Controller
     public function getClientId(Request $request)
     {
         $clientIds = DB::table('CLIENT')
-                           ->select('CLIENT_ID')
-                           ->where('CLIENT_ID', 'like', '%'. $request->search .'%')
-                           ->orWhere(DB::raw('UPPER(CLIENT_NAME)'), 'like', '%'. strtoupper($request->search) .'%')
-                           ->get();
+            ->select('CLIENT_ID')
+            ->where('CLIENT_ID', 'like', '%' . $request->search . '%')
+            ->orWhere(DB::raw('UPPER(CLIENT_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $clientIds);
     }
-    
+
     public function getClientGroup(Request $request)
     {
         $clientGroups = DB::table('CLIENT_GROUP')
-                           ->select('CLIENT_GROUP_ID')
-                           ->where('CLIENT_GROUP_ID', 'like', '%'. $request->search .'%')
-                           ->orWhere(DB::raw('UPPER(GROUP_NAME)'), 'like', '%'. strtoupper($request->search) .'%')
-                           ->get();
+            ->select('CLIENT_GROUP_ID')
+            ->where('CLIENT_GROUP_ID', 'like', '%' . $request->search . '%')
+            ->orWhere(DB::raw('UPPER(GROUP_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $clientGroups);
     }
-    
+
     public function searchOptionalData(Request $request)
     {
         // $searchOptionResult = DB::table('RX_TRANSACTION_LOG')     
@@ -154,67 +154,146 @@ class ClaimHistoryController extends Controller
         //                    ->where('client_group_id', 'like', '%'. $request->client_group_id['client_groupvalue'] .'%')                                     
         //                    ->get();
 
-        if($request->ndc != null)
-        {
+        if ($request->ndc != null) {
             $ndc = $request->ndc['ndcvalue'];
-        }else{
+        } else {
             $ndc = null;
         }
 
-        if($request->procedure_code != null)
-        {
+        if ($request->procedure_code != null) {
             $procedure_code = $request->procedure_code['procvalue'];
-        }else{
+        } else {
             $procedure_code = null;
         }
 
-        if($request->customer_id != null)
-        {
+        if ($request->customer_id != null) {
             $customer_id = $request->customer_id['custvalue'];
-        }else{
+        } else {
             $customer_id = null;
         }
 
-        if($request->client_id != null)
-        {
+        if ($request->client_id != null) {
             $client_id = $request->client_id['clientvalue'];
-        }else{
+        } else {
             $client_id = null;
         }
 
-        if($request->client_group_id != null)
-        {
+        if ($request->client_group_id != null) {
             $client_group_id = $request->clietnt_group_id['client_groupvalue'];
-        }else{
+        } else {
             $client_group_id = null;
         }
 
+        $searchOptionResult = DB::table('RX_TRANSACTION_LOG')
+            ->where('rx_number', 'like', '%' . $request->rx_number . '%')
+            ->where('claim_reference_number', 'like', '%' . $request->claim_reference_number . '%')
+            ->when($ndc, function ($query) use ($ndc) {
+                return $query->where('ndc', 'like', '%' . $ndc . '%');
+            })
 
-        $searchOptionResult = DB::table('RX_TRANSACTION_LOG')     
-                           ->where('rx_number', 'like', '%'. $request->rx_number .'%')                      
-                           ->where('claim_reference_number', 'like', '%'. $request->claim_reference_number .'%')                      
-                           ->when($ndc, function($query) use ($ndc){
-                            return $query->where('ndc', 'like', '%'. $ndc .'%');
-                           })
-                           
-                           ->when($procedure_code, function($query) use ($procedure_code){
-                            return $query->where('procedure_code', 'like', '%'. $procedure_code .'%');
-                           })
+            ->when($procedure_code, function ($query) use ($procedure_code) {
+                return $query->where('procedure_code', 'like', '%' . $procedure_code . '%');
+            })
 
-                           ->when($customer_id, function($query) use ($customer_id){
-                            return $query->where('customer_id', 'like', '%'. $customer_id .'%');
-                           })
+            ->when($customer_id, function ($query) use ($customer_id) {
+                return $query->where('customer_id', 'like', '%' . $customer_id . '%');
+            })
 
-                           ->when($client_id, function($query) use ($client_id){
-                            return $query->where('client_id', 'like', '%'. $client_id .'%');
-                           })
+            ->when($client_id, function ($query) use ($client_id) {
+                return $query->where('client_id', 'like', '%' . $client_id . '%');
+            })
 
-                           ->when($client_group_id, function($query) use ($client_group_id){
-                            return $query->where('client_group_id', 'like', '%'. $client_group_id .'%');
-                           })
-                           ->get();
+            ->when($client_group_id, function ($query) use ($client_group_id) {
+                return $query->where('client_group_id', 'like', '%' . $client_group_id . '%');
+            })
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $searchOptionResult);
     }
-    
+
+    public function searchClaimHistory(Request $request)
+    {
+
+        $date_of_service = date('Ymd', strtotime($request->date_of_service));
+        $search_date_type = $request->search_date_type;
+        $dates = ["search_date" => $date_of_service, "search_date_type" => $search_date_type];
+        // dd($dates);
+        $patient_pin_number = $request->patient_pin_number;
+        $person_code = $request->person_code;
+        $pharmacy_nabp = $request->provider_id;
+
+        $rx_number = $request->rx_number;
+        $claim_reference_number = $request->claim_reference_number;
+        $ndc = $request->ndc;
+        $gpi = $request->gpi;
+        $procedure_id = $request->procedure_id;
+        $customer_id = $request->customer_id;
+        $client_id = $request->client_id;
+        $client_group_id = $request->client_group_id;
+
+        $search_claim_history = DB::table('RX_TRANSACTION_DETAIL')
+            ->where(DB::raw('UPPER(CARDHOLDER_ID)'), 'like', '%' . strtoupper($request->cardholder_id) . '%')
+
+            ->when($person_code, function ($query, $person_code) {
+                return $query->where('person_code', 'like', '%' . $person_code . '%');
+            })
+
+            ->when($patient_pin_number, function ($query, $patient_pin_number) {
+                return $query->where('PATIENT_PIN_NUMBER', 'like', '%' . $patient_pin_number . '%');
+            })
+
+            ->when($pharmacy_nabp, function ($query, $pharmacy_nabp) {
+                return $query->where(DB::raw('UPPER(pharmacy_nabp)'), 'like', '%' . strtoupper($pharmacy_nabp) . '%');
+            })
+
+            ->when($dates, function ($query, $dates) {
+                if ($dates['search_date_type'] == "from") {
+                    return $query->where('DATE_FILLED', '>=', $dates['search_date']);
+                } else {
+                    return $query->where('DATE_FILLED', '<=', $dates['search_date']);
+                }
+            })
+
+            ->when($rx_number, function ($query, $rx_number) {
+                return $query->where('rx_number', $rx_number);
+            })
+
+            ->when($claim_reference_number, function ($query, $claim_reference_number) {
+                return $query->where('claim_reference_number', $claim_reference_number);
+            })
+
+            ->when($ndc, function ($query, $ndc) {
+                return $query->where('ndc', $ndc);
+            })
+
+            ->when($gpi, function ($query, $gpi) {
+                return $query->where('GENERIC_PRODUCT_ID', $gpi);
+            })
+
+            ->when($procedure_id, function ($query, $procedure_id) {
+                return $query->where('procedure_id', $procedure_id);
+            })
+
+            ->when($customer_id, function ($query, $customer_id) {
+                return $query->where('customer_id', $customer_id);
+            })
+
+            ->when($client_id, function ($query, $client_id) {
+                return $query->where('client_id', $client_id);
+            })
+
+            ->when($client_group_id, function ($query, $client_group_id) {
+                return $query->where('client_group_id', $client_group_id);
+            })
+
+
+            ->get();
+
+
+        dd($search_claim_history);
+
+
+
+        return $this->respondWithToken($this->token(), '', $search_claim_history);
+    }
 }

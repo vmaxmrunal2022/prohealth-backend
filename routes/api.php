@@ -526,20 +526,28 @@ Route::get('/provider-type-validation/getFormData', [ProviderTypeValidationContr
 
 
 //Third Party Pricing(module)
+//Third Party Pricing(module)
 Route::group(['prefix' => 'third-party-pricing/'], function () {
     //Price Schedule
     Route::get('price-schedule/get', [PriceScheduleController::class, 'get']);
     Route::get('price-schedule/get-price-schedule-data', [PriceScheduleController::class, 'getPriceScheduleDetails']);
-    Route::get('price-schedule/search', [PriceScheduleController::class, 'search']);
-
+    // Route::post('price-schedule/update', [PriceScheduleController::class, 'updateBrandItem'])->name('price_schedule_update');
+    Route::get('price-schedule/get-brand-type', [PriceScheduleController::class, 'getBrandType']);
+    Route::get('price-schedule/get-brand-source', [PriceScheduleController::class, 'getBrandSource']);
+    Route::post('price-schedule/submit', [PriceScheduleController::class, 'submitPriceSchedule']);
 
     //Copay Schedule
     Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
     Route::get('copay-schedule/get-copay-data', [CopayScheduleController::class, 'getCopayData'])->name('get.copay.single');
+    Route::get('copay-schedule/get-source', [CopayScheduleController::class, 'getSourceOptions']);
+    Route::get('copay-schedule/get-factor', [CopayScheduleController::class, 'getFactor']);
+    Route::get('copay-schedule/get-list-options', [CopayScheduleController::class, 'getListOptions']);
+    Route::get('copay-schedule/get-daw-options', [CopayScheduleController::class, 'getDawOptions']);
+    Route::get('copay-schedule/get-coinsurance-calculation-option', [CopayScheduleController::class, 'getConinsuranceCalculationOption']);
+    Route::post('copay-schedule/submit', [CopayScheduleController::class, 'submitCopaySchedule']);
 
     //Copay Step Schedule
     Route::get('copay-step-schedule/get', [CopayStepScheduleController::class, 'get'])->name('get.copay-step');
-    // Route::get('copay-step-schedule/get-copay-data', [CopayStepScheduleController::class, 'getCopayData'])->name('get.copay-step.single');
     Route::get('copay-step-schedule/check-copay-list-existing', [CopayStepScheduleController::class, 'checkCopayListExist']);
     Route::post('copay-step-schedule/submit', [CopayStepScheduleController::class, 'submit'])->name('submit.copay-step');
 
@@ -552,17 +560,22 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
 
     //Tax Schedule
     Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
+    Route::get('tax-schedule/get-calculations', [TaxScheduleController::class, 'getCalculations']);
+    Route::get('tax-schedule/get-base-prices', [TaxScheduleController::class, 'getBasePrices']);
+    Route::post('tax-schedule/submit', [TaxScheduleController::class, 'submitTaxSchedule']);
 
     //Procedure UCR list
     Route::get('procedure-ucr-list/get', [ProcedureUcrList::class, 'get']);
     Route::get('procedure-ucr-list/get-procedure-list-data', [ProcedureUcrList::class, 'getProcedureListData']);
+    Route::get('procedure-ucr-list/get-procedure-code', [ProcedureUcrList::class, 'getProcedureCode']);
+    Route::post('procedure-ucr-list/submit', [ProcedureUcrList::class, 'submitProcedureList']);
 
     //RVA List
     Route::get('rva-list/get', [RvaListController::class, 'get']);
     Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
-    Route::get('rva-list/search', [RvaListController::class, 'Search']);
-
+    Route::post('rva-list/submit', [RvaListController::class, 'submitRva']);
 });
+
 
 //Drug Information
 Route::group(['prefix' => "drug-information/"], function () {
@@ -572,10 +585,6 @@ Route::group(['prefix' => "drug-information/"], function () {
     Route::get('drug-database/get-drug-prices', [DrugDatabaseController::class, 'getDrugPrices']);
     Route::post('drug-price/add', [DrugDatabaseController::class, 'addDrugPrice']);
     Route::get('ndc-gpi/search', [NdcGpiController::class, 'search']);
-    Route::get('ndc-gpi/details/{ndcid}', [NdcGpiController::class, 'search']);
-
-
-    
 
 });
 
@@ -651,6 +660,9 @@ Route::group(['prefix' => 'membership/'], function () {
     Route::get('plan-validation/get-plan-id', [PlanValidationController::class, 'getPlanId']);
     Route::post('plan-validation/add-plan-validaion', [PlanValidationController::class, 'addPlanValidation']);
 });
+
+
+
 
 //Administrator
 Route::group(['prefix' => 'administrator/'], function () {

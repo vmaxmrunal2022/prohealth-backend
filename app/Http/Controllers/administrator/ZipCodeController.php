@@ -12,25 +12,26 @@ use Illuminate\Contracts\Encryption\DecryptException;
 
 class ZipCodeController extends Controller
 {
-    public function search(Request $request){
+    public function search(Request $request)
+    {
         $zip_code_list = DB::table('ZIP_CODES')
-        ->where('ZIP_CODE','like', '%' .$request->search. '%')
-        ->orWhere(DB::raw('UPPER(CITY)'),'like', '%' .strtoupper($request->search). '%')
-        ->get();
+            ->where('ZIP_CODE', 'like', '%' . $request->search . '%')
+            ->orWhere(DB::raw('UPPER(CITY)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
         return $this->respondWithToken($this->token(), '', $zip_code_list);
-
     }
 
-    public function getZipCodeList($zip_code){
+    public function getZipCodeList($zip_code)
+    {
         // dd($zip_code);
         $zip_code_list = DB::table('ZIP_CODES')
-        ->where('ZIP_CODE','=', $zip_code)
-        ->first();
+            ->where('ZIP_CODE', '=', $zip_code)
+            ->first();
         return $this->respondWithToken($this->token(), '', $zip_code_list);
-
     }
 
-    public function submitFormData(Request $request){
+    public function submitFormData(Request $request)
+    {
         // dd($request->all());
         if ($request->has('new')) {
             $addUser = DB::table('ZIP_CODES')

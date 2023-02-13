@@ -18,7 +18,7 @@ class PlanAssociationController extends Controller
         //     ->orWhere('PIN_NUMBER_SUFFIX', 'like', '%' . strtoupper($request->search) . '%')
         //     ->get();
 
-        $planAssociation = DB::table('PLAN_LOOKUP_TABLE')        
+        $planAssociation = DB::table('PLAN_LOOKUP_TABLE')
             ->where('BIN_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('PROCESS_CONTROL_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('GROUP_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
@@ -45,8 +45,8 @@ class PlanAssociationController extends Controller
 
         $transaction_type = is_array($request->transaction_type) != null ? $request->transaction_type['tt_value'] : $request->transaction_type;
 
-        $use_default_ccg = is_array($request->use_default_ccg) != null ? $request->use_default_ccg['ta_value'] : $request->use_default_ccg;       
- 
+        $use_default_ccg = is_array($request->use_default_ccg) != null ? $request->use_default_ccg['ta_value'] : $request->use_default_ccg;
+
         if ($request->add_new) {
             $planAssociation = DB::table('plan_lookup_table')
                 ->insert([
@@ -182,9 +182,9 @@ class PlanAssociationController extends Controller
     public function getClientGroupLabel(Request $request)
     {
         $client_group_label = DB::table('client_group')
-                              ->select('group_name')
-                              ->where('client_group_id', $request->search)
-                              ->first();
+            ->select('group_name')
+            ->where('client_group_id', $request->search)
+            ->first();
 
         return $this->respondWithToken($this->token(), '', $client_group_label);
     }
@@ -192,8 +192,8 @@ class PlanAssociationController extends Controller
     public function getPlanId(Request $request)
     {
         $planIds = DB::table('plan_table')
-                   ->select('id', )
-                   ->get();
+            // ->select('id')
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $planIds);
     }
