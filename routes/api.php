@@ -105,8 +105,8 @@ use Nette\Schema\Context;
 //     return $request->user();
 // });
 
-Route::group([ 'middleware' => 'apisession'], function ($router){
 
+Route::group([ 'middleware' => 'apisession'], function ($router){
 
 
 Route::group(['prefix' => 'users'], function ($router) {
@@ -621,6 +621,9 @@ Route::group(['prefix' => 'plan-design/'], function () {
     Route::get('plan-edit/get-uc-plan', [PlanEditController::class, 'getUCPlan']);
     Route::get('plan-edit/get-search-indication', [PlanEditController::class, 'getSearchIndication']);
     Route::get('plan-edit/get-formulary', [PlanEditController::class, 'getFormulary']);
+
+    Route::get('get-copay-drop-down', [PlanEditController::class, 'getCopaydropDown']);
+
 });
 
 //Membership
