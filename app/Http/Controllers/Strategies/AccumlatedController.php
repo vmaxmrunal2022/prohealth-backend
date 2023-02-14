@@ -46,7 +46,7 @@ class AccumlatedController extends Controller {
                         'form_id'=>'',
                         'user_id_created'=>'',
                         'accum_exclusion_flag'=>$request->accum_exclusion_flag,
-                        'effective_date'=>$request->effective_date,
+                        'effective_date'=>strtotime($request->effective_date),
                         'module_exit'=>'',
                         'plan_accum_deduct_id'=>$request->plan_accum_deduct_id,
     
@@ -57,13 +57,13 @@ class AccumlatedController extends Controller {
             }
 
 
-            // return $this->respondWithToken( $this->token(), 'Successfully added', $accum_benfit_stat );
+            return $this->respondWithToken( $this->token(), 'Successfully added', $accum_benfit_stat );
 
 
            
         } else {
 
-            $benefitcode = DB::table( 'accum_bene_strategy_names' )
+            $update = DB::table( 'accum_bene_strategy_names' )
             ->where( 'accum_bene_strategy_id', $request->accum_bene_strategy_id )
             ->update(
                 [
@@ -95,14 +95,14 @@ class AccumlatedController extends Controller {
                 ]
             );
 
-            $benefitcode = DB::table('ACCUM_BENEFIT_STRATEGY' ) ->where('accum_bene_strategy_id', 'like', '%' . $request->accum_bene_strategy_id. '%')->first();
+            $data = DB::table('ACCUM_BENEFIT_STRATEGY' ) ->where('accum_bene_strategy_id', 'like', '%' . $request->accum_bene_strategy_id. '%')->first();
 
 
         }
 
         // $benefitcode = DB::table( 'benefit_codes' )->where( 'benefit_code', 'like', $request->benefit_code )->first();
 
-        return $this->respondWithToken( $this->token(), 'Successfully updated', $benefitcode );
+        return $this->respondWithToken( $this->token(), 'Successfully updated', $data);
     }
 
     public function search( Request $request ) {
