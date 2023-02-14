@@ -658,6 +658,8 @@ Route::group(['prefix' => 'membership/'], function () {
 
     //Prior Authorization
     Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
+    Route::post('prior-authorization/submit', [PriorAuthController::class, 'submitPriorAuthorization']);
+
 
     //Plan Validation
     Route::get('plan-validation/get', [PlanValidationController::class, 'get']);
