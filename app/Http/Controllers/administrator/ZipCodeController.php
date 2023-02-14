@@ -29,6 +29,7 @@ class ZipCodeController extends Controller
             ->first();
         return $this->respondWithToken($this->token(), '', $zip_code_list);
     }
+    
 
     public function submitFormData(Request $request)
     {

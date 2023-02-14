@@ -674,6 +674,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('search-audit-trial/get-user_ids', [AuditTrailController::class, 'getUserIds'])->name('getUserIds');
         Route::get('search-audit-trial/get-record-actions', [AuditTrailController::class, 'getRecordAction'])->name('getRecordAction');
         Route::post('search-audit-trial/search-user-log', [AuditTrailController::class, 'searchUserLog'])->name('searchUserLog');
+        Route::post('search-audit-trial/get-old-user-log', [AuditTrailController::class, 'getOldUserLog']);
 
         //System parameters
         Route::get('system-parameter/get-parameters', [SystemParameterController::class, 'getSystemParameters']);

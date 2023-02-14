@@ -139,6 +139,23 @@ class UserDefinationController extends Controller
                 'group_id' => $request->group_id
             ]);
 
+            //TODO
+            // 1.Table name
+            // 2. record action
+            // 3. record snapshot log
+            $addUserLog = DB::table('FE_RECORD_LOG')->insert([
+                'user_id' => $request->user_id,
+                'application' => 'PBM',
+                'date_created' => date('Ymd'),
+                'time_created' => date('HiA'),
+                // 'SQL_SERVER_USER_ID' => 'phi',
+                // 'SQL_SERVER_USER_PASSWORD' => 'comet',
+                // 'user_password' => $request->user_password,
+                // 'user_first_name' => $request->user_first_name,
+                // 'user_last_name' => $request->user_last_name,
+                // 'group_id' => $request->group_id
+            ]);
+
             if ($addUser) {
                 return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addUser);
             }
@@ -151,6 +168,22 @@ class UserDefinationController extends Controller
                     'user_last_name' => $request->user_last_name,
                     'group_id' => $request->group_id
                 ]);
+            //TODO
+            // 1.Table name
+            // 2. record action
+            // 3. record snapshot log
+            $updateUserLog = DB::table('FE_RECORD_LOG')->insert([
+                'user_id' => $request->user_id,
+                'application' => 'PBM',
+                'date_created' => date('Ymd'),
+                'time_created' => date('HiA'),
+                // 'SQL_SERVER_USER_ID' => 'phi',
+                // 'SQL_SERVER_USER_PASSWORD' => 'comet',
+                // 'user_password' => $request->user_password,
+                // 'user_first_name' => $request->user_first_name,
+                // 'user_last_name' => $request->user_last_name,
+                // 'group_id' => $request->group_id
+            ]);
 
             if ($updateUser) {
                 return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateUser);
