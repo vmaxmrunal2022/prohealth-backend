@@ -135,7 +135,7 @@ class DiagnosisValidationListController extends Controller
                             $validationAddData = DB::table('DIAGNOSIS_VALIDATIONS')
                             ->insert([
                                 'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                                'DIAGNOSIS_ID' => $request->exception_name,
+                                'DIAGNOSIS_ID' => $request->diagnosis_id,
                                 'DIAGNOSIS_STATUS' => $request->diagnosis_status,
                                 'PRIORITY' => $request->priority,
                             ]);

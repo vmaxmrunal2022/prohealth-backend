@@ -30,7 +30,7 @@ class PrescriberController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function updatePrescriber(Request $request)
+    public function add(Request $request)
     {
         $update = DB::table('PHYSICIAN_TABLE')
                   ->where('PHYSICIAN_ID', $request->physician_id)

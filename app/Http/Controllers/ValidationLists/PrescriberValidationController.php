@@ -15,7 +15,7 @@ class PrescriberValidationController extends Controller
                 ->where(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' .strtoupper($request->search). '%')
                 ->orderBy('PHYSICIAN_LIST','ASC')
                 ->get();
-                return $this->respondWithToken($this->token(), '', $physicianExceptionData);
+            return $this->respondWithToken($this->token(), '', $physicianExceptionData);
     }
 
 
