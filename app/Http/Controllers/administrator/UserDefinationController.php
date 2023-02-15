@@ -7,6 +7,7 @@ use App\Models\administrator\UserDefinition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserDefinationController extends Controller
 {
@@ -126,6 +127,17 @@ class UserDefinationController extends Controller
 
     public function submitFormData(Request $request)
     {
+        //$hashed_password = Hash::make($request->user_password);
+        $prefix = '$2y$';
+        $cost = '10';
+        $salt = '$thisisahardcodedsalt$';
+        $blowfishPrefix = $prefix . $cost . $salt;
+        $password = $request->user_password;
+        $hash = crypt($password, $blowfishPrefix);
+        $hashToThirdParty = substr($hash, -32);
+        $hashFromThirdParty = $hashToThirdParty;
+
+        // dd($hashFromThirdParty);
         if ($request->has('new')) {
             //$addUser = DB::table('FE_USERS')->insert([
             $addUser = UserDefinition::insert([
@@ -133,10 +145,28 @@ class UserDefinationController extends Controller
                 'application' => 'PBM',
                 'SQL_SERVER_USER_ID' => 'phi',
                 'SQL_SERVER_USER_PASSWORD' => 'comet',
-                'user_password' => $request->user_password,
+                //'user_password' => $request->user_password,
+                'user_password' => $hashFromThirdParty,
                 'user_first_name' => $request->user_first_name,
                 'user_last_name' => $request->user_last_name,
                 'group_id' => $request->group_id
+            ]);
+
+            //TODO
+            // 1.Table name
+            // 2. record action
+            // 3. record snapshot log
+            $addUserLog = DB::table('FE_RECORD_LOG')->insert([
+                'user_id' => $request->user_id,
+                'application' => 'PBM',
+                'date_created' => date('Ymd'),
+                'time_created' => date('HiA'),
+                // 'SQL_SERVER_USER_ID' => 'phi',
+                // 'SQL_SERVER_USER_PASSWORD' => 'comet',
+                // 'user_password' => $request->user_password,
+                // 'user_first_name' => $request->user_first_name,
+                // 'user_last_name' => $request->user_last_name,
+                // 'group_id' => $request->group_id
             ]);
 
             if ($addUser) {
@@ -151,6 +181,22 @@ class UserDefinationController extends Controller
                     'user_last_name' => $request->user_last_name,
                     'group_id' => $request->group_id
                 ]);
+            //TODO
+            // 1.Table name
+            // 2. record action
+            // 3. record snapshot log
+            $updateUserLog = DB::table('FE_RECORD_LOG')->insert([
+                'user_id' => $request->user_id,
+                'application' => 'PBM',
+                'date_created' => date('Ymd'),
+                'time_created' => date('HiA'),
+                // 'SQL_SERVER_USER_ID' => 'phi',
+                // 'SQL_SERVER_USER_PASSWORD' => 'comet',
+                // 'user_password' => $request->user_password,
+                // 'user_first_name' => $request->user_first_name,
+                // 'user_last_name' => $request->user_last_name,
+                // 'group_id' => $request->group_id
+            ]);
 
             if ($updateUser) {
                 return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateUser);

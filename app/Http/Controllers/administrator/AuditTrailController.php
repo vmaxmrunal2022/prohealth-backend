@@ -90,4 +90,14 @@ class AuditTrailController extends Controller
 
         return $this->respondWithToken($this->token(), '', $search);
     }
+
+    public function getOldUserLog(Request $request)
+    {
+        $old_user_log_data = DB::table('FE_RECORD_LOG')
+            ->where('user_id', $request->user_id)
+            ->where('record_action', $request->record_action)
+            ->where('table_name', $request->table_name)
+            ->get();
+        return $this->respondWithToken($this->token(), '', $old_user_log_data);
+    }
 }
