@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Code;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\HttpFoundation\Response;
 
 class BenifitController extends Controller
 {
@@ -22,11 +21,10 @@ class BenifitController extends Controller
 
     public function add(Request $request)
     {
-        $response  = new Response();
-        // $response = $response->setStatusCode(200);
-        // return $response;
+
+
         $createddate = date('y-m-d');
-        if ($request->has('new')) {
+        if ($request->new == 1)  {
             $benefitcode = DB::table('benefit_codes')->insert(
                 [
                     'benefit_code' => strtoupper($request->benefit_code),
@@ -39,12 +37,14 @@ class BenifitController extends Controller
                 ]
             );
 
-            
+
+
 
             $benefitcode = DB::table('benefit_codes') ->where('benefit_code', 'like', '%' . $request->benefit_code. '%')->first();
+	return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
 
 
-        } else {
+        } else  if($request->new == 0){
             $benefitcode = DB::table('benefit_codes')
                                 ->where('benefit_code', $request->benefit_code)
                                 ->update(
@@ -59,7 +59,7 @@ class BenifitController extends Controller
                                     ]
                             );
 
-            // $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', $request->benefit_code )->first();
+           
 
             $benefitcode = DB::table('benefit_codes' ) ->where('benefit_code', 'like', '%' . $request->benefit_code. '%')->first();
 
@@ -67,7 +67,8 @@ class BenifitController extends Controller
         
         }
 
-        return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
+
+        return $this->respondWithToken($this->token(), 'Successfully updated', $benefitcode);
     }
 
     public function delete(Request $request)
@@ -86,4 +87,5 @@ class BenifitController extends Controller
 
         return $this->respondWithToken($this->token(), '', $isExist);
     }
+
 }
