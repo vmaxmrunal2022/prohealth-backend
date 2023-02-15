@@ -49,8 +49,91 @@ class DrugClassController extends Controller
 
     }
 
-    public function submit(Request $request)
+    public function getNDCItemDetails($ndcid){
+
+        $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+        // ->select('DRUG_CATGY_EXCEPTION_NAMES.*', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_NAME')
+        ->join('PLAN_DRUG_CATGY_EXCEPTIONS', 'PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', '=', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST')
+        ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')  ->get();
+        return $this->respondWithToken($this->token(), '', $ndc);
+
+
+    }
+
+    public function add(Request $request)
     {
-        dd($request->all());
+        
+        $createddate = date('y-m-d');
+        if ($request->new == 1)  {
+            $drugcatgy = DB::table('DRUG_CATGY_EXCEPTION_NAMES')->insert(
+                [
+                    'drug_catgy_exception_list' => strtoupper($request->drug_catgy_exception_list),
+                    'drug_catgy_exception_name' => $request->drug_catgy_exception_name,
+                    'DATE_TIME_CREATED' => $createddate,
+                    'USER_ID' => '', // TODO add user id
+                    'DATE_TIME_MODIFIED' => '',
+                    'USER_ID_CREATED' => '',
+                    'FORM_ID' => ''
+                ]
+            );
+
+
+            $plan=DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->insert(
+                [
+                    'PLAN_ID'=>$request->plan_id,
+                    'SCATEGORY'=>$request->scategory,
+                    'STYPE'=>$request->stype,
+                    'NEW_DRUG_STATUS'=>$request->new_drug_status,
+                    'PROCESS_RULE'=>$request->process_rule,
+                    'MAXIMUM_ALLOWABLE_COST'=>$request->maximum_allowable_cost,
+                    'PHYSICIAN_LIST'=>$request->physician_list,
+                    'PHYSICIAN_SPECIALTY_LIST'=>$request->physician_speciality_list,
+                    'PHARMACY_LIST'=>$request->pharmacy_list,
+                    'DIAGNOSIS_LIST'=>$request->diagnosis_list,
+                    'PREFERRED_PRODUCT_NDC'=>$request->prefered_product_ndc,
+                    'CONVERSION_PRODUCT_NDC'=>$request->conversion_product_ndc,
+                    'ALTERNATE_PRICE_SCHEDULE'=>$request->alternate_price_schedule,
+                    'ALTERNATE_COPAY_SCHED'=>$request->alternate_copay_sched,
+                    'MESSAGE'=>$request->message,
+                    'MESSAGE_STOP_DATE'=>$request->message_stop_date,
+                    'MIN_RX_QTY'=>$request->min_rx_qty,
+                    'MAX_RX_QTY'=>$request->max_rx_qty,
+                    'MIN_RX_DAYS'=>$request->min_rx_days,
+                    
+
+                ]
+            );
+
+
+        
+
+	return $this->respondWithToken($this->token(), 'Record added Successfully!', $drugcatgy);
+
+
+        } else  if($request->new == 0){
+            $benefitcode = DB::table('benefit_codes')
+                                ->where('benefit_code', $request->benefit_code)
+                                ->update(
+                                    [
+                                        'benefit_code' => strtoupper($request->benefit_code),
+                                        'description' => $request->description,
+                                        'DATE_TIME_CREATED' => $createddate,
+                                        'USER_ID' => '', // TODO add user id
+                                        'DATE_TIME_MODIFIED' => '',
+                                        'USER_ID_CREATED' => '',
+                                        'FORM_ID' => ''
+                                    ]
+                            );
+
+           
+
+            $benefitcode = DB::table('benefit_codes' ) ->where('benefit_code', 'like', '%' . $request->benefit_code. '%')->first();
+
+
+        
+        }
+
+
+        return $this->respondWithToken($this->token(), 'Record updated Successfully! ', $benefitcode);
     }
 }

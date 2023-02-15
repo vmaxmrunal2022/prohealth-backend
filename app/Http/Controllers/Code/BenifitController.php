@@ -37,11 +37,8 @@ class BenifitController extends Controller
                 ]
             );
 
-
-
-
             $benefitcode = DB::table('benefit_codes') ->where('benefit_code', 'like', '%' . $request->benefit_code. '%')->first();
-	return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
+	return $this->respondWithToken($this->token(), 'Record added Successfully!', $benefitcode);
 
 
         } else  if($request->new == 0){
@@ -68,7 +65,7 @@ class BenifitController extends Controller
         }
 
 
-        return $this->respondWithToken($this->token(), 'Successfully updated', $benefitcode);
+        return $this->respondWithToken($this->token(), 'Record updated Successfully! ', $benefitcode);
     }
 
     public function delete(Request $request)
