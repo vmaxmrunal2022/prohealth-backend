@@ -65,8 +65,8 @@ class UserController extends Controller
         } else {
             $user_password = null;
         }
+        // dd($hashFromThirdParty);
 
-        // dd(Hash::check($hashFromThirdParty, $hashed));
         $validator = Validator::make($request->all(), [
             'USER_ID' => 'required|string',
             'USER_PASSWORD' => 'required',
@@ -120,6 +120,7 @@ class UserController extends Controller
             $accessToken = auth()->user()->createToken('authToken')->accessToken;
             $responseMessage = "Login Successful";
             Session::put('user', auth()->user()->user_id);
+            // dd($request->session()->get('user'));
             return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
         } else {
             $responseMessage = "Sorry, this user does not exist";
