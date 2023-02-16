@@ -161,7 +161,9 @@ class UserDefinationController extends Controller
                 'user_first_name' => $request->user_first_name,
                 'user_last_name' => $request->user_last_name,
                 'group_id' => $request->group_id,
-                'user_id_created' => $request->session()->get('user')
+                'user_id_created' => $request->session()->get('user'),
+                'privs' => $request->default_system_user,
+                'restrict_security_flag' => $request->restrict_security_flag
             ]);
 
             //TODO
@@ -192,7 +194,9 @@ class UserDefinationController extends Controller
                     'user_first_name' => $request->user_first_name,
                     'user_last_name' => $request->user_last_name,
                     'group_id' => $request->group_id,
-                    'user_id_created' => $request->session()->get('user')
+                    'user_id_created' => $request->session()->get('user'),
+                    'privs' => $request->default_system_user,
+                    'restrict_security_flag' => $request->restrict_security_flag
                 ]);
             //TODO
             // 1.Table name
@@ -394,7 +398,6 @@ class UserDefinationController extends Controller
                         'group_name' => $request->group_name,
                         'user_profile' => $request->user_profile
                     ]);
-
                 return $this->respondWithToken($this->token(), 'Added Successfully!', $add_fe_group);
             } else {
                 return $this->respondWithToken($this->token(), 'Something went wrong!');

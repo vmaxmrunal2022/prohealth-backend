@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\administrator;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class VerifyDrugVCoverage extends Controller
 {
@@ -38,8 +41,26 @@ class VerifyDrugVCoverage extends Controller
         return $this->respondWithToken($this->token(), '', $claim_var_ind);
     }
 
+    public function getMemberDetails(Request $request)
+    {
+        $member_details = DB::table('member')
+            ->select('customer_id', 'client_id', 'client_group_id', 'person_code')
+            ->where(DB::raw('UPPER(member_id)'), strtoupper($request->member_id))
+            ->get();
+        return $this->respondWithToken($this->token(), '', $member_details);
+    }
+
     public function submitVerifyDrugCoverage(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            // 'group_id' => ['required', Rule::unique('FE_USER_GROUPS')->where(function ($q) {
+            //     $q->whereNotNull('group_id');
+            // })],
+            'ndc' => ['required'],
+            'date_of_service' => ['required'],
+            'member_id' => ['required']
+        ]);
+
         //TODO -> functionality not clear
         if ($request->add_new) {
             $add_newVerify_drug = [
