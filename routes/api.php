@@ -315,14 +315,9 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/diagnosisvalidation/diagnosis_limitations/{diagnosis_list}/{diagnosis_id}', [DiagnosisValidationListController::class, 'getDiagnosisLimitations'])->name('diagnosisvalidation.details.get'); // DETAIL
     Route::post('/diagnosisvalidation/submit-diagnosis-form',[DiagnosisValidationListController::class,'addDiagnosisValidations']);//add and update diagnosis data
     Route::post('/diagnosisvalidation/submit-diagnosis-limitation-form',[DiagnosisValidationListController::class,'DiagnosisLimitationAdd']);
-
     Route::get('/diagnosisvalidation/validation-list/{diagnosis_list}' , [DiagnosisValidationListController::class,'getDiagnosisValidations']);
-
     Route::get('/diagnosisvalidation/details/{diagnosis_list}/{diagnosis_id}' , [DiagnosisValidationListController::class,'getDiagnosisDetails']);
-
     Route::post('/diagnosisvalidation/submit-diagnosis-validation-form',[DiagnosisValidationListController::class,'updatePriorityDiagnosisValidation']);
-
-
     Route::get('/pricingstrategy/search', [PricingStrategyController::class, 'search'])->name('pricingstrategy.search'); // SEARCH
     Route::get('/pricingstrategy/get/{ndcid}', [PricingStrategyController::class, 'getProviderList'])->name('pricingstrategy.list.get'); // LIST ITEMS
     Route::get('/pricingstrategy/details/{ndcid}', [PricingStrategyController::class, 'getNDCItemDetails'])->name('pricingstrategy.details.get'); // DETAIL
