@@ -5,41 +5,47 @@ namespace App\Http\Controllers\Code;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ServiceTypeController extends Controller
 {
     public function get(Request $request)
     {
-        $procedurecodes = DB::table('SERVICE_TYPES')
-            ->where('SERVICE_TYPE', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
-            ->get();
+        $validator = Validator::make($request->all(), [
+            "search" => ['required']
+        ]);
 
-        return  $this->respondWithToken($this->token(), '', $procedurecodes);
+        if ($validator->fails()) {
+            return response(
+                $validator->errors(),
+                400
+            );
+        } else {
+            $procedurecodes = DB::table('SERVICE_TYPES')
+                ->where('SERVICE_TYPE', 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
+                ->get();
+
+            return  $this->respondWithToken($this->token(), '', $procedurecodes);
+        }
     }
 
     public function add(Request $request)
     {
-        if ($request->new) {
-            $procedurecode = DB::table('SERVICE_TYPES')->insert(
-                [
-                    'SERVICE_TYPE' => strtoupper($request->service_type),
-                    'DESCRIPTION' => strtoupper($request->description),
-                    'DATE_TIME_CREATED' => date('y-m-d'),
-                    'USER_ID_CREATED' => $request->user_id_created,
-                    'USER_ID' => $request->user_id,
-                    'DATE_TIME_MODIFIED' => $request->date_time_modified,
-                    'FORM_ID' => $request->form_id,
-                    // 'COMPLETE_CODE_IND' => ''
-                ]
-            );
-            return $this->respondWithToken($this->token(), 'Added successfully!', $procedurecode);
+        $validator = Validator::make($request->all(), [
+            "service_type" => ['required', 'max:2', Rule::unique('SERVICE_TYPES')->where(function ($q) {
+                $q->whereNotNull('service_type');
+            })],
+        ]);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 400);
         } else {
-            $procedurecode = DB::table('SERVICE_TYPES')
-                ->where(DB::raw('UPPER(SERVICE_TYPE)'), strtoupper($request->service_type))
-                ->update(
+            if ($request->new) {
+                $procedurecode = DB::table('SERVICE_TYPES')->insert(
                     [
-                        // 'SERVICE_TYPE' => strtoupper($request->service_type),
+                        'SERVICE_TYPE' => strtoupper($request->service_type),
                         'DESCRIPTION' => strtoupper($request->description),
                         'DATE_TIME_CREATED' => date('y-m-d'),
                         'USER_ID_CREATED' => $request->user_id_created,
@@ -49,7 +55,24 @@ class ServiceTypeController extends Controller
                         // 'COMPLETE_CODE_IND' => ''
                     ]
                 );
-            return $this->respondWithToken($this->token(), 'Updated successfully!', $procedurecode);
+                return $this->respondWithToken($this->token(), 'Added successfully!', $procedurecode);
+            } else {
+                $procedurecode = DB::table('SERVICE_TYPES')
+                    ->where(DB::raw('UPPER(SERVICE_TYPE)'), strtoupper($request->service_type))
+                    ->update(
+                        [
+                            // 'SERVICE_TYPE' => strtoupper($request->service_type),
+                            'DESCRIPTION' => strtoupper($request->description),
+                            'DATE_TIME_CREATED' => date('y-m-d'),
+                            'USER_ID_CREATED' => $request->user_id_created,
+                            'USER_ID' => $request->user_id,
+                            'DATE_TIME_MODIFIED' => $request->date_time_modified,
+                            'FORM_ID' => $request->form_id,
+                            // 'COMPLETE_CODE_IND' => ''
+                        ]
+                    );
+                return $this->respondWithToken($this->token(), 'Updated successfully!', $procedurecode);
+            }
         }
     }
 
@@ -66,6 +89,6 @@ class ServiceTypeController extends Controller
             ->where(DB::raw('UPPER(SERVICE_TYPE)'), strtoupper($request->search))
             ->get()
             ->count();
-        return $this->respondWithToken($this->token(), '', $check_service_type_exist);  
+        return $this->respondWithToken($this->token(), '', $check_service_type_exist);
     }
 }
