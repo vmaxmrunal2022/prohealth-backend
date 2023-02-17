@@ -61,6 +61,7 @@ class DiagnosisController extends Controller
             'procedure_code' => ['required', 'max:8', Rule::unique('DIAGNOSIS_CODES')->where(function ($q) {
                 $q->whereNotNull('diagnosis_id');
             })],
+            "description" => ['max:35']
         ]);
         if ($validator->fails()) {
             return response($validator->errors(), 400);

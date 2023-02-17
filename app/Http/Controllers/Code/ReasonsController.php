@@ -33,6 +33,7 @@ class ReasonsController extends Controller
             "reason_code" => ['required', 'max:10', Rule::unique('REASON_CODES')->where(function ($q) {
                 $q->whereNotNull('reason_code');
             })],
+            "description" => ['max:35']
         ]);
 
         if ($validator->fails()) {

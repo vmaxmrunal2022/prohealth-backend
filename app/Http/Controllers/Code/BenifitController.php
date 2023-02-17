@@ -35,6 +35,7 @@ class BenifitController extends Controller
             'benefit_code' => ['required', 'max:10', Rule::unique('benefit_codes')->where(function ($q) {
                 $q->whereNotNull('benefit_code');
             })],
+            "description" => ['max:36']
         ]);
         if ($validator->fails()) {
             return response($validator->errors(), 400);

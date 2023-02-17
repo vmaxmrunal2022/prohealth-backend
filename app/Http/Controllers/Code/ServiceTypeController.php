@@ -37,6 +37,7 @@ class ServiceTypeController extends Controller
             "service_type" => ['required', 'max:2', Rule::unique('SERVICE_TYPES')->where(function ($q) {
                 $q->whereNotNull('service_type');
             })],
+            "description" => ['max:35']
         ]);
 
         if ($validator->fails()) {

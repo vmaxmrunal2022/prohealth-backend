@@ -35,6 +35,7 @@ class ServiceModifierController extends Controller
             "service_modifier" => ['required', 'max:2', Rule::unique('SERVICE_MODIFIERS')->where(function ($q) {
                 $q->whereNotNull('service_modifier');
             })],
+            "description" => ['max:35']
         ]);
 
         if ($validator->fails()) {

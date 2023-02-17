@@ -35,6 +35,7 @@ class CouseOfLossController extends Controller
             "cause_of_loss_code" => ['required', 'max:8', Rule::unique('CAUSE_OF_LOSS_CODES')->where(function ($q) {
                 $q->whereNotNull('cause_of_loss_code');
             })],
+            "description" => ['max:35']
         ]);
 
         if ($validator->fails()) {

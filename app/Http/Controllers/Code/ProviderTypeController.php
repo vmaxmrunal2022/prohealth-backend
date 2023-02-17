@@ -47,6 +47,7 @@ class ProviderTypeController extends Controller
             "provider_type" => ['required', 'max:2', Rule::unique('PROVIDER_TYPES')->where(function ($q) {
                 $q->whereNotNull('provider_type');
             })],
+            "description" => ['max:35']
         ]);
 
         if ($validator->fails()) {

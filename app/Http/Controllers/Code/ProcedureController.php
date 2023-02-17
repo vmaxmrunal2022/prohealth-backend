@@ -33,6 +33,7 @@ class ProcedureController extends Controller
             'procedure_code' => ['required', 'max:10', Rule::unique('PROCEDURE_CODES')->where(function ($q) {
                 $q->whereNotNull('procedure_code');
             })],
+            "description" => ['max:36']
         ]);
         if ($validator->fails()) {
             return response($validator->errors(), 400);
