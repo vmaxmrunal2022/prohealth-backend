@@ -25,6 +25,8 @@ use App\Http\Controllers\Exception\BenefitDerivationController;
 use App\Http\Controllers\Exception\GPIExceptionController;
 use App\Http\Controllers\Exception\NDCExceptionController;
 
+use App\Http\Controllers\membership\PlanValidationController;
+use App\Http\Controllers\membership\PriorAuthController;
 use App\Http\Controllers\ValidationLists\ValidationListsController;
 
 use App\Http\Controllers\ValidationLists\PrescriberValidationController;
@@ -272,36 +274,36 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/super-benefit-list/add', [SuperBenefitControler::class, 'add']);
     });
 
-    Route::group(['prefix' => 'validationlist'], function ($router) {
+Route::group(['prefix' => 'validationlist'], function ($router) {
 
-        // NDC
-        Route::get('/diagnosis/search', [ValidationListsController::class, 'search'])->name('diagnosis.search'); // SEARCH
-        Route::get('/diagnosis/get/{ndcid}', [ValidationListsController::class, 'getDiagnosisList'])->name('diagnosis.list.get'); // LIST ITEMS
-        Route::get('/diagnosis/details/{ndcid}', [ValidationListsController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
+    // NDC
+    Route::get('/diagnosis/search', [ValidationListsController::class, 'search'])->name('diagnosis.search'); // SEARCH
+    Route::get('/diagnosis/get/{ndcid}', [ValidationListsController::class, 'getDiagnosisList'])->name('diagnosis.list.get'); // LIST ITEMS
+    Route::get('/diagnosis/details/{ndcid}', [ValidationListsController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
-        Route::get('/limitations', [DiagnosisController::class, 'getLimitations'])->name('diagnosis.get'); // SEARCH
-
-
-
-        Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('speciality.search'); // SEARCH
-        Route::get('/speciality/get/{specialty_id}', [SpecialityController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
-        Route::get('/speciality/details/{specialty_id}/{specialty_list}', [SpecialityController::class, 'getSpecialityDetails'])->name('ndsc.details.get'); // DETAIL
-        Route::post('/speciality/submit-speciality-form', [SpecialityController::class, 'addSpeciality']); // add update speciality
+    Route::get('/limitations', [DiagnosisController::class, 'getLimitations'])->name('diagnosis.get'); // SEARCH
 
 
 
-        Route::get('/eligibility/search', [EligibilityValidationListController::class, 'search']); // SEARCH
-        // Route::get('/eligibility/get/{ndcid}', [EligibilityValidationListController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
-        Route::get('/eligibility/details/{elig_lis_id}', [EligibilityValidationListController::class, 'getEligibilityDetails'])->name('eligibility.details.get'); // DETAIL
-        Route::post('/eligibility/submit-eligiblity-form', [EligibilityValidationListController::class, 'addEligiblityData']);
+    Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('speciality.search'); // SEARCH
+    Route::get('/speciality/get/{specialty_id}', [SpecialityController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
+    Route::get('/speciality/details/{specialty_id}/{specialty_list}', [SpecialityController::class, 'getSpecialityDetails'])->name('ndsc.details.get'); // DETAIL
+    Route::post('/speciality/submit-speciality-form',[SpecialityController::class, 'addSpeciality']); // add update speciality
 
 
 
-        Route::get('/provider/search', [ProviderController::class, 'search'])->name('provider.search'); // SEARCH
-        Route::get('/provider/get/{provider_list}', [ProviderController::class, 'getProviderValidationList'])->name('provider.list.get'); // LIST ITEMS
-        Route::get('/provider/details/{provider_list}/{provider_nabp}', [ProviderController::class, 'getProviderDetails'])->name('ndsc.details.get'); // DETAIL
-        Route::post('/provider/submit-provider-form', [ProviderController::class, 'addProviderData']);
-        Route::get('/provider/provider-list-drop-down/', [ProviderController::class, 'searchDropDownProviderList']);
+    Route::get('/eligibility/search', [EligibilityValidationListController::class, 'search']); // SEARCH
+    // Route::get('/eligibility/get/{ndcid}', [EligibilityValidationListController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
+    Route::get('/eligibility/details/{elig_lis_id}', [EligibilityValidationListController::class, 'getEligibilityDetails'])->name('eligibility.details.get'); // DETAIL
+    Route::post('/eligibility/submit-eligiblity-form',[EligibilityValidationListController::class, 'addEligiblityData']);
+
+
+
+    Route::get('/provider/search', [ProviderController::class, 'search'])->name('provider.search'); // SEARCH
+    Route::get('/provider/get/{provider_list}', [ProviderController::class, 'getProviderValidationList'])->name('provider.list.get'); // LIST ITEMS
+    Route::get('/provider/details/{provider_list}/{provider_nabp}', [ProviderController::class, 'getProviderDetails'])->name('ndsc.details.get'); // DETAIL
+    Route::post('/provider/submit-provider-form',[ProviderController::class,'addProviderData']);
+    Route::get('/provider/provider-list-drop-down/',[ProviderController::class,'searchDropDownProviderList']);
 
 
         //DIAGNOSIS VALIDATION LIST
@@ -454,10 +456,14 @@ Route::group(['middleware' => 'apisession'], function ($router) {
     Route::group(['prefix' => 'providerdata'], function ($router) {
 
 
-        Route::get('/provider/search', [ProviderDataProviderController::class, 'search'])->name('provider.search'); // SEARCH
-        Route::get('/provider/get/{ndcid}', [ProviderDataProviderController::class, 'getProviderList'])->name('provider.list.get'); // LIST ITEMS
-        Route::get('/provider/details/{ndcid}', [ProviderDataProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
-        Route::post('/provider/add', [ProviderDataProviderController::class, 'add'])->name('ndsc.details.get'); // DETAIL
+    Route::get('/provider/search', [ProviderDataProviderController::class, 'search'])->name('provider.search'); // SEARCH
+    Route::get('/provider/get/{ndcid}', [ProviderDataProviderController::class, 'getProviderList'])->name('provider.list.get'); // LIST ITEMS
+    Route::get('/provider/details/{ndcid}', [ProviderDataProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
+    Route::post('/provider/add', [ProviderDataProviderController::class, 'add'])->name('ndsc.details.get'); // DETAIL
+    Route::get('/provider/traditionalid/search', [ProviderDataProviderController::class, 'TraditionalIdsearch'])->name('provider.traditionalid.search'); // SEARCH
+    Route::post('/provider/traditionalnetwork/add', [ProviderDataProviderController::class, 'addTraditionalNetwork'])->name('traditinal.add'); // DETAIL
+    Route::get('/provider/flexiblelid/search', [ProviderDataProviderController::class, 'FlexibleIdsearch'])->name('provider.traditionalid.search'); // SEARCH
+    Route::post('/provider/flexiblenetwork/add', [ProviderDataProviderController::class, 'addFlexibleNetwork'])->name('flexi.add'); // DETAIL
 
 
         //SUPER PROVIDER NETWORK
@@ -566,14 +572,18 @@ Route::group(['middleware' => 'apisession'], function ($router) {
     });
 
 
-    //Drug Information
-    Route::group(['prefix' => "drug-information/"], function () {
-        Route::post('drug-database/add', [DrugDatabaseController::class, 'add']);
+//Drug Information
+Route::group(['prefix' => "drug-information/"], function () {
+    Route::post('drug-database/add', [DrugDatabaseController::class, 'add']);
 
-        Route::get('drug-database/get', [DrugDatabaseController::class, 'get']);
-        Route::get('drug-database/get-drug-prices', [DrugDatabaseController::class, 'getDrugPrices']);
-        Route::post('drug-price/add', [DrugDatabaseController::class, 'addDrugPrice']);
-    });
+    Route::get('drug-database/get', [DrugDatabaseController::class, 'get']);
+    Route::get('drug-database/get-drug-prices', [DrugDatabaseController::class, 'getDrugPrices']);
+    Route::post('drug-price/add', [DrugDatabaseController::class, 'addDrugPrice']);
+    Route::get('ndc-gpi/search', [NdcGpiController::class, 'search']);
+    Route::get('ndc-gpi/details/{ndcid}', [NdcGpiController::class, 'getDetails']);
+
+
+});
 
 
     //Plan Design
@@ -638,8 +648,10 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('memberdata/get-change-log-table', [MemberController::class, 'getChangeLogTable']);
 
 
-        //Prior Authorization
-        Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
+    //Prior Authorization
+    Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
+    Route::post('prior-authorization/submit', [PriorAuthController::class, 'submitPriorAuthorization']);
+
 
         //Plan Validation
         Route::get('plan-validation/get', [PlanValidationController::class, 'get']);
@@ -711,4 +723,9 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('claim-history', [ClaimHistoryController::class, 'get']);
         Route::post('search-claim-history', [ClaimHistoryController::class, 'searchClaimHistory']);
     });
+});
+
+
+
+
 });

@@ -30,11 +30,13 @@ class PrescriberController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function updatePrescriber(Request $request)
+    public function add(Request $request)
     {
-        $update = DB::table('PHYSICIAN_TABLE')
-                  ->where('PHYSICIAN_ID', $request->physician_id)
-                  ->update([
+
+        if($request->new){
+
+            $insert = DB::table('PHYSICIAN_TABLE')
+                  ->insert([
                     'physician_id' => $request->physician_id,
                     'physician_last_name' => $request->physician_last_name,
                     'physician_first_name' => $request->physician_first_name,
@@ -52,6 +54,40 @@ class PrescriberController extends Controller
                     'user_id' => $request->user_id,
                     'zip_code' => $request->zip_code,
                   ]);
+
+        }
+        
+        if($insert)
+        {
+            $getUpdated = DB::table('PHYSICIAN_TABLE')->where('physician_id', $request->physician_id)->first();
+            return $this->respondWithToken($this->token(), 'Updated Successfully...!', $getUpdated);
+        }
+
+        else{
+
+            $update = DB::table('PHYSICIAN_TABLE')
+            ->where('PHYSICIAN_ID', $request->physician_id)
+            ->update([
+              'physician_id' => $request->physician_id,
+              'physician_last_name' => $request->physician_last_name,
+              'physician_first_name' => $request->physician_first_name,
+              'address_1' => $request->address_1,
+              'city' => $request->city,
+              'country' => $request->country,
+              'license_number' => $request->license_number,
+              'medical_group' => $request->medical_group,
+              'phone' => $request->phone,
+              'physician_dea' => $request->physician_dea,
+              'physician_specialty' => $request->physician_specialty,
+              'physician_title' => $request->physician_title,
+              'spin_number' => $request->spin_number,
+              'state' => $request->state,
+              'user_id' => $request->user_id,
+              'zip_code' => $request->zip_code,
+            ]);
+            
+        }
+
         if($update)
         {
             $getUpdated = DB::table('PHYSICIAN_TABLE')->where('physician_id', $request->physician_id)->first();

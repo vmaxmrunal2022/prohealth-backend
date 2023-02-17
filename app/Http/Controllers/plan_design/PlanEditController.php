@@ -9,6 +9,45 @@ use Illuminate\Support\Facades\DB;
 class PlanEditController extends Controller
 {
 
+    public function getCopaydropDown()
+
+    {
+
+        $PolicyAnnualMonth = [
+
+            ['name' => 'January','code'=>'Jan'],
+
+            ['name' => 'February','code'=>'Feb'],
+
+            ['name' => 'March','code'=>'Mar'],
+
+            ['name' => 'April','code'=>'Apl'],
+
+            ['name' => 'May' ,'code'=>'May'],
+
+            ['name' => 'June' ,'code'=>''],
+
+            ['name' => 'July' ,'code'=>''],
+
+            ['name' => 'August' ,'code'=>'Aug'],
+
+            ['name' => 'September' ,'code'=>'Sep'],
+
+            ['name' => 'October' ,'code'=>'Oct'],
+
+            ['name' => 'November' ,'code'=>'Nov'],
+
+            ['name' => 'December' ,'code'=>'Dec'],
+
+        ];
+        return $this->respondWithToken($this->token(),'',$PolicyAnnualMonth);
+
+    }
+
+
+    
+    
+
 
     public function add(Request $request)
     {

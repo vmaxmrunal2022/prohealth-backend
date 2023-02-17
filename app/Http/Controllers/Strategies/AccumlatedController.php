@@ -11,39 +11,59 @@ class AccumlatedController extends Controller {
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
-        if ( $request->has( 'new' ) ) {
+        $existdata = DB::table('accum_bene_strategy_names' )
+        ->where('accum_bene_strategy_id',$request->accum_bene_strategy_id)
+        ->first();
 
-            $accum_benfit_stat_names = DB::table( 'accum_bene_strategy_names' )->insert(
-                [
-                    'accum_bene_strategy_id' => strtoupper( $request->accum_bene_strategy_id ),
-                    'accum_bene_strategy_name' => $request->accum_bene_strategy_name,
+        if ( $request->has('new') ) {
 
-                ]
-            );
+            if($existdata){
 
-            $accum_benfit_stat = DB::table( 'ACCUM_BENEFIT_STRATEGY' )->insert(
-                [
-                    'accum_bene_strategy_id' => strtoupper( $request->accum_bene_strategy_id ),
-                    'pharm_type_variation_ind'=>$request->pharm_type_variation_ind,
-                    'formulary_variation_ind'=>$request->formulary_variation_ind,
-                    'network_part_variation_ind'=>$request->network_part_variation_ind,
-                    'claim_type_variation_ind'=>$request->claim_type_variation_ind,
-                    'date_time_created'=>$createddate,
-                    'user_id'=>'',
-                    'date_time_modified'=>'',
-                    'form_id'=>'',
-                    'user_id_created'=>'',
-                    'accum_exclusion_flag'=>$request->accum_exclusion_flag,
-                    'effective_date'=>$request->effective_date,
-                    'module_exit'=>'',
-                    'plan_accum_deduct_id'=>$request->plan_accum_deduct_id,
+                return $this->respondWithToken($this->token(),'This record already exists in the system..!!!',$existdata);
 
-                ]
-            );
 
+            }
+
+            else{
+                $accum_benfit_stat_names = DB::table( 'accum_bene_strategy_names' )->insert(
+                    [
+                        'accum_bene_strategy_id' => strtoupper( $request->accum_bene_strategy_id ),
+                        'accum_bene_strategy_name' => $request->accum_bene_strategy_name,
+    
+                    ]
+                );
+    
+                $accum_benfit_stat = DB::table( 'ACCUM_BENEFIT_STRATEGY' )->insert(
+                    [
+                        'accum_bene_strategy_id' => strtoupper( $request->accum_bene_strategy_id ),
+                        'pharm_type_variation_ind'=>$request->pharm_type_variation_ind,
+                        'formulary_variation_ind'=>$request->formulary_variation_ind,
+                        'network_part_variation_ind'=>$request->network_part_variation_ind,
+                        'claim_type_variation_ind'=>$request->claim_type_variation_ind,
+                        'date_time_created'=>$createddate,
+                        'user_id'=>'',
+                        'date_time_modified'=>'',
+                        'form_id'=>'',
+                        'user_id_created'=>'',
+                        'accum_exclusion_flag'=>$request->accum_exclusion_flag,
+                        'effective_date'=>strtotime($request->effective_date),
+                        'module_exit'=>'',
+                        'plan_accum_deduct_id'=>$request->plan_accum_deduct_id,
+    
+                    ]
+                );
+    
+
+            }
+
+
+            return $this->respondWithToken( $this->token(), 'Successfully added', $accum_benfit_stat );
+
+
+           
         } else {
 
-            $benefitcode = DB::table( 'accum_bene_strategy_names' )
+            $update = DB::table( 'accum_bene_strategy_names' )
             ->where( 'accum_bene_strategy_id', $request->accum_bene_strategy_id )
             ->update(
                 [
@@ -75,13 +95,14 @@ class AccumlatedController extends Controller {
                 ]
             );
 
-            $benefitcode = DB::table( 'ACCUM_BENEFIT_STRATEGY' )->where( 'accum_bene_strategy_id', 'like', $request->accum_bene_strategy_id )->first();
+            $data = DB::table('ACCUM_BENEFIT_STRATEGY' ) ->where('accum_bene_strategy_id', 'like', '%' . $request->accum_bene_strategy_id. '%')->first();
+
 
         }
 
         // $benefitcode = DB::table( 'benefit_codes' )->where( 'benefit_code', 'like', $request->benefit_code )->first();
 
-        return $this->respondWithToken( $this->token(), 'Successfully added', $benefitcode );
+        return $this->respondWithToken( $this->token(), 'Successfully updated', $data);
     }
 
     public function search( Request $request ) {

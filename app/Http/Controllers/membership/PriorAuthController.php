@@ -22,10 +22,29 @@ class PriorAuthController extends Controller
     }
 
     public function submitPriorAuthorization(Request $request)
-    {
-        if($request->add_new)
-        {
-            $addPriorAuth = DB::table('PRIOR_AUTHORIZATIONS')
+    {   
+
+
+        $getEligibilityData = DB::table('PRIOR_AUTHORIZATIONS')
+        ->where('customer_id',strtoupper($request->customer_id))
+        ->where('client_id',strtoupper($request->client_id))
+        ->where('client_group_id', strtoupper($request->client_group_id))
+        ->where('plan_id', $request->plan_id)
+        ->first();
+        
+        
+        if($request->add_new==1)
+        {  
+
+            if($getEligibilityData){
+
+                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getEligibilityData);
+
+
+            }
+
+            else{
+                $addPriorAuth = DB::table('PRIOR_AUTHORIZATIONS')
                             ->insert([
                                 //Authorization Tab Starts
                                 'customer_id' => strtoupper($request->customer_id),
@@ -57,12 +76,17 @@ class PriorAuthController extends Controller
                                 'accum_bene_exclude_flag' => $request->accum_bene_exclude_flag,
                                 'provider_type' => $request->provider_type,                              
                             ]);
-            return $this->respondWithToken($this->token(),'', $addPriorAuth);
-        }else{
-            $addPriorAuth = DB::table('PRIOR_AUTHORIZATIONS')
-                            ->where('customer_id', $request->customer_id)
-                            ->where('client_id', $request->client_id)
-                            ->where('client_group_id', $request->client_group_id)
+
+            }
+
+            
+            return $this->respondWithToken($this->token(),'Record Added Successfully !', $addPriorAuth);
+        }else if($request->add_new==0){
+            $update = DB::table('PRIOR_AUTHORIZATIONS')
+                            ->where('member_id',strtoupper($request->member_id))
+                            ->where('customer_id', strtoupper($request->customer_id))
+                            ->where('client_id', strtoupper($request->client_id))
+                            ->where('client_group_id', strtoupper($request->client_group_id))
                             ->update([
                                 //Authorization Tab Starts
                                 'prior_auth_code_num' => $request->prior_auth_code_num,
@@ -92,7 +116,7 @@ class PriorAuthController extends Controller
                                 'provider_type' => $request->provider_type,  
                                  //Pricing/ Misc tab ends                            
                             ]);
-            return $this->respondWithToken($this->token(),'', $addPriorAuth);
+            return $this->respondWithToken($this->token(),'Record Updated Successfully!', $update);
         }
     }
 }

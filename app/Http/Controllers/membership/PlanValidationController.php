@@ -32,25 +32,45 @@ class PlanValidationController extends Controller
 
   public function addPlanValidation(Request $request)
   {
-    if ($request->new) {
-      $planValidation = DB::table('plan_validation_lists')
+
+    $getEligibilityData = DB::table('plan_validation_lists')
+        ->where('customer_id',strtoupper($request->customer_id))
+        ->where('client_id',strtoupper($request->client_id))
+        ->where('client_group_id', strtoupper($request->client_group_id))
+        ->where('plan_id', $request->plan_id)
+        ->first();
+
+
+    if ($request->add_new==1) {
+
+      if($getEligibilityData){
+
+        return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getEligibilityData);
+
+
+      }else{
+
+        $planValidation = DB::table('plan_validation_lists')
         ->insert([
           'customer_id' => $request->customer_id,
           'client_id' => $request->client_id,
           'client_group_id' => $request->client_group_id,
           'plan_id' => $request->plan_id
         ]);
-      return $this->respondWithToken($this->token(), 'Added Successfully !', $planValidation);
-    } else {
+      return $this->respondWithToken($this->token(), 'Record Added Successfully !', $planValidation);
+
+      }
+     
+    } else if($request->add_new==0){
       $planValidation = DB::table('plan_validation_lists')
         ->where('customer_id', $request->customer_id)
+        ->where('client_id',$request->client_id)
+        ->where('client_group_id',$request->client_group_id)
         ->update([
           // 'customer_id' => $request->customer_id,
-          'client_id' => $request->client_id,
-          'client_group_id' => $request->client_group_id,
           'plan_id' => $request->plan_id
         ]);
-      return $this->respondWithToken($this->token(), 'Updated Successfully !', $planValidation);
+      return $this->respondWithToken($this->token(), 'Record Updated Successfully !', $planValidation);
     }
   }
 
@@ -61,4 +81,5 @@ class PlanValidationController extends Controller
       ->get();
     return $this->respondWithToken($this->token(), '', $plan_ids);
   }
+
 }
