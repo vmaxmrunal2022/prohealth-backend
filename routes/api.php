@@ -476,11 +476,9 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
 
     Route::get('traditionalnetwork/search', [TraditionalNetworkController::class, 'search']);
     Route::get('traditionalnetwork/get/{ndcid}', [TraditionalNetworkController::class, 'getList']);
-
     Route::get('traditionalnetwork/details/{ndcid}', [TraditionalNetworkController::class, 'getDetails']);
-
     Route::post('traditionalnetwork/add', [TraditionalNetworkController::class, 'add']);
-
+    Route::get('traditionalnetwork/all', [TraditionalNetworkController::class, 'all']);
 
     //Flexible Network
 
@@ -490,6 +488,7 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('flexiblenetwork/details/{ndcid}', [FlexibleNetworkController::class, 'getDetails']);
 
     Route::post('flexiblenetwork/add', [FlexibleNetworkController::class, 'add']);
+    Route::get('flexiblenetwork/all', [FlexibleNetworkController::class, 'all']);
 
     //Rule Id 
 
