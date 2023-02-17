@@ -46,6 +46,26 @@ class UserController extends Controller
     }
     public function login(Request $request)
     {
+        $prefix = '$2y$';
+        $cost = '10';
+        $salt = '$thisisahardcodedsalt$';
+        $blowfishPrefix = $prefix . $cost . $salt;
+        $password = $request->USER_PASSWORD;
+        $hash = crypt($password, $blowfishPrefix);
+        $hashToThirdParty = substr($hash, -32);
+        $hashFromThirdParty = $hashToThirdParty;
+        // dd($hashFromThirdParty);
+
+
+        // $pw = $request->USER_PASSWORD;
+        $hashed = Hash::make($hashFromThirdParty);
+        $check_password = Hash::check($hashFromThirdParty, $hashed);
+        if ($check_password) {
+            $user_password = $hashFromThirdParty;
+        } else {
+            $user_password = null;
+        }
+        // dd($hashFromThirdParty);
 
         $validator = Validator::make($request->all(), [
             'USER_ID' => 'required|string',
@@ -60,17 +80,21 @@ class UserController extends Controller
         $credentials = $request->only(["USER_ID", "USER_PASSWORD"]);
         // $user = User::where('USER_ID', $credentials['USER_ID'])->first();
 
+
+
         $user = User::where('USER_ID', $request->USER_ID)
-            ->where('USER_PASSWORD', $request->USER_PASSWORD)
+            // ->where('USER_PASSWORD', $request->USER_PASSWORD)
+            ->where('USER_PASSWORD', $user_password)
             ->first();
 
-
-            // return response()->json([
-            //     'data' => Auth::check(),
-            //     "success" => false,
-            //     "message" => '',
-            //     "error" => ''
-            // ], 422);
+        // dd($user);
+        // exit();
+        // return response()->json([
+        //     'data' => Auth::check(),
+        //     "success" => false,
+        //     "message" => '',
+        //     "error" => ''
+        // ], 422);
 
         // if ($user) {
         //     Auth::loginUsingId($user->id);
@@ -82,9 +106,8 @@ class UserController extends Controller
         // }
 
         if ($user) {
-
             Auth::login($user);
-        //    print_r(Auth::login($user));
+            //    print_r(Auth::login($user));
             if (!Auth::check()) {
                 $responseMessage = "Invalid username or password";
                 return response()->json([
@@ -97,6 +120,7 @@ class UserController extends Controller
             $accessToken = auth()->user()->createToken('authToken')->accessToken;
             $responseMessage = "Login Successful";
             Session::put('user', auth()->user()->user_id);
+            // dd($request->session()->get('user'));
             return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
         } else {
             $responseMessage = "Sorry, this user does not exist";
