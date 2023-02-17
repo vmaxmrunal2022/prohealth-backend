@@ -109,7 +109,8 @@ class PricingStrategyController extends Controller
     {
         $ndclist = DB::table('PRICING_STRATEGY')
             // ->select('DIAGNOSIS_LIST', 'DIAGNOSIS_ID','PRIORITY')
-            ->where('PRICING_STRATEGY_ID', 'like', '%' . strtoupper($ndcid) . '%')
+            ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.PRICING_STRATEGY_ID', '=', 'PRICING_STRATEGY_NAMES.PRICING_STRATEGY_ID')
+            ->where('PRICING_STRATEGY_NAMES.PRICING_STRATEGY_ID', $ndcid)
             // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
             ->get();
 
