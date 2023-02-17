@@ -57,14 +57,21 @@ class DiagnosisValidationListController extends Controller
         }
 
         public function addDiagnosisValidations(Request $request){
-            // dd($request->all());
-            if($request->has('new')){
+        //     // dd($request->all());
+            if($request->new ==1 ){
 
 
                 $getEligibilityData = DB::table('DIAGNOSIS_EXCEPTIONS')
                 ->where('diagnosis_list',strtoupper($request->diagnosis_list))
                 ->where('exception_name',strtoupper($request->exception_name))
                 ->first();
+
+                if($getEligibilityData){
+                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getEligibilityData);
+
+                }
+
+
 
                 $getvalidData = DB::table('DIAGNOSIS_VALIDATIONS')
                 ->where('diagnosis_list',strtoupper($request->diagnosis_list))
@@ -79,6 +86,11 @@ class DiagnosisValidationListController extends Controller
                     return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getEligibilityData);
     
     
+                }
+
+                if($getvalidData){
+                    return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getvalidData);
+
                 }
 
                 else{
@@ -107,7 +119,7 @@ class DiagnosisValidationListController extends Controller
                     ->insert([
                         'DIAGNOSIS_LIST'=>strtoupper($request->diagnosis_list),
                         'DIAGNOSIS_ID'=>strtoupper($request->diagnosis_id),
-                        'LIMITATIONS_LIST'=>$request->limitation_list,
+                        'LIMITATIONS_LIST'=>$request->limitations_list,
                         'EFFECTIVE_DATE'=>date('Ydm',strtotime($request->effective_date)),
                         'TERMINATION_DATE'=>date('Ydm',strtotime($request->termination_date)),
                         'DATE_TIME_CREATED'=>date('d-M-y'),
@@ -159,7 +171,7 @@ class DiagnosisValidationListController extends Controller
                         $addDataValid = DB::table('DIAGNOSIS_VALIDATIONS')
                         ->insert([
                             'DIAGNOSIS_LIST'=>$request->diagnosis_list,
-                            'DIAGNOSIS_ID'=> $request->diagnosis_id['value'],
+                            'DIAGNOSIS_ID'=> $request->diagnosis_id,
                             'DIAGNOSIS_STATUS' => $request->diagnosis_status,
                             'PRIORITY' => $request->priority,
                             'DATE_TIME_CREATED'=>date('d-M-y'),
@@ -180,12 +192,29 @@ class DiagnosisValidationListController extends Controller
 
         public function DiagnosisLimitationAdd(Request $request){
 
-            if($request->has('new')){
-                $addData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+            // dd($request);
+
+            if($request->new == 1){
+
+            
+
+
+                $getEligibilityData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                ->where('DIAGNOSIS_LIST',strtoupper($request->diagnosis_list))
+                ->where('DIAGNOSIS_ID',strtoupper($request->diagnosis_id))
+                ->where('LIMITATIONS_LIST',$request->limitations_list)
+                ->first();
+
+                if($getEligibilityData){
+                    return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getEligibilityData );
+    
+                    }
+                    else{
+                        $addData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
                         ->insert([
                             'DIAGNOSIS_LIST'=>$request->diagnosis_list,
                             'DIAGNOSIS_ID'=>$request->diagnosis_id,
-                            'LIMITATIONS_LIST'=>$request->limitation_list,
+                            'LIMITATIONS_LIST'=>$request->limitations_list,
                             'EFFECTIVE_DATE'=>date('Ydm',strtotime($request->effective_date)),
                             'TERMINATION_DATE'=>date('Ydm',strtotime($request->termination_date)),
                             'DATE_TIME_CREATED'=>date('d-M-y'),
@@ -195,23 +224,32 @@ class DiagnosisValidationListController extends Controller
                         if($addData){
                             return $this->respondWithToken($this->token(),'Added Succcessfully Limitation!!!');
                         }
+                    }
+
+
+
+              
             }
-            else{
+            else if ($request->updateForm =='update'){
+
+
+
 
                 $update = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC' )
-                ->where( 'DIAGNOSIS_LIST', $request->diagnosis_list)
-                ->where('DIAGNOSIS_ID',$request->diagnosis_id)
+                ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
+                ->where('DIAGNOSIS_ID',strtoupper($request->diagnosis_id))
+                ->where('EFFECTIVE_DATE',$request->effective_date)
                 ->update(
                     [
                         'LIMITATIONS_LIST' =>$request->limitations_list,
-                        'EFFECTIVE_DATE'=>$request->effective_date,
                         'TERMINATION_DATE'=>$request->termination_date,
                     ]
                 );
     
     
-                $benefitcode = DB::table('CLIENT' ) ->where('client_id', 'like', '%' . $request->client_id. '%')->first();
-    
+                if($update){
+                    return $this->respondWithToken($this->token(),'updated Succcessfully Limitation!!!',$update);
+                }    
 
             }
         }
