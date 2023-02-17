@@ -81,10 +81,19 @@ class ProviderDataProviderController extends Controller
 
     public function add(Request $request){
         $getEligibilityData = DB::table('PHARMACY_TABLE')
-        ->where('pharmacy_nabp',$request->pharmacy_nabp)
+        ->where('pharmacy_nabp',strtoupper($request->pharmacy_nabp))
         ->first();
-        if($request->has('new')){
-            if(!$getEligibilityData){
+
+        // dd($request->all());
+
+        if($request->add_new == 1){
+            if($getEligibilityData){
+                return $this->respondWithToken($this->token(),'This record is already exists ..!!!');
+
+            }
+
+            else{
+
                 $addData = DB::table('PHARMACY_TABLE')
                 ->insert([
                     'PHARMACY_NABP'=>strtoupper($request->pharmacy_nabp),
@@ -158,14 +167,18 @@ class ProviderDataProviderController extends Controller
                     
             
                 ]);
-                return $this->respondWithToken($this->token(),'Added Successfully...!!!', $addData);
-            }else{
-                return $this->respondWithToken($this->token(),'This record is already exists ..!!!');
+                
             }
 
-        }else{
+            if($addData){
+                return $this->respondWithToken($this->token(),'Added Successfully...!!!', $addData);
+
+            }
+
+           
+        }else if ($request->updateForm =='update'){
             $updateData = DB::table('PHARMACY_TABLE')
-            ->where('pharmacy_nabp',$request->pharmacy_nabp)
+            ->where('pharmacy_nabp',strtoupper($request->pharmacy_nabp))
             ->update([
                 'PHARMACY_NAME'=>($request->pharmacy_name),
                 'ADDRESS_1'=>$request->address_1,
