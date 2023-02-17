@@ -39,7 +39,7 @@ class PricingStrategyController extends Controller
                     'form_id' => '',
                     'user_id_created' => '',
                     'effective_date' => $request->effective_date,
-                    'module_exit' => '',
+                    'module_exit' => $request->module_exit,
                     'price_schedule' => $request->price_schedule,
                     'mac_list' => $request->mac_list,
 
@@ -76,7 +76,7 @@ class PricingStrategyController extends Controller
                         'form_id' => '',
                         'user_id_created' => '',
                         'effective_date' => $request->effective_date,
-                        'module_exit' => '',
+                        'module_exit' => $request->module_exit,
                         'price_schedule' => $request->price_schedule,
                         'mac_list' => $request->mac_list,
 
