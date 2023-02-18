@@ -65,7 +65,7 @@ class UserController extends Controller
         } else {
             $user_password = null;
         }
-        // dd($hashFromThirdParty);
+        // print_r($hashFromThirdParty);
 
         $validator = Validator::make($request->all(), [
             'USER_ID' => 'required|string',

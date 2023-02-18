@@ -25,8 +25,8 @@ use App\Http\Controllers\Exception\BenefitDerivationController;
 use App\Http\Controllers\Exception\GPIExceptionController;
 use App\Http\Controllers\Exception\NDCExceptionController;
 
-use App\Http\Controllers\membership\PlanValidationController;
-use App\Http\Controllers\membership\PriorAuthController;
+// use App\Http\Controllers\membership\PlanValidationController;
+// use App\Http\Controllers\membership\PriorAuthController;
 use App\Http\Controllers\ValidationLists\ValidationListsController;
 
 use App\Http\Controllers\ValidationLists\PrescriberValidationController;
@@ -55,7 +55,7 @@ use App\Http\Controllers\administrator\ZipCodeController;
 use App\Http\Controllers\administrator\AuditTrailController;
 use App\Http\Controllers\administrator\SystemParameterController;
 use App\Http\Controllers\administrator\UserDefinationController;
-
+use App\Http\Controllers\administrator\VerifyDrugVCoverage;
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
 use App\Http\Controllers\Provider\FlexibleNetworkController;
@@ -69,13 +69,14 @@ use App\Http\Controllers\PrescriberData\PrescriberController;
 use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
 use App\Http\Controllers\Exception\TherapyClassController;
 use App\Http\Controllers\drug_information\DrugDatabaseController;
-use App\Http\Controllers\drug_information\NdcGpiController;
 use App\Http\Controllers\Exception\PrcedureCodeListController;
 use App\Http\Controllers\Exception\ProviderTypeValidationController;
 use App\Http\Controllers\plan_design\PlanAssociationController;
 use App\Http\Controllers\Exception\SuperBenefitControler;
 use App\Http\Controllers\Exception\DrugClassController;
 use App\Http\Controllers\membership\MemberController;
+use App\Http\Controllers\membership\PlanValidationController;
+use App\Http\Controllers\membership\PriorAuthController;
 use App\Http\Controllers\plan_design\PlanEditController;
 use App\Http\Controllers\third_party_pricing\CopayScheduleController;
 use App\Http\Controllers\third_party_pricing\CopayStepScheduleController;
@@ -105,8 +106,8 @@ use Nette\Schema\Context;
 //     return $request->user();
 // });
 
+Route::group(['middleware' => 'apisession'], function ($router) {
 
-Route::group([ 'middleware' => 'apisession'], function ($router){
 
 
 Route::group(['prefix' => 'users'], function ($router) {

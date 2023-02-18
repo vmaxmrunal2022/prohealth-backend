@@ -6,14 +6,22 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Validator;
 
 class AuditTrailController extends Controller
 {
     public function getTables(Request $request)
     {
-        $sql = DB::table('all_tables')->select('table_name')->where('owner', 'PHIDBA')
-            ->where(DB::raw('UPPER(table_name)'), 'like', '%' . strtoupper($request->search) . '%')->get();
-        return $this->respondWithToken($this->token(), '', $sql);
+        $validator = Validator::make($request->all(), [
+            'search' => ['required']
+        ]);
+        if ($validator->fails()) {
+            return response($validator->errors(), 400);
+        } else {
+            $sql = DB::table('all_tables')->select('table_name')->where('owner', 'PHIDBA')
+                ->where(DB::raw('UPPER(table_name)'), 'like', '%' . strtoupper($request->search) . '%')->get();
+            return $this->respondWithToken($this->token(), '', $sql);
+        }
     }
 
     public function getUserIds(Request $request)

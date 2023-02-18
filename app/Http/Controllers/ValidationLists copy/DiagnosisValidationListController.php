@@ -127,13 +127,9 @@ class DiagnosisValidationListController extends Controller
                     ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
                     ->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))
                     ->first();
-
-
                 if ($validationsdata) {
-
                     return $this->respondWithToken($this->token(), 'validations data exists!!!', $validationsdata);
                 } else {
-
                     $validationAddData = DB::table('DIAGNOSIS_VALIDATIONS')
                         ->insert([
                             'DIAGNOSIS_LIST' => $request->diagnosis_list,
@@ -142,21 +138,9 @@ class DiagnosisValidationListController extends Controller
                             'PRIORITY' => $request->priority,
                         ]);
                 }
-
-
-
-
-
-
-
-
-
-
                 return $this->respondWithToken($this->token(), 'data added Successfully!!!', $validationAddData);
             } else {
-
                 if ($request->updateForm == 'update') {
-
                     $updateData = DB::table('DIAGNOSIS_EXCEPTIONS')
                         ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
                         ->update([
@@ -176,18 +160,12 @@ class DiagnosisValidationListController extends Controller
                                 'DIAGNOSIS_ID' => $request->diagnosis_id
                             ]);
                     }
-
-
                     $updateData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
                         ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
                         ->where('DIAGNOSIS_ID', $request->diagnosis_id)
                         ->update([
                             'LIMITATIONS_LIST' => $request->limitations_list,
-
                         ]);
-
-
-
 
                     if ($updateData) {
                         return $this->respondWithToken($this->token(), 'data Update Successfully!!!', $updateData);
