@@ -53,7 +53,7 @@ class ReasonsController extends Controller
                     ]
                 );
                 $procedurecode  = DB::table('REASON_CODES')->where('reason_code', $request->reason_code)->first();
-                return  $this->respondWithToken($this->token(), 'Added successfully!', $procedurecode);
+                return  $this->respondWithToken($this->token(), 'Record Added Successfully!', $procedurecode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -78,7 +78,7 @@ class ReasonsController extends Controller
                         ]
                     );
                 $procedurecode  = DB::table('REASON_CODES')->where('reason_code', $request->reason_code)->first();
-                return  $this->respondWithToken($this->token(), 'Updated successfully!', $procedurecode);
+                return  $this->respondWithToken($this->token(), 'Record Updated Successfully!', $procedurecode);
             }
         }
     }
