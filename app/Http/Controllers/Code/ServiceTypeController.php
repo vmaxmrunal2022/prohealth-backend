@@ -20,10 +20,9 @@ class ServiceTypeController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('SERVICE_TYPES')
-                ->where('SERVICE_TYPE', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
+                ->where(DB::raw('UPPER(SERVICE_TYPE)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
-
             return  $this->respondWithToken($this->token(), '', $procedurecodes);
         }
     }

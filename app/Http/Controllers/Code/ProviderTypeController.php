@@ -24,8 +24,8 @@ class ProviderTypeController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('PROVIDER_TYPES')
-                ->where('PROVIDER_TYPE', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
+                ->where(DB::raw('UPPER(PROVIDER_TYPE)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $procedurecodes);
