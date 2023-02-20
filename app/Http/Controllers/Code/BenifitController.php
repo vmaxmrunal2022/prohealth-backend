@@ -21,8 +21,8 @@ class BenifitController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $benefitcodes = DB::table('benefit_codes')
-                ->where('benefit_code', 'like', '%' .  strtoupper($request->search) . '%')
-                ->orWhere('description', 'like', '%' .  strtoupper($request->search) . '%')
+                ->where(DB::raw('UPPER(benefit_code)'), 'like', '%' .  strtoupper($request->search) . '%')
+                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' .  strtoupper($request->search) . '%')
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $benefitcodes);
@@ -31,7 +31,6 @@ class BenifitController extends Controller
 
     public function add(Request $request)
     {
-
         $response  = new Response();
         // $response = $response->setStatusCode(200);
         // return $response;

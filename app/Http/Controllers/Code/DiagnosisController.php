@@ -19,8 +19,8 @@ class DiagnosisController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $benefitcodes = DB::table('DIAGNOSIS_CODES')
-                ->where('DIAGNOSIS_ID', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('DESCRIPTION', 'like', '%' . $request->search . '%')
+                ->where(DB::raw('UPPER(diagnosis_id)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . $request->search . '%')
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $benefitcodes);

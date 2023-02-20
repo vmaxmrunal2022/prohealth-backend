@@ -21,8 +21,8 @@ class CouseOfLossController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('CAUSE_OF_LOSS_CODES')
-                ->where('CAUSE_OF_LOSS_CODE', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
+                ->where(DB::raw('UPPER(CAUSE_OF_LOSS_CODE)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
             return  $this->respondWithToken($this->token(), '', $procedurecodes);
