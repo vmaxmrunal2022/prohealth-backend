@@ -29,16 +29,17 @@ class ProcedureController extends Controller
 
     public function add(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'procedure_code' => ['required', 'max:10', Rule::unique('PROCEDURE_CODES')->where(function ($q) {
-                $q->whereNotNull('procedure_code');
-            })],
-            "description" => ['max:36']
-        ]);
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
-            if ($request->new) {
+        if ($request->new) {
+            $validator = Validator::make($request->all(), [
+                'procedure_code' => ['required', 'max:10', Rule::unique('PROCEDURE_CODES')->where(function ($q) {
+                    $q->whereNotNull('procedure_code');
+                })],
+                "description" => ['max:36']
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else {
+
                 $procedurecode = DB::table('PROCEDURE_CODES')->insert(
                     [
                         'PROCEDURE_CODE' => strtoupper($request->procedure_code),
@@ -56,6 +57,14 @@ class ProcedureController extends Controller
                 // ->first();
 
                 return $this->respondWithToken($this->token(), 'Added successfully!', $procedurecode);
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                'procedure_code' => ['required', 'max:10'],
+                "description" => ['max:36']
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
             } else {
                 $procedurecode = DB::table('PROCEDURE_CODES')
                     ->where(DB::raw('UPPER(procedure_code)'), strtoupper($request->procedure_code))
@@ -70,15 +79,11 @@ class ProcedureController extends Controller
                             'FORM_ID' => ''
                         ]
                     );
-                // $procedurecodes = DB::table('PROCEDURE_CODES')
-                //     ->where('PROCEDURE_CODE', 'like', '%' . strtoupper($request->procedure_code) . '%')
-                //     // ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
-                //     ->first();
-
                 return $this->respondWithToken($this->token(), 'Updated successfully !', $procedurecode);
             }
         }
     }
+
 
     public function delete(Request $request)
     {
