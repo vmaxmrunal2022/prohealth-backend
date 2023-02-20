@@ -17,7 +17,7 @@ class ProviderController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response($validator->errors(), 400);
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $pharmacyExceptionData = DB::table('PHARMACY_EXCEPTIONS')
                 ->where(DB::raw('UPPER(PHARMACY_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
@@ -75,7 +75,7 @@ class ProviderController extends Controller
                 "provider_id" => ['required'],
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 if (!$getProviderExceptionData && !$getProviderValidationData) {
                     $addProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
@@ -123,7 +123,7 @@ class ProviderController extends Controller
                 "provider_id" => ['required'],
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $updateProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
                     ->where('PHARMACY_LIST', $request->pharmacy_list)

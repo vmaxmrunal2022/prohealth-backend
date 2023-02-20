@@ -16,7 +16,7 @@ class ReasonsController extends Controller
             "search" => ['required']
         ]);
         if ($validator->fails()) {
-            return response($validator->errors(), 400);
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('REASON_CODES')
                 ->where('REASON_CODE', 'like', '%' . strtoupper($request->search) . '%')
@@ -38,7 +38,7 @@ class ReasonsController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
 
                 $procedurecode = DB::table('REASON_CODES')->insert(
@@ -62,7 +62,7 @@ class ReasonsController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $procedurecode = DB::table('REASON_CODES')
                     ->where('reason_code', $request->reason_code)

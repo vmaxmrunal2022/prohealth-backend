@@ -18,7 +18,7 @@ class BenifitController extends Controller
             "search" => ['required']
         ]);
         if ($validator->fails()) {
-            return response($validator->errors(), 400);
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $benefitcodes = DB::table('benefit_codes')
                 ->where('benefit_code', 'like', '%' .  strtoupper($request->search) . '%')
@@ -45,7 +45,7 @@ class BenifitController extends Controller
                 "description" => ['max:36']
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $benefitcode = DB::table('benefit_codes')->insert(
                     [
@@ -67,7 +67,7 @@ class BenifitController extends Controller
                 "description" => ['max:36']
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $benefitcode = DB::table('benefit_codes')
                     ->where('benefit_code', $request->benefit_code)

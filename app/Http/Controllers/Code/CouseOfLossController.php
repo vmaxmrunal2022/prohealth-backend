@@ -18,7 +18,7 @@ class CouseOfLossController extends Controller
             "search" => ['required']
         ]);
         if ($validator->fails()) {
-            return response($validator->errors(), 400);
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('CAUSE_OF_LOSS_CODES')
                 ->where('CAUSE_OF_LOSS_CODE', 'like', '%' . strtoupper($request->search) . '%')
@@ -40,7 +40,7 @@ class CouseOfLossController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $procedurecode = DB::table('CAUSE_OF_LOSS_CODES')->insert(
                     [
@@ -65,7 +65,7 @@ class CouseOfLossController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $procedurecode = DB::table('CAUSE_OF_LOSS_CODES')
                     // ->where('CAUSE_OF_LOSS_CODES', 'like', strtoupper($request->benefit_code))

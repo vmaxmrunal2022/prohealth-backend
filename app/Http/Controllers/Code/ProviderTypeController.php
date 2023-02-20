@@ -21,7 +21,7 @@ class ProviderTypeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response($validator->errors(), 400);
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('PROVIDER_TYPES')
                 ->where('PROVIDER_TYPE', 'like', '%' . strtoupper($request->search) . '%')
@@ -52,7 +52,7 @@ class ProviderTypeController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
 
                 $procedurecode = DB::table('PROVIDER_TYPES')->insert(
@@ -76,7 +76,7 @@ class ProviderTypeController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $procedurecode = DB::table('PROVIDER_TYPES')
                     ->where(DB::raw('UPPER(PROVIDER_TYPE)'), strtoupper($request->provider_type))

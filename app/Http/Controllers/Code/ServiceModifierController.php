@@ -18,7 +18,7 @@ class ServiceModifierController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response($validator->errors(), 400);
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('SERVICE_MODIFIERS')
                 ->where('SERVICE_MODIFIER', 'like', '%' . $request->search . '%')
@@ -40,7 +40,7 @@ class ServiceModifierController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
 
                 $procedurecode = DB::table('SERVICE_MODIFIERS')->insert(
@@ -64,7 +64,7 @@ class ServiceModifierController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
 
                 $procedurecode = DB::table('SERVICE_MODIFIERS')
