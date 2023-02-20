@@ -39,7 +39,7 @@ class PricingStrategyController extends Controller
                     'form_id' => '',
                     'user_id_created' => '',
                     'effective_date' => $request->effective_date,
-                    'module_exit' => '',
+                    'module_exit' => $request->module_exit,
                     'price_schedule' => $request->price_schedule,
                     'mac_list' => $request->mac_list,
 
@@ -76,7 +76,7 @@ class PricingStrategyController extends Controller
                         'form_id' => '',
                         'user_id_created' => '',
                         'effective_date' => $request->effective_date,
-                        'module_exit' => '',
+                        'module_exit' => $request->module_exit,
                         'price_schedule' => $request->price_schedule,
                         'mac_list' => $request->mac_list,
 
@@ -109,7 +109,8 @@ class PricingStrategyController extends Controller
     {
         $ndclist = DB::table('PRICING_STRATEGY')
             // ->select('DIAGNOSIS_LIST', 'DIAGNOSIS_ID','PRIORITY')
-            ->where('PRICING_STRATEGY_ID', 'like', '%' . strtoupper($ndcid) . '%')
+            ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.PRICING_STRATEGY_ID', '=', 'PRICING_STRATEGY_NAMES.PRICING_STRATEGY_ID')
+            ->where('PRICING_STRATEGY_NAMES.PRICING_STRATEGY_ID', $ndcid)
             // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
             ->get();
 
