@@ -61,37 +61,46 @@ class DiagnosisController extends Controller
             })],
             "description" => ['max:35']
         ]);
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
+        
 
             if ($request->new) {
-                $benefitcode = DB::table('DIAGNOSIS_CODES')->insert(
-                    [
-                        'DIAGNOSIS_ID' => strtoupper($request->diagnosis_id),
-                        'DESCRIPTION' => $request->description,
-                        'DATE_TIME_CREATED' => date('y-m-d'),
-                        'USER_ID' => '',
-                        'DATE_TIME_MODIFIED' => '',
-                        'USER_ID_CREATED' => '',
-                        'FORM_ID' => '',
-                        'COMPLETE_CODE_IND' => $request->complete_code_ind,
-                        ]
-                );
-                $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
-                return  $this->respondWithToken($this->token(), 'Record Added Successfully', $code);
+    
+
+                if ($validator->fails()) {
+                    return response($validator->errors(), 400);
+                }else{
+
+                    $benefitcode = DB::table('DIAGNOSIS_CODES')->insert(
+                        [
+                            'DIAGNOSIS_ID' => strtoupper($request->diagnosis_id),
+                            'DESCRIPTION' => $request->description,
+                            'DATE_TIME_CREATED' => date('y-m-d'),
+                            'USER_ID' => '',
+                            'DATE_TIME_MODIFIED' => '',
+                            'USER_ID_CREATED' => '',
+                            'FORM_ID' => '',
+                            'COMPLETE_CODE_IND' => $request->complete_code_ind,
+                            ]
+                    );
+                    $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
+                    return  $this->respondWithToken($this->token(), 'Record Added Successfully', $code);
+                    
+                }
+
+
+               
             }
          else {
-            $validator = Validator::make($request->all(), [
+            $updatevalidator = Validator::make($request->all(), [
                 'diagnosis_id' => ['required', 'max:8'],
                 "description" => ['max:35']
             ]);
-            if ($validator->fails()) {
+            if ($updatevalidator->fails()) {
                 return response($validator->errors(), 400);
             } else {
                 $benefitcode = DB::table('DIAGNOSIS_CODES')
                     // ->where(DB::raw('UPPER(DIAGNOSIS_ID)'), strtoupper($request->diagnosis_code))
-                    ->where('DIAGNOSIS_ID', $request->diagnosis_id)
+                    ->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))
                     ->update(
                         [
                             'DESCRIPTION' => $request->description,
@@ -100,7 +109,7 @@ class DiagnosisController extends Controller
                             'DATE_TIME_MODIFIED' => '',
                             'USER_ID_CREATED' => '',
                             'FORM_ID' => '',
-                            'COMPLETE_CODE_IND' => ''
+                            'COMPLETE_CODE_IND' => $request->complete_code_ind,
                         ]
                     );
                 // $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
@@ -111,7 +120,7 @@ class DiagnosisController extends Controller
         // $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
 
     }
-}
+
 
     public function delete(Request $request)
     {
