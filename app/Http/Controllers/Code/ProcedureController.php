@@ -16,7 +16,7 @@ class ProcedureController extends Controller
             "search" => 'required'
         ]);
         if ($validator->fails()) {
-            return response($validator->errors(), 400);
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('PROCEDURE_CODES')
                 ->where('PROCEDURE_CODE', 'like', '%' . strtoupper($request->search) . '%')
@@ -37,7 +37,7 @@ class ProcedureController extends Controller
                 "description" => ['max:36']
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
 
                 $procedurecode = DB::table('PROCEDURE_CODES')->insert(
@@ -64,7 +64,7 @@ class ProcedureController extends Controller
                 "description" => ['max:36']
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $procedurecode = DB::table('PROCEDURE_CODES')
                     ->where(DB::raw('UPPER(procedure_code)'), strtoupper($request->procedure_code))

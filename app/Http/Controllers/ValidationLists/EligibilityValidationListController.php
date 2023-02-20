@@ -17,7 +17,7 @@ class EligibilityValidationListController extends Controller
             "search" => ['required'],
         ]);
         if ($validator->fails()) {
-            return response($validator->errors(), 400);
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $data = DB::table('ELIG_VALIDATION_LISTS')
                 ->where(DB::raw('UPPER(ELIG_VALIDATION_LISTS.ELIG_VALIDATION_ID)'), 'like', '%' . strtoupper($request->search) . '%')
@@ -95,7 +95,7 @@ class EligibilityValidationListController extends Controller
                 "dis_dep_age_limit" => ['max:3', 'numeric'],
             ]);
             if ($validator->fails()) {
-                return response($validator->errors());
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $getEligibilityData = DB::table('ELIG_VALIDATION_LISTS')
                     ->where(DB::raw('UPPER(ELIG_VALIDATION_ID)'), strtoupper($request->elig_validation_id))
@@ -136,7 +136,7 @@ class EligibilityValidationListController extends Controller
                 "dis_dep_age_limit" => ['max:3', 'numeric'],
             ]);
             if ($validator->fails()) {
-                return response($validator->errors());
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $updateData = DB::table('ELIG_VALIDATION_LISTS')
                     ->where('ELIG_VALIDATION_ID', $request->elig_validation_id)

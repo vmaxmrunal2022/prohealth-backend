@@ -17,10 +17,7 @@ class ServiceTypeController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response(
-                $validator->errors(),
-                400
-            );
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('SERVICE_TYPES')
                 ->where('SERVICE_TYPE', 'like', '%' . strtoupper($request->search) . '%')
@@ -42,7 +39,7 @@ class ServiceTypeController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
 
                 $procedurecode = DB::table('SERVICE_TYPES')->insert(
@@ -66,7 +63,7 @@ class ServiceTypeController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $procedurecode = DB::table('SERVICE_TYPES')
                     ->where(DB::raw('UPPER(SERVICE_TYPE)'), strtoupper($request->service_type))

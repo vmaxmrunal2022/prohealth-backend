@@ -16,7 +16,7 @@ class DiagnosisValidationListController extends Controller
             "search" => ['required']
         ]);
         if ($validator->fails()) {
-            return response($validator->errors());
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $data = DB::table('DIAGNOSIS_EXCEPTIONS as a')
                 // ->join('DIAGNOSIS_VALIDATIONS as b','b.DIAGNOSIS_LIST','=','a.DIAGNOSIS_LIST')
@@ -83,7 +83,7 @@ class DiagnosisValidationListController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
 
 
@@ -157,7 +157,7 @@ class DiagnosisValidationListController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
 
                 if ($request->updateForm == 'update') {

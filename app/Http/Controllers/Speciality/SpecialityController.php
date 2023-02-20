@@ -17,7 +17,7 @@ class SpecialityController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response($validator->errors(), 400);
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $data = DB::table('SPECIALTY_EXCEPTIONS')
                 // ->join('SPECIALTY_EXCEPTIONS', 'SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', '=', 'SPECIALTY_VALIDATIONS.SPECIALTY_LIST')
@@ -58,7 +58,7 @@ class SpecialityController extends Controller
                 "specialty_status" => ['max:1']
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $getSpecialtyExceptionData = DB::table('SPECIALTY_EXCEPTIONS')
                     ->where(DB::raw('UPPER(SPECIALTY_LIST)'), '=', strtoupper($request->specialty_list))
@@ -111,7 +111,7 @@ class SpecialityController extends Controller
                 "specialty_status" => ['max:1']
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $updateData = DB::table('SPECIALTY_EXCEPTIONS')
                     ->where('SPECIALTY_LIST', $request->specialty_list)

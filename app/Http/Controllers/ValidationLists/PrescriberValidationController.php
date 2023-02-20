@@ -17,7 +17,7 @@ class PrescriberValidationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response($validator->errors(), 400);
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $physicianExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
                 ->where(DB::raw('UPPER(PHYSICIAN_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
@@ -74,7 +74,7 @@ class PrescriberValidationController extends Controller
                 "physician_status" => ['max:1'],
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 if (!$getProviderExceptionData && !$getProviderValidationData) {
                     $addProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
@@ -123,7 +123,7 @@ class PrescriberValidationController extends Controller
                 "physician_status" => ['max:1'],
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $updateProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
                     ->where('PHYSICIAN_LIST', $request->physician_list)

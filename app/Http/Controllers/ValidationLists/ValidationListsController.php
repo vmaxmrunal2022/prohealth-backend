@@ -27,7 +27,6 @@ class ValidationListsController extends Controller
             ->where('DIAGNOSIS_ID', 'like', '%' . strtoupper($ndcid) . '%')
             // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
             ->get();
-
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 

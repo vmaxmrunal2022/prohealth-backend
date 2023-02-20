@@ -16,7 +16,7 @@ class DiagnosisController extends Controller
             'search' => ['required']
         ]);
         if ($validator->fails()) {
-            return response($validator->errors(), 400);
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $benefitcodes = DB::table('DIAGNOSIS_CODES')
                 ->where('DIAGNOSIS_ID', 'like', '%' . strtoupper($request->search) . '%')
@@ -48,7 +48,7 @@ class DiagnosisController extends Controller
                 "description" => ['max:35']
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $benefitcode = DB::table('DIAGNOSIS_CODES')->insert(
                     [
@@ -71,7 +71,7 @@ class DiagnosisController extends Controller
                 "description" => ['max:35']
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 $benefitcode = DB::table('DIAGNOSIS_CODES')
                     // ->where(DB::raw('UPPER(DIAGNOSIS_ID)'), strtoupper($request->diagnosis_code))
