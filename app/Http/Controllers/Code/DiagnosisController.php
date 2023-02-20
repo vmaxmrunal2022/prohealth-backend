@@ -75,7 +75,6 @@ class DiagnosisValidationListController extends Controller
                     $q->whereNotNull('diagnosis_list');
                 })],
                 "EXCEPTION_NAME" => ['max:35'],
-                "diagnosis_list" => ['max:8'],
                 "diagnosis_status" => ['max:1', 'numeric'],
                 "priority" => ['max:1', 'numeric'],
                 "effective_date" => ['max:8', 'numeric'],
@@ -149,7 +148,6 @@ class DiagnosisValidationListController extends Controller
             $validator = Validator::make($request->all(), [
                 "diagnosis_list" => ['required', 'max:10'],
                 "EXCEPTION_NAME" => ['max:35'],
-                "diagnosis_list" => ['max:8'],
                 "diagnosis_status" => ['max:1', 'numeric'],
                 "priority" => ['max:1', 'numeric'],
                 "effective_date" => ['max:8', 'numeric'],
