@@ -69,58 +69,195 @@ class DiagnosisValidationListController extends Controller
 
     public function addDiagnosisValidations(Request $request)
     {
-        if ($request->new) {
+        if ($request->has('new')) {
             $validator = Validator::make($request->all(), [
-                'procedure_code' => ['required', 'max:8', Rule::unique('DIAGNOSIS_CODES')->where(function ($q) {
-                    $q->whereNotNull('diagnosis_id');
+                "diagnosis_list" => ['required', 'max:10', Rule::unique('DIAGNOSIS_EXCEPTIONS')->where(function ($q) {
+                    $q->whereNotNull('diagnosis_list');
                 })],
-                "description" => ['max:35']
+                "EXCEPTION_NAME" => ['max:35'],
+                "diagnosis_list" => ['max:8'],
+                "diagnosis_status" => ['max:1', 'numeric'],
+                "priority" => ['max:1', 'numeric'],
+                "effective_date" => ['max:8', 'numeric'],
+                "termination_date" => ['max:8', 'numeric']
             ]);
+
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
-                $benefitcode = DB::table('DIAGNOSIS_CODES')->insert(
-                    [
-                        'DIAGNOSIS_ID' => strtoupper($request->diagnosis_id),
-                        'DESCRIPTION' => $request->description,
-                        'DATE_TIME_CREATED' => date('y-m-d'),
-                        'USER_ID' => '',
-                        'DATE_TIME_MODIFIED' => '',
-                        'USER_ID_CREATED' => '',
-                        'FORM_ID' => '',
-                        'COMPLETE_CODE_IND' => ''
-                    ]
-                );
-                $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
-                return  $this->respondWithToken($this->token(), 'Added Successfully!', $code);
+
+
+                $exceptiondata = DB::table('DIAGNOSIS_EXCEPTIONS')
+                    ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
+                    ->first();
+
+                $limitationsdata = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                    ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
+                    ->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))
+                    ->first();
+
+                if ($limitationsdata) {
+
+                    return $this->respondWithToken($this->token(), 'limitation data exists!!!', $limitationsdata);
+                } else {
+                    $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                        ->insert([
+                            'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                            'DIAGNOSIS_ID' => $request->diagnosis_id,
+                            'LIMITATIONS_LIST' => $request->limitations_list,
+                            'EFFECTIVE_DATE' => date('Ydm', strtotime($request->effective_date)),
+                            'TERMINATION_DATE' => date('Ydm', strtotime($request->termination_date)),
+                            'DATE_TIME_CREATED' => date('d-M-y'),
+
+                        ]);
+                }
+
+                if ($exceptiondata) {
+                    return $this->respondWithToken($this->token(), 'exception data exists!!!', $exceptiondata);
+                } else {
+                    $exceptionAddData = DB::table('DIAGNOSIS_EXCEPTIONS')
+                        ->insert([
+                            'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                            'EXCEPTION_NAME' => $request->exception_name,
+                            'DATE_TIME_CREATED' => date('d-M-y'),
+                            'USER_ID' => $request->user_name,
+                        ]);
+                }
+
+                $validationsdata = DB::table('DIAGNOSIS_VALIDATIONS')
+                    ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
+                    ->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))
+                    ->first();
+
+
+                if ($validationsdata) {
+
+                    return $this->respondWithToken($this->token(), 'validations data exists!!!', $validationsdata);
+                } else {
+
+                    $validationAddData = DB::table('DIAGNOSIS_VALIDATIONS')
+                        ->insert([
+                            'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                            'DIAGNOSIS_ID' => $request->exception_name,
+                            'DIAGNOSIS_STATUS' => $request->diagnosis_status,
+                            'PRIORITY' => $request->priority,
+                        ]);
+                }
+                return $this->respondWithToken($this->token(), 'data added Successfully!!!', $validationAddData);
             }
         } else {
             $validator = Validator::make($request->all(), [
-                'diagnosis_id' => ['required', 'max:8'],
-                "description" => ['max:35']
+                "diagnosis_list" => ['required', 'max:10'],
+                "EXCEPTION_NAME" => ['max:35'],
+                "diagnosis_list" => ['max:8'],
+                "diagnosis_status" => ['max:1', 'numeric'],
+                "priority" => ['max:1', 'numeric'],
+                "effective_date" => ['max:8', 'numeric'],
+                "termination_date" => ['max:8', 'numeric']
             ]);
+
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
-                $benefitcode = DB::table('DIAGNOSIS_CODES')
-                    // ->where(DB::raw('UPPER(DIAGNOSIS_ID)'), strtoupper($request->diagnosis_code))
-                    ->where('DIAGNOSIS_ID', $request->diagnosis_id)
-                    ->update(
-                        [
-                            'DESCRIPTION' => $request->description,
-                            'DATE_TIME_CREATED' => date('y-m-d'),
-                            'USER_ID' => '',
-                            'DATE_TIME_MODIFIED' => '',
-                            'USER_ID_CREATED' => '',
-                            'FORM_ID' => '',
-                            'COMPLETE_CODE_IND' => ''
-                        ]
-                    );
-                // $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
-                return  $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
+
+                if ($request->updateForm == 'update') {
+
+                    $updateData = DB::table('DIAGNOSIS_EXCEPTIONS')
+                        ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
+                        ->update([
+                            'EXCEPTION_NAME' => $request->exception_name,
+                            'DATE_TIME_MODIFIED' => date('d-M-y'),
+                        ]);
+
+                    if (isset($request->diagnosis_id)) {
+                        $updateDataValid = DB::table('DIAGNOSIS_VALIDATIONS')
+                            ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
+                            // ->where('DIAGNOSIS_ID', $request->diagnosis_id)
+                            ->update([
+                                'DIAGNOSIS_STATUS' => $request->diagnosis_status,
+                                'PRIORITY' => $request->priority,
+                                'DATE_TIME_MODIFIED' => date('d-M-y'),
+                                'USER_ID_MODIFIED' => $request->user_name,
+                                'DIAGNOSIS_ID' => $request->diagnosis_id
+                            ]);
+                    }
+
+
+                    $updateData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                        ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
+                        ->where('DIAGNOSIS_ID', $request->diagnosis_id)
+                        ->update([
+                            'LIMITATIONS_LIST' => $request->limitations_list,
+
+                        ]);
+
+
+
+
+                    if ($updateData) {
+                        return $this->respondWithToken($this->token(), 'data Update Successfully!!!', $updateData);
+                    }
+                }
             }
         }
-        // $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
+    }
+
+
+    // public function DiagnosisLimitationAdd(Request $request)
+    // {
+    //     if ($request->has('new')) {
+
+
+
+    //         $recordcheck = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+    //             ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
+    //             ->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))
+    //             ->where('LIMITATIONS_LIST', strtoupper($request->limitation_list))
+    //             ->first();
+
+    //         if ($recordcheck) {
+
+
+    //             return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getusersData);
+
+    //         }else{
+
+
+    //             $addData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+    //                 ->insert([
+    //                     'DIAGNOSIS_LIST' => $request->diagnosis_list,
+    //                     'DIAGNOSIS_ID' => $request->diagnosis_id,
+    //                     'LIMITATIONS_LIST' => $request->limitation_list,
+    //                     'EFFECTIVE_DATE' => date('Ydm', strtotime($request->effective_date)),
+    //                     'TERMINATION_DATE' => date('Ydm', strtotime($request->termination_date)),
+    //                     'DATE_TIME_CREATED' => date('d-M-y'),
+    //                     'USER_ID_CREATED' => $request->user_name
+
+    //                 ]);
+
+    //         }
+
+
+
+    //             if ($addData) {
+    //                 return $this->respondWithToken($this->token(), 'Added Succcessfully Limitation!!!');
+    //             } 
+
+    //         } else {
+    //             $updateData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+    //                 ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
+    //                 ->where('DIAGNOSIS_ID', $request->diagnosis_id)
+    //                 ->update([
+    //                     'LIMITATIONS_LIST' => $request->limitations_list,
+
+    //                 ]);
+    //         }
+    //         if ($updateData) {
+    //             return $this->respondWithToken($this->token(), 'Limitation Update Successfully !!!', $updateData);
+    //         }
+
+    // }
+
 
     public function getDiagnosisValidations($diagnosis_list)
     {
