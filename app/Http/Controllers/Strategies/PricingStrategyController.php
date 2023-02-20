@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Strategies;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class PricingStrategyController extends Controller
 {

@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Strategies;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 
-class CopayStrategyController extends Controller {
+class CopayStrategyController extends Controller
+{
 
 
     public function add(Request $request)
@@ -59,17 +60,17 @@ class CopayStrategyController extends Controller {
                 ->update(
                     [
 
-                    'copay_strategy_id' => strtoupper($request->copay_strategy_id),
-                    'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
-                    'formulary_variation_ind' => $request->formulary_variation_ind,
-                    'network_part_variation_ind' => $request->network_part_variation_ind,
-                    'claim_type_variation_ind' => $request->claim_type_variation_ind,
-                    'date_time_created' => $createddate,
-                    'user_id' => '',
-                    'date_time_modified' => '',
-                    'form_id' => '',
-                    'user_id_created' => '',
-                    'effective_date' => $request->effective_date,
+                        'copay_strategy_id' => strtoupper($request->copay_strategy_id),
+                        'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
+                        'formulary_variation_ind' => $request->formulary_variation_ind,
+                        'network_part_variation_ind' => $request->network_part_variation_ind,
+                        'claim_type_variation_ind' => $request->claim_type_variation_ind,
+                        'date_time_created' => $createddate,
+                        'user_id' => '',
+                        'date_time_modified' => '',
+                        'form_id' => '',
+                        'user_id_created' => '',
+                        'effective_date' => $request->effective_date,
 
 
 
@@ -83,34 +84,36 @@ class CopayStrategyController extends Controller {
 
 
 
-    public function search( Request $request ) {
-        $ndc = DB::table( 'COPAY_STRATEGY' )
-        ->join( 'COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID' )
-        ->select( 'COPAY_STRATEGY.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name' )
-        ->where( 'COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' . strtoupper( $request->search ) . '%' )
-        ->orWhere( 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME', 'like', '%' . strtoupper( $request->search ) . '%' )
-        ->get();
+    public function search(Request $request)
+    {
+        $ndc = DB::table('COPAY_STRATEGY')
+            ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
+            ->select('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name')
+            ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
 
-        return $this->respondWithToken( $this->token(), '', $ndc );
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function getList( $ndcid ) {
-        $ndclist = DB::table( 'COPAY_STRATEGY' )
-        // ->select( 'DIAGNOSIS_LIST', 'DIAGNOSIS_ID', 'PRIORITY' )
-        ->where( 'COPAY_STRATEGY_ID', 'like', '%' . strtoupper( $ndcid ) . '%' )
-        // ->orWhere( 'EXCEPTION_NAME', 'like', '%' . strtoupper( $ndcid ) . '%' )
-        ->get();
+    public function getList($ndcid)
+    {
+        $ndclist = DB::table('COPAY_STRATEGY')
+            // ->select( 'DIAGNOSIS_LIST', 'DIAGNOSIS_ID', 'PRIORITY' )
+            ->where('COPAY_STRATEGY_ID', 'like', '%' . strtoupper($ndcid) . '%')
+            // ->orWhere( 'EXCEPTION_NAME', 'like', '%' . strtoupper( $ndcid ) . '%' )
+            ->get();
 
-        return $this->respondWithToken( $this->token(), '', $ndclist );
+        return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
-    public function getDetails( $ndcid ) {
-        $ndc = DB::table( 'COPAY_STRATEGY' )
-        ->join( 'COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID' )
-        ->where( 'COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' .$ndcid. '%' )
-        ->first();
+    public function getDetails($ndcid)
+    {
+        $ndc = DB::table('COPAY_STRATEGY')
+            ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
+            ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' . $ndcid . '%')
+            ->first();
 
-        return $this->respondWithToken( $this->token(), '', $ndc );
-
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 }
