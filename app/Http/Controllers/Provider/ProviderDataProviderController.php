@@ -86,11 +86,55 @@ class ProviderDataProviderController extends Controller
 
         // dd($request->all());
 
+
+        $get = DB::table('RX_NETWORKS')
+        ->where('pharmacy_nabp',$request->pharmacy_nabp)
+        ->first();
+
         if($request->add_new == 1){
+   
+
+            if(!$get){
+                $addData = DB::table('RX_NETWORKS')
+                ->insert([
+                    'NETWORK_ID'=>strtoupper($request->network_id),
+                    'PHARMACY_NABP'=>($request->pharmacy_nabp),
+                    'PRICE_SCHEDULE_OVRD'=>$request->price_schedule_ovrd,
+                    'PARTICIPATION_OVRD'=>$request->participation_ovrd,
+                   'EFFECTIVE_DATE'=>$request->effective_date,
+                   'TERMINATION_DATE'=>$request->termination_date,
+                    
+            
+                ]);
+                return $this->respondWithToken($this->token(),'traditional REcord Added Successfully...!!!', $addData);
+            }else{
+                return $this->respondWithToken($this->token(),'This record is already exists ..!!!');
+            }
+
+
+            if(!$Data){
+                $addData = DB::table('RX_NETWORK_RULES')
+                ->insert([
+                    'RX_NETWORK_RULE_ID'=>strtoupper($request->rx_network_rule_id),
+                    'PHARMACY_CHAIN'=>strtoupper($request->pharmacy_chain),
+                   'EFFECTIVE_DATE'=>$request->effective_date,
+                   'TERMINATION_DATE'=>$request->termination_date,
+                    
+            
+                ]);
+                return $this->respondWithToken($this->token(),'rx network record Added Successfully...!!!', $addData);
+            }else{
+                return $this->respondWithToken($this->token(),'This record is already exists ..!!!');
+            }
+
+
+
             if($getEligibilityData){
                 return $this->respondWithToken($this->token(),'This record is already exists ..!!!');
 
             }
+
+
 
             else{
 

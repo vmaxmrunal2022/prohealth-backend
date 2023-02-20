@@ -47,7 +47,7 @@ class AccumlatedController extends Controller {
                         'user_id_created'=>'',
                         'accum_exclusion_flag'=>$request->accum_exclusion_flag,
                         'effective_date'=>strtotime($request->effective_date),
-                        'module_exit'=>'',
+                        'module_exit'=>$request->module_exit,
                         'plan_accum_deduct_id'=>$request->plan_accum_deduct_id,
     
                     ]
@@ -90,12 +90,12 @@ class AccumlatedController extends Controller {
                     'accum_exclusion_flag'=>$request->accum_exclusion_flag,
                     'effective_date'=>$request->effective_date,
                     'plan_accum_deduct_id'=>$request->plan_accum_deduct_id,
-                    'module_exit'=>'',
+                    'module_exit'=>$request->module_exit,
 
                 ]
             );
 
-            $data = DB::table('ACCUM_BENEFIT_STRATEGY' ) ->where('accum_bene_strategy_id', 'like', '%' . $request->accum_bene_strategy_id. '%')->first();
+            $data = DB::table('ACCUM_BENEFIT_STRATEGY') ->where('accum_bene_strategy_id', 'like', '%' . $request->accum_bene_strategy_id. '%')->first();
 
 
         }
@@ -119,7 +119,9 @@ class AccumlatedController extends Controller {
     public function getList( $ndcid ) {
         $ndclist = DB::table( 'ACCUM_BENEFIT_STRATEGY' )
         // ->select( 'DIAGNOSIS_LIST', 'DIAGNOSIS_ID', 'PRIORITY' )
-        ->where( 'ACCUM_BENE_STRATEGY_ID', 'like', '%' . strtoupper( $ndcid ) . '%' )
+        ->join( 'ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID' )
+
+        ->where( 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID',$ndcid)
         // ->orWhere( 'EXCEPTION_NAME', 'like', '%' . strtoupper( $ndcid ) . '%' )
         ->get();
 

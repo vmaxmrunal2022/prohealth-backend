@@ -57,14 +57,23 @@ class DiagnosisController extends Controller
         //         'COMPLETE_CODE_IND' => ''
         //     ]
         // );
-        $validator = Validator::make($request->all(), [
-            'procedure_code' => ['required', 'max:8', Rule::unique('DIAGNOSIS_CODES')->where(function ($q) {
-                $q->whereNotNull('diagnosis_id');
-            })],
-            "description" => ['max:35']
-        ]);
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
+
+        if ($request->new) {
+            $benefitcode = DB::table('DIAGNOSIS_CODES')->insert(
+                [
+                    'DIAGNOSIS_ID' => strtoupper($request->diagnosis_id),
+                    'DESCRIPTION' => $request->description,
+                    'DATE_TIME_CREATED' => date('y-m-d'),
+                    'USER_ID' => '',
+                    'DATE_TIME_MODIFIED' => '',
+                    'USER_ID_CREATED' => '',
+                    'FORM_ID' => '',
+                    'COMPLETE_CODE_IND' => $request->complete_code_ind,
+                    
+                ]
+            );
+            $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
+            return  $this->respondWithToken($this->token(), 'Added Successfully!', $code);
         } else {
 
             if ($request->new) {
@@ -77,8 +86,8 @@ class DiagnosisController extends Controller
                         'DATE_TIME_MODIFIED' => '',
                         'USER_ID_CREATED' => '',
                         'FORM_ID' => '',
-                        'COMPLETE_CODE_IND' => ''
-                    ]
+                        'COMPLETE_CODE_IND' => $request->complete_code_ind,
+                        ]
                 );
                 $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
                 return  $this->respondWithToken($this->token(), 'Added Successfully!', $code);
