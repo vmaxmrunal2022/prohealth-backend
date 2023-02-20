@@ -60,7 +60,7 @@ class PrescriberController extends Controller
         if($insert)
         {
             $getUpdated = DB::table('PHYSICIAN_TABLE')->where('physician_id', $request->physician_id)->first();
-            return $this->respondWithToken($this->token(), 'Updated Successfully...!', $getUpdated);
+            return $this->respondWithToken($this->token(), 'Record Added Successfully', $getUpdated);
         }
 
         else{
@@ -91,7 +91,7 @@ class PrescriberController extends Controller
         if($update)
         {
             $getUpdated = DB::table('PHYSICIAN_TABLE')->where('physician_id', $request->physician_id)->first();
-            return $this->respondWithToken($this->token(), 'Updated Successfully...!', $getUpdated);
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $getUpdated);
         }
     }
 }

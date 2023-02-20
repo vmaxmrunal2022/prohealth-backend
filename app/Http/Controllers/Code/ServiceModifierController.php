@@ -55,7 +55,7 @@ class ServiceModifierController extends Controller
                         // 'COMPLETE_CODE_IND' => ''
                     ]
                 );
-                return  $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+                return  $this->respondWithToken($this->token(), 'Record Added Successfully ', $procedurecode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -82,7 +82,7 @@ class ServiceModifierController extends Controller
                         ]
                     );
 
-                return  $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+                return  $this->respondWithToken($this->token(), 'Record Updated Successfully', $procedurecode);
             }
         }
     }
@@ -90,7 +90,7 @@ class ServiceModifierController extends Controller
     public function delete(Request $request)
     {
         return  DB::table('SERVICE_MODIFIERS')->where('SERVICE_MODIFIER', $request->id)->delete()
-            ? $this->respondWithToken($this->token(), 'Successfully deleted')
+            ? $this->respondWithToken($this->token(), 'Record Deleted Successfully')
             : $this->respondWithToken($this->token(), 'Could find data');
     }
 
