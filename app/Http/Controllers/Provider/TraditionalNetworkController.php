@@ -83,13 +83,26 @@ class TraditionalNetworkController extends Controller
 
     {
 
-             $ndc = DB::table('RX_NETWORK_NAMES')
-        ->join('RX_NETWORKS', 'RX_NETWORK_NAMES.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
-                ->get();
+        if($request->pharmacy_nabp){
+
+            $ndc = DB::table('RX_NETWORK_NAMES')
+            ->join('RX_NETWORKS', 'RX_NETWORK_NAMES.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
+            ->where('RX_NETWORKS.PHARMACY_NABP',$request->pharmacy_nabp)->get();
+    
+            if($ndc){
+                return $this->respondWithToken($this->token(), '', $ndc);
+    
+            }
+
+        }
+
+       
+        else{
+
+            return $this->respondWithToken($this->token(), 'No Data Found');
 
 
-
-    return $this->respondWithToken($this->token(), '', $ndc);
+        }
     }
 
 

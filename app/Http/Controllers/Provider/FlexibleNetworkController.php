@@ -94,7 +94,7 @@ class FlexibleNetworkController extends Controller
            
              $ndc = DB::table('RX_NETWORK_RULE_NAMES')
         ->join('RX_NETWORK_RULES', 'RX_NETWORK_RULE_NAMES.RX_NETWORK_RULE_ID', '=', 'RX_NETWORK_RULE_NAMES.RX_NETWORK_RULE_ID')
-                ->get();
+        ->where('RX_NETWORK_RULES.PHARMACY_CHAIN',$request->pharmacy_chain)->get();
 
 
 

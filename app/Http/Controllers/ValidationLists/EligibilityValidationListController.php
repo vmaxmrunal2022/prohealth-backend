@@ -83,23 +83,24 @@ class EligibilityValidationListController extends Controller
 
     public function addEligiblityData(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "elig_validation_id" => ['required', 'max:10', Rule::unique('ELIG_VALIDATION_LISTS')->where(function ($q) {
-                $q->whereNotNull('elig_validation_id');
-            })],
-            "elig_validation_name" => ['max:25'],
-            "agelimit_month" => ['required_if:age_limit_opt,1'],
-            "student_age_limit" => ['max:3', 'numeric'],
-            "child_age_limit" => ['max:3', 'numeric'],
-            "dis_dep_age_limit" => ['max:3', 'numeric'],
-        ]);
-        if ($validator->fails()) {
-            return response($validator->errors());
-        } else {
-            $getEligibilityData = DB::table('ELIG_VALIDATION_LISTS')
-                ->where(DB::raw('UPPER(ELIG_VALIDATION_ID)'), strtoupper($request->elig_validation_id))
-                ->first();
-            if ($request->has('new')) {
+        if ($request->has('new')) {
+            $validator = Validator::make($request->all(), [
+                "elig_validation_id" => ['required', 'max:10', Rule::unique('ELIG_VALIDATION_LISTS')->where(function ($q) {
+                    $q->whereNotNull('elig_validation_id');
+                })],
+                "elig_validation_name" => ['max:25'],
+                "agelimit_month" => ['required_if:age_limit_opt,1'],
+                "student_age_limit" => ['max:3', 'numeric'],
+                "child_age_limit" => ['max:3', 'numeric'],
+                "dis_dep_age_limit" => ['max:3', 'numeric'],
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors());
+            } else {
+                $getEligibilityData = DB::table('ELIG_VALIDATION_LISTS')
+                    ->where(DB::raw('UPPER(ELIG_VALIDATION_ID)'), strtoupper($request->elig_validation_id))
+                    ->first();
+
                 if (!$getEligibilityData) {
                     $addData = DB::table('ELIG_VALIDATION_LISTS')
                         ->insert([
@@ -124,6 +125,18 @@ class EligibilityValidationListController extends Controller
                 } else {
                     return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
                 }
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                "elig_validation_id" => ['required', 'max:10'],
+                "elig_validation_name" => ['max:25'],
+                "agelimit_month" => ['required_if:age_limit_opt,1'],
+                "student_age_limit" => ['max:3', 'numeric'],
+                "child_age_limit" => ['max:3', 'numeric'],
+                "dis_dep_age_limit" => ['max:3', 'numeric'],
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors());
             } else {
                 $updateData = DB::table('ELIG_VALIDATION_LISTS')
                     ->where('ELIG_VALIDATION_ID', $request->elig_validation_id)
