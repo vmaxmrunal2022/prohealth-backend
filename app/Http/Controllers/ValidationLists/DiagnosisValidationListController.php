@@ -69,22 +69,23 @@ class DiagnosisValidationListController extends Controller
 
     public function addDiagnosisValidations(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "diagnosis_list" => ['required', 'max:10', Rule::unique('DIAGNOSIS_EXCEPTIONS')->where(function ($q) {
-                $q->whereNotNull('diagnosis_list');
-            })],
-            "EXCEPTION_NAME" => ['max:35'],
-            "diagnosis_list" => ['max:8'],
-            "diagnosis_status" => ['max:1', 'numeric'],
-            "priority" => ['max:1', 'numeric'],
-            "effective_date" => ['max:8', 'numeric'],
-            "termination_date" => ['max:8', 'numeric']
-        ]);
+        if ($request->has('new')) {
+            $validator = Validator::make($request->all(), [
+                "diagnosis_list" => ['required', 'max:10', Rule::unique('DIAGNOSIS_EXCEPTIONS')->where(function ($q) {
+                    $q->whereNotNull('diagnosis_list');
+                })],
+                "EXCEPTION_NAME" => ['max:35'],
+                "diagnosis_list" => ['max:8'],
+                "diagnosis_status" => ['max:1', 'numeric'],
+                "priority" => ['max:1', 'numeric'],
+                "effective_date" => ['max:8', 'numeric'],
+                "termination_date" => ['max:8', 'numeric']
+            ]);
 
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
-            if ($request->has('new')) {
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else {
+
 
                 $exceptiondata = DB::table('DIAGNOSIS_EXCEPTIONS')
                     ->where('DIAGNOSIS_LIST', strtoupper($request->diagnosis_list))
@@ -142,17 +143,21 @@ class DiagnosisValidationListController extends Controller
                             'PRIORITY' => $request->priority,
                         ]);
                 }
-
-
-
-
-
-
-
-
-
-
                 return $this->respondWithToken($this->token(), 'data added Successfully!!!', $validationAddData);
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                "diagnosis_list" => ['required', 'max:10'],
+                "EXCEPTION_NAME" => ['max:35'],
+                "diagnosis_list" => ['max:8'],
+                "diagnosis_status" => ['max:1', 'numeric'],
+                "priority" => ['max:1', 'numeric'],
+                "effective_date" => ['max:8', 'numeric'],
+                "termination_date" => ['max:8', 'numeric']
+            ]);
+
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
             } else {
 
                 if ($request->updateForm == 'update') {
