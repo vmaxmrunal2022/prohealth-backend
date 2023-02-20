@@ -56,7 +56,7 @@ class DiagnosisController extends Controller
         //     ]
         // );
         $validator = Validator::make($request->all(), [
-            'procedure_code' => ['required', 'max:8', Rule::unique('DIAGNOSIS_CODES')->where(function ($q) {
+            'diagnosis_id' => ['required', 'max:8', Rule::unique('DIAGNOSIS_CODES')->where(function ($q) {
                 $q->whereNotNull('diagnosis_id');
             })],
             "description" => ['max:35']
@@ -79,7 +79,7 @@ class DiagnosisController extends Controller
                         ]
                 );
                 $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
-                return  $this->respondWithToken($this->token(), 'Added Successfully!', $code);
+                return  $this->respondWithToken($this->token(), 'Record Added Successfully', $code);
             }
          else {
             $validator = Validator::make($request->all(), [
@@ -104,7 +104,7 @@ class DiagnosisController extends Controller
                         ]
                     );
                 // $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
-                return  $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
+                return  $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
             }
         }
     
