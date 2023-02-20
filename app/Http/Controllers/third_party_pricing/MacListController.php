@@ -57,6 +57,7 @@ class MacListController extends Controller
 
         // print($effective_date);
         // print($termination_date);
+        // dd($request->all());
         if ($request->add_new) {
             $add_mac_list = DB::table('mac_list')
                 ->insert([

@@ -30,7 +30,7 @@ class TaxScheduleController extends Controller
     public function getBasePrices(Request $request)
     {
         $base_prices = [
-            ['base_price_id' => 'F', 'base_pricew_title' => 'Ingredient Cost + Fee'],
+            ['base_price_id' => 'F', 'base_price_title' => 'Ingredient Cost + Fee'],
             ['base_price_id' => 'I', 'base_price_title' => 'Ingredient Cost']
         ];
         return $this->respondWithToken($this->token(), '', $base_prices);
