@@ -60,6 +60,8 @@ class BenifitController extends Controller
                 );
                 $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', '%' . $request->benefit_code . '%')->first();
             }
+            return $this->respondWithToken($this->token(), 'Record added Successfully ', $benefitcode);
+
             // } else if ($request->has('new')) {
         } else {
             $validator = Validator::make($request->all(), [
@@ -84,9 +86,8 @@ class BenifitController extends Controller
                     );
             }
             $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', $request->benefit_code)->first();
-            // $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', '%' . $request->benefit_code . '%')->first();
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
         }
-        return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
     }
 
 
