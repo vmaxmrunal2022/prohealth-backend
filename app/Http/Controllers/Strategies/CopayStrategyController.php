@@ -39,6 +39,8 @@ class CopayStrategyController extends Controller {
                     'user_id_created' => '',
                     'effective_date' => $request->effective_date,
                     'copay_schedule'=>$request->copay_schedule,
+                    'module_exit' => $request->module_exit,
+
 
                 ]
             );
@@ -72,6 +74,8 @@ class CopayStrategyController extends Controller {
                     'user_id_created' => '',
                     'effective_date' => $request->effective_date,
                     'copay_schedule'=>$request->copay_schedule,
+                    'module_exit' => $request->module_exit,
+
 
 
 

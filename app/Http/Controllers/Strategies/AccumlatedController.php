@@ -47,7 +47,7 @@ class AccumlatedController extends Controller {
                         'user_id_created'=>'',
                         'accum_exclusion_flag'=>$request->accum_exclusion_flag,
                         'effective_date'=>strtotime($request->effective_date),
-                        'module_exit'=>'',
+                        'module_exit'=>$request->module_exit,
                         'plan_accum_deduct_id'=>$request->plan_accum_deduct_id,
     
                     ]
@@ -90,7 +90,7 @@ class AccumlatedController extends Controller {
                     'accum_exclusion_flag'=>$request->accum_exclusion_flag,
                     'effective_date'=>$request->effective_date,
                     'plan_accum_deduct_id'=>$request->plan_accum_deduct_id,
-                    'module_exit'=>'',
+                    'module_exit'=>$request->module_exit,
 
                 ]
             );
