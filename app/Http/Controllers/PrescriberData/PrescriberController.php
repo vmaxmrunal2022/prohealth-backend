@@ -33,9 +33,22 @@ class PrescriberController extends Controller
     public function add(Request $request)
     {
 
+        $check = DB::table('PHYSICIAN_TABLE')
+        ->where('physician_id',strtoupper($request->physician_id))
+        ->first();
+
         if($request->new){
 
-            $insert = DB::table('PHYSICIAN_TABLE')
+            if($check){
+
+                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $check);
+
+
+            }
+            else{
+
+
+                $insert = DB::table('PHYSICIAN_TABLE')
                   ->insert([
                     'physician_id' => $request->physician_id,
                     'physician_last_name' => $request->physician_last_name,
@@ -61,6 +74,10 @@ class PrescriberController extends Controller
                       $getUpdated = DB::table('PHYSICIAN_TABLE')->where('physician_id', $request->physician_id)->first();
                       return $this->respondWithToken($this->token(), 'Record Added Successfully', $getUpdated);
                   }
+
+            }
+
+            
 
         }
         

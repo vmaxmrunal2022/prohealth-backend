@@ -83,7 +83,7 @@ class CouseOfLossController extends Controller
                         ]
                     );
                 // $procedurecode = DB::table('CAUSE_OF_LOSS_CODES')->where('CAUSE_OF_LOSS_CODE', $request->cause_of_loss_code)->first();
-                return   $this->respondWithToken($this->token(), 'Record Updated successfully!', $procedurecode);
+                return   $this->respondWithToken($this->token(), 'Record Updated successfully', $procedurecode);
             }
         }
     }
