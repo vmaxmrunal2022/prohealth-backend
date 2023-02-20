@@ -78,7 +78,7 @@ class ReasonsController extends Controller
                         ]
                     );
                 $procedurecode  = DB::table('REASON_CODES')->where('reason_code', $request->reason_code)->first();
-                return  $this->respondWithToken($this->token(), 'Record Updated Successfully!', $procedurecode);
+                return  $this->respondWithToken($this->token(), 'Record Updated Successfully', $procedurecode);
             }
         }
     }
