@@ -58,26 +58,25 @@ class ProviderController extends Controller
 
     public function addProviderData(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "pharmacy_list" => ['required', 'make:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
-                $q->whereNotNull('pharmacy_list');
-            })],
-            "exception_name" => ['max:35'],
-            "provider_id" => ['required'],
-        ]);
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
-            $getProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
-                ->where(DB::raw('UPPER(PHARMACY_LIST)'), strtoupper($request->pharmacy_list))
-                ->first();
+        $getProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
+            ->where(DB::raw('UPPER(PHARMACY_LIST)'), strtoupper($request->pharmacy_list))
+            ->first();
 
-            $getProviderValidationData = DB::table('PHARMACY_VALIDATIONS')
-                ->where('PHARMACY_LIST', $request->pharmacy_list)
-                ->where('PHARMACY_NABP', $request->pharmacy_nabp)
-                ->first();
-
-            if ($request->has('new')) {
+        $getProviderValidationData = DB::table('PHARMACY_VALIDATIONS')
+            ->where('PHARMACY_LIST', $request->pharmacy_list)
+            ->where('PHARMACY_NABP', $request->pharmacy_nabp)
+            ->first();
+        if ($request->has('new')) {
+            $validator = Validator::make($request->all(), [
+                "pharmacy_list" => ['required', 'make:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
+                    $q->whereNotNull('pharmacy_list');
+                })],
+                "exception_name" => ['max:35'],
+                "provider_id" => ['required'],
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else {
                 if (!$getProviderExceptionData && !$getProviderValidationData) {
                     $addProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
                         ->insert([
@@ -116,6 +115,15 @@ class ProviderController extends Controller
                         return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
                     }
                 }
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                "pharmacy_list" => ['required', 'make:10'],
+                "exception_name" => ['max:35'],
+                "provider_id" => ['required'],
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
             } else {
                 $updateProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
                     ->where('PHARMACY_LIST', $request->pharmacy_list)

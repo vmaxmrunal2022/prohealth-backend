@@ -43,17 +43,18 @@ class ProviderTypeController extends Controller
 
     public function add(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "provider_type" => ['required', 'max:2', Rule::unique('PROVIDER_TYPES')->where(function ($q) {
-                $q->whereNotNull('provider_type');
-            })],
-            "description" => ['max:35']
-        ]);
+        if ($request->new) {
+            $validator = Validator::make($request->all(), [
+                "provider_type" => ['required', 'max:2', Rule::unique('PROVIDER_TYPES')->where(function ($q) {
+                    $q->whereNotNull('provider_type');
+                })],
+                "description" => ['max:35']
+            ]);
 
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
-            if ($request->new) {
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else {
+
                 $procedurecode = DB::table('PROVIDER_TYPES')->insert(
                     [
                         'PROVIDER_TYPE' => strtoupper($request->provider_type),
@@ -67,6 +68,15 @@ class ProviderTypeController extends Controller
                     ]
                 );
                 return  $this->respondWithToken($this->token(), 'Added successfully!', $procedurecode);
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                "provider_type" => ['required', 'max:2'],
+                "description" => ['max:35']
+            ]);
+
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
             } else {
                 $procedurecode = DB::table('PROVIDER_TYPES')
                     ->where(DB::raw('UPPER(PROVIDER_TYPE)'), strtoupper($request->provider_type))

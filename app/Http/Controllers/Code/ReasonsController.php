@@ -29,17 +29,18 @@ class ReasonsController extends Controller
 
     public function add(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "reason_code" => ['required', 'max:10', Rule::unique('REASON_CODES')->where(function ($q) {
-                $q->whereNotNull('reason_code');
-            })],
-            "description" => ['max:35']
-        ]);
+        if ($request->new) {
+            $validator = Validator::make($request->all(), [
+                "reason_code" => ['required', 'max:10', Rule::unique('REASON_CODES')->where(function ($q) {
+                    $q->whereNotNull('reason_code');
+                })],
+                "description" => ['max:35']
+            ]);
 
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
-            if ($request->new) {
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else {
+
                 $procedurecode = DB::table('REASON_CODES')->insert(
                     [
                         'REASON_CODE' => strtoupper($request->reason_code),
@@ -53,6 +54,15 @@ class ReasonsController extends Controller
                 );
                 $procedurecode  = DB::table('REASON_CODES')->where('reason_code', $request->reason_code)->first();
                 return  $this->respondWithToken($this->token(), 'Added successfully!', $procedurecode);
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                "reason_code" => ['required', 'max:10'],
+                "description" => ['max:35']
+            ]);
+
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
             } else {
                 $procedurecode = DB::table('REASON_CODES')
                     ->where('reason_code', $request->reason_code)

@@ -13,7 +13,7 @@ class DiagnosisController extends Controller
     public function get(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'search' => ['requird']
+            'search' => ['required']
         ]);
         if ($validator->fails()) {
             return response($validator->errors(), 400);
@@ -30,8 +30,6 @@ class DiagnosisController extends Controller
 
     public function getLimitations(Request $request)
     {
-
-
         $benefitcodes = DB::table('LIMITATIONS_LIST')
             ->where('LIMITATIONS_LIST', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('LIMITATIONS_LIST_NAME', 'like', '%' . $request->search . '%')
@@ -57,23 +55,14 @@ class DiagnosisController extends Controller
         //         'COMPLETE_CODE_IND' => ''
         //     ]
         // );
-
-        if ($request->new) {
-            $benefitcode = DB::table('DIAGNOSIS_CODES')->insert(
-                [
-                    'DIAGNOSIS_ID' => strtoupper($request->diagnosis_id),
-                    'DESCRIPTION' => $request->description,
-                    'DATE_TIME_CREATED' => date('y-m-d'),
-                    'USER_ID' => '',
-                    'DATE_TIME_MODIFIED' => '',
-                    'USER_ID_CREATED' => '',
-                    'FORM_ID' => '',
-                    'COMPLETE_CODE_IND' => $request->complete_code_ind,
-                    
-                ]
-            );
-            $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
-            return  $this->respondWithToken($this->token(), 'Added Successfully!', $code);
+        $validator = Validator::make($request->all(), [
+            'procedure_code' => ['required', 'max:8', Rule::unique('DIAGNOSIS_CODES')->where(function ($q) {
+                $q->whereNotNull('diagnosis_id');
+            })],
+            "description" => ['max:35']
+        ]);
+        if ($validator->fails()) {
+            return response($validator->errors(), 400);
         } else {
 
             if ($request->new) {
@@ -91,6 +80,14 @@ class DiagnosisController extends Controller
                 );
                 $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
                 return  $this->respondWithToken($this->token(), 'Added Successfully!', $code);
+            }
+         else {
+            $validator = Validator::make($request->all(), [
+                'diagnosis_id' => ['required', 'max:8'],
+                "description" => ['max:35']
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
             } else {
                 $benefitcode = DB::table('DIAGNOSIS_CODES')
                     // ->where(DB::raw('UPPER(DIAGNOSIS_ID)'), strtoupper($request->diagnosis_code))
@@ -110,10 +107,11 @@ class DiagnosisController extends Controller
                 return  $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
             }
         }
-
+    
         // $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
 
     }
+}
 
     public function delete(Request $request)
     {

@@ -33,17 +33,18 @@ class ServiceTypeController extends Controller
 
     public function add(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "service_type" => ['required', 'max:2', Rule::unique('SERVICE_TYPES')->where(function ($q) {
-                $q->whereNotNull('service_type');
-            })],
-            "description" => ['max:35']
-        ]);
+        if ($request->new) {
+            $validator = Validator::make($request->all(), [
+                "service_type" => ['required', 'max:2', Rule::unique('SERVICE_TYPES')->where(function ($q) {
+                    $q->whereNotNull('service_type');
+                })],
+                "description" => ['max:35']
+            ]);
 
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
-            if ($request->new) {
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else {
+
                 $procedurecode = DB::table('SERVICE_TYPES')->insert(
                     [
                         'SERVICE_TYPE' => strtoupper($request->service_type),
@@ -57,6 +58,15 @@ class ServiceTypeController extends Controller
                     ]
                 );
                 return $this->respondWithToken($this->token(), 'Added successfully!', $procedurecode);
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                "service_type" => ['required', 'max:2'],
+                "description" => ['max:35']
+            ]);
+
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
             } else {
                 $procedurecode = DB::table('SERVICE_TYPES')
                     ->where(DB::raw('UPPER(SERVICE_TYPE)'), strtoupper($request->service_type))

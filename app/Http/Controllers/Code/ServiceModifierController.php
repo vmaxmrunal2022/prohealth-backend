@@ -31,17 +31,18 @@ class ServiceModifierController extends Controller
 
     public function add(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "service_modifier" => ['required', 'max:2', Rule::unique('SERVICE_MODIFIERS')->where(function ($q) {
-                $q->whereNotNull('service_modifier');
-            })],
-            "description" => ['max:35']
-        ]);
+        if ($request->new) {
+            $validator = Validator::make($request->all(), [
+                "service_modifier" => ['required', 'max:2', Rule::unique('SERVICE_MODIFIERS')->where(function ($q) {
+                    $q->whereNotNull('service_modifier');
+                })],
+                "description" => ['max:35']
+            ]);
 
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
-            if ($request->new) {
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else {
+
                 $procedurecode = DB::table('SERVICE_MODIFIERS')->insert(
                     [
                         'SERVICE_MODIFIER' => $request->service_modifier,
@@ -55,7 +56,17 @@ class ServiceModifierController extends Controller
                     ]
                 );
                 return  $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                "service_modifier" => ['required', 'max:2'],
+                "description" => ['max:35']
+            ]);
+
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
             } else {
+
                 $procedurecode = DB::table('SERVICE_MODIFIERS')
                     ->where('SERVICE_MODIFIER', $request->service_modifier)
                     ->update(

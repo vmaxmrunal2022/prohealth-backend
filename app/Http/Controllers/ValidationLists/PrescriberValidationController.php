@@ -56,27 +56,26 @@ class PrescriberValidationController extends Controller
 
     public function addPrescriberData(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "physician_list" => ['required', 'make:10', Rule::unique('PHYSICIAN_EXCEPTIONS')->where(function ($q) {
-                $q->whereNotNull('physician_list');
-            })],
-            "exception_name" => ['max:35'],
-            "physician_id" => ['required'],
-            "physician_status" => ['max:1'],
-        ]);
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
-            $getProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
-                ->where('PHYSICIAN_LIST', $request->physician_list)
-                ->first();
+        $getProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
+            ->where('PHYSICIAN_LIST', $request->physician_list)
+            ->first();
 
-            $getProviderValidationData = DB::table('PHYSICIAN_VALIDATIONS')
-                ->where('PHYSICIAN_LIST', $request->physician_list)
-                ->where('PHYSICIAN_ID', $request->physician_id)
-                ->first();
-
-            if ($request->has('new')) {
+        $getProviderValidationData = DB::table('PHYSICIAN_VALIDATIONS')
+            ->where('PHYSICIAN_LIST', $request->physician_list)
+            ->where('PHYSICIAN_ID', $request->physician_id)
+            ->first();
+        if ($request->has('new')) {
+            $validator = Validator::make($request->all(), [
+                "physician_list" => ['required', 'make:10', Rule::unique('PHYSICIAN_EXCEPTIONS')->where(function ($q) {
+                    $q->whereNotNull('physician_list');
+                })],
+                "exception_name" => ['max:35'],
+                "physician_id" => ['required'],
+                "physician_status" => ['max:1'],
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else {
                 if (!$getProviderExceptionData && !$getProviderValidationData) {
                     $addProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
                         ->insert([
@@ -115,6 +114,16 @@ class PrescriberValidationController extends Controller
                         return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
                     }
                 }
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                "physician_list" => ['required', 'make:10'],
+                "exception_name" => ['max:35'],
+                "physician_id" => ['required'],
+                "physician_status" => ['max:1'],
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
             } else {
                 $updateProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
                     ->where('PHYSICIAN_LIST', $request->physician_list)

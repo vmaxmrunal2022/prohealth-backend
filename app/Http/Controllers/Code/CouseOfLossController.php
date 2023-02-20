@@ -31,17 +31,17 @@ class CouseOfLossController extends Controller
 
     public function add(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "cause_of_loss_code" => ['required', 'max:8', Rule::unique('CAUSE_OF_LOSS_CODES')->where(function ($q) {
-                $q->whereNotNull('cause_of_loss_code');
-            })],
-            "description" => ['max:35']
-        ]);
+        if ($request->new) {
+            $validator = Validator::make($request->all(), [
+                "cause_of_loss_code" => ['required', 'max:8', Rule::unique('CAUSE_OF_LOSS_CODES')->where(function ($q) {
+                    $q->whereNotNull('cause_of_loss_code');
+                })],
+                "description" => ['max:35']
+            ]);
 
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
-            if ($request->new) {
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else {
                 $procedurecode = DB::table('CAUSE_OF_LOSS_CODES')->insert(
                     [
                         'CAUSE_OF_LOSS_CODE' => strtoupper($request->cause_of_loss_code),
@@ -57,6 +57,15 @@ class CouseOfLossController extends Controller
 
                 // $procedurecode = DB::table('CAUSE_OF_LOSS_CODES')->where('CAUSE_OF_LOSS_CODE', $request->cause_of_loss_code)->first();
                 return   $this->respondWithToken($this->token(), 'Added successfully!', $procedurecode);
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                "cause_of_loss_code" => ['required', 'max:8'],
+                "description" => ['max:35']
+            ]);
+
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
             } else {
                 $procedurecode = DB::table('CAUSE_OF_LOSS_CODES')
                     // ->where('CAUSE_OF_LOSS_CODES', 'like', strtoupper($request->benefit_code))

@@ -49,26 +49,27 @@ class SpecialityController extends Controller
 
     public function addSpeciality(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "specialty_list" => ['required', 'max:10', Rule::unique('SPECIALTY_EXCEPTIONS')->where(function ($q) {
-                $q->whereNotNull('specialty_list');
-            })],
-            "exception_name" => ['max:35'],
-            "specialty_status" => ['max:1']
-        ]);
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
-            $getSpecialtyExceptionData = DB::table('SPECIALTY_EXCEPTIONS')
-                ->where(DB::raw('UPPER(SPECIALTY_LIST)'), '=', strtoupper($request->specialty_list))
-                ->first();
+        if ($request->has('new')) {
+            $validator = Validator::make($request->all(), [
+                "specialty_list" => ['required', 'max:10', Rule::unique('SPECIALTY_EXCEPTIONS')->where(function ($q) {
+                    $q->whereNotNull('specialty_list');
+                })],
+                "exception_name" => ['max:35'],
+                "specialty_status" => ['max:1']
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else {
+                $getSpecialtyExceptionData = DB::table('SPECIALTY_EXCEPTIONS')
+                    ->where(DB::raw('UPPER(SPECIALTY_LIST)'), '=', strtoupper($request->specialty_list))
+                    ->first();
 
-            $getSpecialtyValidationData = DB::table('SPECIALTY_VALIDATIONS')
-                ->where(DB::raw('UPPER(SPECIALTY_LIST)'), '=', strtoupper($request->specialty_list))
-                ->where(DB::raw('UPPER(SPECIALTY_ID)'), '=', strtoupper($request->specialty_id))
-                ->first();
+                $getSpecialtyValidationData = DB::table('SPECIALTY_VALIDATIONS')
+                    ->where(DB::raw('UPPER(SPECIALTY_LIST)'), '=', strtoupper($request->specialty_list))
+                    ->where(DB::raw('UPPER(SPECIALTY_ID)'), '=', strtoupper($request->specialty_id))
+                    ->first();
 
-            if ($request->has('new')) {
+
                 if (!$getSpecialtyExceptionData && !$getSpecialtyValidationData) {
                     $addData = DB::table('SPECIALTY_EXCEPTIONS')
                         ->insert([
@@ -102,6 +103,15 @@ class SpecialityController extends Controller
                         return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getSpecialtyValidationData);
                     }
                 }
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                "specialty_list" => ['required', 'max:10'],
+                "exception_name" => ['max:35'],
+                "specialty_status" => ['max:1']
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
             } else {
                 $updateData = DB::table('SPECIALTY_EXCEPTIONS')
                     ->where('SPECIALTY_LIST', $request->specialty_list)
