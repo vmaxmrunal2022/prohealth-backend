@@ -95,7 +95,7 @@ class AccumlatedController extends Controller {
                 ]
             );
 
-            $data = DB::table('ACCUM_BENEFIT_STRATEGY' ) ->where('accum_bene_strategy_id', 'like', '%' . $request->accum_bene_strategy_id. '%')->first();
+            $data = DB::table('ACCUM_BENEFIT_STRATEGY') ->where('accum_bene_strategy_id', 'like', '%' . $request->accum_bene_strategy_id. '%')->first();
 
 
         }
