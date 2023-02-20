@@ -21,7 +21,7 @@ class ServiceModifierController extends Controller
             return response($validator->errors(), 400);
         } else {
             $procedurecodes = DB::table('SERVICE_MODIFIERS')
-                ->where('SERVICE_MODIFIER', 'like', '%' . $request->search . '%')
+                ->where('SERVICE_MODIFIER', 'like', '%' .$request->search . '%')
                 ->orWhere('DESCRIPTION', 'like', '%' . $request->search . '%')
                 ->get();
 
@@ -45,7 +45,7 @@ class ServiceModifierController extends Controller
 
                 $procedurecode = DB::table('SERVICE_MODIFIERS')->insert(
                     [
-                        'SERVICE_MODIFIER' => $request->service_modifier,
+                        'SERVICE_MODIFIER' => strtoupper($request->service_modifier),
                         'DESCRIPTION' => $request->description,
                         'DATE_TIME_CREATED' => date('y-m-d'),
                         'USER_ID_CREATED' => $request->user_id_created,
@@ -68,7 +68,7 @@ class ServiceModifierController extends Controller
             } else {
 
                 $procedurecode = DB::table('SERVICE_MODIFIERS')
-                    ->where('SERVICE_MODIFIER', $request->service_modifier)
+                    ->where('SERVICE_MODIFIER', strtoupper($request->service_modifier))
                     ->update(
                         [
                             // 'SERVICE_MODIFIER' => $request->service_modifier,
