@@ -21,7 +21,7 @@ class ServiceModifierController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('SERVICE_MODIFIERS')
-                ->where('SERVICE_MODIFIER', 'like', '%' . $request->search . '%')
+                ->where('SERVICE_MODIFIER', 'like', '%' .$request->search . '%')
                 ->orWhere('DESCRIPTION', 'like', '%' . $request->search . '%')
                 ->get();
 
@@ -45,7 +45,7 @@ class ServiceModifierController extends Controller
 
                 $procedurecode = DB::table('SERVICE_MODIFIERS')->insert(
                     [
-                        'SERVICE_MODIFIER' => $request->service_modifier,
+                        'SERVICE_MODIFIER' => strtoupper($request->service_modifier),
                         'DESCRIPTION' => $request->description,
                         'DATE_TIME_CREATED' => date('y-m-d'),
                         'USER_ID_CREATED' => $request->user_id_created,
@@ -55,7 +55,7 @@ class ServiceModifierController extends Controller
                         // 'COMPLETE_CODE_IND' => ''
                     ]
                 );
-                return  $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+                return  $this->respondWithToken($this->token(), 'Record Added Successfully ', $procedurecode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -68,7 +68,7 @@ class ServiceModifierController extends Controller
             } else {
 
                 $procedurecode = DB::table('SERVICE_MODIFIERS')
-                    ->where('SERVICE_MODIFIER', $request->service_modifier)
+                    ->where('SERVICE_MODIFIER', strtoupper($request->service_modifier))
                     ->update(
                         [
                             // 'SERVICE_MODIFIER' => $request->service_modifier,
@@ -82,7 +82,7 @@ class ServiceModifierController extends Controller
                         ]
                     );
 
-                return  $this->respondWithToken($this->token(), 'Successfully added', $procedurecode);
+                return  $this->respondWithToken($this->token(), 'Record Updated Successfully', $procedurecode);
             }
         }
     }
@@ -90,7 +90,7 @@ class ServiceModifierController extends Controller
     public function delete(Request $request)
     {
         return  DB::table('SERVICE_MODIFIERS')->where('SERVICE_MODIFIER', $request->id)->delete()
-            ? $this->respondWithToken($this->token(), 'Successfully deleted')
+            ? $this->respondWithToken($this->token(), 'Record Deleted Successfully')
             : $this->respondWithToken($this->token(), 'Could find data');
     }
 

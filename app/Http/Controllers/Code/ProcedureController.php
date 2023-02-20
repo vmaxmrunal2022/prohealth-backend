@@ -56,7 +56,7 @@ class ProcedureController extends Controller
                 // ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
                 // ->first();
 
-                return $this->respondWithToken($this->token(), 'Added successfully!', $procedurecode);
+                return $this->respondWithToken($this->token(), 'Record Added successfully!', $procedurecode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -79,7 +79,7 @@ class ProcedureController extends Controller
                             'FORM_ID' => ''
                         ]
                     );
-                return $this->respondWithToken($this->token(), 'Updated successfully !', $procedurecode);
+                return $this->respondWithToken($this->token(), 'Record Updated successfully !', $procedurecode);
             }
         }
     }

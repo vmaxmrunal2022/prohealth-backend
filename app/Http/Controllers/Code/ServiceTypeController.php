@@ -54,7 +54,7 @@ class ServiceTypeController extends Controller
                         // 'COMPLETE_CODE_IND' => ''
                     ]
                 );
-                return $this->respondWithToken($this->token(), 'Added successfully!', $procedurecode);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $procedurecode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -79,7 +79,7 @@ class ServiceTypeController extends Controller
                             // 'COMPLETE_CODE_IND' => ''
                         ]
                     );
-                return $this->respondWithToken($this->token(), 'Updated successfully!', $procedurecode);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $procedurecode);
             }
         }
     }

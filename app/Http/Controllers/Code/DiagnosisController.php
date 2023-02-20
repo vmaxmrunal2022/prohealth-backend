@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Code;
+namespace App\Http\Controllers\ValidationLists;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,37 +8,66 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-class DiagnosisController extends Controller
+class DiagnosisValidationListController extends Controller
 {
-    public function get(Request $request)
+    public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'search' => ['required']
+            "search" => ['required']
         ]);
         if ($validator->fails()) {
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
-            $benefitcodes = DB::table('DIAGNOSIS_CODES')
-                ->where('DIAGNOSIS_ID', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('DESCRIPTION', 'like', '%' . $request->search . '%')
+            $data = DB::table('DIAGNOSIS_EXCEPTIONS as a')
+                // ->join('DIAGNOSIS_VALIDATIONS as b','b.DIAGNOSIS_LIST','=','a.DIAGNOSIS_LIST')
+                ->where(DB::raw('UPPER(a.DIAGNOSIS_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere(DB::raw('UPPER(a.EXCEPTION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+                // ->groupBy('DIAGNOSIS_LIST')
                 ->get();
 
-            return $this->respondWithToken($this->token(), '', $benefitcodes);
+            return $this->respondWithToken($this->token(), '', $data);
         }
     }
 
-
-    public function getLimitations(Request $request)
+    public function getPriorityDiagnosis($diagnosis_list)
     {
-        $benefitcodes = DB::table('LIMITATIONS_LIST')
-            ->where('LIMITATIONS_LIST', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('LIMITATIONS_LIST_NAME', 'like', '%' . $request->search . '%')
+        $data = DB::table('DIAGNOSIS_VALIDATIONS as a')
+            ->join('DIAGNOSIS_EXCEPTIONS as b', 'b.DIAGNOSIS_LIST', '=', 'a.DIAGNOSIS_LIST')
+            ->where('a.DIAGNOSIS_LIST', 'like', '%' . $diagnosis_list . '%')
+            ->orderBy('PRIORITY', 'ASC')
             ->get();
 
-        return $this->respondWithToken($this->token(), '', $benefitcodes);
+        return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function add(Request $request)
+    public function getDiagnosisCodeList($search = '')
+    {
+        $data = DB::table('DIAGNOSIS_CODES')
+            ->where('DIAGNOSIS_ID', 'like', '%' . strtoupper($search) . '%')
+            ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($search) . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $data);
+    }
+
+    public function getLimitationsCode($search = '')
+    {
+        $data = DB::table('LIMITATIONS_LIST')
+            ->where(DB::raw('UPPER(LIMITATIONS_LIST)'), 'like', '%' . strtoupper($search) . '%')
+            ->where(DB::raw('UPPER(LIMITATIONS_LIST_NAME)'), 'like', '%' . strtoupper($search) . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $data);
+    }
+
+    public function getDiagnosisLimitations($diagnosis_list, $diagnosis_id)
+    {
+        $data = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC as a')
+            ->where('a.DIAGNOSIS_LIST', '=', $diagnosis_list)
+            ->where('a.DIAGNOSIS_ID', '=', $diagnosis_id)
+            ->get();
+        return $this->respondWithToken($this->token(), '', $data);
+    }
+
+    public function addDiagnosisValidations(Request $request)
     {
         if ($request->new) {
             $validator = Validator::make($request->all(), [
@@ -93,23 +122,35 @@ class DiagnosisController extends Controller
         }
         // $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
 
+    public function getDiagnosisValidations($diagnosis_list)
+    {
+        $getData = DB::table('DIAGNOSIS_VALIDATIONS')
+            ->where('DIAGNOSIS_LIST', $diagnosis_list)
+            ->get();
+        return $this->respondWithToken($this->token(), '', $getData);
     }
 
-    public function delete(Request $request)
+    public function getDiagnosisDetails($diagnosis_list, $diagnosis_id)
     {
-        return  DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', $request->id)->delete()
-            ? $this->respondWithToken($this->token(), 'Successfully deleted')
-            : $this->respondWithToken($this->token(), 'Could find data');
+        $data = DB::table('DIAGNOSIS_VALIDATIONS as a')
+            ->join('DIAGNOSIS_EXCEPTIONS as b', 'b.DIAGNOSIS_LIST', '=', 'a.DIAGNOSIS_LIST')
+            ->where('a.DIAGNOSIS_LIST', $diagnosis_list)
+            ->where('a.DIAGNOSIS_ID', $diagnosis_id)
+            ->first();
+        return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function checkDiagnosisCodeExist(Request $request)
-    {
-        $check_diagnosis_exist = DB::table('DIAGNOSIS_CODES')
-            // ->where(DB::raw('UPPER(diagnosis_id)'), strtoupper($request->diagnosis_id))
-            ->where('DIAGNOSIS_ID', $request->search)
-            ->get()
-            ->count();
 
-        return $this->respondWithToken($this->token(), '', $check_diagnosis_exist);
+    public function updatePriorityDiagnosisValidation(Request $request)
+    {
+        $data = DB::table('DIAGNOSIS_VALIDATIONS')
+            ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
+            ->where('DIAGNOSIS_ID', $request->diagnosis_id)
+            ->update([
+                'PRIORITY' => $request->priority
+            ]);
+        if ($data) {
+            return $this->respondWithToken($this->token(), 'updatd successfully', $data);
+        }
     }
 }

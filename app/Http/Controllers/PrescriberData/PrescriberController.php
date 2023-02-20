@@ -33,9 +33,22 @@ class PrescriberController extends Controller
     public function add(Request $request)
     {
 
+        $check = DB::table('PHYSICIAN_TABLE')
+        ->where('physician_id',strtoupper($request->physician_id))
+        ->first();
+
         if($request->new){
 
-            $insert = DB::table('PHYSICIAN_TABLE')
+            if($check){
+
+                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $check);
+
+
+            }
+            else{
+
+
+                $insert = DB::table('PHYSICIAN_TABLE')
                   ->insert([
                     'physician_id' => $request->physician_id,
                     'physician_last_name' => $request->physician_last_name,
@@ -55,13 +68,20 @@ class PrescriberController extends Controller
                     'zip_code' => $request->zip_code,
                   ]);
 
+
+                  if($insert)
+                  {
+                      $getUpdated = DB::table('PHYSICIAN_TABLE')->where('physician_id', $request->physician_id)->first();
+                      return $this->respondWithToken($this->token(), 'Record Added Successfully', $getUpdated);
+                  }
+
+            }
+
+            
+
         }
         
-        if($insert)
-        {
-            $getUpdated = DB::table('PHYSICIAN_TABLE')->where('physician_id', $request->physician_id)->first();
-            return $this->respondWithToken($this->token(), 'Updated Successfully...!', $getUpdated);
-        }
+       
 
         else{
 
@@ -85,14 +105,16 @@ class PrescriberController extends Controller
               'user_id' => $request->user_id,
               'zip_code' => $request->zip_code,
             ]);
+
+            if($update)
+            {
+                $getUpdated = DB::table('PHYSICIAN_TABLE')->where('physician_id', $request->physician_id)->first();
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $getUpdated);
+            }
             
         }
 
-        if($update)
-        {
-            $getUpdated = DB::table('PHYSICIAN_TABLE')->where('physician_id', $request->physician_id)->first();
-            return $this->respondWithToken($this->token(), 'Updated Successfully...!', $getUpdated);
-        }
+       
     }
 }
 
