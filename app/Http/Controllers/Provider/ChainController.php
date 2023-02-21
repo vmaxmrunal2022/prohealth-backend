@@ -15,7 +15,7 @@ class ChainController extends Controller
                 ->orWhere('PHARMACY_CHAIN_NAME', 'like', '%' .strtoupper($request->search). '%')
                 ->get();
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
     public function getList ($ndcid)
@@ -23,7 +23,6 @@ class ChainController extends Controller
         $ndc =DB::table('PHARMACY_CHAIN')
         ->Where('PHARMACY_CHAIN', 'like', '%' .$ndcid. '%')
         ->get();
-
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
