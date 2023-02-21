@@ -13,6 +13,7 @@ class DrugDatabaseController extends Controller
     public function add(Request $request)
     {
 
+        
         $getData = DB::table('DRUG_MASTER')
             ->where('NDC', strtoupper($request->ndc))
                 // ->Where('LABEL_NAME',strtoupper($request->label_name))
@@ -30,6 +31,7 @@ class DrugDatabaseController extends Controller
             } else {
 
 
+
                 $addData = DB::table('DRUG_MASTER')
                     ->insert([
                         'NDC' => strtoupper($request->ndc),
@@ -37,7 +39,7 @@ class DrugDatabaseController extends Controller
                         'GENERIC_PRODUCT_ID' => strtoupper($request->generic_product_id),
                         'GENERIC_NAME' => strtoupper($request->generic_name),
                         'MANUFACTURER_NAME' => strtoupper($request->manufacturer_name),
-                        'MANUFACTURER_NAME_ABBR' => strtoupper($request->manufaturer_name_abbr),
+                        'MANUFACTURER_NAME_ABBR' => strtoupper($request->manufacturer_name_abbr),
                         'GENERIC_CODE' => strtoupper($request->generic_code),
                         'DEA_CLASS_CODE' => strtoupper($request->dea_class_code),
                         'THERAPEUTIC_CLASS_CODE' => strtoupper($request->therapeutic_class_code),
@@ -117,7 +119,7 @@ class DrugDatabaseController extends Controller
                         'GENERIC_PRODUCT_ID' => strtoupper($request->generic_product_id),
                         'GENERIC_NAME' => strtoupper($request->generic_name),
                         'MANUFACTURER_NAME' => strtoupper($request->manufacturer_name),
-                        'MANUFACTURER_NAME_ABBR' => strtoupper($request->manufaturer_name_abbr),
+                        'MANUFACTURER_NAME_ABBR' => strtoupper($request->manufacturer_name_abbr),
                         'GENERIC_CODE' => strtoupper($request->generic_code),
                         'DEA_CLASS_CODE' => strtoupper($request->dea_class_code),
                         'THERAPEUTIC_CLASS_CODE' => strtoupper($request->therapeutic_class_code),

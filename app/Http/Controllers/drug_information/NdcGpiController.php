@@ -18,10 +18,7 @@ class NdcGpiController extends Controller
         if($request->ndc){
 
             $data = DB::table('DRUG_MASTER')
-            ->where('NDC', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('LABEL_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('GENERIC_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('PACKAGE_SIZE', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('NDC',$request->ndc)
             ->get();
 
         }
@@ -29,11 +26,7 @@ class NdcGpiController extends Controller
         if($request->gpi){
 
             $data = DB::table('DRUG_MASTER')
-            ->where('NDC', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('LABEL_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('GENERIC_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('PACKAGE_SIZE', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('GENERIC_PRODUCT_ID', 'like', '%' . strtoupper($request->search) . '%')
+           ->Where('GENERIC_PRODUCT_ID',$request->gpi)
             ->get();
 
         }
@@ -62,7 +55,6 @@ class NdcGpiController extends Controller
     public function GpiDropDown(Request $request){
         $data = DB::table('DRUG_MASTER')
         ->select('NDC','GENERIC_PRODUCT_ID','LABEL_NAME')
-        ->where('GENERIC_PRODUCT_ID',$request->generic_product_id)
         ->get();
         return $this->respondWithToken($this->token(),'',$data);
     }

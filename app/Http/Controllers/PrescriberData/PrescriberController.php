@@ -33,11 +33,15 @@ class PrescriberController extends Controller
     public function add(Request $request)
     {
 
+       
+
+
+
         $check = DB::table('PHYSICIAN_TABLE')
         ->where('physician_id',strtoupper($request->physician_id))
         ->first();
 
-        if($request->new){
+        if($request->new==1){
 
             if($check){
 
@@ -50,8 +54,9 @@ class PrescriberController extends Controller
 
                 $insert = DB::table('PHYSICIAN_TABLE')
                   ->insert([
-                    'physician_id' => $request->physician_id,
+                    'physician_id' => strtoupper($request->physician_id),
                     'physician_last_name' => $request->physician_last_name,
+                    'phys_file_srce_id'=>$request->phys_file_srce_id,
                     'physician_first_name' => $request->physician_first_name,
                     'address_1' => $request->address_1,
                     'city' => $request->city,
@@ -91,6 +96,7 @@ class PrescriberController extends Controller
               'physician_id' => $request->physician_id,
               'physician_last_name' => $request->physician_last_name,
               'physician_first_name' => $request->physician_first_name,
+              'phys_file_srce_id'=>$request->phys_file_srce_id,
               'address_1' => $request->address_1,
               'city' => $request->city,
               'country' => $request->country,

@@ -40,21 +40,7 @@ class PlanAssociationController extends Controller
 
     public function submitPlanAssociation(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "bin_number" => ['required', 'max:6', Rule::unique('plan_lookup_table')->where(function ($q) {
-                $q->whereNotNull('bin_number')
-                    ->whereNotNull('process_control_number')
-                    ->whereNotNull('group_number');
-            })],
-            "process_control_number" => ['required', 'max:10'],
-            "group_number" => ['required', 'max:14'],
-        ]);
-
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
-            // dd($request->use_default_ccg);exit();
-            $client_group_id = is_array($request->client_group_id) != null ?  $request->client_group_id['client_group_value']  : $request->client_group_id;
+        $client_group_id = is_array($request->client_group_id) != null ?  $request->client_group_id['client_group_value']  : $request->client_group_id;
 
             $client_id = is_array($request->client_id) != null ? $request->client_id['client_value'] : $request->client_id;
 
@@ -69,6 +55,20 @@ class PlanAssociationController extends Controller
             $use_default_ccg = is_array($request->use_default_ccg) != null ? $request->use_default_ccg['ta_value'] : $request->use_default_ccg;
 
             if ($request->add_new) {
+        $validator = Validator::make($request->all(), [
+            "bin_number" => ['required', 'max:6', Rule::unique('plan_lookup_table')->where(function ($q) {
+                $q->whereNotNull('bin_number')
+                    ->whereNotNull('process_control_number')
+                    ->whereNotNull('group_number');
+            })],
+            "process_control_number" => ['required', 'max:10'],
+            "group_number" => ['required', 'max:14'],
+        ]);
+
+        if ($validator->fails()) {
+            return response($validator->errors(), 400);
+        } else {
+            // dd($request->use_default_ccg);exit();   
                 $planAssociation = DB::table('plan_lookup_table')
                     ->insert([
                         'bin_number' => strtoupper($request->bin_number),
@@ -94,8 +94,19 @@ class PlanAssociationController extends Controller
                 //     ->where('group_number', 'like', '%' . $request->group_number . '%')
                 //     ->first();
 
-                return $this->respondWithToken($this->token(), 'Successfully Added!!!', $planAssociation);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $planAssociation);
+            }
+         } else {
+            $validator = Validator::make($request->all(), [
+                "bin_number" => ['required', 'max:6'],
+                "process_control_number" => ['required', 'max:10'],
+                "group_number" => ['required', 'max:14'],
+            ]);
+    
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
             } else {
+
                 $planAssociation = DB::table('plan_lookup_table')
                     ->where('bin_number', 'like', '%' . $request->bin_number . '%')
                     ->where('process_control_number', 'like', '%' . $request->process_control_number . '%')
@@ -122,7 +133,7 @@ class PlanAssociationController extends Controller
                 //     ->first();
                 // print_r($planAssociation);
 
-                return $this->respondWithToken($this->token(), 'Successfully Updated!!!', $planAssociation);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $planAssociation);
             }
         }
     }

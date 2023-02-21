@@ -31,7 +31,8 @@ class SpecialityController extends Controller
     public function getSpecialityList($specialty_id)
     {
         $ndclist = DB::table('SPECIALTY_VALIDATIONS')
-            ->where('SPECIALTY_LIST', '=', $specialty_id)
+        ->join('SPECIALTY_EXCEPTIONS', 'SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', '=', 'SPECIALTY_VALIDATIONS.SPECIALTY_LIST')
+            ->where('SPECIALTY_VALIDATIONS.SPECIALTY_LIST', '=', $specialty_id)
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndclist);

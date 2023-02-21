@@ -59,10 +59,7 @@ use App\Http\Controllers\administrator\VerifyDrugVCoverage;
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
 use App\Http\Controllers\Provider\FlexibleNetworkController;
-
-
-
-
+use App\Http\Controllers\Provider\ChainController;
 use App\Http\Controllers\Provider\PrioritiseNetworkController;
 use App\Http\Controllers\Provider\ProviderDataProviderController;
 use App\Http\Controllers\PrescriberData\PrescriberController;
@@ -427,6 +424,14 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::get('prioritize/get/{ndcid}', [PrioritiseNetworkController::class, 'networkList']);
         Route::post('prioritize/add', [PrioritiseNetworkController::class, 'add']);
+
+        Route::get('chains/search', [ChainController::class, 'search']);
+
+        Route::get('chain/get/{ndcid}', [ChainController::class, 'getList']);
+
+
+
+
     });
 
 
