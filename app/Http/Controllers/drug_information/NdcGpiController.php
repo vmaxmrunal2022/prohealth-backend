@@ -58,6 +58,14 @@ class NdcGpiController extends Controller
 
     }
 
+
+    public function GpiDropDown(Request $request){
+        $data = DB::table('DRUG_MASTER')
+        ->select('NDC','GENERIC_PRODUCT_ID','LABEL_NAME')
+        ->where('GENERIC_PRODUCT_ID',$request->generic_product_id)
+        ->get();
+        return $this->respondWithToken($this->token(),'',$data);
+    }
     /**
      * Store a newly created resource in storage.
      *
