@@ -66,7 +66,7 @@ class ProviderController extends Controller
             ->where('PHARMACY_LIST', $request->pharmacy_list)
             ->where('PHARMACY_NABP', $request->pharmacy_nabp)
             ->first();
-            
+
         if ($request->new == 1) {
             $validator = Validator::make($request->all(), [
                 "pharmacy_list" => [
@@ -122,7 +122,6 @@ class ProviderController extends Controller
             $validator = Validator::make($request->all(), [
                 "pharmacy_list" => ['required', 'max:10'],
                 "exception_name" => ['max:35'],
-                "provider_id" => ['required'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");

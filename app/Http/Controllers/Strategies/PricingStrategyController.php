@@ -65,7 +65,7 @@ class PricingStrategyController extends Controller
                 "network_part_variation_ind" => ['max:1'],
                 "claim_type_variation_ind" => ['max:1'],
                 "formulary_variation_ind" => ['max:1'],
-                "price_schedule" => ['max:1'],
+                "price_schedule" => ['max:10'],
             ]);
 
             if ($validator->fails()) {
@@ -107,7 +107,7 @@ class PricingStrategyController extends Controller
                 "network_part_variation_ind" => ['max:1'],
                 "claim_type_variation_ind" => ['max:1'],
                 "formulary_variation_ind" => ['max:1'],
-                "price_schedule" => ['max:1'],
+                "price_schedule" => ['max:10'],
             ]);
 
             if ($validator->fails()) {
