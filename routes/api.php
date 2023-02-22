@@ -253,8 +253,9 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/copay/get/{ndcid}', [CopayStrategyController::class, 'getList'])->name('copay.list.get'); // LIST ITEMS
         Route::get('/copay/details/{ndcid}', [CopayStrategyController::class, 'getDetails'])->name('copay.details.get'); // DETAIL
         Route::post('/copay/add', [CopayStrategyController::class, 'add'])->name('copay.add'); // SEARCH
+        Route::get('/copay/drop-down', [CopayStrategyController::class, 'CopayDropDown'])->name('copay.dropdown'); // SEARCH
 
-
+        
 
         Route::get('/accumulated/search', [AccumlatedController::class, 'search'])->name('accumulated.search'); // SEARCH
         Route::get('/accumulated/get/{ndcid}', [AccumlatedController::class, 'getList'])->name('accumulated.list.get'); // LIST ITEMS

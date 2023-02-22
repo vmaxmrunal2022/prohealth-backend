@@ -148,4 +148,14 @@ class CopayStrategyController extends Controller
         $benefitcode = DB::table('COPAY_STRATEGY')->where('copay_strategy_id', 'like', $request->copay_strategy_id)->first();
         return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
     }
+
+
+    public function CopayDropDown(Request $request){
+
+        $ndc = DB::table('COPAY_STRATEGY_NAMES')
+            ->get();
+
+        return $this->respondWithToken($this->token(), 'Data Fetched Suceefully', $ndc);
+
+    }
 }
