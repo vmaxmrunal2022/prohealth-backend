@@ -97,7 +97,7 @@ class AccumlatedController extends Controller
                         'accum_exclusion_flag' => $request->accum_exclusion_flag,
                         //'effective_date' => strtotime($request->effective_date),
                         'effective_date' => date('Ymd', strtotime($request->effective_date)),
-                        'module_exit' => '',
+                        'module_exit' => $request->module_exit,
                         'plan_accum_deduct_id' => $request->plan_accum_deduct_id,
                     ]
                 );
@@ -149,8 +149,8 @@ class AccumlatedController extends Controller
                             //'effective_date' => $request->effective_date,
                             'effective_date' => date('Ymd', strtotime($request->effective_date)),
                             'plan_accum_deduct_id' => $request->plan_accum_deduct_id,
-                            'module_exit' => '',
-                        ]
+                            'module_exit' => $request->module_exit,
+                            ]
                     );
 
                 $accum_benfit_stat = DB::table('ACCUM_BENEFIT_STRATEGY')

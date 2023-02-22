@@ -428,6 +428,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('chains/search', [ChainController::class, 'search']);
 
         Route::get('chain/get/{ndcid}', [ChainController::class, 'getList']);
+        Route::get('chain/add', [ChainController::class, 'add']);
 
 
 

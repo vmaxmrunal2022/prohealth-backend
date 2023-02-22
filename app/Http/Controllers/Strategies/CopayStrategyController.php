@@ -90,6 +90,8 @@ class CopayStrategyController extends Controller
                         'form_id' => '',
                         'user_id_created' => '',
                         'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                        'module_exit'=>$request->module_exit,
+                        'copay_schedule'=>$request->copay_schedule,
                     ]
                 );
                 $benefitcode = DB::table('COPAY_STRATEGY')->where('copay_strategy_id', 'like', $request->copay_strategy_id)->first();
@@ -136,6 +138,9 @@ class CopayStrategyController extends Controller
                             'form_id' => '',
                             'user_id_created' => '',
                             'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                            'module_exit'=>$request->module_exit,
+                            'copay_schedule'=>$request->copay_schedule,
+
                         ]
                     );
             }
