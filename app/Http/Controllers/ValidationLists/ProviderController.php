@@ -66,7 +66,8 @@ class ProviderController extends Controller
             ->where('PHARMACY_LIST', $request->pharmacy_list)
             ->where('PHARMACY_NABP', $request->pharmacy_nabp)
             ->first();
-        if ($request->has('new')) {
+            
+        if ($request->new == 1) {
             $validator = Validator::make($request->all(), [
                 "pharmacy_list" => [
                     'required', 'max:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
@@ -74,7 +75,6 @@ class ProviderController extends Controller
                     })
                 ],
                 "exception_name" => ['max:35'],
-                "provider_id" => ['required'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -98,7 +98,7 @@ class ProviderController extends Controller
                         ]);
 
                     if ($addProviderExceptionData) {
-                        return $this->respondWithToken($this->token(), 'Added Successfully ...!!!', $addProviderExceptionData);
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully ...!!!', $addProviderExceptionData);
                     }
                 } else {
                     if (!$getProviderValidationData) {
@@ -111,7 +111,7 @@ class ProviderController extends Controller
                                 'USER_ID' => $request->user_name
                             ]);
                         if ($addProviderValidationData) {
-                            return $this->respondWithToken($this->token(), 'Added Successfully ...!!!', $addProviderValidationData);
+                            return $this->respondWithToken($this->token(), 'Record Added Successfully ...!!!', $addProviderValidationData);
                         }
                     } else {
                         return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
