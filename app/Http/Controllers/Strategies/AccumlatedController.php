@@ -161,4 +161,13 @@ class AccumlatedController extends Controller
             }
         }
     }
+
+    public function AccumlatedDropDown(Request $request){
+
+        $ndc = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+            ->get();
+
+        return $this->respondWithToken($this->token(), 'Data Fetched Suceefully', $ndc);
+
+    }
 }

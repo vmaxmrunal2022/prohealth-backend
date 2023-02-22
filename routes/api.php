@@ -260,6 +260,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/accumulated/get/{ndcid}', [AccumlatedController::class, 'getList'])->name('accumulated.list.get'); // LIST ITEMS
         Route::get('/accumulated/details/{ndcid}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
         Route::post('/accumulated/add', [AccumlatedController::class, 'add'])->name('accumulated.add'); // SEARCH
+        Route::get('/accumulated/drop-down', [AccumlatedController::class, 'AccumlatedDropDown'])->name('accumulated.dropdown'); // SEARCH
 
 
 
