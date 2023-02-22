@@ -46,7 +46,7 @@ class PlanAssociationController extends Controller
 
             $customer_id = is_array($request->customer_id) != null ? $request->customer_id['cust_value'] : $request->customer_id;
 
-            $membership_processing_flag = is_array($request->membership_processing_flag) != null ? $request->membership_processing_flag['form_id_value'] : null;
+            // $membership_processing_flag = is_array($request->membership_processing_flag) != null ? $request->membership_processing_flag['form_id_value'] : null;
 
             $pharmacy_chain = is_array($request->pharmacy_chain) != null ? $request->pharmacy_chain['pharm_value'] : $request->pharmacy_chain;
 
@@ -77,7 +77,7 @@ class PlanAssociationController extends Controller
                         'customer_id' => $customer_id,
                         'form_id' => $request->form_id,
                         'group_number' => strtoupper($request->group_number),
-                        'membership_processing_flag' => $membership_processing_flag,
+                        'membership_processing_flag' => $request->membership_processing_flag,
                         'pharmacy_chain' => $pharmacy_chain,
                         'pin_number_suffix' => $request->pin_number_suffix,
                         'plan_id' => $request->plan_id,
@@ -116,7 +116,7 @@ class PlanAssociationController extends Controller
                         'client_id' => $client_id,
                         'customer_id' => $customer_id,
                         'form_id' => $request->form_id,
-                        'membership_processing_flag' => $membership_processing_flag,
+                        'membership_processing_flag' => $request->membership_processing_flag,
                         'pharmacy_chain' => $pharmacy_chain,
                         'pin_number_suffix' => $request->pin_number_suffix,
                         'plan_id' => $request->plan_id,
