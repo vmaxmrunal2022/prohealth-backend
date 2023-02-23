@@ -29,6 +29,14 @@ class EligibilityValidationListController extends Controller
     }
 
 
+    public function DropDown(Request $request){
+
+        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')->get();
+        return $this->respondWithToken($this->token(), '', $elig_list_data);
+
+    }
+
+
 
 
     public function getEligibilityDetails($elig_list_id)
@@ -83,7 +91,7 @@ class EligibilityValidationListController extends Controller
 
     public function addEligiblityData(Request $request)
     {
-        if ($request->has('new')) {
+        if ($request->new == 1) {
             $validator = Validator::make($request->all(), [
                 "elig_validation_id" => ['required', 'max:10', Rule::unique('ELIG_VALIDATION_LISTS')->where(function ($q) {
                     $q->whereNotNull('elig_validation_id');
@@ -126,7 +134,7 @@ class EligibilityValidationListController extends Controller
                     return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
                 }
             }
-        } else {
+        } else if($request->new == 0) {
             $validator = Validator::make($request->all(), [
                 "elig_validation_id" => ['required', 'max:10'],
                 "elig_validation_name" => ['max:25'],

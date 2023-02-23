@@ -216,7 +216,10 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         // Route::get('/eligibility/get/{ndcid}', [EligibilityValidationListController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
         Route::get('/eligibility/details/{elig_lis_id}', [EligibilityValidationListController::class, 'getEligibilityDetails'])->name('eligibility.details.get'); // DETAIL
         Route::post('/eligibility/submit-eligiblity-form', [EligibilityValidationListController::class, 'addEligiblityData']);
+        Route::get('/eligibility/dropdown', [EligibilityValidationListController::class,'DropDown']);
 
+
+        
 
 
         Route::get('/provider/search', [ProviderController::class, 'search'])->name('provider.search'); // SEARCH
@@ -392,6 +395,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
         Route::post('superprovider/add', [SuperProviderNetworkController::class, 'add']);
+        Route::get('supernetwork/dropdown', [SuperProviderNetworkController::class, 'dropDown']);
+
 
 
         //TRADITIONAL NETWORK
@@ -430,7 +435,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('chains/search', [ChainController::class, 'search']);
 
         Route::get('chain/get/{ndcid}', [ChainController::class, 'getList']);
-        Route::get('chain/add', [ChainController::class, 'add']);
+        Route::post('chain/add', [ChainController::class, 'add']);
 
 
 

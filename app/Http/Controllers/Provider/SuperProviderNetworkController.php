@@ -91,8 +91,6 @@ class SuperProviderNetworkController extends Controller
     public function networkList($ndcid)
     {
       
-
-
                 $ndclist=  DB::table('SUPER_RX_NETWORK_NAMES')
                 ->join('SUPER_RX_NETWORKS','SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID','=','SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
              ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($ndcid) . '%')  
@@ -100,6 +98,15 @@ class SuperProviderNetworkController extends Controller
 
 
         return $this->respondWithToken($this->token(), '', $ndclist);
+    }
+
+    public function dropDown(Request $request)
+    {
+      
+       $ndclist=  DB::table('SUPER_RX_NETWORK_NAMES')
+        ->join('SUPER_RX_NETWORKS','SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID','=','SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
+        ->get();
+        return $this->respondWithToken($this->token(), 'Data Fetched Succssfully', $ndclist);
     }
 
 
