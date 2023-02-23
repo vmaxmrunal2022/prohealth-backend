@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-// use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class ProviderController extends Controller
@@ -72,12 +71,10 @@ class ProviderController extends Controller
             $validator = Validator::make($request->all(), [
                 "pharmacy_list" => [
                     'required', 'max:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
-                    'required', 'max:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
                         $q->whereNotNull('pharmacy_list');
                     })
                 ],
                 "exception_name" => ['max:35'],
-                "provider_id" => ['required'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -125,7 +122,6 @@ class ProviderController extends Controller
             $validator = Validator::make($request->all(), [
                 "pharmacy_list" => ['required', 'max:10'],
                 "exception_name" => ['max:35'],
-                "provider_id" => ['required'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
