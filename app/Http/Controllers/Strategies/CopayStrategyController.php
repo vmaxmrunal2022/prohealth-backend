@@ -96,7 +96,7 @@ class CopayStrategyController extends Controller
                     ]
                 );
                 $benefitcode = DB::table('COPAY_STRATEGY')->where('copay_strategy_id', 'like', $request->copay_strategy_id)->first();
-                return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $benefitcode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -147,7 +147,7 @@ class CopayStrategyController extends Controller
             }
         }
         $benefitcode = DB::table('COPAY_STRATEGY')->where('copay_strategy_id', 'like', $request->copay_strategy_id)->first();
-        return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
+        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
     }
 
 

@@ -392,6 +392,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
         Route::post('superprovider/add', [SuperProviderNetworkController::class, 'add']);
+        Route::get('supernetwork/dropdown', [SuperProviderNetworkController::class, 'dropDown']);
+
 
 
         //TRADITIONAL NETWORK
@@ -430,7 +432,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('chains/search', [ChainController::class, 'search']);
 
         Route::get('chain/get/{ndcid}', [ChainController::class, 'getList']);
-        Route::get('chain/add', [ChainController::class, 'add']);
+        Route::post('chain/add', [ChainController::class, 'add']);
 
 
 
