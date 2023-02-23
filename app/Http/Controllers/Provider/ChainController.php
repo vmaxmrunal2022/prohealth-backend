@@ -22,8 +22,8 @@ class ChainController extends Controller
     public function getList ($ndcid)
     {
         $ndc =DB::table('PHARMACY_CHAIN')
-        ->Where('PHARMACY_CHAIN', 'like', '%' .$ndcid. '%')
-        ->get();
+        ->Where('PHARMACY_CHAIN',$ndcid)
+        ->first();
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
@@ -123,7 +123,6 @@ class ChainController extends Controller
                     );
 
                     
-                dd($procedurecode);
                 return  $this->respondWithToken($this->token(), 'Record Updated Successfully', $procedurecode);
             
         }
