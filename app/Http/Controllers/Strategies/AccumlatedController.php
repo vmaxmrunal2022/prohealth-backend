@@ -34,7 +34,9 @@ class AccumlatedController extends Controller
     {
         $ndclist = DB::table('ACCUM_BENEFIT_STRATEGY')
             // ->select( 'DIAGNOSIS_LIST', 'DIAGNOSIS_ID', 'PRIORITY' )
-            ->where('ACCUM_BENE_STRATEGY_ID', 'like', '%' . strtoupper($ndcid) . '%')
+            ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID')
+
+            ->where('ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', 'like', '%' . strtoupper($ndcid) . '%')
             // ->orWhere( 'EXCEPTION_NAME', 'like', '%' . strtoupper( $ndcid ) . '%' )
             ->get();
 
@@ -97,7 +99,7 @@ class AccumlatedController extends Controller
                         'accum_exclusion_flag' => $request->accum_exclusion_flag,
                         //'effective_date' => strtotime($request->effective_date),
                         'effective_date' => date('Ymd', strtotime($request->effective_date)),
-                        'module_exit' => '',
+                        'module_exit' => $request->module_exit,
                         'plan_accum_deduct_id' => $request->plan_accum_deduct_id,
                     ]
                 );
@@ -149,8 +151,8 @@ class AccumlatedController extends Controller
                             //'effective_date' => $request->effective_date,
                             'effective_date' => date('Ymd', strtotime($request->effective_date)),
                             'plan_accum_deduct_id' => $request->plan_accum_deduct_id,
-                            'module_exit' => '',
-                        ]
+                            'module_exit' => $request->module_exit,
+                            ]
                     );
 
                 $accum_benfit_stat = DB::table('ACCUM_BENEFIT_STRATEGY')
@@ -160,5 +162,14 @@ class AccumlatedController extends Controller
                 return $this->respondWithToken($this->token(), 'Successfully Updated', $accum_benfit_stat);
             }
         }
+    }
+
+    public function AccumlatedDropDown(Request $request){
+
+        $ndc = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+            ->get();
+
+        return $this->respondWithToken($this->token(), 'Data Fetched Suceefully', $ndc);
+
     }
 }
