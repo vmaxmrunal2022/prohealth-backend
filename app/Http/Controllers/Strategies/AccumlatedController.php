@@ -107,7 +107,7 @@ class AccumlatedController extends Controller
                     ->join('accum_bene_strategy_names', 'ACCUM_BENEFIT_STRATEGY.accum_bene_strategy_id', '=', 'accum_bene_strategy_names.accum_bene_strategy_id')
                     ->where('accum_bene_strategy_names.accum_bene_strategy_id', $request->accum_bene_strategy_id)
                     ->first();
-                return $this->respondWithToken($this->token(), 'Successfully Added', $accum_benfit_stat);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully ', $accum_benfit_stat);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -159,7 +159,7 @@ class AccumlatedController extends Controller
                     ->join('accum_bene_strategy_names', 'ACCUM_BENEFIT_STRATEGY.accum_bene_strategy_id', '=', 'accum_bene_strategy_names.accum_bene_strategy_id')
                     ->where('accum_bene_strategy_names.accum_bene_strategy_id', $request->accum_bene_strategy_id)
                     ->first();
-                return $this->respondWithToken($this->token(), 'Successfully Updated', $accum_benfit_stat);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $accum_benfit_stat);
             }
         }
     }

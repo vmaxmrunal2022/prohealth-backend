@@ -32,8 +32,9 @@ class CopayStrategyController extends Controller
     public function getList($ndcid)
     {
         $ndclist = DB::table('COPAY_STRATEGY')
+        ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
             // ->select( 'DIAGNOSIS_LIST', 'DIAGNOSIS_ID', 'PRIORITY' )
-            ->where('COPAY_STRATEGY_ID', 'like', '%' . strtoupper($ndcid) . '%')
+            ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' . strtoupper($ndcid) . '%')
             // ->orWhere( 'EXCEPTION_NAME', 'like', '%' . strtoupper( $ndcid ) . '%' )
             ->get();
 
@@ -95,7 +96,7 @@ class CopayStrategyController extends Controller
                     ]
                 );
                 $benefitcode = DB::table('COPAY_STRATEGY')->where('copay_strategy_id', 'like', $request->copay_strategy_id)->first();
-                return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $benefitcode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -146,7 +147,7 @@ class CopayStrategyController extends Controller
             }
         }
         $benefitcode = DB::table('COPAY_STRATEGY')->where('copay_strategy_id', 'like', $request->copay_strategy_id)->first();
-        return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
+        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
     }
 
 

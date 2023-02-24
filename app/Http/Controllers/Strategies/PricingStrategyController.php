@@ -54,7 +54,7 @@ class PricingStrategyController extends Controller
         $createddate = date('y-m-d');
 
         // if ($request->has('new')) {
-        if ($request->new) {
+        if ($request->new == 1) {
             $validator = Validator::make($request->all(), [
                 "pricing_strategy_id" => ['required', 'max:10', Rule::unique('PRICING_STRATEGY_NAMES')->where(function ($q) {
                     $q->whereNotNull('pricing_strategy_id');
@@ -97,6 +97,9 @@ class PricingStrategyController extends Controller
                         'mac_list' => $request->mac_list,
                     ]
                 );
+
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $accum_benfit_stat);
+
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -142,6 +145,9 @@ class PricingStrategyController extends Controller
                         ]
                     );
                 $benefitcode = DB::table('PRICING_STRATEGY')->where('pricing_strategy_id', 'like', $request->pricing_strategy_id)->first();
+
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
+
             }
         }
     }
