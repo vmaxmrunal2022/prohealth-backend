@@ -255,7 +255,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/copay/add', [CopayStrategyController::class, 'add'])->name('copay.add'); // SEARCH
         Route::get('/copay/drop-down', [CopayStrategyController::class, 'CopayDropDown'])->name('copay.dropdown'); // SEARCH
 
-        
+
 
         Route::get('/accumulated/search', [AccumlatedController::class, 'search'])->name('accumulated.search'); // SEARCH
         Route::get('/accumulated/get/{ndcid}', [AccumlatedController::class, 'getList'])->name('accumulated.list.get'); // LIST ITEMS
@@ -431,10 +431,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::get('chain/get/{ndcid}', [ChainController::class, 'getList']);
         Route::get('chain/add', [ChainController::class, 'add']);
-
-
-
-
     });
 
 
@@ -725,7 +721,8 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/reason/exception/search', [ReasonCodeExceptionController::class, 'search'])->name('reason.exception.search'); // SEARCH
     Route::get('/reason/exception/details/{ndcid}', [ReasonCodeExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
     Route::post('/reason/exception/add', [ReasonCodeExceptionController::class, 'add'])->name('reason.exception.add'); // DETAILS
-
+    Route::get('/reason/exception/get-reject-code', [ReasonCodeExceptionController::class, 'getRejectCode']);
+    Route::get('/reason/exception/get-reason-code', [ReasonCodeExceptionController::class, 'getReasonCode']);
 
     // NDC
     Route::get('/drugcalss/search', [DrugClassController::class, 'search'])->name('drugclass.search'); // SEARCH
@@ -1104,9 +1101,6 @@ Route::group(['prefix' => "drug-information/"], function () {
     Route::get('ndc-gpi/details/{ndcid}', [NdcGpiController::class, 'getDetails']);
 
     Route::get('ndc-gpi/drop-down', [NdcGpiController::class, 'GpiDropDown']);
-
-
-    
 });
 
 

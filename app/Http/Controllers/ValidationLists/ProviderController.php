@@ -67,17 +67,15 @@ class ProviderController extends Controller
             ->where('PHARMACY_LIST', $request->pharmacy_list)
             ->where('PHARMACY_NABP', $request->pharmacy_nabp)
             ->first();
-
-        if ($request->new == 1) {
+        if ($request->has('new')) {
             $validator = Validator::make($request->all(), [
                 "pharmacy_list" => [
-                    'required', 'max:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
                     'required', 'max:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
                         $q->whereNotNull('pharmacy_list');
                     })
                 ],
                 "exception_name" => ['max:35'],
-                "provider_id" => ['required'],
+                "pharmacy_list" => ['required'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -101,7 +99,7 @@ class ProviderController extends Controller
                         ]);
 
                     if ($addProviderExceptionData) {
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully ...!!!', $addProviderExceptionData);
+                        return $this->respondWithToken($this->token(), 'Added Successfully ...!!!', $addProviderExceptionData);
                     }
                 } else {
                     if (!$getProviderValidationData) {
@@ -114,7 +112,7 @@ class ProviderController extends Controller
                                 'USER_ID' => $request->user_name
                             ]);
                         if ($addProviderValidationData) {
-                            return $this->respondWithToken($this->token(), 'Record Added Successfully ...!!!', $addProviderValidationData);
+                            return $this->respondWithToken($this->token(), 'Added Successfully ...!!!', $addProviderValidationData);
                         }
                     } else {
                         return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
@@ -125,7 +123,7 @@ class ProviderController extends Controller
             $validator = Validator::make($request->all(), [
                 "pharmacy_list" => ['required', 'max:10'],
                 "exception_name" => ['max:35'],
-                "provider_id" => ['required'],
+                "pharmacy_list" => ['required'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");

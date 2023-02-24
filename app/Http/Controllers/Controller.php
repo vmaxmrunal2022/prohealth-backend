@@ -46,16 +46,16 @@ class Controller extends BaseController
             ->get();
         return $this->respondWithToken($this->token(), '', $countries);
     }
-    
-    public function ContriesSearch($c_id='')
+
+    public function ContriesSearch($c_id = '')
     {
-        if(!empty($c_id)){
-            $countries = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(DESCRIPTION)'), 'like','%'.strtoupper($c_id).'%')->get();
-        }else{
+        if (!empty($c_id)) {
+            $countries = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($c_id) . '%')->get();
+        } else {
             $countries = DB::table('COUNTRY_STATES')->get();
         }
 
-        return $this->respondWithToken($this->token(),'', $countries);
+        return $this->respondWithToken($this->token(), '', $countries);
         // return $countries;
     }
 
@@ -75,25 +75,25 @@ class Controller extends BaseController
         // return $this->respondWithToken($this->token(), '', $states);
     }
 
-   
-    public function getStatesOfCountrySearch($state_code='')
+
+    public function getStatesOfCountrySearch($state_code = '')
     {
-        if(!empty($state_code)){
-            $states = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(STATE_CODE)'), 'like','%'.strtoupper($state_code).'%')->get();
-        }else{
+        if (!empty($state_code)) {
+            $states = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(STATE_CODE)'), 'like', '%' . strtoupper($state_code) . '%')->get();
+        } else {
             $states = DB::table('COUNTRY_STATES')->get();
         }
 
         return $this->respondWithToken($this->token(), '', $states);
     }
-      //Member
-      public function getMember(Request $request)
-      {        
-          $memberIds = DB::table('member')     
-                       ->where('member_id', 'like', '%'. $request->search .'%') 
-                       ->get();
-          return $this->respondWithToken($this->token(), '', $memberIds);
-      }
+    //Member
+    public function getMember(Request $request)
+    {
+        $memberIds = DB::table('member')
+            ->where('member_id', 'like', '%' . $request->search . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $memberIds);
+    }
 
     //Provider
     public function getProvider(Request $request)
