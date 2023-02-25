@@ -20,35 +20,50 @@ class ReasonCodeExceptionController extends Controller
             $terminate_date = date('Ymd', strtotime($request->termination_date));
 
 
+            $check = DB::table('REASON_CODE_LISTS')
+            ->where('REASON_CODE_LIST_ID',strtoupper($request->reason_code_list_id))
+            ->first();
+            
 
         if ( $request->has( 'new' ) ) {
 
+            if($check){
+             return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $check);
 
-            $accum_benfit_stat = DB::table('REASON_CODE_LISTS')->insert(
-                [   'reason_code_list_id'=>strtoupper($request->reason_code_list_id),
-                    'reject_code' => $request->reject_code,
-                    'reason_code'=>$request->reason_code,
-                    'effective_date'=>$effective_date,
-                    'termination_date'=>$terminate_date,
-                    'date_time_created'=>$createddate,
-                    'date_time_modified'=>$createddate,
-                ]
-            );
+            }
+            else{
+
+                $accum_benfit_stat = DB::table('REASON_CODE_LISTS')->insert(
+                    [   'reason_code_list_id'=>strtoupper($request->reason_code_list_id),
+                        'reject_code' => $request->reject_code,
+                        'reason_code'=>$request->reason_code,
+                        'effective_date'=>$effective_date,
+                        'termination_date'=>$terminate_date,
+                        'date_time_created'=>$createddate,
+                        'date_time_modified'=>$createddate,
+                    ]
+                );
+    
+    
+                $accum_benfit_stat = DB::table('REASON_CODE_LIST_NAMES')->insert(
+                    [
+    
+                        'reason_code_list_id'=>strtoupper($request->reason_code_list_id),
+                        'reason_code_name'=>$request->reason_code_name,
+                        'date_time_created'=>$createddate,
+    
+    
+                    ]
+                );
+    
+                $benefitcode = DB::table('REASON_CODE_LISTS' )->where('reason_code_list_id', 'like', $request->reason_code_list_id)->first();
+    
+                return $this->respondWithToken( $this->token(), 'Record Added Successfully',$benefitcode);
+
+            }
 
 
-            $accum_benfit_stat = DB::table('REASON_CODE_LIST_NAMES')->insert(
-                [
-
-                    'reason_code_list_id'=>strtoupper($request->reason_code_list_id),
-                    'reason_code_name'=>$request->reason_code_name,
-                    'date_time_created'=>$createddate,
-
-
-                ]
-            );
-
-            $benefitcode = DB::table('REASON_CODE_LISTS' )->where('reason_code_list_id', 'like', $request->reason_code_list_id)->first();
-
+           
 
 
         }else{
@@ -86,11 +101,7 @@ class ReasonCodeExceptionController extends Controller
         }
 
        
-
-           
-
-
-        return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
+        return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$benefitcode);
     }
 
     
