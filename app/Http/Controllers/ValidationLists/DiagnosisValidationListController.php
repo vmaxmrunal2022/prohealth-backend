@@ -262,7 +262,10 @@ class DiagnosisValidationListController extends Controller
     public function getDiagnosisValidations($diagnosis_list)
     {
         $getData = DB::table('DIAGNOSIS_VALIDATIONS')
-            ->where('DIAGNOSIS_LIST', $diagnosis_list)
+        ->join('DIAGNOSIS_EXCEPTIONS', 'DIAGNOSIS_EXCEPTIONS.DIAGNOSIS_LIST', '=', 'DIAGNOSIS_VALIDATIONS.DIAGNOSIS_LIST')
+
+
+            ->where('DIAGNOSIS_VALIDATIONS.DIAGNOSIS_LIST', $diagnosis_list)
             ->get();
         return $this->respondWithToken($this->token(), '', $getData);
     }

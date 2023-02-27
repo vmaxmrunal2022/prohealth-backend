@@ -14,6 +14,10 @@ class SuperBenefitControler extends Controller
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
+        $effective_date = date('Ymd', strtotime($request->effective_date));
+        $terminate_date = date('Ymd', strtotime($request->termination_date));
+
+
         if ( $request->has( 'new' ) ) {
 
 
@@ -34,7 +38,9 @@ class SuperBenefitControler extends Controller
 
                     'benefit_list_id'=>$request->benefit_list_id,
                     'accum_benefit_strategy_id'=>$request->accum_benefit_strategy_id,
-                    // 'effective_date'=>$request->effective_date,
+                    'effective_date'=>$effective_date,
+                    'termination_date'=>$terminate_date,
+
 
                 ]
             );
@@ -61,7 +67,8 @@ class SuperBenefitControler extends Controller
             ->update(
                 [
                     'accum_benefit_strategy_id'=>$request->accum_benefit_strategy_id,
-                    'effective_date'=>$request->effective_date,
+                    'effective_date'=>$effective_date,
+                    'termination_date'=>$terminate_date,
                   
 
                 ]
@@ -73,6 +80,19 @@ class SuperBenefitControler extends Controller
 
 
         return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
+    }
+
+
+    public function getNDCItemDetails($id)
+    {
+      
+         $benefitLists = DB::table('SUPER_BENEFIT_LISTS')
+         ->join('SUPER_BENEFIT_LIST_NAMES', 'SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID', '=', 'SUPER_BENEFIT_LIST_NAMES.SUPER_BENEFIT_LIST_ID')
+         ->where('SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID',$id)
+         ->get();
+
+        return $this->respondWithToken($this->token(), '', $benefitLists);
+
     }
 
 

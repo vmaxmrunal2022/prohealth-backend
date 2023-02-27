@@ -791,6 +791,9 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/super-benefit-list/get', [SuperBenefitControler::class, 'get']);
     Route::get('/super-benefit-list/get-super-benefit-code', [SuperBenefitControler::class, 'getBenefitCode']);
     Route::post('/super-benefit-list/add', [SuperBenefitControler::class, 'add']);
+
+    Route::get('/super-benefit-list/get/{id}', [SuperBenefitControler::class, 'getNDCItemDetails']);
+
 });
 
 Route::group(['prefix' => 'validationlist'], function ($router) {
