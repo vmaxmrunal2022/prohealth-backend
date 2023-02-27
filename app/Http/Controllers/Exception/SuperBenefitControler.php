@@ -45,8 +45,9 @@ class SuperBenefitControler extends Controller
                 ]
             );
 
-            $benefitcode = DB::table('SUPER_BENEFIT_LISTS')->where('benefit_list_id', 'like', '%'.$request->benefit_list_id .'%')->first();
-
+            if ($accum_benfit_stat) {
+                return $this->respondWithToken($this->token(), 'Recored Added Successfully', $accum_benfit_stat);
+            }
         } else {
 
 
@@ -74,12 +75,12 @@ class SuperBenefitControler extends Controller
                 ]
             );
 
-            $benefitcode = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', $request->super_benefit_list_id )->first();
-
+            if ($accum_benfit_stat) {
+                return $this->respondWithToken($this->token(), 'Recored Updated Successfully', $accum_benfit_stat);
+            }
         }
 
 
-        return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
     }
 
 

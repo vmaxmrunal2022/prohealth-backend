@@ -24,7 +24,7 @@ class NdcExlusionController extends Controller
         if ( $request->has( 'new' ) ) {
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'Ndc Exclusion List Id already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Ndc Exclusion List Id already exists in the system..!!!', $recordcheck,208);
 
             }
 
@@ -37,7 +37,7 @@ class NdcExlusionController extends Controller
                         'ndc_exclusion_list'=>$request->ndc_exclusion_list,
                         'DATE_TIME_CREATED'=>$createddate,
     
-                      
+
     
                     ]
                 );
@@ -49,9 +49,6 @@ class NdcExlusionController extends Controller
                         'exclusion_name'=>$request->exclusion_name,
                         'DATE_TIME_CREATED'=>$createddate,
 
-    
-                      
-                       
     
                     ]
                 );
