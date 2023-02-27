@@ -59,7 +59,7 @@ class PlanEditController extends Controller
                 // ->Where('PACKAGE_SIZE',strtoupper($request->package_size))
             ->first();
 
-        if ($request->has('new')) {
+        if ($request->add_new == 1) {
 
             if ($getData) {
 
@@ -157,7 +157,7 @@ class PlanEditController extends Controller
 
             }
 
-        } else { {
+        } else if($request->add_new == 0){ {
                 $updateData = DB::table('PLAN_BENEFIT_TABLE')
                     ->where('PLAN_ID', $request->plan_id)
                     ->update([
