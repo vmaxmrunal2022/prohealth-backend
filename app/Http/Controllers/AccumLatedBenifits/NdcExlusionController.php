@@ -24,7 +24,7 @@ class NdcExlusionController extends Controller
         if ( $request->has( 'new' ) ) {
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Ndc Exclusion List Id already exists in the system..!!!', $recordcheck);
 
             }
 
@@ -91,7 +91,7 @@ class NdcExlusionController extends Controller
 
         
             if ($update) {
-                            return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $update);
+                            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                         }
         }
 
