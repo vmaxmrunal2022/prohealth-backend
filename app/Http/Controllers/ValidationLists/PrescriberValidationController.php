@@ -33,8 +33,9 @@ class PrescriberValidationController extends Controller
     public function getProviderValidationList($physician_list)
     {
         $physician_validation_list = DB::table('PHYSICIAN_VALIDATIONS as a')
-            ->select('a.PHYSICIAN_LIST', 'a.PHYSICIAN_ID', 'a.PHYSICIAN_STATUS', 'b.PHYSICIAN_LAST_NAME', 'b.PHYSICIAN_FIRST_NAME')
+            // ->select('a.PHYSICIAN_LIST', 'a.PHYSICIAN_ID', 'a.PHYSICIAN_STATUS', 'b.PHYSICIAN_LAST_NAME', 'b.PHYSICIAN_FIRST_NAME','a.EXCEPTION_NAME')
             ->join('PHYSICIAN_TABLE as b ', 'b.PHYSICIAN_ID', '=', 'a.PHYSICIAN_ID')
+            ->join('PHYSICIAN_EXCEPTIONS','PHYSICIAN_EXCEPTIONS.PHYSICIAN_LIST','=','a.PHYSICIAN_LIST')
             ->where('a.PHYSICIAN_LIST', 'like', '%' . $physician_list . '%')
             ->get();
 

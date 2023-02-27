@@ -34,9 +34,10 @@ class ProviderController extends Controller
     {
 
         $pharmacyValidationData = DB::table('PHARMACY_VALIDATIONS')
-            ->select('PHARMACY_TABLE.PHARMACY_NABP', 'PHARMACY_VALIDATIONS.PHARMACY_LIST', 'PHARMACY_VALIDATIONS.PHARMACY_STATUS', 'PHARMACY_NAME')
+            // ->select('PHARMACY_TABLE.PHARMACY_NABP', 'PHARMACY_VALIDATIONS.PHARMACY_LIST', 'PHARMACY_VALIDATIONS.PHARMACY_STATUS', 'PHARMACY_NAME')
             ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'PHARMACY_VALIDATIONS.PHARMACY_NABP')
-            ->where('PHARMACY_LIST', $pharmacy_list)
+            ->join('PHARMACY_EXCEPTIONS', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST', '=', 'PHARMACY_VALIDATIONS.PHARMACY_LIST')
+            ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $pharmacy_list)
             ->get();
 
         return $this->respondWithToken($this->token(), '', $pharmacyValidationData);
