@@ -67,7 +67,7 @@ class PrescriberValidationController extends Controller
             ->first();
         if ($request->has('new')) {
             $validator = Validator::make($request->all(), [
-                "physician_list" => ['required', 'make:10', Rule::unique('PHYSICIAN_EXCEPTIONS')->where(function ($q) {
+                "physician_list" => ['required', 'max:10', Rule::unique('PHYSICIAN_EXCEPTIONS')->where(function ($q) {
                     $q->whereNotNull('physician_list');
                 })],
                 "exception_name" => ['max:35'],
@@ -89,7 +89,7 @@ class PrescriberValidationController extends Controller
                     $addProviderValidationData = DB::table('PHYSICIAN_VALIDATIONS')
                         ->insert([
                             'PHYSICIAN_LIST' => $request->physician_list,
-                            'PHYSICIAN_ID' => $request->physician_id['value'],
+                            'PHYSICIAN_ID' => $request->physician_id,
                             'PHYSICIAN_STATUS' => $request->physician_status,
                             'USER_ID' => $request->user_name,
                             'DATE_TIME_CREATED' => date('d-M-y')
