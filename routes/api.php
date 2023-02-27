@@ -59,9 +59,7 @@ use App\Http\Controllers\administrator\VerifyDrugVCoverage;
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
 use App\Http\Controllers\Provider\FlexibleNetworkController;
-
-
-
+use App\Http\Controllers\Provider\ChainController;
 
 use App\Http\Controllers\Provider\PrioritiseNetworkController;
 use App\Http\Controllers\Provider\ProviderDataProviderController;
@@ -1019,6 +1017,11 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
 
     Route::get('prioritize/get/{ndcid}', [PrioritiseNetworkController::class, 'networkList']);
     Route::post('prioritize/add', [PrioritiseNetworkController::class, 'add']);
+
+    Route::get('chains/search', [ChainController::class, 'search']);
+
+        Route::get('chain/get/{ndcid}', [ChainController::class, 'getList']);
+        Route::post('chain/add', [ChainController::class, 'add']);
 });
 
 
