@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use DB;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+
 class CustomerController extends Controller
 {
     public $customerIdPrefix = 'CN';
@@ -79,14 +82,14 @@ class CustomerController extends Controller
             'COVERAGE_EFF_DATE_1' => $customerREQUEST['strategy']['tier1'],
             // 'COVERAGE_STRATEGY_ID_1' => $customerREQUEST['strategy'][''],
             'PLAN_ID_1' => $customerREQUEST['strategy']['plan_id_1'],
-            'MISC_DATA_1' => $customerREQUEST['strategy']['miscellaneous_1'] ,
+            'MISC_DATA_1' => $customerREQUEST['strategy']['miscellaneous_1'],
             'COVERAGE_EFF_DATE_2' => $customerREQUEST['strategy']['tier2'],
             // 'COVERAGE_STRATEGY_ID_2' => $customerREQUEST['strategy'][''],
-            'PLAN_ID_2' => $customerREQUEST['strategy']['plan_id_2'] ,
-            'MISC_DATA_2' => $customerREQUEST['strategy']['miscellaneous_2'] ,
-            'COVERAGE_EFF_DATE_3' => $customerREQUEST['strategy']['tier3'] ,
+            'PLAN_ID_2' => $customerREQUEST['strategy']['plan_id_2'],
+            'MISC_DATA_2' => $customerREQUEST['strategy']['miscellaneous_2'],
+            'COVERAGE_EFF_DATE_3' => $customerREQUEST['strategy']['tier3'],
             // 'COVERAGE_STRATEGY_ID_3' => $customerREQUEST['strategy'][''],
-            'PLAN_ID_3' => $customerREQUEST['strategy']['plan_id_3'] ,
+            'PLAN_ID_3' => $customerREQUEST['strategy']['plan_id_3'],
             'MISC_DATA_3' => $customerREQUEST['strategy']['miscellaneous_3'],
             'PHARMACY_EXCEPTIONS_FLAG' => $customerREQUEST['strategy']['provider_vefification_option'],
             'SUPER_RX_NETWORK_ID' => $customerREQUEST['strategy']['super_provider_network'],
@@ -104,13 +107,13 @@ class CustomerController extends Controller
             'SUPER_MD_NETWORK_ID' => '',
             'MD_STRATEGY_ID' => '',
             'PHYSICIAN_TEMPLATE_ID' => '',
-            'ACCUM_BENE_FAM_SUM_IND' =>'',
-            'USER_ID_CREATED'=>'',
-            'DRUG_COV_STRATEGY_ID_1'=>'',
-            'PREF_MAINT_DRUG_STRATEGY_ID_1'=>'',
-            'PRICING_STRATEGY_ID_1'=>'',
-            'COPAY_STRATEGY_ID_1'=>'',
-            'ACCUM_BENE_STRATEGY_ID_1' =>'',
+            'ACCUM_BENE_FAM_SUM_IND' => '',
+            'USER_ID_CREATED' => '',
+            'DRUG_COV_STRATEGY_ID_1' => '',
+            'PREF_MAINT_DRUG_STRATEGY_ID_1' => '',
+            'PRICING_STRATEGY_ID_1' => '',
+            'COPAY_STRATEGY_ID_1' => '',
+            'ACCUM_BENE_STRATEGY_ID_1' => '',
             'DRUG_COV_STRATEGY_ID_2' => '',
             'PREF_MAINT_DRUG_STRATEGY_ID_2' => '',
             'PRICING_STRATEGY_ID_2' => '',
@@ -148,108 +151,123 @@ class CustomerController extends Controller
     }
 
 
-    public function add( Request $request ) {
-        $createddate = date( 'y-m-d' );
+    public function add(Request $request)
+    {
+        // dd($request->all());
+        $createddate = date('y-m-d');
+        if ($request->add_new) {
+            $validator = Validator::make($request->all(), [
+                'customer_id' => ['required', 'max:10', Rule::unique('CUSTOMER')->where(function ($q) {
+                    $q->whereNotNull('customer_id');
+                })],
+                'customer_name' => ['max:25'],
+                'address_1' => ['max:25'],
+                'address_2' => ['max:25'],
+                'city' => ['max:18'],
+                'state' => ['max:2'],
+                'zip_code' => ['max:10'],
+                'effective_date' => ['max:10'],
+                'termination_date' => ['max:10', 'after:effective_date'],
+                'comm_charge_paid' => ['numeric'],
+                'comm_charge_reject' => ['numeric'],
 
-        // dd($request->city);
-
-        if ( $request->has( 'new' ) ) {
-
-            $accum_benfit_stat_names = DB::table('CUSTOMER')->insert(
-                [   'customer_id'=>$request->customer_id,
-                    'customer_name' => strtoupper( $request->customer_name ),
-                    'address_1'=>$request->address_1,
-                    'address_2'=>$request->address_2,
-                    'city'=>$request->city,
-                    'state'=>$request->state,
-                    'zip_code'=>$request->zip_code,
-                    'zip_plus_2'=>$request->zip_plus_2,
-                    'phone'=>$request->phone,
-                    'fax'=>$request->fax,
-                    'contact'=>$request->contact,
-                    'edi_address'=>$request->edi_address,
-                    'effective_date'=>$request->effective_date,
-                    'termination_date'=>$request->termination_date,
-                    'customer_type'=>$request->customer_type,
-                    'cap_amount'=>$request->cap_amount,
-                    'comm_charge_paid'=>$request->comm_charge_paid,
-                    'comm_charge_reject'=>$request->comm_charge_reject,
-                    'date_time_created'=>$request->date_time_created,
-                    'user_id'=>$request->user_id,
-                    'processing_cycle'=>$request->processing_cycle,
-                    'auto_term_days'=>$request->auto_term_days,
-                    'admin_fee'=>$request->admin_fee,
-                    'dmr_fee'=>$request->dmr_fee,
-                    'auto_term_level'=>$request->auto_term_level,
-                    'census_date'=>$request->census_date,
-                    'ucf_fee'=>$request->ucf_fee,
-                    'prior_auth_fee'=>$request->prior_auth_fee,
-                    'mail_ord_letter_fee'=>$request->mail_ord_letter_fee,
-                    'msg_priority_id'=>$request->msg_priority_id,
-                    'dur_exception_list'=>$request->dur_exception_list,
-
-                ]
-            );
-
-            $benefitcode = DB::table('CUSTOMER' ) ->where('customer_id', 'like', '%' . $request->customer_id. '%')->first();
-
-
+            ]);
+            if ($validator->fails()) {
+                $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
+                // dd($fieldsWithErrorMessagesArray);
+                // return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, 'false');
+            } else {
+                $accum_benfit_stat_names = DB::table('CUSTOMER')->insert(
+                    [
+                        'customer_id' => $request->customer_id,
+                        'customer_name' => strtoupper($request->customer_name),
+                        'address_1' => $request->address_1,
+                        'address_2' => $request->address_2,
+                        'city' => $request->city,
+                        'state' => $request->state,
+                        'zip_code' => $request->zip_code,
+                        'zip_plus_2' => $request->zip_plus_2,
+                        'phone' => $request->phone,
+                        'fax' => $request->fax,
+                        'contact' => $request->contact,
+                        'edi_address' => $request->edi_address,
+                        'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                        'termination_date' => date('Ymd', strtotime($request->termination_date)),
+                        'customer_type' => $request->customer_type,
+                        'cap_amount' => $request->cap_amount,
+                        'comm_charge_paid' => $request->comm_charge_paid,
+                        'comm_charge_reject' => $request->comm_charge_reject,
+                        'date_time_created' => $request->date_time_created,
+                        'user_id' => $request->user_id,
+                        'processing_cycle' => $request->processing_cycle,
+                        'auto_term_days' => $request->auto_term_days,
+                        'admin_fee' => $request->admin_fee,
+                        'dmr_fee' => $request->dmr_fee,
+                        'auto_term_level' => $request->auto_term_level,
+                        'census_date' => $request->census_date,
+                        'ucf_fee' => $request->ucf_fee,
+                        'prior_auth_fee' => $request->prior_auth_fee,
+                        'mail_ord_letter_fee' => $request->mail_ord_letter_fee,
+                        'msg_priority_id' => $request->msg_priority_id,
+                        'dur_exception_list' => $request->dur_exception_list,
+                    ]
+                );
+                $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
+                return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
+            }
         } else {
 
 
-            $accum_benfit_stat = DB::table('CUSTOMER' )
-            ->where( 'CUSTOMER_ID', $request->customer_id)
-            ->update(
-                [
-                    'customer_name' => strtoupper( $request->customer_name ),
-                    'address_1'=>$request->address_1,
-                    'address_2'=>$request->address_2,
-                    'city'=>$request->city,
-                    'state'=>$request->state,
-                    'zip_code'=>$request->zip_code,
-                    'zip_plus_2'=>$request->zip_plus_2,
-                    'phone'=>$request->phone,
-                    'fax'=>$request->fax,
-                    'contact'=>$request->contact,
-                    'edi_address'=>$request->edi_address,
-                    'effective_date'=>$request->effective_date,
-                    'termination_date'=>$request->termination_date,
-                    'customer_type'=>$request->customer_type,
-                    'cap_amount'=>$request->cap_amount,
-                    'comm_charge_paid'=>$request->comm_charge_paid,
-                    'comm_charge_reject'=>$request->comm_charge_reject,
-                    'date_time_created'=>$request->date_time_created,
-                    'user_id'=>$request->user_id,
-                    'processing_cycle'=>$request->processing_cycle,
-                    'auto_term_days'=>$request->auto_term_days,
-                    'admin_fee'=>$request->admin_fee,
-                    'dmr_fee'=>$request->dmr_fee,
-                    'auto_term_level'=>$request->auto_term_level,
-                    'census_date'=>$request->census_date,
-                    'ucf_fee'=>$request->ucf_fee,
-                    'prior_auth_fee'=>$request->prior_auth_fee,
-                    'mail_ord_letter_fee'=>$request->mail_ord_letter_fee,
-                    'msg_priority_id'=>$request->msg_priority_id,
-                    'dur_exception_list'=>$request->dur_exception_list,
-                
-
-                ]
-            );
+            $accum_benfit_stat = DB::table('CUSTOMER')
+                ->where('CUSTOMER_ID', $request->customer_id)
+                ->update(
+                    [
+                        'customer_name' => strtoupper($request->customer_name),
+                        'address_1' => $request->address_1,
+                        'address_2' => $request->address_2,
+                        'city' => $request->city,
+                        'state' => $request->state,
+                        'zip_code' => $request->zip_code,
+                        'zip_plus_2' => $request->zip_plus_2,
+                        'phone' => $request->phone,
+                        'fax' => $request->fax,
+                        'contact' => $request->contact,
+                        'edi_address' => $request->edi_address,
+                        'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                        'termination_date' => date('Ymd', strtotime($request->termination_date)),
+                        'customer_type' => $request->customer_type,
+                        'cap_amount' => $request->cap_amount,
+                        'comm_charge_paid' => $request->comm_charge_paid,
+                        'comm_charge_reject' => $request->comm_charge_reject,
+                        'date_time_created' => $request->date_time_created,
+                        'user_id' => $request->user_id,
+                        'processing_cycle' => $request->processing_cycle,
+                        'auto_term_days' => $request->auto_term_days,
+                        'admin_fee' => $request->admin_fee,
+                        'dmr_fee' => $request->dmr_fee,
+                        'auto_term_level' => $request->auto_term_level,
+                        'census_date' => $request->census_date,
+                        'ucf_fee' => $request->ucf_fee,
+                        'prior_auth_fee' => $request->prior_auth_fee,
+                        'mail_ord_letter_fee' => $request->mail_ord_letter_fee,
+                        'msg_priority_id' => $request->msg_priority_id,
+                        'dur_exception_list' => $request->dur_exception_list,
 
 
+                    ]
+                );
 
-            $benefitcode = DB::table('CUSTOMER' ) ->where('customer_id', 'like', '%' . $request->customer_id. '%')->first();
 
+
+            $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
+            return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
         }
-
-
-        return $this->respondWithToken( $this->token(), 'Successfully added', $benefitcode );
     }
 
     public function generateCustomerId()
     {
         $total = Customer::count() + 1;
-        $id = $this->customerIdPrefix.sprintf("%0".$this->customerIdMaxDigits."d", $total);
+        $id = $this->customerIdPrefix . sprintf("%0" . $this->customerIdMaxDigits . "d", $total);
         // $newid = $this->_generateAndvalidate();
 
         // while ($newid) {
@@ -272,16 +290,16 @@ class CustomerController extends Controller
     public function getPlanId($planid)
     {
         $customer = DB::table('plan_table_extensions')
-        // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
-        ->where('PLAN_ID', 'like', '%' . strtoupper($planid) . '%')
-        ->first();
+            // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
+            ->where('PLAN_ID', 'like', '%' . strtoupper($planid) . '%')
+            ->first();
 
         // dd($customer);
 
-    return $this->respondWithToken($this->token(),'', $customer);
+        return $this->respondWithToken($this->token(), '', $customer);
     }
 
-   
+
 
     public function searchPlanId(Request $request)
     {
@@ -293,32 +311,32 @@ class CustomerController extends Controller
 
 
 
-    
+
 
     public function searchSuperProviderNetworkId(Request $request)
     {
         // dd($request);
         $customer = DB::table('super_rx_network_names')
-        ->where('SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($request->rva_list_id) . '%')
-        ->orWhere('SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($request->rva_list_id) . '%')
-        ->first();
-    return $this->respondWithToken($this->token(),'', $customer);
+            ->where('SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($request->rva_list_id) . '%')
+            ->orWhere('SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($request->rva_list_id) . '%')
+            ->first();
+        return $this->respondWithToken($this->token(), '', $customer);
     }
 
     public function ALLSuperProviderNetworkIdS(Request $request)
     {
         $customer = DB::table('super_rx_network_names')->get();
-        $newarray=[];
+        $newarray = [];
         foreach ($customer as $row) {
 
             $new['value'] = $row->super_rx_network_id;
-           $new['label'] = $row->super_rx_network_id_name;
-           array_push($newarray, $new);
-    }
+            $new['label'] = $row->super_rx_network_id_name;
+            array_push($newarray, $new);
+        }
 
 
 
-    return $this->respondWithToken($this->token(),'', $newarray);
+        return $this->respondWithToken($this->token(), '', $newarray);
     }
 
 
@@ -335,5 +353,4 @@ class CustomerController extends Controller
 
         return $this->respondWithToken($this->token(), '', $customer);
     }
-
 }
