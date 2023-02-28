@@ -783,7 +783,10 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::post('/benefitderivation/add', [BenefitDerivationController::class, 'add'])->name('benefit.search'); // SEARCH
     Route::get('/benifitcodes/all', [BenefitListController::class, 'index']);
 
+    Route::get('/benifitcodes/list/all', [BenefitListController::class, 'BenefitLists']);
 
+
+    
 
     //Provider Type Validation 
     Route::get('/provider-type-validation/get', [ProviderTypeValidationController::class, 'get'])->name('provider-type-validation-get');
@@ -873,6 +876,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/accumulated/get/{ndcid}', [AccumlatedController::class, 'getList'])->name('accumulated.list.get'); // LIST ITEMS
     Route::get('/accumulated/details/{ndcid}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
     Route::post('/accumulated/add', [AccumlatedController::class, 'add'])->name('accumulated.add'); // SEARCH
+    Route::get('/accumulated/all', [AccumlatedController::class, 'getAllAcuumlatedBenefits'])->name('accumulated.all'); // SEARCH
 
 
 
