@@ -27,6 +27,13 @@ class ReasonsController extends Controller
         }
     }
 
+    public function all(Request $request){
+        $reasoncodes = DB::table('REASON_CODES')
+        ->get();
+    return $this->respondWithToken($this->token(), '', $reasoncodes);
+
+    }
+
     public function add(Request $request)
     {
         if ($request->new) {

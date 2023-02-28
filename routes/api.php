@@ -130,7 +130,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/reasons/submit', [ReasonsController::class, 'add'])->name('reasons.submit'); // add
         Route::post('/reasons/delete', [ReasonsController::class, 'delete'])->name('reasons.delete'); // DELETE
         Route::get('/check-reason-exist', [ReasonsController::class, 'checkReasonExist']);
-
+        Route::get('/reasons/all', [ReasonsController::class, 'all'])->name('reasons.get'); // SEARCH
 
 
         // PROCEDURE
