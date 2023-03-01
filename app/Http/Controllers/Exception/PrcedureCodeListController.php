@@ -75,9 +75,12 @@ class PrcedureCodeListController extends Controller
 
             $accum_benfit_stat = DB::table('PROC_CODE_LISTS' )
             ->where('proc_code_list_id', $request->proc_code_list_id )
-            ->where('procedure_code',$request->procedure_code)
+            // ->where('procedure_code',$request->procedure_code)
             ->update(
                 [
+
+                    'procedure_code'=>$request->procedure_code,
+
                     'effective_date'=>$effective_date,
                     'termination_date'=>$terminate_date,                  
 

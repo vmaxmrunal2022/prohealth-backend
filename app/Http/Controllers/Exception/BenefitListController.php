@@ -16,6 +16,14 @@ class BenefitListController extends Controller
     return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function BenefitLists(Request $request){
+
+        $ndc = DB::table('BENEFIT_LIST_NAMES')->get();
+
+    return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
+
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
