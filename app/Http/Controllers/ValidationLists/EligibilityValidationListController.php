@@ -85,6 +85,12 @@ class EligibilityValidationListController extends Controller
             $elig_list_data->student_covd = false;
         }
 
+        if ($elig_list_data->adult_dep_covd == '1') {
+            $elig_list_data->adult_dep_covd = true;
+        } else {
+            $elig_list_data->adult_dep_covd = false;
+        }
+
 
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
@@ -127,7 +133,7 @@ class EligibilityValidationListController extends Controller
                             'DATE_TIME_CREATED' => date('d-M-y'),
                             'USER_ID' => $request->user_name,
                             'AGE_LIMIT_OPT' => $request->age_limit_opt,
-                            'AGE_LIMIT_MMDD' => $request->agelimit_month
+                            'AGE_LIMIT_MMDD' => $request->age_limit_mmdd
                         ]);
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
                 } else {
@@ -162,7 +168,7 @@ class EligibilityValidationListController extends Controller
                         'DIS_DEP_AGE_LIMIT' => $request->dis_dep_age_limit,
                         'DATE_TIME_MODIFIED' => date('d-M-y'),
                         'AGE_LIMIT_OPT' => $request->age_limit_opt,
-                        'AGE_LIMIT_MMDD' => $request->agelimit_month
+                        'AGE_LIMIT_MMDD' => $request->age_limit_mmdd
                     ]);
                 return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
             }
