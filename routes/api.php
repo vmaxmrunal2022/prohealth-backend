@@ -67,6 +67,7 @@ use App\Http\Controllers\PrescriberData\PrescriberController;
 use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureController;
 use App\Http\Controllers\Exception\TherapyClassController;
 use App\Http\Controllers\drug_information\DrugDatabaseController;
+use App\Http\Controllers\drug_information\NdcGpiController;
 use App\Http\Controllers\Exception\PrcedureCodeListController;
 use App\Http\Controllers\Exception\ProviderTypeValidationController;
 use App\Http\Controllers\plan_design\PlanAssociationController;
@@ -1118,6 +1119,21 @@ Route::group(['prefix' => 'membership/'], function () {
 });
 
 
+
+Route::group(['prefix' => "drug-information/"], function () {
+    Route::post('drug-database/add', [DrugDatabaseController::class, 'add']);
+
+    Route::get('drug-database/get', [DrugDatabaseController::class, 'get']);
+    Route::get('drug-database/get-drug-prices', [DrugDatabaseController::class, 'getDrugPrices']);
+    Route::post('drug-price/add', [DrugDatabaseController::class, 'addDrugPrice']);
+    Route::get('ndc-gpi/search', [NdcGpiController::class, 'search']);
+    Route::get('ndc-gpi/details/{ndcid}', [NdcGpiController::class, 'getDetails']);
+
+    Route::get('ndc-gpi/drop-down', [NdcGpiController::class, 'GpiDropDown']);
+
+
+    
+});
 
 
 //Administrator
