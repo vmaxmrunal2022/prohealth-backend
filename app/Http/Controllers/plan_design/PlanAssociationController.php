@@ -51,48 +51,68 @@ class PlanAssociationController extends Controller
 
             $use_default_ccg = is_array($request->use_default_ccg) != null ? $request->use_default_ccg['ta_value'] : $request->use_default_ccg;
 
+
+            $recordcheck = DB::table('plan_lookup_table')
+            ->where('bin_number', strtoupper($request->bin_number))
+            ->first();
+    
+
             if ($request->add_new) {
-        $validator = Validator::make($request->all(), [
-            "bin_number" => ['required', 'max:6', Rule::unique('plan_lookup_table')->where(function ($q) {
-                $q->whereNotNull('bin_number')
-                    ->whereNotNull('process_control_number')
-                    ->whereNotNull('group_number');
-            })],
-            "process_control_number" => ['required', 'max:10'],
-            "group_number" => ['required', 'max:14'],
-        ]);
 
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else {
-            // dd($request->use_default_ccg);exit();   
-                $planAssociation = DB::table('plan_lookup_table')
-                    ->insert([
-                        'bin_number' => strtoupper($request->bin_number),
-                        'client_group_id' => $client_group_id,
-                        'client_id' => $client_id,
-                        'customer_id' => $customer_id,
-                        'form_id' => $request->form_id,
-                        'group_number' => strtoupper($request->group_number),
-                        'membership_processing_flag' => $request->membership_processing_flag,
-                        'pharmacy_chain' => $pharmacy_chain,
-                        'pin_number_suffix' => $request->pin_number_suffix,
-                        'plan_id' => $request->plan_id,
-                        'plan_id_mail_order' => $request->plan_id_mail_order,
-                        'process_control_number' => strtoupper($request->process_control_number),
-                        'transaction_type' => $transaction_type,
-                        'use_default_ccg' => $use_default_ccg,
-                        'user_id' => $request->user_id,
+
+                if($recordcheck){
+                    return $this->respondWithToken($this->token(), 'Bin Number already exists', $recordcheck);
+
+                }
+
+                else{
+
+                    $validator = Validator::make($request->all(), [
+                        "bin_number" => ['required', 'max:6', Rule::unique('plan_lookup_table')->where(function ($q) {
+                            $q->whereNotNull('bin_number')
+                                ->whereNotNull('process_control_number')
+                                ->whereNotNull('group_number');
+                        })],
+                        "process_control_number" => ['required', 'max:10'],
+                        "group_number" => ['required', 'max:14'],
                     ]);
+            
+                    if ($validator->fails()) {
+                        return response($validator->errors(), 400);
+                    } else {
+                        // dd($request->use_default_ccg);exit();   
+                            $planAssociation = DB::table('plan_lookup_table')
+                                ->insert([
+                                    'bin_number' => strtoupper($request->bin_number),
+                                    'client_group_id' => $client_group_id,
+                                    'client_id' => $client_id,
+                                    'customer_id' => $customer_id,
+                                    'form_id' => $request->form_id,
+                                    'group_number' => strtoupper($request->group_number),
+                                    'membership_processing_flag' => $request->membership_processing_flag,
+                                    'pharmacy_chain' => $pharmacy_chain,
+                                    'pin_number_suffix' => $request->pin_number_suffix,
+                                    'plan_id' => $request->plan_id,
+                                    'plan_id_mail_order' => $request->plan_id_mail_order,
+                                    'process_control_number' => strtoupper($request->process_control_number),
+                                    'transaction_type' => $transaction_type,
+                                    'use_default_ccg' => $use_default_ccg,
+                                    'user_id' => $request->user_id,
+                                ]);
+            
+                            // $planAssociation = DB::table('plan_lookup_table')
+                            //     ->where('bin_number', 'like', '%' . $request->bin_number . '%')
+                            //     ->where('process_control_number', 'like', '%' . $request->process_control_number . '%')
+                            //     ->where('group_number', 'like', '%' . $request->group_number . '%')
+                            //     ->first();
+            
+                            return $this->respondWithToken($this->token(), 'Record Added Successfully', $planAssociation);
+                        }
 
-                // $planAssociation = DB::table('plan_lookup_table')
-                //     ->where('bin_number', 'like', '%' . $request->bin_number . '%')
-                //     ->where('process_control_number', 'like', '%' . $request->process_control_number . '%')
-                //     ->where('group_number', 'like', '%' . $request->group_number . '%')
-                //     ->first();
+                }
 
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $planAssociation);
-            }
+
+        
          } else {
             $validator = Validator::make($request->all(), [
                 "bin_number" => ['required', 'max:6'],
