@@ -101,39 +101,39 @@ class PrescriberValidationController extends Controller
                     }
                 } 
             }
-        // } else {
-        //     $validator = Validator::make($request->all(), [
-        //         "physician_list" => ['required', 'max:10'],
-        //         "exception_name" => ['max:35'],
-        //         "physician_id" => ['required'],
-        //         "physician_status" => ['max:1'],
-        //     ]);
-        //     if ($validator->fails()) {
-        //         return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        //     } else {
-        //         $updateProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
-        //             ->where('PHYSICIAN_LIST', $request->physician_list)
-        //             ->update([
-        //                 'EXCEPTION_NAME' => $request->exception_name,
-        //                 'DATE_TIME_MODIFIED' => date('d-M-y'),
-        //             ]);
+        } else {
+            // $validator = Validator::make($request->all(), [
+            //     "physician_list" => ['required', 'max:10'],
+            //     "exception_name" => ['max:35'],
+            //     "physician_id" => ['required'],
+            //     "physician_status" => ['max:1'],
+            // ]);
+            // if ($validator->fails()) {
+            //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            // } else {
+                $updateProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
+                    ->where('PHYSICIAN_LIST', $request->physician_list)
+                    ->update([
+                        'EXCEPTION_NAME' => $request->exception_name,
+                        'DATE_TIME_MODIFIED' => date('d-M-y'),
+                    ]);
 
-        //         if (!$getProviderValidationData) {
-        //             $addProviderValidationData = DB::table('PHYSICIAN_VALIDATIONS')
-        //             ->where('PHYSICIAN_LIST', $request->physician_list)
+                if ($updateProviderExceptionData) {
+                    $addProviderValidationData = DB::table('PHYSICIAN_VALIDATIONS')
+                    ->where('PHYSICIAN_LIST', $request->physician_list)
 
-        //                 ->update([
-        //                     'PHYSICIAN_LIST' => $request->physician_list,
-        //                     'PHYSICIAN_ID' => $request->physician_id,
-        //                     'PHYSICIAN_STATUS' => $request->physician_status,
-        //                     'DATE_TIME_CREATED' => date('d-M-y'),
-        //                     'USER_ID' => $request->user_name
-        //                 ]);
-        //             if ($addProviderValidationData) {
-        //                 return $this->respondWithToken($this->token(), 'Record Updated Successfully ...!!!', $addProviderValidationData);
-        //             }
-        //         } 
-        //     }
+                        ->update([
+                            'PHYSICIAN_LIST' => $request->physician_list,
+                            'PHYSICIAN_ID' => $request->physician_id,
+                            'PHYSICIAN_STATUS' => $request->physician_status,
+                            'DATE_TIME_CREATED' => date('d-M-y'),
+                            'USER_ID' => $request->user_name
+                        ]);
+                    if ($addProviderValidationData) {
+                        return $this->respondWithToken($this->token(), 'Record Updated Successfully ...!!!', $addProviderValidationData);
+                    }
+                } 
+            // }
         }
     }
 
