@@ -1112,39 +1112,7 @@ Route::group(['prefix' => "drug-information/"], function () {
 });
 
 
-//Plan Design
-Route::group(['prefix' => 'plan-design/'], function () {
-    //Plan Association
-    Route::get('plan-association/get', [PlanAssociationController::class, 'get']);
-    Route::post('plan-association/submit-form', [PlanAssociationController::class, 'submitPlanAssociation']);
-    Route::get('plan-association/get-pharmacy-chain', [PlanAssociationController::class, 'getPharmacyChain']);
-    Route::get('plan-association/get-form-id', [PlanAssociationController::class, 'getFormId']);
-    Route::get('plan-association/get-membership-process-flag', [PlanAssociationController::class, 'getMemProcFlag']);
-    Route::get('plan-association/get-customer', [PlanAssociationController::class, 'getCustomer']);
-    Route::get('plan-association/get-client', [PlanAssociationController::class, 'getClient']);
-    Route::get('plan-association/get-client-group', [PlanAssociationController::class, 'getClientGroup']);
-    Route::get('plan-association/get-transaction-type', [PlanAssociationController::class, 'getTransactionType']);
-    Route::get('plan-association/get-transaction-association', [PlanAssociationController::class, 'getTransactionAssociation']);
-    Route::get('plan-association/get-client-group-label', [PlanAssociationController::class, 'getClientGroupLabel']);
-    Route::get('plan-association/get-plan-id', [PlanAssociationController::class, 'getPlanId']);
 
-    //Plan Edit
-    Route::get('plan-edit/get', [PlanEditController::class, 'get']);
-    Route::post('plan-edit/add', [PlanEditController::class, 'add']);
-
-    Route::get('plan-edit/get-plan-edit-data/{planid}', [PlanEditController::class, 'getPlanEditData']);
-    Route::get('plan-edit/get-plan-classification', [PlanEditController::class, 'getPlanClassification']);
-    Route::get('plan-edit/get-exp-flag', [PlanEditController::class, 'getExpFlag']);
-    Route::get('plan-edit/get-pharm-exp-flag', [PlanEditController::class, 'getPharmExpFlag']);
-    Route::get('plan-edit/get-prisc-exp-flag', [PlanEditController::class, 'getPriscExpFlag']);
-    Route::get('plan-edit/get-exhausted', [PlanEditController::class, 'getExhausted']);
-    Route::get('plan-edit/get-tax', [PlanEditController::class, 'getTax']);
-    Route::get('plan-edit/get-uc-plan', [PlanEditController::class, 'getUCPlan']);
-    Route::get('plan-edit/get-search-indication', [PlanEditController::class, 'getSearchIndication']);
-    Route::get('plan-edit/get-formulary', [PlanEditController::class, 'getFormulary']);
-
-    Route::get('get-copay-drop-down', [PlanEditController::class, 'getCopaydropDown']);
-});
 
 //Membership
 Route::group(['prefix' => 'membership/'], function () {

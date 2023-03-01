@@ -28,6 +28,12 @@ class Controller extends BaseController
         $elig_list_data->age_limit_day = '2';
 
 
+        if ($elig_list_data->adult_dep_covd == '1') {
+            $elig_list_data->adult_dep_covd = true;
+        } else {
+            $elig_list_data->adult_dep_covd = false;
+        }
+
         if ($elig_list_data->cardholder_covd == '1') {
             $elig_list_data->cardholder_covd = true;
         } else {
