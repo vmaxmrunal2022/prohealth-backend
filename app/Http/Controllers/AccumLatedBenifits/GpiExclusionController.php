@@ -15,7 +15,7 @@ class GpiExclusionController extends Controller
 
 
         $recordcheck = DB::table('GPI_EXCLUSION_LISTS')
-        ->where('generic_product_id', strtoupper($request->generic_product_id))
+        ->where('GPI_EXCLUSION_LIST', strtoupper($request->gpi_exclusion_list))
         ->first();
 
 
