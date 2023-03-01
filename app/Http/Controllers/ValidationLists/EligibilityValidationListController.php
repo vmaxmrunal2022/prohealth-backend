@@ -92,19 +92,19 @@ class EligibilityValidationListController extends Controller
     public function addEligiblityData(Request $request)
     {
         if ($request->new == 1) {
-            $validator = Validator::make($request->all(), [
-                "elig_validation_id" => ['required', 'max:10', Rule::unique('ELIG_VALIDATION_LISTS')->where(function ($q) {
-                    $q->whereNotNull('elig_validation_id');
-                })],
-                "elig_validation_name" => ['max:25'],
-                "agelimit_month" => ['required_if:age_limit_opt,1'],
-                "student_age_limit" => ['max:3', 'numeric'],
-                "child_age_limit" => ['max:3', 'numeric'],
-                "dis_dep_age_limit" => ['max:3', 'numeric'],
-            ]);
-            if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            } else {
+            // $validator = Validator::make($request->all(), [
+            //     "elig_validation_id" => ['required', 'max:10', Rule::unique('ELIG_VALIDATION_LISTS')->where(function ($q) {
+            //         $q->whereNotNull('elig_validation_id');
+            //     })],
+            //     "elig_validation_name" => ['max:25'],
+            //     "agelimit_month" => ['required_if:age_limit_opt,1'],
+            //     "student_age_limit" => ['max:3', 'numeric'],
+            //     "child_age_limit" => ['max:3', 'numeric'],
+            //     "dis_dep_age_limit" => ['max:3', 'numeric'],
+            // ]);
+            // if ($validator->fails()) {
+            //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            // } else {
                 $getEligibilityData = DB::table('ELIG_VALIDATION_LISTS')
                     ->where(DB::raw('UPPER(ELIG_VALIDATION_ID)'), strtoupper($request->elig_validation_id))
                     ->first();
@@ -129,23 +129,23 @@ class EligibilityValidationListController extends Controller
                             'AGE_LIMIT_OPT' => $request->age_limit_opt,
                             'AGE_LIMIT_MMDD' => $request->agelimit_month
                         ]);
-                    return $this->respondWithToken($this->token(), 'Added Successfully...!!!', $addData);
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
                 } else {
                     return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
                 }
-            }
+            // }
         } else if($request->new == 0) {
-            $validator = Validator::make($request->all(), [
-                "elig_validation_id" => ['required', 'max:10'],
-                "elig_validation_name" => ['max:25'],
-                "agelimit_month" => ['required_if:age_limit_opt,1'],
-                "student_age_limit" => ['max:3', 'numeric'],
-                "child_age_limit" => ['max:3', 'numeric'],
-                "dis_dep_age_limit" => ['max:3', 'numeric'],
-            ]);
-            if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            } else {
+            // $validator = Validator::make($request->all(), [
+            //     "elig_validation_id" => ['required', 'max:10'],
+            //     "elig_validation_name" => ['max:25'],
+            //     "agelimit_month" => ['required_if:age_limit_opt,1'],
+            //     "student_age_limit" => ['max:3', 'numeric'],
+            //     "child_age_limit" => ['max:3', 'numeric'],
+            //     "dis_dep_age_limit" => ['max:3', 'numeric'],
+            // ]);
+            // if ($validator->fails()) {
+            //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            // } else {
                 $updateData = DB::table('ELIG_VALIDATION_LISTS')
                     ->where('ELIG_VALIDATION_ID', $request->elig_validation_id)
                     ->update([
@@ -164,8 +164,8 @@ class EligibilityValidationListController extends Controller
                         'AGE_LIMIT_OPT' => $request->age_limit_opt,
                         'AGE_LIMIT_MMDD' => $request->agelimit_month
                     ]);
-                return $this->respondWithToken($this->token(), 'Updated Successfully...!!!', $updateData);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
             }
         }
-    }
+    // }
 }
