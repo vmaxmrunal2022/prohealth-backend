@@ -12,30 +12,58 @@ class PrcedureCodeListController extends Controller
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
+        $effective_date = date('Ymd', strtotime($request->effective_date));
+        $terminate_date = date('Ymd', strtotime($request->termination_date));
+
+
+                $recordcheck = DB::table('PROC_CODE_LIST_NAMES')
+                ->where('proc_code_list_id', strtoupper($request->proc_code_list_id))
+                ->first();
+
+               
+
         if ( $request->has( 'new' ) ) {
 
-            $accum_benfit_stat_names = DB::table( 'PROC_CODE_LIST_NAMES' )->insert(
-                [
-                    'proc_code_list_id' => strtoupper( $request->proc_code_list_id ),
-                    'description'=>$request->description
 
-                ]
-            );
+            if($recordcheck){
 
-            $accum_benfit_stat = DB::table('PROC_CODE_LISTS')->insert(
-                [
-                    'proc_code_list_id'=>$request->proc_code_list_id,
-                    'procedure_code'=>$request->procedure_code,
+                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $recordcheck);
 
-                ]
-            );
 
-            $benefitcode = DB::table( 'PROC_CODE_LISTS' )->where( 'proc_code_list_id', 'like', '%'.$request->proc_code_list_id .'%' )->first();
+            }else{
 
+                $accum_benfit_stat_names = DB::table( 'PROC_CODE_LIST_NAMES' )->insert(
+                    [
+                        'proc_code_list_id' => strtoupper($request->proc_code_list_id ),
+                        'description'=>$request->description
+    
+                    ]
+                );
+    
+                $accum_benfit_stat = DB::table('PROC_CODE_LISTS')->insert(
+                    [
+                        'proc_code_list_id'=>strtoupper($request->proc_code_list_id),
+                        'procedure_code'=>$request->procedure_code,
+                        'effective_date'=>$effective_date,
+                        'termination_date'=>$terminate_date,
+    
+                    ]
+                );
+
+
+                if ($accum_benfit_stat) {
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully!!!', $accum_benfit_stat);
+                }
+    
+    
+
+            }
+
+           
         } else {
 
             $benefitcode = DB::table( 'PROC_CODE_LIST_NAMES' )
-            ->where( 'proc_code_list_id', $request->proc_code_list_id )
+            ->where('proc_code_list_id', strtoupper($request->proc_code_list_id))
 
             ->update(
                 [
@@ -50,8 +78,8 @@ class PrcedureCodeListController extends Controller
             ->where('procedure_code',$request->procedure_code)
             ->update(
                 [
-                    'effective_date'=>$request->effective_date,
-                  
+                    'effective_date'=>$effective_date,
+                    'termination_date'=>$terminate_date,                  
 
                 ]
             );
@@ -61,7 +89,7 @@ class PrcedureCodeListController extends Controller
 
         }
 
-        return $this->respondWithToken( $this->token(), 'Successfully added', $benefitcode );
+        return $this->respondWithToken( $this->token(), 'Record Updated Successfully', $benefitcode );
     }
 
     public function get( Request $request )

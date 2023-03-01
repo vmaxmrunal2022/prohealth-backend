@@ -14,33 +14,58 @@ class SuperBenefitControler extends Controller
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
+        $effective_date = date('Ymd', strtotime($request->effective_date));
+        $terminate_date = date('Ymd', strtotime($request->termination_date));
+
+
+        $recordcheck = DB::table('SUPER_BENEFIT_LIST_NAMES')
+        ->where('super_benefit_list_id', strtoupper($request->super_benefit_list_id))
+        ->first();
+
+
         if ( $request->has( 'new' ) ) {
 
+            if($recordcheck){
+                return $this->respondWithToken($this->token(), 'Super Benefit List Id  already exists in the system..!!!', $recordcheck,208);
+
+            }
+
+            else{
 
 
-            $accum_benfit_stat_names = DB::table('SUPER_BENEFIT_LIST_NAMES')->insert(
-                [
-                    'super_benefit_list_id' => strtoupper( $request->super_benefit_list_id ),
-                    'description'=>$request->description
-                    
+                $accum_benfit_stat_names = DB::table('SUPER_BENEFIT_LIST_NAMES')->insert(
+                    [
+                        'super_benefit_list_id' => strtoupper( $request->super_benefit_list_id ),
+                        'description'=>$request->description
+                        
+    
+                    ]
+                );
+    
+    
+                $accum_benfit_stat = DB::table('SUPER_BENEFIT_LISTS' )->insert(
+                    [
+                        'super_benefit_list_id'=>strtoupper( $request->super_benefit_list_id ),
+    
+                        'benefit_list_id'=>$request->benefit_list_id,
+                        'accum_benefit_strategy_id'=>$request->accum_benefit_strategy_id,
+                        'effective_date'=>$effective_date,
+                        'termination_date'=>$terminate_date,
+    
+    
+                    ]
+                );
+    
+                if ($accum_benfit_stat) {
+                    return $this->respondWithToken($this->token(), 'Recored Added Successfully', $accum_benfit_stat);
+                }
 
-                ]
-            );
+            }
 
 
-            $accum_benfit_stat = DB::table('SUPER_BENEFIT_LISTS' )->insert(
-                [
-                    'super_benefit_list_id'=>strtoupper( $request->super_benefit_list_id ),
 
-                    'benefit_list_id'=>$request->benefit_list_id,
-                    'accum_benefit_strategy_id'=>$request->accum_benefit_strategy_id,
-                    // 'effective_date'=>$request->effective_date,
 
-                ]
-            );
-
-            $benefitcode = DB::table('SUPER_BENEFIT_LISTS')->where('benefit_list_id', 'like', '%'.$request->benefit_list_id .'%')->first();
-
+         
         } else {
 
 
@@ -61,18 +86,32 @@ class SuperBenefitControler extends Controller
             ->update(
                 [
                     'accum_benefit_strategy_id'=>$request->accum_benefit_strategy_id,
-                    'effective_date'=>$request->effective_date,
+                    'effective_date'=>$effective_date,
+                    'termination_date'=>$terminate_date,
                   
 
                 ]
             );
 
-            $benefitcode = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', $request->super_benefit_list_id )->first();
-
+            if ($accum_benfit_stat) {
+                return $this->respondWithToken($this->token(), 'Recored Updated Successfully', $accum_benfit_stat);
+            }
         }
 
 
-        return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
+    }
+
+
+    public function getNDCItemDetails($id)
+    {
+      
+         $benefitLists = DB::table('SUPER_BENEFIT_LISTS')
+         ->join('SUPER_BENEFIT_LIST_NAMES', 'SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID', '=', 'SUPER_BENEFIT_LIST_NAMES.SUPER_BENEFIT_LIST_ID')
+         ->where('SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID',$id)
+         ->get();
+
+        return $this->respondWithToken($this->token(), '', $benefitLists);
+
     }
 
 
