@@ -21,24 +21,27 @@ class PrescriberValidationController extends Controller
         } else {
             $physicianExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
                 ->where(DB::raw('UPPER(PHYSICIAN_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->where(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->orderBy('PHYSICIAN_LIST', 'ASC')
                 ->get();
             return $this->respondWithToken($this->token(), '', $physicianExceptionData);
         }
     }
 
-
-
     public function getProviderValidationList($physician_list)
     {
         $physician_validation_list = DB::table('PHYSICIAN_VALIDATIONS as a')
-            ->select('a.PHYSICIAN_LIST', 'a.PHYSICIAN_ID', 'a.PHYSICIAN_STATUS', 'b.PHYSICIAN_LAST_NAME', 'b.PHYSICIAN_FIRST_NAME')
+            // ->select('a.PHYSICIAN_LIST', 'a.PHYSICIAN_ID', 'a.PHYSICIAN_STATUS', 'b.PHYSICIAN_LAST_NAME', 'b.PHYSICIAN_FIRST_NAME','a.EXCEPTION_NAME')
             ->join('PHYSICIAN_TABLE as b ', 'b.PHYSICIAN_ID', '=', 'a.PHYSICIAN_ID')
+            ->join('PHYSICIAN_EXCEPTIONS', 'PHYSICIAN_EXCEPTIONS.PHYSICIAN_LIST', '=', 'a.PHYSICIAN_LIST')
             ->where('a.PHYSICIAN_LIST', 'like', '%' . $physician_list . '%')
             ->get();
 
-        return $this->respondWithToken($this->token(), '', $physician_validation_list);
+        return $this->respondWithToken(
+            $this->token(),
+            '',
+            $physician_validation_list
+        );
     }
 
 
@@ -66,7 +69,7 @@ class PrescriberValidationController extends Controller
             ->first();
         if ($request->has('new')) {
             $validator = Validator::make($request->all(), [
-                "physician_list" => ['required', 'make:10', Rule::unique('PHYSICIAN_EXCEPTIONS')->where(function ($q) {
+                "physician_list" => ['required', 'max:10', Rule::unique('PHYSICIAN_EXCEPTIONS')->where(function ($q) {
                     $q->whereNotNull('physician_list');
                 })],
                 "exception_name" => ['max:35'],
@@ -88,7 +91,7 @@ class PrescriberValidationController extends Controller
                     $addProviderValidationData = DB::table('PHYSICIAN_VALIDATIONS')
                         ->insert([
                             'PHYSICIAN_LIST' => $request->physician_list,
-                            'PHYSICIAN_ID' => $request->physician_id['value'],
+                            'PHYSICIAN_ID' => $request->physician_id,
                             'PHYSICIAN_STATUS' => $request->physician_status,
                             'USER_ID' => $request->user_name,
                             'DATE_TIME_CREATED' => date('d-M-y')
@@ -117,7 +120,7 @@ class PrescriberValidationController extends Controller
             }
         } else {
             $validator = Validator::make($request->all(), [
-                "physician_list" => ['required', 'make:10'],
+                "physician_list" => ['required', 'max:10'],
                 "exception_name" => ['max:35'],
                 "physician_id" => ['required'],
                 "physician_status" => ['max:1'],

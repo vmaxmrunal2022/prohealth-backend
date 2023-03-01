@@ -12,13 +12,6 @@ class PlanAssociationController extends Controller
 {
     public function get(Request $request)
     {
-        // $planAssociation = DB::table('PLAN_LOOKUP_TABLE')        
-        //     ->where('BIN_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
-        //     ->orWhere('PROCESS_CONTROL_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
-        //     ->orWhere('GROUP_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
-        //     ->orWhere('PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
-        //     ->orWhere('PIN_NUMBER_SUFFIX', 'like', '%' . strtoupper($request->search) . '%')
-        //     ->get();
         $validator = Validator::make($request->all(), [
             "search" => ['required'],
         ]);
@@ -26,11 +19,14 @@ class PlanAssociationController extends Controller
             return response($validator->errors(), 400);
         } else {
             $planAssociation = DB::table('PLAN_LOOKUP_TABLE')
-                ->where('BIN_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('PROCESS_CONTROL_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('GROUP_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('PIN_NUMBER_SUFFIX', 'like', '%' . strtoupper($request->search) . '%')
+                ->select('PLAN_LOOKUP_TABLE.*', 'client.client_name', 'client_group.group_name')
+                ->join('client', 'PLAN_LOOKUP_TABLE.client_id', '=', 'client.client_id')
+                ->join('client_group', 'PLAN_LOOKUP_TABLE.client_group_id', '=', 'client_group.client_group_id')
+                ->where('PLAN_LOOKUP_TABLE.BIN_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere('PLAN_LOOKUP_TABLE.PROCESS_CONTROL_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere('PLAN_LOOKUP_TABLE.GROUP_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere('PLAN_LOOKUP_TABLE.PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere('PLAN_LOOKUP_TABLE.PIN_NUMBER_SUFFIX', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
 
