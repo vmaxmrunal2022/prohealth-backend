@@ -13,7 +13,7 @@ class SuperProviderNetworkController extends Controller
      public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
-        if ( $request->has( 'new' ) ) {
+        if ( $request->has( 'add_new' ) ) {
 
 
 
