@@ -19,9 +19,10 @@ class PlanAssociationController extends Controller
             return response($validator->errors(), 400);
         } else {
             $planAssociation = DB::table('PLAN_LOOKUP_TABLE')
-                ->select('PLAN_LOOKUP_TABLE.*', 'client.client_name', 'client_group.group_name')
+                ->select('PLAN_LOOKUP_TABLE.*', 'client.client_name', 'client_group.group_name', 'customer.customer_name')
                 ->join('client', 'PLAN_LOOKUP_TABLE.client_id', '=', 'client.client_id')
                 ->join('client_group', 'PLAN_LOOKUP_TABLE.client_group_id', '=', 'client_group.client_group_id')
+                ->join('customer', 'PLAN_LOOKUP_TABLE.customer_id', '=', 'customer.customer_id')
                 ->where('PLAN_LOOKUP_TABLE.BIN_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere('PLAN_LOOKUP_TABLE.PROCESS_CONTROL_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere('PLAN_LOOKUP_TABLE.GROUP_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
