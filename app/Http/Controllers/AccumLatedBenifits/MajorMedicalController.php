@@ -26,8 +26,8 @@ class MajorMedicalController extends Controller
                     'mm_life_maximum' => $request->mm_life_maximum,
                     'grouping_type'=>$request->grouping_type,
                     'mm_claim_max'=>$request->mm_claim_max,
-                    'effective_date'=>'19950701',
-                    'termination_date'=>'19950701'
+                    'effective_date'=>$request->effective_date,
+                    'termination_date'=>$request->termination_date,
                   
                    
 
@@ -37,6 +37,7 @@ class MajorMedicalController extends Controller
             // $benefitcode = DB::table('TEMP_MM_LIFE_MAX')->where('customer_id',$request->customer_id)->first();
         $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%'.$request->mm_life_maximum .'%')->first();
 
+        return $this->respondWithToken( $this->token(), 'Record added Successfully',$benefitcode);
 
 
         }else{
@@ -49,25 +50,24 @@ class MajorMedicalController extends Controller
             ->where('client_group_id',$request->client_group_id)
             ->update(
                 [
+                    
                     'mm_life_maximum' => $request->mm_life_maximum,
                     'grouping_type'=>$request->grouping_type,
                     'mm_claim_max'=>$request->mm_claim_max,
+                    'effective_date'=>$request->effective_date,
+                    'termination_date'=>$request->termination_date,
                    
                 ]
             );
 
         
-
         $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%'.$request->mm_life_maximum .'%')->first();
+        return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$benefitcode);
+
 
         }
 
-       
-
-           
-
-
-        return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
+    
     }
     
 
