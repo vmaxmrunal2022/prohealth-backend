@@ -1045,7 +1045,9 @@ Route::group(['prefix' => "drug-information/"], function () {
 //Plan Design
 Route::group(['prefix' => 'plan-design/'], function () {
     //Plan Association
-    Route::get('plan-association/get', [PlanAssociationController::class, 'get']);
+    Route::get('plan-association/get/{id}', [PlanAssociationController::class, 'getDetails']);
+    Route::get('plan-association/search', [PlanAssociationController::class, 'search']);
+
     Route::post('plan-association/submit-form', [PlanAssociationController::class, 'submitPlanAssociation']);
     Route::get('plan-association/get-pharmacy-chain', [PlanAssociationController::class, 'getPharmacyChain']);
     Route::get('plan-association/get-form-id', [PlanAssociationController::class, 'getFormId']);
