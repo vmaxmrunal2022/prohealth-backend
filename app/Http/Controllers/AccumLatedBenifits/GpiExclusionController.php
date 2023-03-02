@@ -22,7 +22,7 @@ class GpiExclusionController extends Controller
         if ( $request->has( 'new' ) ) {
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'GPI Exclusion List ID already exists in the system..!!!', $recordcheck,208);
+                return $this->respondWithToken($this->token(), 'GPI Exclusion List ID already exists in the system..!!!', $recordcheck);
 
             }
 
@@ -89,6 +89,14 @@ class GpiExclusionController extends Controller
 
     }
 
+
+
+    public function GPIS(Request $request){
+        $gpis=  DB::table('GPI_EXCLUSION_LISTS')->get();
+        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $gpis);
+
+
+    }
 
 
 
