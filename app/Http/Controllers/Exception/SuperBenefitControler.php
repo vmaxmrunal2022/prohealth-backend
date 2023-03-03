@@ -26,7 +26,7 @@ class SuperBenefitControler extends Controller
         if ( $request->has( 'new' ) ) {
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'Super Benefit List Id  already exists in the system..!!!', $recordcheck,208);
+                return $this->respondWithToken($this->token(), 'Super Benefit List Id  already exists in the system..!!!', $recordcheck);
 
             }
 
@@ -82,7 +82,7 @@ class SuperBenefitControler extends Controller
 
             $accum_benfit_stat = DB::table('SUPER_BENEFIT_LISTS' )
             ->where('super_benefit_list_id', $request->super_benefit_list_id )
-            ->where('benefit_list_id',$request->benefit_list_id)
+            ->where('benefit_list_id',strtoupper($request->benefit_list_id))
             ->update(
                 [
                     'accum_benefit_strategy_id'=>$request->accum_benefit_strategy_id,
@@ -94,7 +94,7 @@ class SuperBenefitControler extends Controller
             );
 
             if ($accum_benfit_stat) {
-                return $this->respondWithToken($this->token(), 'Recored Updated Successfully', $accum_benfit_stat);
+                return $this->respondWithToken($this->token(), 'Record  Updated Successfully', $accum_benfit_stat);
             }
         }
 

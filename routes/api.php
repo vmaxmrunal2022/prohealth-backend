@@ -130,7 +130,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/reasons/submit', [ReasonsController::class, 'add'])->name('reasons.submit'); // add
         Route::post('/reasons/delete', [ReasonsController::class, 'delete'])->name('reasons.delete'); // DELETE
         Route::get('/check-reason-exist', [ReasonsController::class, 'checkReasonExist']);
-
+        Route::get('/reasons/all', [ReasonsController::class, 'all'])->name('reasons.get'); // SEARCH
 
 
         // PROCEDURE
@@ -273,6 +273,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/accumulated/benifit/details/{ndcid}', [AccumlatedBenifitController::class, 'getDetails'])->name('accumulated.benifit.details.get'); // DETAIL
         Route::post('/accumulated/benifit/add', [AccumlatedBenifitController::class, 'add'])->name('accumulated.benifit.add'); // SEARCH
 
+        Route::get('/accumulated/drop-down', [AccumlatedController::class, 'getAllAcuumlatedBenefits'])->name('accumulated.all'); // SEARCH
 
         Route::get('/gpiExclusion/search', [GpiExclusionController::class, 'search'])->name('gpiExclusion.search'); // SEARCH
 
@@ -444,62 +445,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
     Route::get('/provider-type-validation', [ProviderTypeValidationController::class, 'test']);
     Route::get('/provider-type-validation/get', [ProviderTypeValidationController::class, 'get'])->name('provider-type-validation-get');
     Route::get('/provider-type-validation/getFormData', [ProviderTypeValidationController::class, 'getFormData'])->name('provider-type-validation-getFormData');
-
-
-
-
-
-
-
-    //Third Party Pricing(module)
-    Route::group(['prefix' => 'third-party-pricing/'], function () {
-        //Price Schedule
-        Route::get('price-schedule/get', [PriceScheduleController::class, 'get']);
-        Route::get('price-schedule/get-price-schedule-data', [PriceScheduleController::class, 'getPriceScheduleDetails']);
-        // Route::post('price-schedule/update', [PriceScheduleController::class, 'updateBrandItem'])->name('price_schedule_update');
-        Route::get('price-schedule/get-brand-type', [PriceScheduleController::class, 'getBrandType']);
-        Route::get('price-schedule/get-brand-source', [PriceScheduleController::class, 'getBrandSource']);
-        Route::post('price-schedule/submit', [PriceScheduleController::class, 'submitPriceSchedule']);
-
-        //Copay Schedule
-        Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
-        Route::get('copay-schedule/get-copay-data', [CopayScheduleController::class, 'getCopayData'])->name('get.copay.single');
-        Route::get('copay-schedule/get-source', [CopayScheduleController::class, 'getSourceOptions']);
-        Route::get('copay-schedule/get-factor', [CopayScheduleController::class, 'getFactor']);
-        Route::get('copay-schedule/get-list-options', [CopayScheduleController::class, 'getListOptions']);
-        Route::get('copay-schedule/get-daw-options', [CopayScheduleController::class, 'getDawOptions']);
-        Route::get('copay-schedule/get-coinsurance-calculation-option', [CopayScheduleController::class, 'getConinsuranceCalculationOption']);
-        Route::post('copay-schedule/submit', [CopayScheduleController::class, 'submitCopaySchedule']);
-
-        //Copay Step Schedule
-        Route::get('copay-step-schedule/get', [CopayStepScheduleController::class, 'get'])->name('get.copay-step');
-        Route::get('copay-step-schedule/check-copay-list-existing', [CopayStepScheduleController::class, 'checkCopayListExist']);
-        Route::post('copay-step-schedule/submit', [CopayStepScheduleController::class, 'submit'])->name('submit.copay-step');
-
-        //MAC List
-        Route::get('mac-list/get', [MacListController::class, 'get'])->name('get.macList');
-        Route::get('mac-list/get-mac-list', [MacListController::class, 'getMacList'])->name('get.mac-list.single');
-        Route::get('mac-list/get-price-source', [MacListController::class, 'getPriceSource']);
-        Route::get('mac-list/get-price-type', [MacListController::class, 'getPriceType']);
-        Route::post('mac-list/submit', [MacListController::class, 'submit']);
-
-        //Tax Schedule
-        Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
-        Route::get('tax-schedule/get-calculations', [TaxScheduleController::class, 'getCalculations']);
-        Route::get('tax-schedule/get-base-prices', [TaxScheduleController::class, 'getBasePrices']);
-        Route::post('tax-schedule/submit', [TaxScheduleController::class, 'submitTaxSchedule']);
-
-        //Procedure UCR list
-        Route::get('procedure-ucr-list/get', [ProcedureUcrList::class, 'get']);
-        Route::get('procedure-ucr-list/get-procedure-list-data', [ProcedureUcrList::class, 'getProcedureListData']);
-        Route::get('procedure-ucr-list/get-procedure-code', [ProcedureUcrList::class, 'getProcedureCode']);
-        Route::post('procedure-ucr-list/submit', [ProcedureUcrList::class, 'submitProcedureList']);
-
-        //RVA List
-        Route::get('rva-list/get', [RvaListController::class, 'get']);
-        Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
-        Route::post('rva-list/submit', [RvaListController::class, 'submitRva']);
-    });
 
 
     //Drug Information
@@ -751,6 +696,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
 
 
 
+
     // THERAPY CLASS
     Route::get('/therapy-class/search', [TherapyClassController::class, 'search'])->name('therapyclass.search'); // SEARCH
     Route::get('/therapy-class/get/{ndcid}', [TherapyClassController::class, 'getTCList'])->name('therapyclass.list.get'); // LIST ITEMS
@@ -780,6 +726,9 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/benefitderivation/details/{ndcid}/{ndcid2}', [BenefitDerivationController::class, 'getBLItemDetails'])->name('benefit.details.get'); // DETAILS
     Route::post('/benefitderivation/add', [BenefitDerivationController::class, 'add'])->name('benefit.search'); // SEARCH
     Route::get('/benifitcodes/all', [BenefitListController::class, 'index']);
+
+    Route::get('/benifitcodes/list/all', [BenefitListController::class, 'BenefitLists']);
+
 
 
 
@@ -882,6 +831,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
     Route::get('/gpiExclusion/details/{ndcid}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
     Route::post('/gpiExclusion/add', [GpiExclusionController::class, 'add'])->name('gpiExclusion.add'); // ADD
+    Route::get('/gpi/dropdowns', [GpiExclusionController::class, 'GPIS'])->name('gpi.search'); // SEARCH
 
 
 
@@ -1040,13 +990,6 @@ Route::get('/provider-type-validation', [ProviderTypeValidationController::class
 Route::get('/provider-type-validation/get', [ProviderTypeValidationController::class, 'get'])->name('provider-type-validation-get');
 Route::get('/provider-type-validation/getFormData', [ProviderTypeValidationController::class, 'getFormData'])->name('provider-type-validation-getFormData');
 
-
-
-
-
-
-
-//Third Party Pricing(module)
 //Third Party Pricing(module)
 Route::group(['prefix' => 'third-party-pricing/'], function () {
     //Price Schedule
@@ -1112,93 +1055,123 @@ Route::group(['prefix' => "drug-information/"], function () {
 });
 
 
+//Plan Design
+Route::group(['prefix' => 'plan-design/'], function () {
+    //Plan Association
+    Route::get('plan-association/get/{id}', [PlanAssociationController::class, 'getDetails']);
+    Route::get('plan-association/search', [PlanAssociationController::class, 'search']);
+
+    Route::post('plan-association/submit-form', [PlanAssociationController::class, 'submitPlanAssociation']);
+    Route::get('plan-association/get-pharmacy-chain', [PlanAssociationController::class, 'getPharmacyChain']);
+    Route::get('plan-association/get-form-id', [PlanAssociationController::class, 'getFormId']);
+    Route::get('plan-association/get-membership-process-flag', [PlanAssociationController::class, 'getMemProcFlag']);
+    Route::get('plan-association/get-customer', [PlanAssociationController::class, 'getCustomer']);
+    Route::get('plan-association/get-client', [PlanAssociationController::class, 'getClient']);
+    Route::get('plan-association/get-client-group', [PlanAssociationController::class, 'getClientGroup']);
+    Route::get('plan-association/get-transaction-type', [PlanAssociationController::class, 'getTransactionType']);
+    Route::get('plan-association/get-transaction-association', [PlanAssociationController::class, 'getTransactionAssociation']);
+    Route::get('plan-association/get-client-group-label', [PlanAssociationController::class, 'getClientGroupLabel']);
+    Route::get('plan-association/get-plan-id', [PlanAssociationController::class, 'getPlanId']);
 
 
-//Membership
-Route::group(['prefix' => 'membership/'], function () {
-    //Member
-    Route::get('memberdata/get', [MemberController::class, 'get']);
-    Route::get('memberdata/get-member-coverage-history-data', [MemberController::class, 'getCoverageHistory']);
-    Route::get('memberdata/get-health-condition', [MemberController::class, 'getHealthCondition']);
-    Route::get('memberdata/get-diagnosis-history', [MemberController::class, 'getDiagnosisHistory']);
-    Route::get('memberdata/get-prior-authorization', [MemberController::class, 'getPriorAuthorization']);
-    Route::get('memberdata/get-log-change-data', [MemberController::class, 'getLogChangeData']);
-    Route::get('memberdata/get-eligibility', [MemberController::class, 'getEligibility'])->name('member.eligibility');
-    Route::get('memberdata/member-status', [MemberController::class, 'getMemberStatus'])->name('member.status');
-    Route::get('memberdata/member-relationship', [MemberController::class, 'getMemberRelationship'])->name('member.relationship');
-    Route::get('memberdata/copay-schedule-overrides', [MemberController::class, 'getCopayScheduleOverride'])->name('member.copayScheduleOverrides');
-    Route::get('memberdata/accumulated-benifit-overrides', [MemberController::class, 'getAccumulatedBenifitOverride'])->name('member.accumulatedBenifitOverride');
-    Route::get('memberdata/copay-strategy-id', [MemberController::class, 'getCopayStrategyId']);
-    Route::get('memberdata/accumulated-benifit-strategy', [MemberController::class, 'getAccumulatedBenifitStrategy']);
-    Route::get('memberdata/pricing-strategy', [MemberController::class, 'getPricingStrategy']);
-    Route::get('memberdata/view-limitations', [MemberController::class, 'getViewLimitations']);
-    Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
+    //Membership
+    Route::group(['prefix' => 'membership/'], function () {
+        //Member
+        Route::get('memberdata/get', [MemberController::class, 'get']);
+        Route::get('memberdata/get-member-coverage-history-data', [MemberController::class, 'getCoverageHistory']);
+        Route::get('memberdata/get-health-condition', [MemberController::class, 'getHealthCondition']);
+        Route::get('memberdata/get-diagnosis-history', [MemberController::class, 'getDiagnosisHistory']);
+        Route::get('memberdata/get-prior-authorization', [MemberController::class, 'getPriorAuthorization']);
+        Route::get('memberdata/get-log-change-data', [MemberController::class, 'getLogChangeData']);
+        Route::get('memberdata/get-eligibility', [MemberController::class, 'getEligibility'])->name('member.eligibility');
+        Route::get('memberdata/member-status', [MemberController::class, 'getMemberStatus'])->name('member.status');
+        Route::get('memberdata/member-relationship', [MemberController::class, 'getMemberRelationship'])->name('member.relationship');
+        Route::get('memberdata/copay-schedule-overrides', [MemberController::class, 'getCopayScheduleOverride'])->name('member.copayScheduleOverrides');
+        Route::get('memberdata/accumulated-benifit-overrides', [MemberController::class, 'getAccumulatedBenifitOverride'])->name('member.accumulatedBenifitOverride');
+        Route::get('memberdata/copay-strategy-id', [MemberController::class, 'getCopayStrategyId']);
+        Route::get('memberdata/accumulated-benifit-strategy', [MemberController::class, 'getAccumulatedBenifitStrategy']);
+        Route::get('memberdata/pricing-strategy', [MemberController::class, 'getPricingStrategy']);
+        Route::get('memberdata/view-limitations', [MemberController::class, 'getViewLimitations']);
+        Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
 
-    //tab table routes
-    Route::get('memberdata/get-coverage-information-table', [MemberController::class, 'getCoverageInformationTable']);
-    Route::get('memberdata/get-health-conditions-diagnosis-table', [MemberController::class, 'getDiagnosisTable']);
-    Route::get('memberdata/get-health-conditions-diagnosis-details-table', [MemberController::class, 'getDiagnosisDetailsTable']);
-    Route::get('memberdata/get-claim-history-table', [MemberController::class, 'getClaimHistoryTable']);
-    Route::get('memberdata/get-prior-auth-table', [MemberController::class, 'getPriorAuthTable']);
-    Route::get('memberdata/get-provider-search-table', [MemberController::class, 'getProviderSearch']);
-    Route::get('memberdata/get-change-log-table', [MemberController::class, 'getChangeLogTable']);
-
-
-    //Prior Authorization
-    Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
-    Route::post('prior-authorization/submit', [PriorAuthController::class, 'submitPriorAuthorization']);
+        //tab table routes
+        Route::get('memberdata/get-coverage-information-table', [MemberController::class, 'getCoverageInformationTable']);
+        Route::get('memberdata/get-health-conditions-diagnosis-table', [MemberController::class, 'getDiagnosisTable']);
+        Route::get('memberdata/get-health-conditions-diagnosis-details-table', [MemberController::class, 'getDiagnosisDetailsTable']);
+        Route::get('memberdata/get-claim-history-table', [MemberController::class, 'getClaimHistoryTable']);
+        Route::get('memberdata/get-prior-auth-table', [MemberController::class, 'getPriorAuthTable']);
+        Route::get('memberdata/get-provider-search-table', [MemberController::class, 'getProviderSearch']);
+        Route::get('memberdata/get-change-log-table', [MemberController::class, 'getChangeLogTable']);
 
 
-    //Plan Validation
-    Route::get('plan-validation/get', [PlanValidationController::class, 'get']);
-    Route::get('plan-validation/get-client-details', [PlanValidationController::class, 'getClientDetails']);
-    Route::get('plan-validation/get-plan-id', [PlanValidationController::class, 'getPlanId']);
-    Route::post('plan-validation/add-plan-validaion', [PlanValidationController::class, 'addPlanValidation']);
-});
+        //Prior Authorization
+        Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
+        Route::post('prior-authorization/submit', [PriorAuthController::class, 'submitPriorAuthorization']);
+
+
+        //Plan Validation
+        Route::get('plan-validation/get', [PlanValidationController::class, 'get']);
+        Route::get('plan-validation/get-client-details', [PlanValidationController::class, 'getClientDetails']);
+        Route::get('plan-validation/get-plan-id', [PlanValidationController::class, 'getPlanId']);
+        Route::post('plan-validation/add-plan-validaion', [PlanValidationController::class, 'addPlanValidation']);
+    });
 
 
 
+    Route::group(['prefix' => "drug-information/"], function () {
+        Route::post('drug-database/add', [DrugDatabaseController::class, 'add']);
 
-//Administrator
-Route::group(['prefix' => 'administrator/'], function () {
-    //User Defination
-    Route::get('user-defination/get', [UserDefinationController::class, 'get']);
-    Route::get('user-defination/get-group-data', [UserDefinationController::class, 'getGroupData']);
-    Route::get('user-defination/get-security-options', [UserDefinationController::class, 'getSecurityOptions']);
-    Route::get('user-defination/validate-group', [UserDefinationController::class, 'validateGroup']);
-    Route::post('user-defination/submit', [UserDefinationController::class, 'submitFormData']);
-    Route::get('user-defination/get-customers', [UserDefinationController::class, 'getCustomers']);
-    Route::get('user-defination/get-customers-list', [UserDefinationController::class, 'getCustomersList']);
-    Route::get('user-defination/get-clients', [UserDefinationController::class, 'getClients']);
-    Route::get('user-defination/get-client-groups', [UserDefinationController::class, 'getClientGroups']);
+        Route::get('drug-database/get', [DrugDatabaseController::class, 'get']);
+        Route::get('drug-database/get-drug-prices', [DrugDatabaseController::class, 'getDrugPrices']);
+        Route::post('drug-price/add', [DrugDatabaseController::class, 'addDrugPrice']);
+        Route::get('ndc-gpi/search', [NdcGpiController::class, 'search']);
+        Route::get('ndc-gpi/details/{ndcid}', [NdcGpiController::class, 'getDetails']);
 
-    //Search Audit Trail
-    Route::get('search-audit-trial/get-tables', [AuditTrailController::class, 'getTables'])->name('getAllTables');
-    Route::get('search-audit-trial/get-user_ids', [AuditTrailController::class, 'getUserIds'])->name('getUserIds');
-    Route::get('search-audit-trial/get-record-actions', [AuditTrailController::class, 'getRecordAction'])->name('getRecordAction');
-    Route::post('search-audit-trial/search-user-log', [AuditTrailController::class, 'searchUserLog'])->name('searchUserLog');
+        Route::get('ndc-gpi/drop-down', [NdcGpiController::class, 'GpiDropDown']);
+    });
 
-    //System parameters
-    Route::get('system-parameter/get-parameters', [SystemParameterController::class, 'getSystemParameters'])->name('getSystemParameters');
-    Route::get('system-parameter/add', [SystemParameterController::class, 'add'])->name('add.SystemParameters');
 
-    Route::get('system-parameters/get-states', [SystemParameterController::class, 'getState'])->name('getState');
-    Route::get('system-parameters/get-countries', [SystemParameterController::class, 'getCountries'])->name('getCountries');
+    //Administrator
+    Route::group(['prefix' => 'administrator/'], function () {
+        //User Defination
+        Route::get('user-defination/get', [UserDefinationController::class, 'get']);
+        Route::get('user-defination/get-group-data', [UserDefinationController::class, 'getGroupData']);
+        Route::get('user-defination/get-security-options', [UserDefinationController::class, 'getSecurityOptions']);
+        Route::get('user-defination/validate-group', [UserDefinationController::class, 'validateGroup']);
+        Route::post('user-defination/submit', [UserDefinationController::class, 'submitFormData']);
+        Route::get('user-defination/get-customers', [UserDefinationController::class, 'getCustomers']);
+        Route::get('user-defination/get-customers-list', [UserDefinationController::class, 'getCustomersList']);
+        Route::get('user-defination/get-clients', [UserDefinationController::class, 'getClients']);
+        Route::get('user-defination/get-client-groups', [UserDefinationController::class, 'getClientGroups']);
 
-    //Claim History
-    Route::post('claim-history/search', [ClaimHistoryController::class, 'searchHistory']);
-    Route::get('claim-history/get-ndcdrops', [ClaimHistoryController::class, 'getNDCDropdown']);
-    Route::get('claim-history/get-gpidrops', [ClaimHistoryController::class, 'getGPIDropdown']);
-    Route::get('claim-history/get-proceduer-code', [ClaimHistoryController::class, 'getProcedureCode']);
-    Route::get('claim-history/get-customer-id', [ClaimHistoryController::class, 'getCustomerId']);
-    Route::get('claim-history/get-client-id', [ClaimHistoryController::class, 'getClientId']);
-    Route::get('claim-history/get-client-group', [ClaimHistoryController::class, 'getClientGroup']);
-    Route::post('claim-history/search-optional-data', [ClaimHistoryController::class, 'searchOptionalData']);
+        //Search Audit Trail
+        Route::get('search-audit-trial/get-tables', [AuditTrailController::class, 'getTables'])->name('getAllTables');
+        Route::get('search-audit-trial/get-user_ids', [AuditTrailController::class, 'getUserIds'])->name('getUserIds');
+        Route::get('search-audit-trial/get-record-actions', [AuditTrailController::class, 'getRecordAction'])->name('getRecordAction');
+        Route::post('search-audit-trial/search-user-log', [AuditTrailController::class, 'searchUserLog'])->name('searchUserLog');
 
-    Route::get('zipcode/search', [ZipCodeController::class, 'search']);
-    Route::get('zipcode/get/{zip_code}', [ZipCodeController::class, 'getZipCodeList']);
-    Route::post('zipcode/submit', [ZipCodeController::class, 'submitFormData']);
+        //System parameters
+        Route::get('system-parameter/get-parameters', [SystemParameterController::class, 'getSystemParameters'])->name('getSystemParameters');
+        Route::get('system-parameter/add', [SystemParameterController::class, 'add'])->name('add.SystemParameters');
 
-    //claim history
-    Route::get('claim-history', [ClaimHistoryController::class, 'get']);
+        Route::get('system-parameters/get-states', [SystemParameterController::class, 'getState'])->name('getState');
+        Route::get('system-parameters/get-countries', [SystemParameterController::class, 'getCountries'])->name('getCountries');
+
+        //Claim History
+        Route::post('claim-history/search', [ClaimHistoryController::class, 'searchHistory']);
+        Route::get('claim-history/get-ndcdrops', [ClaimHistoryController::class, 'getNDCDropdown']);
+        Route::get('claim-history/get-gpidrops', [ClaimHistoryController::class, 'getGPIDropdown']);
+        Route::get('claim-history/get-proceduer-code', [ClaimHistoryController::class, 'getProcedureCode']);
+        Route::get('claim-history/get-customer-id', [ClaimHistoryController::class, 'getCustomerId']);
+        Route::get('claim-history/get-client-id', [ClaimHistoryController::class, 'getClientId']);
+        Route::get('claim-history/get-client-group', [ClaimHistoryController::class, 'getClientGroup']);
+        Route::post('claim-history/search-optional-data', [ClaimHistoryController::class, 'searchOptionalData']);
+
+        Route::get('zipcode/search', [ZipCodeController::class, 'search']);
+        Route::get('zipcode/get/{zip_code}', [ZipCodeController::class, 'getZipCodeList']);
+        Route::post('zipcode/submit', [ZipCodeController::class, 'submitFormData']);
+
+        //claim history
+        Route::get('claim-history', [ClaimHistoryController::class, 'get']);
+    });
 });

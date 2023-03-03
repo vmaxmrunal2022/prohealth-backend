@@ -15,14 +15,14 @@ class GpiExclusionController extends Controller
 
 
         $recordcheck = DB::table('GPI_EXCLUSION_LISTS')
-        ->where('generic_product_id', strtoupper($request->generic_product_id))
+        ->where('GPI_EXCLUSION_LIST', strtoupper($request->gpi_exclusion_list))
         ->first();
 
 
         if ( $request->has( 'new' ) ) {
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'GPI Exclusion List ID already exists in the system..!!!', $recordcheck,208);
+                return $this->respondWithToken($this->token(), 'GPI Exclusion List ID already exists in the system..!!!', $recordcheck);
 
             }
 
@@ -91,6 +91,14 @@ class GpiExclusionController extends Controller
 
 
 
+    public function GPIS(Request $request){
+        $gpis=  DB::table('GPI_EXCLUSION_LISTS')->get();
+        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $gpis);
+
+
+    }
+
+
 
     public function search(Request $request)
 
@@ -109,7 +117,7 @@ class GpiExclusionController extends Controller
     {
         $ndc =DB::table('GPI_EXCLUSION_LISTS')
         ->join('GPI_EXCLUSIONS', 'GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST', '=', 'GPI_EXCLUSIONS.GPI_EXCLUSION_LIST')
-                ->where('GPI_EXCLUSION_LISTS.GENERIC_PRODUCT_ID', 'like', '%' .$ndcid. '%')
+                ->where('GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST',$ndcid)
                 ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

@@ -22,6 +22,7 @@ class SuperProviderNetworkController extends Controller
     {
         $createddate = date('y-m-d');
 
+<<<<<<< HEAD
         if ($request->has('new')) {
 
 
@@ -30,11 +31,67 @@ class SuperProviderNetworkController extends Controller
                 [
                     'super_rx_network_id' => strtoupper($request->super_rx_network_id),
                     'super_rx_network_id_name' => strtoupper($request->super_rx_network_id_name),
+=======
+        $recordcheck=DB::table('SUPER_RX_NETWORKS')->where('super_rx_network_id',strtoupper($request->super_rx_network_id))->first();
 
-                ]
-            );
 
 
+        if ( $request->add_new ==1 ) {
+>>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
+
+            if($recordcheck){
+                return $this->respondWithToken($this->token(), 'This Record is  already exists in the system..!!!', $recordcheck);
+
+            }
+
+            else{
+
+                $accum_benfit_stat_names = DB::table('SUPER_RX_NETWORK_NAMES')->insert(
+                    [
+                        'super_rx_network_id' => strtoupper( $request->super_rx_network_id ),
+                        'super_rx_network_id_name'=>strtoupper( $request->super_rx_network_id_name ),
+    
+                    ]
+                );
+    
+    
+                $accum_benfit_stat = DB::table('SUPER_RX_NETWORKS' )->insert(
+                    [
+                        'super_rx_network_id' => strtoupper( $request->super_rx_network_id),
+                        'rx_network_id'=>$request->rx_network_id,
+                        'effective_date'=>$request->effective_date,   
+                        'comm_charge_paid'=>$request->comm_charge_paid,
+                        'comm_charge_reject'=>$request->comm_charge_reject,
+                        'days_supply_opt'=>$request->days_supply_opt,
+                        'effective_date'=>$request->effective_date,
+                        'max_fills_opt'=>$request->max_fills_opt,
+                        'max_retail_fills'=>$request->max_retail_fills,
+                        'max_rx_qty'=>$request->max_rx_qty,
+                        'min_rx_qty'=>$request->min_rx_qty,
+                        'price_schedule_ovrd'=>$request->price_schedule_ovrd,
+                        'rx_network_id'=>$request->rx_network_id,
+                        'rx_network_type'=>$request->rx_network_type,
+                        'starter_dose_bypass_days'=>$request->starter_dose_bypass_days,
+                        'starter_dose_days'=>$request->starter_dose_days,
+                        'starter_dose_maint_bypass_days'=>$request->starter_dose_maint_bypass_days,
+                        'super_rx_network_priority'=>$request->super_rx_network_priority,
+                        'termination_date'=>$request->termination_date,
+                        'min_rx_days'=>$request->min_rx_days,
+                        'max_rx_days'=>$request->max_rx_days,
+
+                        
+                        
+                    ]
+                );
+
+            }
+
+            if ($accum_benfit_stat) {
+                return $this->respondWithToken($this->token(), 'Recored Added Successfully', $accum_benfit_stat);
+            }
+
+
+<<<<<<< HEAD
             $accum_benfit_stat = DB::table('SUPER_RX_NETWORKS')->insert(
                 [
                     'super_rx_network_id' => strtoupper($request->super_rx_network_id),
@@ -45,6 +102,9 @@ class SuperProviderNetworkController extends Controller
 
             $benefitcode = DB::table('SUPER_RX_NETWORKS')->where('super_rx_network_id', 'like', '%' . $request->super_rx_network_id . '%')->first();
         } else {
+=======
+        } else if($request->add_new == 0) {
+>>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
 
 
             $benefitcode = DB::table('SUPER_RX_NETWORK_NAMES')
@@ -60,6 +120,7 @@ class SuperProviderNetworkController extends Controller
                 );
 
             $accum_benfit_stat = DB::table('SUPER_RX_NETWORKS')
+<<<<<<< HEAD
                 ->where('super_rx_network_id', $request->super_rx_network_id)
                 ->update(
                     [
@@ -71,13 +132,50 @@ class SuperProviderNetworkController extends Controller
 
                     ]
                 );
+=======
+            ->where('super_rx_network_id', $request->super_rx_network_id )
+            ->update(
+                [
+                    'rx_network_id'=>$request->rx_network_id,
+                    'effective_date'=>$request->effective_date,   
+                    'comm_charge_paid'=>$request->comm_charge_paid,
+                    'comm_charge_reject'=>$request->comm_charge_reject,
+                    'days_supply_opt'=>$request->days_supply_opt,
+                    'effective_date'=>$request->effective_date,
+                    'max_fills_opt'=>$request->max_fills_opt,
+                    'max_retail_fills'=>$request->max_retail_fills,
+                    'max_rx_qty'=>$request->max_rx_qty,
+                    'min_rx_qty'=>$request->min_rx_qty,
+                    'price_schedule_ovrd'=>$request->price_schedule_ovrd,
+                    'rx_network_id'=>$request->rx_network_id,
+                    'rx_network_type'=>$request->rx_network_type,
+                    'starter_dose_bypass_days'=>$request->starter_dose_bypass_days,
+                    'starter_dose_days'=>$request->starter_dose_days,
+                    'starter_dose_maint_bypass_days'=>$request->starter_dose_maint_bypass_days,
+                    'super_rx_network_priority'=>$request->super_rx_network_priority,
+                    'termination_date'=>$request->termination_date,
+                    'min_rx_days'=>$request->min_rx_days,
+                    'max_rx_days'=>$request->max_rx_days,
+                   
+                  
+
+                ]
+            );
+
+
+            $benefitcode = DB::table('SUPER_RX_NETWORKS')->where('super_rx_network_id', 'like', '%'.$request->super_rx_network_id .'%')->first();
+            return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$benefitcode);
+>>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
 
 
             $benefitcode = DB::table('SUPER_RX_NETWORKS')->where('super_rx_network_id', 'like', '%' . $request->super_rx_network_id . '%')->first();
         }
 
 
+<<<<<<< HEAD
         return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
+=======
+>>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
     }
     public function search(Request $request)
     {

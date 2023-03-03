@@ -84,8 +84,8 @@ class PlanValidationController extends Controller
 
   public function getPlanId(Request $request)
   {
-    $plan_ids = DB::table('PLAN_TABLE')
-      ->select('id')
+    $plan_ids = DB::table('PLAN_TABLE_EXTENSIONS')
+      // ->select('id')
       ->get();
     return $this->respondWithToken($this->token(), '', $plan_ids);
   }

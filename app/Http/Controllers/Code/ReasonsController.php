@@ -19,12 +19,19 @@ class ReasonsController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('REASON_CODES')
-                ->where(DB::raw('UPPER(REASON_CODE)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->where('REASON_CODE', 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere('REASON_DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $procedurecodes);
         }
+    }
+
+    public function all(Request $request){
+        $reasoncodes = DB::table('REASON_CODES')
+        ->get();
+    return $this->respondWithToken($this->token(), '', $reasoncodes);
+
     }
 
     public function add(Request $request)

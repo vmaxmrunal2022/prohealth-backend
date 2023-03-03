@@ -43,6 +43,15 @@ class AccumlatedController extends Controller
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
+
+    public function getAllAcuumlatedBenefits(Request $request){
+        
+        $ndclist = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+        ->get();
+
+    return $this->respondWithToken($this->token(), '', $ndclist);
+    }
+
     public function getDetails($ndcid)
     {
         $ndc = DB::table('ACCUM_BENEFIT_STRATEGY')
