@@ -11,7 +11,12 @@ class FlexibleNetworkController extends Controller
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
+        $recordCheck=DB::table('RX_NETWORK_RULES')->where('rx_network_rule_id',$request->rx_network_rule_id)->first();
+        
+
         if ( $request->has( 'new' ) ) {
+
+
 
 
 
@@ -35,7 +40,7 @@ class FlexibleNetworkController extends Controller
                     'zip_code'=>$request->zip_code,
                     'area_code'=>$request->area_code,
                     'price_schedule_ovrd'=>$request->price_schedule_ovrd,
-                   'exclude_rule'=>$request->exclude_rule,
+                     'exclude_rule'=>$request->exclude_rule,
                   
                    
 
