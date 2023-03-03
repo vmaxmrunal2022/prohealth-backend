@@ -680,7 +680,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/gpi/list', [GPIExceptionController::class, 'GpiList'])->name('gpi.search'); // SEARCH
 
 
-    
+
 
     // THERAPY CLASS
     Route::get('/therapy-class/search', [TherapyClassController::class, 'search'])->name('therapyclass.search'); // SEARCH
@@ -715,7 +715,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/benifitcodes/list/all', [BenefitListController::class, 'BenefitLists']);
 
 
-    
+
 
     //Provider Type Validation 
     Route::get('/provider-type-validation/get', [ProviderTypeValidationController::class, 'get'])->name('provider-type-validation-get');
@@ -741,7 +741,6 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::post('/super-benefit-list/add', [SuperBenefitControler::class, 'add']);
 
     Route::get('/super-benefit-list/get/{id}', [SuperBenefitControler::class, 'getNDCItemDetails']);
-
 });
 
 Route::group(['prefix' => 'validationlist'], function ($router) {
@@ -971,8 +970,8 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
 
     Route::get('chains/search', [ChainController::class, 'search']);
 
-        Route::get('chain/get/{ndcid}', [ChainController::class, 'getList']);
-        Route::post('chain/add', [ChainController::class, 'add']);
+    Route::get('chain/get/{ndcid}', [ChainController::class, 'getList']);
+    Route::post('chain/add', [ChainController::class, 'add']);
 });
 
 
@@ -1134,9 +1133,6 @@ Route::group(['prefix' => "drug-information/"], function () {
     Route::get('ndc-gpi/details/{ndcid}', [NdcGpiController::class, 'getDetails']);
 
     Route::get('ndc-gpi/drop-down', [NdcGpiController::class, 'GpiDropDown']);
-
-
-    
 });
 
 
@@ -1181,5 +1177,5 @@ Route::group(['prefix' => 'administrator/'], function () {
     Route::post('zipcode/submit', [ZipCodeController::class, 'submitFormData']);
 
     //claim history
-    Route::get('claim-history', [ClaimHistoryController::class, 'get']);
+
 });
