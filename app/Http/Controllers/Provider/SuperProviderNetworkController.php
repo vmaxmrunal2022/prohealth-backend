@@ -56,6 +56,9 @@ class SuperProviderNetworkController extends Controller
                         'starter_dose_maint_bypass_days'=>$request->starter_dose_maint_bypass_days,
                         'super_rx_network_priority'=>$request->super_rx_network_priority,
                         'termination_date'=>$request->termination_date,
+                        'min_rx_days'=>$request->min_rx_days,
+                        'max_rx_days'=>$request->max_rx_days,
+
                         
                         
                     ]
@@ -105,6 +108,8 @@ class SuperProviderNetworkController extends Controller
                     'starter_dose_maint_bypass_days'=>$request->starter_dose_maint_bypass_days,
                     'super_rx_network_priority'=>$request->super_rx_network_priority,
                     'termination_date'=>$request->termination_date,
+                    'min_rx_days'=>$request->min_rx_days,
+                    'max_rx_days'=>$request->max_rx_days,
                    
                   
 
