@@ -117,7 +117,7 @@ class GpiExclusionController extends Controller
     {
         $ndc =DB::table('GPI_EXCLUSION_LISTS')
         ->join('GPI_EXCLUSIONS', 'GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST', '=', 'GPI_EXCLUSIONS.GPI_EXCLUSION_LIST')
-                ->where('GPI_EXCLUSION_LISTS.GENERIC_PRODUCT_ID', 'like', '%' .$ndcid. '%')
+                ->where('GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST',$ndcid)
                 ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

@@ -23,11 +23,11 @@ class MajorMedicalController extends Controller
 
         // dd($request->all());
 
-        if ( $request->has( 'new' ) ) {
+        if ( $request->new == 1 ) {
 
             if($recordcheck){
 
-                return $this->respondWithToken($this->token(), 'Record already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Record already exists in the system..!!!', $recordcheck,false);
 
             }
 
@@ -50,9 +50,8 @@ class MajorMedicalController extends Controller
                 );
     
                 // $benefitcode = DB::table('TEMP_MM_LIFE_MAX')->where('customer_id',$request->customer_id)->first();
-            $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%'.$request->mm_life_maximum .'%')->first();
     
-            return $this->respondWithToken( $this->token(), 'Record added Successfully',$benefitcode);
+            return $this->respondWithToken( $this->token(), 'Record added Successfully',$insert);
 
             }
     

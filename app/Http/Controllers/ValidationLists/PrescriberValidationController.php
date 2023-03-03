@@ -65,43 +65,67 @@ class PrescriberValidationController extends Controller
             ->where('PHYSICIAN_ID', strtoupper($request->physician_id))
             ->first();
 
+            $recordcheck=DB::table('PHYSICIAN_EXCEPTIONS')
+            ->where('PHYSICIAN_LIST', strtoupper($request->physician_list))
+            ->first();
+
+
+
+           
         if ($request->has('new')) {
-            $validator = Validator::make($request->all(), [
-                "physician_list" => ['required', 'max:10', Rule::unique('PHYSICIAN_EXCEPTIONS')->where(function ($q) {
-                    $q->whereNotNull('physician_list');
-                })],
-                "exception_name" => ['max:35'],
-                "physician_id" => ['required'],
-                "physician_status" => ['max:1'],
-            ]);
-            if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            } else {
-                if (!$getProviderExceptionData && !$getProviderValidationData) {
 
-                    $addProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
-                        ->insert([
-                            'PHYSICIAN_LIST' => strtoupper($request->physician_list),
-                            'EXCEPTION_NAME' => $request->exception_name,
-                            'USER_ID' => $request->user_name,
-                            'DATE_TIME_CREATED' => date('d-M-y')
-                        ]);
 
-                    $addProviderValidationData = DB::table('PHYSICIAN_VALIDATIONS')
-                        ->insert([
-                            'PHYSICIAN_LIST' => strtoupper($request->physician_list),
-                            'PHYSICIAN_ID' => $request->physician_id,
-                            'PHYSICIAN_STATUS' => $request->physician_status,
-                            'USER_ID' => $request->user_name,
-                            'DATE_TIME_CREATED' => date('d-M-y')
-                        ]);
+            if($recordcheck){
+                return $this->respondWithToken($this->token(), 'Prescriber List Id  Already Existed', $recordcheck,false);
 
-                    if ($addProviderExceptionData) {
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully ...!!!', $addProviderExceptionData);
-                    }
-                } 
             }
-        } else {
+
+
+
+            // $validator = Validator::make($request->all(), [
+            //     "physician_list" => ['required', 'max:10', Rule::unique('PHYSICIAN_EXCEPTIONS')->where(function ($q) {
+            //         $q->whereNotNull('physician_list');
+            //     })],
+            //     "exception_name" => ['max:35'],
+            //     "physician_id" => ['required'],
+            //     "physician_status" => ['max:1'],
+            // ]);
+            
+            // if ($validator->fails()) {
+            //     return $this->respondWithToken($this->token(), $validator->errors()->first(),[],false);
+            // } else {
+
+
+                else{
+
+                    if (!$getProviderExceptionData && !$getProviderValidationData) {
+
+                        $addProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
+                            ->insert([
+                                'PHYSICIAN_LIST' => strtoupper($request->physician_list),
+                                'EXCEPTION_NAME' => $request->exception_name,
+                                'USER_ID' => $request->user_name,
+                                'DATE_TIME_CREATED' => date('d-M-y')
+                            ]);
+    
+                        $addProviderValidationData = DB::table('PHYSICIAN_VALIDATIONS')
+                            ->insert([
+                                'PHYSICIAN_LIST' => strtoupper($request->physician_list),
+                                'PHYSICIAN_ID' => $request->physician_id,
+                                'PHYSICIAN_STATUS' => $request->physician_status,
+                                'USER_ID' => $request->user_name,
+                                'DATE_TIME_CREATED' => date('d-M-y')
+                            ]);
+    
+                        if ($addProviderExceptionData) {
+                            return $this->respondWithToken($this->token(), 'Record Added Successfully ...!!!', $addProviderExceptionData);
+                        }
+                    } 
+
+                }
+               
+            }
+        // } else {
             // $validator = Validator::make($request->all(), [
             //     "physician_list" => ['required', 'max:10'],
             //     "exception_name" => ['max:35'],
@@ -111,7 +135,12 @@ class PrescriberValidationController extends Controller
             // if ($validator->fails()) {
             //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             // } else {
-                $updateProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
+
+
+                else{
+
+
+                    $updateProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
                     ->where('PHYSICIAN_LIST', $request->physician_list)
                     ->update([
                         'EXCEPTION_NAME' => $request->exception_name,
@@ -133,8 +162,11 @@ class PrescriberValidationController extends Controller
                         return $this->respondWithToken($this->token(), 'Record Updated Successfully ...!!!', $addProviderValidationData);
                     }
                 } 
+
+                }
+               
             // }
-        }
+        // }
     }
 
     public function searchDropDownPrescriberList()
