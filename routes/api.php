@@ -1177,5 +1177,5 @@ Route::group(['prefix' => 'administrator/'], function () {
     Route::post('zipcode/submit', [ZipCodeController::class, 'submitFormData']);
 
     //claim history
-
+    Route::get('claim-history', [ClaimHistoryController::class, 'get']);
 });
