@@ -30,7 +30,6 @@ class PrescriberValidationController extends Controller
 
     public function getProviderValidationList($physician_list)
     {
-<<<<<<< HEAD
         $physician_validation_list = DB::table('PHYSICIAN_VALIDATIONS as a')
             // ->select('a.PHYSICIAN_LIST', 'a.PHYSICIAN_ID', 'a.PHYSICIAN_STATUS', 'b.PHYSICIAN_LAST_NAME', 'b.PHYSICIAN_FIRST_NAME','a.EXCEPTION_NAME')
             // ->select('a.PHYSICIAN_LIST', 'a.PHYSICIAN_ID', 'a.PHYSICIAN_STATUS', 'b.PHYSICIAN_LAST_NAME', 'b.PHYSICIAN_FIRST_NAME','a.EXCEPTION_NAME')
@@ -44,7 +43,6 @@ class PrescriberValidationController extends Controller
             '',
             $physician_validation_list
         );
-=======
         $physician_validation_list = DB::table('PHYSICIAN_TABLE')
             // ->select('PHYSICIAN_VALIDATIONS.PHYSICIAN_LIST', 'a.PHYSICIAN_ID', 'a.PHYSICIAN_STATUS', 'b.PHYSICIAN_LAST_NAME', 'b.PHYSICIAN_FIRST_NAME')
             ->join('PHYSICIAN_VALIDATIONS','PHYSICIAN_VALIDATIONS.PHYSICIAN_ID','=','PHYSICIAN_TABLE.PHYSICIAN_ID')
@@ -53,7 +51,6 @@ class PrescriberValidationController extends Controller
             ->get();
 
         return $this->respondWithToken($this->token(), '', $physician_validation_list[0]);
->>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
     }
 
 
@@ -89,7 +86,6 @@ class PrescriberValidationController extends Controller
            
         if ($request->has('new')) {
 
-<<<<<<< HEAD
                     $addProviderValidationData = DB::table('PHYSICIAN_VALIDATIONS')
                         ->insert([
                             'PHYSICIAN_LIST' => $request->physician_list,
@@ -99,8 +95,6 @@ class PrescriberValidationController extends Controller
                             'USER_ID' => $request->user_name,
                             'DATE_TIME_CREATED' => date('d-M-y')
                         ]);
-=======
->>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
 
             if($recordcheck){
                 return $this->respondWithToken($this->token(), 'Prescriber List Id  Already Existed', $recordcheck,false);
@@ -152,20 +146,19 @@ class PrescriberValidationController extends Controller
                 }
                
             }
-<<<<<<< HEAD
-        } else {
-            $validator = Validator::make($request->all(), [
-                "physician_list" => ['required', 'max:10'],
-                "physician_list" => ['required', 'max:10'],
-                "exception_name" => ['max:35'],
-                "physician_id" => ['required'],
-                "physician_status" => ['max:1'],
-            ]);
-            if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            } else {
-                $updateProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
-=======
+        // } else {
+        //     $validator = Validator::make($request->all(), [
+        //         "physician_list" => ['required', 'max:10'],
+        //         "physician_list" => ['required', 'max:10'],
+        //         "exception_name" => ['max:35'],
+        //         "physician_id" => ['required'],
+        //         "physician_status" => ['max:1'],
+        //     ]);
+        //     if ($validator->fails()) {
+        //         return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        //      }
+            //   else {
+            //     $updateProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
         // } else {
             // $validator = Validator::make($request->all(), [
             //     "physician_list" => ['required', 'max:10'],
@@ -182,7 +175,6 @@ class PrescriberValidationController extends Controller
 
 
                     $updateProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
->>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
                     ->where('PHYSICIAN_LIST', $request->physician_list)
                     ->update([
                         'EXCEPTION_NAME' => $request->exception_name,
@@ -209,7 +201,8 @@ class PrescriberValidationController extends Controller
                
             // }
         // }
-    }
+            }
+            
 
     public function searchDropDownPrescriberList()
     {
