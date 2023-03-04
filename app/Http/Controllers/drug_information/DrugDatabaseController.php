@@ -190,73 +190,6 @@ class DrugDatabaseController extends Controller
     }
 
 
-    public function pricingAdd(Request $request){
-
-        $recordcheck = DB::table('DRUG_PRICE')
-        ->where('NDC', strtoupper($request->ndc))->first();
-
-        if($request->pricing_add_new){
-
-            if($recordcheck){
-
-                return $this->respondWithToken($this->token(), 'Record already exists in the system..!!!', $recordcheck);
-                
-            }
-    
-            else{
-    
-                $drug_price = DB::table('DRUG_PRICE')
-                ->insert([
-                    'NDC' => strtoupper($request->ndc),
-                    'PRICE_SOURCE' => strtoupper($request->price_source),
-                    'PRICE_TYPE' => strtoupper($request->price_type),
-                    'PRICE_EFF_DATE_1' => strtoupper($request->price_eff_date_1),
-                    'PRICE_AMT_1' => strtoupper($request->price_amt_1),
-                    'PRICE_EFF_DATE_2' => strtoupper($request->price_eff_date_2),
-                    'PRICE_AMT_2' => strtoupper($request->price_amt_2),
-                    'PRICE_EFF_DATE_3' => strtoupper($request->price_eff_date_3),
-                    'PRICE_AMT_3' => strtoupper($request->price_amt_3),
-        
-    
-        
-                ]);
-
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $drug_price);
-
-    
-            }
-
-        }else{
-
-            $updateUser = DB::table('DRUG_PRICE')
-            ->where('NDC', $request->ndc)
-            ->update([
-                'PRICE_SOURCE' => strtoupper($request->price_source),
-                'PRICE_TYPE' => strtoupper($request->price_type),
-                'PRICE_EFF_DATE_1' => strtoupper($request->price_eff_date_1),
-                'PRICE_AMT_1' => strtoupper($request->price_amt_1),
-                'PRICE_EFF_DATE_2' => strtoupper($request->price_eff_date_2),
-                'PRICE_AMT_2' => strtoupper($request->price_amt_2),
-                'PRICE_EFF_DATE_3' => strtoupper($request->price_eff_date_3),
-                'PRICE_AMT_3' => strtoupper($request->price_amt_3),
-            ]);
-
-           
-           return $this->respondWithToken($this->token(), 'Record Added Successfully', $drug_price);
-
-
-
-        }
-
-       
-
-       
-
-
-    }
-
-
-
     public function get(Request $request)
     {
         $data = DB::table('DRUG_MASTER')
@@ -281,20 +214,33 @@ class DrugDatabaseController extends Controller
     {
 
         $getrecord = DB::table('DRUG_PRICE')
-            ->where('NDC', strtoupper($request->ndc))
-                // ->Where('LABEL_NAME',strtoupper($request->label_name))
-                // ->Where('GENERIC_NAME',strtoupper($request->generic_name))
-                // ->Where('PACKAGE_SIZE',strtoupper($request->package_size))
+            ->where('price_source', strtoupper($request->price_source))
+            ->where('NDC', $request->ndc)
+
             ->first();
 
-        if ($request->has('new')) {
+        if ($request->add_drug_price== 0 ||$request->add_drug_price== 1 ) {
 
             if ($getrecord) {
 
-                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getrecord);
+                $updateUser = DB::table('DRUG_PRICE')
+                ->where('NDC', $request->ndc)
+                ->where('PRICE_SOURCE',$request->price_source)
+                ->update([
+                    'PRICE_TYPE' => strtoupper($request->price_type),
+                    'PRICE_EFF_DATE_1' => strtoupper($request->price_eff_date_1),
+                    'PRICE_AMT_1' => strtoupper($request->price_amt_1),
+                    'PRICE_EFF_DATE_2' => strtoupper($request->price_eff_date_2),
+                    'PRICE_AMT_2' => strtoupper($request->price_amt_2),
+                    'PRICE_EFF_DATE_3' => strtoupper($request->price_eff_date_3),
+                    'PRICE_AMT_3' => strtoupper($request->price_amt_3),
+                ]);
 
+            if ($updateUser) {
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully !!!', $updateUser);
+            }
 
-            } else {
+            } else if($request->add_price ==0  || $request->add_drug_price== 1 ) {
 
 
                 $addData = DB::table('DRUG_PRICE')
@@ -314,39 +260,16 @@ class DrugDatabaseController extends Controller
                     ]);
 
 
-
                 if ($addData) {
-                    return $this->respondWithToken($this->token(), 'Added Successfully!!!', $addData);
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully!!!', $addData);
                 }
 
 
-
-
             }
-
-        } else { {
-                $updateUser = DB::table('DRUG_PRICE')
-                    ->where('NDC', $request->ndc)
-                    ->update([
-                        'PRICE_SOURCE' => strtoupper($request->price_source),
-                        'PRICE_TYPE' => strtoupper($request->price_type),
-                        'PRICE_EFF_DATE_1' => strtoupper($request->price_eff_date_1),
-                        'PRICE_AMT_1' => strtoupper($request->price_amt_1),
-                        'PRICE_EFF_DATE_2' => strtoupper($request->price_eff_date_2),
-                        'PRICE_AMT_2' => strtoupper($request->price_amt_2),
-                        'PRICE_EFF_DATE_3' => strtoupper($request->price_eff_date_3),
-                        'PRICE_AMT_3' => strtoupper($request->price_amt_3),
-                    ]);
-
-                if ($updateUser) {
-                    return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateUser);
-                }
-            }
-        }
-
-
 
     }
+
+}
 
 
 }
