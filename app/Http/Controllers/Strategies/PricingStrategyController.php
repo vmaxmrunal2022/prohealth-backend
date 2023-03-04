@@ -144,9 +144,8 @@ class PricingStrategyController extends Controller
                             'mac_list' => $request->mac_list,
                         ]
                     );
-                $benefitcode = DB::table('PRICING_STRATEGY')->where('pricing_strategy_id', 'like', $request->pricing_strategy_id)->first();
 
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $accum_benfit_stat);
 
             }
         }

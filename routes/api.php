@@ -454,6 +454,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('drug-database/get', [DrugDatabaseController::class, 'get']);
         Route::get('drug-database/get-drug-prices', [DrugDatabaseController::class, 'getDrugPrices']);
         Route::post('drug-price/add', [DrugDatabaseController::class, 'addDrugPrice']);
+
     });
 
 

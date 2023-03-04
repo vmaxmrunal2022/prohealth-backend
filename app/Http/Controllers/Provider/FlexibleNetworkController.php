@@ -52,8 +52,11 @@ class FlexibleNetworkController extends Controller
                     'area_code'=>$request->area_code,
                     'price_schedule_ovrd'=>$request->price_schedule_ovrd,
                     'exclude_rule'=>$request->exclude_rule,
+                    'effective_date'=>$request->effective_date,
+                    'termination_date'=>$request->termination_date,
+                    'exchange_code'=>$request->exchange_code,
+                    'pharmacy_status'=>$request->pharmacy_status,
                   
-                   
 
                 ]
             );
@@ -90,6 +93,10 @@ class FlexibleNetworkController extends Controller
                     'area_code'=>$request->area_code,
                     'price_schedule_ovrd'=>$request->price_schedule_ovrd,
                    'exclude_rule'=>$request->exclude_rule,
+                    'effective_date'=>$request->effective_date,
+                    'termination_date'=>$request->termination_date,
+                    'exchange_code'=>$request->exchange_code,
+                    'pharmacy_status'=>$request->pharmacy_status,
                   
 
                 ]

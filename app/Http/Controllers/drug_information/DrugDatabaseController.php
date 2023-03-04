@@ -190,6 +190,72 @@ class DrugDatabaseController extends Controller
     }
 
 
+    public function pricingAdd(Request $request){
+
+        $recordcheck = DB::table('DRUG_PRICE')
+        ->where('NDC', strtoupper($request->ndc))->first();
+
+        if($request->pricing_add_new){
+
+            if($recordcheck){
+
+                return $this->respondWithToken($this->token(), 'Record already exists in the system..!!!', $recordcheck);
+                
+            }
+    
+            else{
+    
+                $drug_price = DB::table('DRUG_PRICE')
+                ->insert([
+                    'NDC' => strtoupper($request->ndc),
+                    'PRICE_SOURCE' => strtoupper($request->price_source),
+                    'PRICE_TYPE' => strtoupper($request->price_type),
+                    'PRICE_EFF_DATE_1' => strtoupper($request->price_eff_date_1),
+                    'PRICE_AMT_1' => strtoupper($request->price_amt_1),
+                    'PRICE_EFF_DATE_2' => strtoupper($request->price_eff_date_2),
+                    'PRICE_AMT_2' => strtoupper($request->price_amt_2),
+                    'PRICE_EFF_DATE_3' => strtoupper($request->price_eff_date_3),
+                    'PRICE_AMT_3' => strtoupper($request->price_amt_3),
+        
+    
+        
+                ]);
+
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $drug_price);
+
+    
+            }
+
+        }else{
+
+            $updateUser = DB::table('DRUG_PRICE')
+            ->where('NDC', $request->ndc)
+            ->update([
+                'PRICE_SOURCE' => strtoupper($request->price_source),
+                'PRICE_TYPE' => strtoupper($request->price_type),
+                'PRICE_EFF_DATE_1' => strtoupper($request->price_eff_date_1),
+                'PRICE_AMT_1' => strtoupper($request->price_amt_1),
+                'PRICE_EFF_DATE_2' => strtoupper($request->price_eff_date_2),
+                'PRICE_AMT_2' => strtoupper($request->price_amt_2),
+                'PRICE_EFF_DATE_3' => strtoupper($request->price_eff_date_3),
+                'PRICE_AMT_3' => strtoupper($request->price_amt_3),
+            ]);
+
+           
+           return $this->respondWithToken($this->token(), 'Record Added Successfully', $drug_price);
+
+
+
+        }
+
+       
+
+       
+
+
+    }
+
+
 
     public function get(Request $request)
     {
