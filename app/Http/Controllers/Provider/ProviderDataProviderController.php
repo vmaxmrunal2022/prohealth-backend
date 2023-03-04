@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Provider;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
+
 class ProviderDataProviderController extends Controller
 {
 
@@ -112,7 +113,7 @@ class ProviderDataProviderController extends Controller
             }
 
 
-            if(!$Data){
+            if(!$get){
                 $addData = DB::table('RX_NETWORK_RULES')
                 ->insert([
                     'RX_NETWORK_RULE_ID'=>strtoupper($request->rx_network_rule_id),

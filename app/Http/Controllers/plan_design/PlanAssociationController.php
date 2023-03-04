@@ -12,6 +12,8 @@ class PlanAssociationController extends Controller
 {
     public function getDetails($id)
     {
+<<<<<<< HEAD
+=======
        
             $planAssociation = DB::table('PLAN_LOOKUP_TABLE')
             ->where('PLAN_LOOKUP_TABLE.BIN_NUMBER',$id)
@@ -23,6 +25,7 @@ class PlanAssociationController extends Controller
 
     public function search(Request $request){
 
+>>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
         $validator = Validator::make($request->all(), [
             "search" => ['required'],
         ]);
@@ -30,10 +33,16 @@ class PlanAssociationController extends Controller
             return response($validator->errors(), 400);
         } else {
             $planAssociation = DB::table('PLAN_LOOKUP_TABLE')
+<<<<<<< HEAD
+                ->select('PLAN_LOOKUP_TABLE.*', 'client.client_name', 'client_group.group_name')
+                ->join('client', 'PLAN_LOOKUP_TABLE.client_id', '=', 'client.client_id')
+                ->join('client_group', 'PLAN_LOOKUP_TABLE.client_group_id', '=', 'client_group.client_group_id')
+=======
                 // ->select('PLAN_LOOKUP_TABLE.*', 'client.client_name', 'client_group.group_name', 'customer.customer_name')
                 // ->join('client', 'PLAN_LOOKUP_TABLE.client_id', '=', 'client.client_id')
                 // ->join('client_group', 'PLAN_LOOKUP_TABLE.client_group_id', '=', 'client_group.client_group_id')
                 // ->join('customer', 'PLAN_LOOKUP_TABLE.customer_id', '=', 'customer.customer_id')
+>>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
                 ->where('PLAN_LOOKUP_TABLE.BIN_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere('PLAN_LOOKUP_TABLE.PROCESS_CONTROL_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere('PLAN_LOOKUP_TABLE.GROUP_NUMBER', 'like', '%' . strtoupper($request->search) . '%')

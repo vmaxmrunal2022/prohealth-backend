@@ -173,5 +173,16 @@ class EligibilityValidationListController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
             }
         }
+<<<<<<< HEAD
+    }
+
+    public function DropDown(Request $request)
+    {
+
+        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')->get();
+        return $this->respondWithToken($this->token(), '', $elig_list_data);
+    }
+=======
     // }
+>>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
 }
