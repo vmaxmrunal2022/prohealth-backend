@@ -130,7 +130,7 @@ class NdcExlusionController extends Controller
         $ndc = DB::table('NDC_EXCLUSION_LISTS')
         ->join('NDC_EXCLUSIONS', 'NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', '=', 'NDC_EXCLUSIONS.NDC_EXCLUSION_LIST')
         ->join('DRUG_MASTER', 'NDC_EXCLUSION_LISTS.NDC', '=', 'DRUG_MASTER.NDC')
-        ->where('NDC_EXCLUSION_LISTS.NDC',$ndcid)
+        ->where('NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST',$ndcid)
         ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

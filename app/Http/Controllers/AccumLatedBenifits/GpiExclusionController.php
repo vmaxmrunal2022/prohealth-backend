@@ -92,7 +92,7 @@ class GpiExclusionController extends Controller
 
 
     public function GPIS(Request $request){
-        $gpis=  DB::table('GPI_EXCLUSION_LISTS')->get();
+        $gpis=  DB::table('GPI_EXCEPTION_LISTS')->get();
         return $this->respondWithToken($this->token(), 'Record Updated Successfully', $gpis);
 
 
@@ -125,12 +125,13 @@ class GpiExclusionController extends Controller
     }
 
 
-    public function getDetails($ndcid)
+    public function getDetails($gpi)
     {
         $ndc = DB::table('GPI_EXCLUSION_LISTS')
         ->join('GPI_EXCLUSIONS', 'GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST', '=', 'GPI_EXCLUSIONS.GPI_EXCLUSION_LIST')
         ->join('DRUG_MASTER', 'GPI_EXCLUSION_LISTS.GENERIC_PRODUCT_ID', '=', 'DRUG_MASTER.GENERIC_PRODUCT_ID')
-        ->where('GPI_EXCLUSION_LISTS.GENERIC_PRODUCT_ID', 'like', '%' .$ndcid. '%')
+        ->where('GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST',$gpi)
+
         ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
