@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Provider;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ProviderDataProviderController extends Controller
 {
@@ -382,6 +383,22 @@ class ProviderDataProviderController extends Controller
 
                 ]);
             return $this->respondWithToken($this->token(), 'Updated Successfully...!!!', $updateData);
+        }
+    }
+
+    public function getProviderNetworks(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'search' => ['required'],
+        ]);
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $this->errors(), "false");
+        } else {
+            $provider_networks = DB::table('RX_NETWORK_NAMES')
+                ->where(DB::raw('UPPER(NETWORK_ID)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->get();
+
+            return $this->respondWithToken($this->token(), '', $provider_networks);
         }
     }
 }

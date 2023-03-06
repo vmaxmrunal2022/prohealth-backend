@@ -387,7 +387,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/provider/get/{ndcid}', [ProviderDataProviderController::class, 'getProviderList'])->name('provider.list.get'); // LIST ITEMS
         Route::get('/provider/details/{ndcid}', [ProviderDataProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
         Route::post('/provider/add', [ProviderDataProviderController::class, 'add'])->name('ndsc.details.get'); // DETAIL
-
+        Route::get('/get-provider-networks', [ProviderDataProviderController::class, 'getProviderNetworks']);
 
         //SUPER PROVIDER NETWORK
         // Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
