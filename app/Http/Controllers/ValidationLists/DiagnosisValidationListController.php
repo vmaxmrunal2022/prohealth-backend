@@ -33,6 +33,7 @@ class DiagnosisValidationListController extends Controller
     {
         $data = DB::table('DIAGNOSIS_VALIDATIONS as a')
             ->join('DIAGNOSIS_EXCEPTIONS as b', 'b.DIAGNOSIS_LIST', '=', 'a.DIAGNOSIS_LIST')
+            ->join('DIAGNOSIS_CODES as c','c.DIAGNOSIS_ID','=','a.DIAGNOSIS_ID')
             ->where('a.DIAGNOSIS_LIST', 'like', '%' . $diagnosis_list . '%')
             ->orderBy('PRIORITY', 'ASC')
             ->get();
@@ -61,6 +62,9 @@ class DiagnosisValidationListController extends Controller
     public function getDiagnosisLimitations($diagnosis_list, $diagnosis_id)
     {
         $data = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC as a')
+
+        ->join('DIAGNOSIS_CODES as c','c.DIAGNOSIS_ID','=','a.DIAGNOSIS_ID')
+
             ->where('a.DIAGNOSIS_LIST', '=', $diagnosis_list)
             ->where('a.DIAGNOSIS_ID', '=', $diagnosis_id)
             ->get();
@@ -138,7 +142,7 @@ class DiagnosisValidationListController extends Controller
                     $validationAddData = DB::table('DIAGNOSIS_VALIDATIONS')
                         ->insert([
                             'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                            'DIAGNOSIS_ID' => $request->exception_name,
+                            'DIAGNOSIS_ID' => $request->diagnosis_id,
                             'DIAGNOSIS_STATUS' => $request->diagnosis_status,
                             'PRIORITY' => $request->priority,
                         ]);
@@ -172,7 +176,7 @@ class DiagnosisValidationListController extends Controller
                     if (isset($request->diagnosis_id)) {
                         $updateDataValid = DB::table('DIAGNOSIS_VALIDATIONS')
                             ->where('DIAGNOSIS_ID', $request->diagnosis_id)
-                            // ->where('DIAGNOSIS_ID', $request->diagnosis_id)
+                            ->where('DIAGNOSIS_LIST',$request->diagnosis_list)
                             ->update([
                                 'DIAGNOSIS_STATUS' => $request->diagnosis_status,
                                 'PRIORITY' => $request->priority,
