@@ -154,6 +154,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/diagnosis/delete', [DiagnosisController::class, 'delete'])->name('diagnosis.delete'); // DELETE
         // Route::get('/diagnosis/all', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
         Route::get('/check-diagnosis-exist', [DiagnosisController::class, 'checkDiagnosisCodeExist']);
+        Route::get('/diagnosis/all', [DiagnosisController::class, 'all'])->name('diagnosis.get'); // SEARCH
 
 
         // SERVICE TYPES
@@ -965,10 +966,10 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
 
     Route::get('flexiblenetwork/search', [FlexibleNetworkController::class, 'search']);
     Route::get('flexiblenetwork/get/{ndcid}', [FlexibleNetworkController::class, 'getList']);
-
     Route::get('flexiblenetwork/details/{ndcid}', [FlexibleNetworkController::class, 'getDetails']);
-
     Route::post('flexiblenetwork/add', [FlexibleNetworkController::class, 'add']);
+    Route::get('flexiblenetwork/all', [FlexibleNetworkController::class, 'all']);
+
 
     //Rule Id 
 

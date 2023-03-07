@@ -149,8 +149,6 @@ class FlexibleNetworkController extends Controller
             ->join('RX_NETWORK_RULES', 'RX_NETWORK_RULE_NAMES.RX_NETWORK_RULE_ID', '=', 'RX_NETWORK_RULE_NAMES.RX_NETWORK_RULE_ID')
             ->where('RX_NETWORK_RULES.PHARMACY_CHAIN', $request->pharmacy_chain)->get();
 
-
-
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 

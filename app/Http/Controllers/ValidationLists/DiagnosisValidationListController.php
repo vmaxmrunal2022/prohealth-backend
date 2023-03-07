@@ -76,8 +76,8 @@ class DiagnosisValidationListController extends Controller
                 })],
                 "EXCEPTION_NAME" => ['max:35'],
                 "diagnosis_list" => ['max:8'],
-                "diagnosis_status" => ['max:1', 'numeric'],
-                "priority" => ['max:1', 'numeric'],
+                "diagnosis_status" => ['max:1', 'alpha_num'],
+                "priority" => ['max:1', 'alpha_num'],
                 "effective_date" => ['max:8', 'numeric'],
                 "termination_date" => ['max:8', 'numeric']
             ]);
@@ -143,15 +143,15 @@ class DiagnosisValidationListController extends Controller
                             'PRIORITY' => $request->priority,
                         ]);
                 }
-                return $this->respondWithToken($this->token(), 'data added Successfully!!!', $validationAddData);
+                return $this->respondWithToken($this->token(), 'Record  Added Successfully', $validationAddData);
             }
         } else {
             $validator = Validator::make($request->all(), [
                 "diagnosis_list" => ['required', 'max:10'],
                 "EXCEPTION_NAME" => ['max:35'],
                 "diagnosis_list" => ['max:8'],
-                "diagnosis_status" => ['max:1', 'numeric'],
-                "priority" => ['max:1', 'numeric'],
+                "diagnosis_status" => ['max:1', 'alpha_num'],
+                "priority" => ['max:1', 'alpha_num'],
                 "effective_date" => ['max:8', 'numeric'],
                 "termination_date" => ['max:8', 'numeric']
             ]);
@@ -171,14 +171,15 @@ class DiagnosisValidationListController extends Controller
 
                     if (isset($request->diagnosis_id)) {
                         $updateDataValid = DB::table('DIAGNOSIS_VALIDATIONS')
-                            ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
+                            ->where('DIAGNOSIS_ID', $request->diagnosis_id)
                             // ->where('DIAGNOSIS_ID', $request->diagnosis_id)
                             ->update([
                                 'DIAGNOSIS_STATUS' => $request->diagnosis_status,
                                 'PRIORITY' => $request->priority,
                                 'DATE_TIME_MODIFIED' => date('d-M-y'),
                                 'USER_ID_MODIFIED' => $request->user_name,
-                                'DIAGNOSIS_ID' => $request->diagnosis_id
+                                'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                'DIAGNOSIS_STATUS'=>$request->diagnosis_status,
                             ]);
                     }
 
@@ -190,13 +191,11 @@ class DiagnosisValidationListController extends Controller
                             'LIMITATIONS_LIST' => $request->limitations_list,
 
                         ]);
+                   
+                }
 
-
-
-
-                    if ($updateData) {
-                        return $this->respondWithToken($this->token(), 'data Update Successfully!!!', $updateData);
-                    }
+                if ($updateData) {
+                    return $this->respondWithToken($this->token(), 'Record  Updated Successfully!!!', $updateData);
                 }
             }
         }

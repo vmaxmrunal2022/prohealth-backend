@@ -16,20 +16,18 @@ class ProviderTypeController extends Controller
 {
     public function get(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "search" => ['required'],
-        ]);
+       
+            $procedurecodes = DB::table('PROVIDER_TYPES')->get();
 
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        } else {
-            $procedurecodes = DB::table('PROVIDER_TYPES')
-                ->where(DB::raw('UPPER(PROVIDER_TYPE)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->get();
+                if($procedurecodes){
+                    return $this->respondWithToken($this->token(), 'data fetched ', $procedurecodes);
+                }
+                else{
 
-            return $this->respondWithToken($this->token(), '', $procedurecodes);
-        }
+                 return $this->respondWithToken($this->token(), 'There was An Error ', $procedurecodes);
+
+                }
+
     }
 
 

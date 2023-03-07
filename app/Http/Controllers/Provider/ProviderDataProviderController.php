@@ -388,17 +388,17 @@ class ProviderDataProviderController extends Controller
 
     public function getProviderNetworks(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'search' => ['required'],
-        ]);
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $this->errors(), "false");
-        } else {
+        // $validator = Validator::make($request->all(), [
+        //     'search' => ['required'],
+        // ]);
+        // if ($validator->fails()) {
+        //     return $this->respondWithToken($this->token(), $validator->errors(), $this->errors(), "false");
+        // } else {
             $provider_networks = DB::table('RX_NETWORK_NAMES')
-                ->where(DB::raw('UPPER(NETWORK_ID)'), 'like', '%' . strtoupper($request->search) . '%')
+                // ->where(DB::raw('UPPER(NETWORK_ID)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $provider_networks);
         }
-    }
+    // }
 }
