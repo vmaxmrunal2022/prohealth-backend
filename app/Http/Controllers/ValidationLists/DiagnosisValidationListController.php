@@ -224,7 +224,7 @@ class DiagnosisValidationListController extends Controller
             if ($recordcheck) {
 
 
-                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getusersData);
+                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $recordcheck);
 
             }else{
 
