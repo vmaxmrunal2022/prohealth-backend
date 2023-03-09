@@ -51,18 +51,19 @@ class PlanEditController extends Controller
     public function add(Request $request)
     {
         $getData = DB::table('PLAN_BENEFIT_TABLE')
-            ->where('PLAN_ID', strtoupper($request->plan_id))
+            ->where('PLAN_ID', $request->plan_id)
             // ->Where('LABEL_NAME',strtoupper($request->label_name))
             // ->Where('GENERIC_NAME',strtoupper($request->generic_name))
             // ->Where('PACKAGE_SIZE',strtoupper($request->package_size))
             ->first();
 
-        if ($request->has('new')) {
+        if ($request->add_new == "1") {
 
             if ($getData) {
 
                 return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getData);
             } else {
+
                 $addData = DB::table('PLAN_BENEFIT_TABLE')
                     ->insert([
                         'PLAN_ID' => strtoupper($request->plan_id),
@@ -141,9 +142,9 @@ class PlanEditController extends Controller
                 $add_extensions = DB::table('plan_table_extensions')
                     ->insert([
                         'plan_id' => $request->plan_id,
-                        'DEFAULT_DRUG_STATUS' => $request->default_drug_status,
-                        'TERMINATION_DATE' => $request->termination_date,
-                        'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                        // 'DEFAULT_DRUG_STATUS' => $request->default_drug_status,
+                        // 'TERMINATION_DATE' => $request->termination_date,
+                        // 'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
                         'DATE_WRITTEN_TO_FIRST_FILL' => $request->date_written_to_first_fill,
                         'DATE_FILLED_TO_SUB_ONLINE' => $request->date_filled_to_sub_online,
                         'DATE_FILLED_TO_SUB_DMR' => $request->date_filled_to_sub_dmr,
@@ -166,6 +167,11 @@ class PlanEditController extends Controller
                         'MO_ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->mo_er_limit_2_max_days_supply, //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
                         'MO_ER_LIMIT_X_MINIMUM_USE' => $request->mo_er_limit_x_minimum_use
                     ]);
+
+                $addData = DB::table('PLAN_BENEFIT_TABLE')
+                    // ->join('PLAN_TABLE_EXTENSIONS', 'PLAN_BENEFIT_TABLE.plan_id', '=', 'PLAN_TABLE_EXTENSIONS.plan_id')
+                    ->where('PLAN_BENEFIT_TABLE.plan_id', $request->plan_id)
+                    ->first();
 
                 if ($addData) {
                     return $this->respondWithToken($this->token(), 'Added Successfully!!!', $addData);
@@ -254,9 +260,9 @@ class PlanEditController extends Controller
                     ->where('PLAN_ID', $request->plan_id)
                     ->update([
                         // 'plan_id' => $request->plan_id,
-                        'DEFAULT_DRUG_STATUS' => $request->default_drug_status,
-                        'TERMINATION_DATE' => $request->termination_date,
-                        'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                        // 'DEFAULT_DRUG_STATUS' => $request->default_drug_status,
+                        // 'TERMINATION_DATE' => $request->days_untile,
+                        // 'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
                         'DATE_WRITTEN_TO_FIRST_FILL' => $request->date_written_to_first_fill,
                         'DATE_FILLED_TO_SUB_ONLINE' => $request->date_filled_to_sub_online,
                         'DATE_FILLED_TO_SUB_DMR' => $request->date_filled_to_sub_dmr,
@@ -280,11 +286,11 @@ class PlanEditController extends Controller
                         'MO_ER_LIMIT_X_MINIMUM_USE' => $request->mo_er_limit_x_minimum_use
                     ]);
 
-
-
-                if ($updateData) {
-                    return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateData);
-                }
+                $updateData = DB::table('PLAN_BENEFIT_TABLE')
+                    // ->join('PLAN_TABLE_EXTENSIONS', 'PLAN_BENEFIT_TABLE.plan_id', '=', 'PLAN_TABLE_EXTENSIONS.plan_id')
+                    ->where('PLAN_BENEFIT_TABLE.plan_id', $request->plan_id)
+                    ->first();
+                return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateData);
             }
         }
     }
@@ -293,8 +299,9 @@ class PlanEditController extends Controller
     public function get(Request $request)
     {
         $planEdit = DB::table('PLAN_BENEFIT_TABLE')
-            ->where('PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('PLAN_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->join('plan_table_extensions', 'plan_table_extensions.plan_id', '=', 'PLAN_BENEFIT_TABLE.plan_id')
+            ->where('PLAN_BENEFIT_TABLE.PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('PLAN_BENEFIT_TABLE.PLAN_NAME', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
         return $this->respondWithToken($this->token(), '', $planEdit);
     }
