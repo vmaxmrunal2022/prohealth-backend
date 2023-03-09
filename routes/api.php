@@ -985,6 +985,8 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
 
     Route::get('prioritize/get/{ndcid}', [PrioritiseNetworkController::class, 'networkList']);
     Route::post('prioritize/add', [PrioritiseNetworkController::class, 'add']);
+    Route::get('prioritize/details/{ndcid}/{ncdid2}', [PrioritiseNetworkController::class, 'getDetails']);
+
 });
 
 
