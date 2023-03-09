@@ -143,14 +143,13 @@ class PlanEditController extends Controller
                         'ELIGIBILITY_EXCEPTIONS_FLAG' => $request->eligibility_exceptions_flag,
                         'PROV_TYPE_LIST_ID' => $request->prov_type_list_id,
                         'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_list,
+                        'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+
                     ]);
 
                 $add_extensions = DB::table('plan_table_extensions')
                     ->insert([
                         'plan_id' => $request->plan_id,
-                        'DEFAULT_DRUG_STATUS' => $request->default_drug_status,
-                        'TERMINATION_DATE' => $request->termination_date,
-                        'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
                         'DATE_WRITTEN_TO_FIRST_FILL' => $request->date_written_to_first_fill,
                         'DATE_FILLED_TO_SUB_ONLINE' => $request->date_filled_to_sub_online,
                         'DATE_FILLED_TO_SUB_DMR' => $request->date_filled_to_sub_dmr,
@@ -267,10 +266,6 @@ class PlanEditController extends Controller
                 $update_extensions = DB::table('plan_table_extensions')
                     ->where('PLAN_ID', $request->plan_id)
                     ->update([
-                        // 'plan_id' => $request->plan_id,
-                        'DEFAULT_DRUG_STATUS' => $request->default_drug_status,
-                        'TERMINATION_DATE' => $request->termination_date,
-                        'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
                         'DATE_WRITTEN_TO_FIRST_FILL' => $request->date_written_to_first_fill,
                         'DATE_FILLED_TO_SUB_ONLINE' => $request->date_filled_to_sub_online,
                         'DATE_FILLED_TO_SUB_DMR' => $request->date_filled_to_sub_dmr,
