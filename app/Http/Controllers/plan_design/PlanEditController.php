@@ -50,26 +50,24 @@ class PlanEditController extends Controller
 
     public function add(Request $request)
     {
-
         $getData = DB::table('PLAN_BENEFIT_TABLE')
-            ->where('PLAN_ID', strtoupper($request->plan_id))
+            ->where('PLAN_ID', $request->plan_id)
             // ->Where('LABEL_NAME',strtoupper($request->label_name))
             // ->Where('GENERIC_NAME',strtoupper($request->generic_name))
             // ->Where('PACKAGE_SIZE',strtoupper($request->package_size))
             ->first();
 
-        if ($request->add_new == 1) {
+        if ($request->add_new == "1") {
 
             if ($getData) {
 
                 return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getData);
             } else {
 
-
                 $addData = DB::table('PLAN_BENEFIT_TABLE')
                     ->insert([
                         'PLAN_ID' => strtoupper($request->plan_id),
-                        'EFFECTIVE_DATE' => $request->effective_date,
+                        'EFFECTIVE_DATE' => strtotime($request->effective_date),
                         'PLAN_NAME' => strtoupper($request->plan_name),
                         'DEFAULT_DRUG_STATUS' => strtoupper($request->default_drug_status),
                         'DEFAULT_PRICE_SCHEDULE' => strtoupper($request->default_price_schedule),
@@ -80,7 +78,7 @@ class PlanEditController extends Controller
                         'NDC_EXCEPTION_LIST' => strtoupper($request->ndc_exception_list),
                         'GPI_EXCEPTION_LIST' => strtoupper($request->gpi_exception_list),
                         'THER_CLASS_EXCEPTION_LIST' => strtoupper($request->ther_class_exception_list),
-                        'TERMINATION_DATE' => strtoupper($request->termination_date),
+                        'TERMINATION_DATE' => strtoupper($request->terminate_date),
                         'MIN_RX_QTY' => strtoupper($request->min_rx_qty),
                         'MAX_RX_QTY' => strtoupper($request->max_rx_qty),
                         'MIN_RX_DAYS' => strtoupper($request->min_rx_days),
@@ -139,17 +137,14 @@ class PlanEditController extends Controller
                         'SUPER_BENEFIT_LIST_ID' => $request->super_benefit_list_id,
                         'SUPER_BENEFIT_LIST_ID_2' => $request->super_benefit_list_id_2,
                         'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
-                        'PROCEDURE_XREF_ID' => $request->procedure_xref_id,
-                        'ELIGIBILITY_EXCEPTIONS_FLAG' => $request->eligibility_exceptions_flag,
-                        'PROV_TYPE_LIST_ID' => $request->prov_type_list_id,
-                        'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_list,
-                        'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
-
                     ]);
 
                 $add_extensions = DB::table('plan_table_extensions')
                     ->insert([
                         'plan_id' => $request->plan_id,
+                        // 'DEFAULT_DRUG_STATUS' => $request->default_drug_status,
+                        // 'TERMINATION_DATE' => $request->termination_date,
+                        // 'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
                         'DATE_WRITTEN_TO_FIRST_FILL' => $request->date_written_to_first_fill,
                         'DATE_FILLED_TO_SUB_ONLINE' => $request->date_filled_to_sub_online,
                         'DATE_FILLED_TO_SUB_DMR' => $request->date_filled_to_sub_dmr,
@@ -173,18 +168,21 @@ class PlanEditController extends Controller
                         'MO_ER_LIMIT_X_MINIMUM_USE' => $request->mo_er_limit_x_minimum_use
                     ]);
 
-
+                $addData = DB::table('PLAN_BENEFIT_TABLE')
+                    // ->join('PLAN_TABLE_EXTENSIONS', 'PLAN_BENEFIT_TABLE.plan_id', '=', 'PLAN_TABLE_EXTENSIONS.plan_id')
+                    ->where('PLAN_BENEFIT_TABLE.plan_id', $request->plan_id)
+                    ->first();
 
                 if ($addData) {
                     return $this->respondWithToken($this->token(), 'Added Successfully!!!', $addData);
                 }
             }
-        } else if ($request->add_new == 0) { {
+        } else { {
                 $updateData = DB::table('PLAN_BENEFIT_TABLE')
                     ->where('PLAN_ID', $request->plan_id)
                     ->update([
 
-                        'EFFECTIVE_DATE' => $request->effective_date,
+                        'EFFECTIVE_DATE' => strtotime($request->effective_date),
                         'PLAN_NAME' => strtoupper($request->plan_name),
                         'DEFAULT_DRUG_STATUS' => strtoupper($request->default_drug_status),
                         'DEFAULT_PRICE_SCHEDULE' => strtoupper($request->default_price_schedule),
@@ -195,7 +193,7 @@ class PlanEditController extends Controller
                         'NDC_EXCEPTION_LIST' => strtoupper($request->ndc_exception_list),
                         'GPI_EXCEPTION_LIST' => strtoupper($request->gpi_exception_list),
                         'THER_CLASS_EXCEPTION_LIST' => strtoupper($request->ther_class_exception_list),
-                        'TERMINATION_DATE' => strtoupper($request->termination_date),
+                        'TERMINATION_DATE' => strtoupper($request->terminate_date),
                         'MIN_RX_QTY' => strtoupper($request->min_rx_qty),
                         'MAX_RX_QTY' => strtoupper($request->max_rx_qty),
                         'MIN_RX_DAYS' => strtoupper($request->min_rx_days),
@@ -255,17 +253,16 @@ class PlanEditController extends Controller
                         'SUPER_BENEFIT_LIST_ID_2' => $request->super_benefit_list_id_2,
                         'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
                         'PROCEDURE_XREF_ID' => $request->procedure_xref_id,
-                        'ELIGIBILITY_EXCEPTIONS_FLAG' => $request->eligibility_exceptions_flag,
-                        'PROV_TYPE_LIST_ID' => $request->prov_type_list_id,
-                        'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_list,
-
-
 
                     ]);
 
                 $update_extensions = DB::table('plan_table_extensions')
                     ->where('PLAN_ID', $request->plan_id)
                     ->update([
+                        // 'plan_id' => $request->plan_id,
+                        // 'DEFAULT_DRUG_STATUS' => $request->default_drug_status,
+                        // 'TERMINATION_DATE' => $request->days_untile,
+                        // 'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
                         'DATE_WRITTEN_TO_FIRST_FILL' => $request->date_written_to_first_fill,
                         'DATE_FILLED_TO_SUB_ONLINE' => $request->date_filled_to_sub_online,
                         'DATE_FILLED_TO_SUB_DMR' => $request->date_filled_to_sub_dmr,
@@ -289,11 +286,11 @@ class PlanEditController extends Controller
                         'MO_ER_LIMIT_X_MINIMUM_USE' => $request->mo_er_limit_x_minimum_use
                     ]);
 
-
-
-                if ($updateData) {
-                    return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateData);
-                }
+                $updateData = DB::table('PLAN_BENEFIT_TABLE')
+                    // ->join('PLAN_TABLE_EXTENSIONS', 'PLAN_BENEFIT_TABLE.plan_id', '=', 'PLAN_TABLE_EXTENSIONS.plan_id')
+                    ->where('PLAN_BENEFIT_TABLE.plan_id', $request->plan_id)
+                    ->first();
+                return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateData);
             }
         }
     }
@@ -302,8 +299,9 @@ class PlanEditController extends Controller
     public function get(Request $request)
     {
         $planEdit = DB::table('PLAN_BENEFIT_TABLE')
-            ->where('PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('PLAN_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->join('plan_table_extensions', 'plan_table_extensions.plan_id', '=', 'PLAN_BENEFIT_TABLE.plan_id')
+            ->where('PLAN_BENEFIT_TABLE.PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('PLAN_BENEFIT_TABLE.PLAN_NAME', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
         return $this->respondWithToken($this->token(), '', $planEdit);
     }

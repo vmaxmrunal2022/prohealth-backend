@@ -20,13 +20,12 @@ class FlexibleNetworkController extends Controller
         if ($request->add_new == 1) {
 
 
-            if ($request->add_new) {
 
                 if($recordCheck){
                     return $this->respondWithToken($this->token(), 'Record Already  exists', $recordCheck);
-                }
+                
 
-                else{
+                }
                     $validator = Validator::make($request->all(), [
                         "rx_network_rule_id" => ['required', 'max:10', Rule::unique('RX_NETWORK_RULES')->where(function ($q) {
                             $q->whereNotNull('rx_network_rule_id');
@@ -78,9 +77,9 @@ class FlexibleNetworkController extends Controller
                         $benefitcode = DB::table('RX_NETWORK_RULES')
                             ->where(DB::raw('UPPER(rx_network_rule_id)'), strtoupper($request->rx_network_rule_id))
                             ->first();
-                        return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $benefitcode);
 
-                }
+                
               
                 }
             } else {
@@ -90,7 +89,7 @@ class FlexibleNetworkController extends Controller
                 ]);
                 if ($validator->fails()) {
                     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), 'false');
-                } else {
+                } else if($request->add_new == 0) {
 
                     $benefitcode = DB::table('RX_NETWORK_RULE_NAMES')
                         ->where(DB::raw('UPPER(rx_network_rule_id)'), strtoupper($request->rx_network_rule_id))
@@ -131,15 +130,12 @@ class FlexibleNetworkController extends Controller
                                 'pharmacy_status' => $request->pharmacy_status,
                             ]
                         );
-                    // $benefitcode = DB::table('RX_NETWORK_RULES')->where('rx_network_rule_id', 'like', $request->rx_network_rule_id)->first();
-                    $benefitcode = DB::table('RX_NETWORK_RULES')
-                        ->where(DB::raw('UPPER(rx_network_rule_id)'), strtoupper($request->rx_network_rule_id))
-                        ->first();
-                    return $this->respondWithToken($this->token(), 'Updated Successfully!!!', $benefitcode);
+                  
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $accum_benfit_stat);
                 }
             }
         }
-    }
+    
 
     public function all(Request $request)
 
