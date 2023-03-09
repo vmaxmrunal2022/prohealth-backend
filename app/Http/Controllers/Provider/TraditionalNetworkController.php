@@ -14,9 +14,7 @@ class TraditionalNetworkController extends Controller
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
-        if ( $request->has( 'new' ) ) {
-
-
+        if ( $request->add_new) {
 
             $accum_benfit_stat_names = DB::table('RX_NETWORK_NAMES')->insert(
                 [
