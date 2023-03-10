@@ -89,6 +89,28 @@ class GpiExclusionController extends Controller
 
     }
 
+    public function allGpiExclusions(Request $request){
+
+        $data = DB::table('GPI_EXCLUSION_LISTS')
+        ->get();
+
+        if($data){
+
+            return $this->respondWithToken($this->token(), 'Data fetched succefully', $data);
+
+
+        }else{
+
+            return $this->respondWithToken($this->token(), 'Something went wrong', $data);
+
+
+        }
+
+
+
+
+    }
+
 
 
     public function GPIS(Request $request){

@@ -283,6 +283,12 @@ class CustomerController extends Controller
         return $this->respondWithToken($this->token(), '', $customer);
     }
 
+    public function All(Request $request)
+    {
+        $customer = DB::table('plan_table_extensions')->get();
+        return $this->respondWithToken($this->token(), '', $customer);
+    }
+
 
 
     public function searchPlanId(Request $request)

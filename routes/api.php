@@ -836,6 +836,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/gpiExclusion/details/{ndcid}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
     Route::post('/gpiExclusion/add', [GpiExclusionController::class, 'add'])->name('gpiExclusion.add'); // ADD
     Route::get('/gpi/dropdowns', [GpiExclusionController::class, 'GPIS'])->name('gpi.search'); // SEARCH
+    Route::get('/gpi/exclusions/dropdowns', [GpiExclusionController::class, 'allGpiExclusions'])->name('gpi.search'); // SEARCH
 
 
 
@@ -848,6 +849,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/ndcExclusion/details/{ndcid}', [NdcExlusionController::class, 'getDetails'])->name('ndcExclusion.get'); // DETAIL
     Route::post('/ndcExclusion/add', [NdcExlusionController::class, 'add'])->name('ndcExclusion.add'); // SEARCH
 
+    Route::get('/ndcExclusion/all', [NdcExlusionController::class, 'AllNdcGpisExcusions'])->name('ndcExclusion.list.get'); // LIST ITEMS
 
 
     Route::get('customer/search', [MajorMedicalController::class, 'search']);
@@ -893,6 +895,7 @@ Route::post('customer/id/generate', [CustomerController::class, 'generateCustome
 Route::get('customer/get', [CustomerController::class, 'searchCutomer']);
 
 Route::get('plan/get/{planid}', [CustomerController::class, 'getPlanId']);
+Route::get('planids/all', [CustomerController::class, 'All']);
 
 
 Route::get('planid/search', [CustomerController::class, 'searchPlanId']);
@@ -986,7 +989,7 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
 
     Route::get('prioritize/get/{ndcid}', [PrioritiseNetworkController::class, 'networkList']);
     Route::post('prioritize/add', [PrioritiseNetworkController::class, 'add']);
-    Route::get('prioritize/details/{ndcid}/{ncdid2}', [PrioritiseNetworkController::class, 'getDetails']);
+    Route::get('prioritize/details/{ndcid}/{ncdid2}/{id3}', [PrioritiseNetworkController::class, 'getDetails']);
 
 });
 

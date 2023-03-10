@@ -102,12 +102,13 @@ class PrioritiseNetworkController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function getDetails($ndcid,$ncdid2){
+    public function getDetails($ndcid,$ncdid2,$id3){
 
         $data=  DB::table('SUPER_RX_NETWORK_NAMES')
-        ->join('SUPER_RX_NETWORKS','SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID','=','SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
-        ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', $ndcid)  
+        ->join('SUPER_RX_NETWORKS','SUPER_RX_NETWORKS.RX_NETWORK_ID','=','SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
+        ->where('SUPER_RX_NETWORKS.RX_NETWORK_ID', $ndcid)  
         ->where('SUPER_RX_NETWORKS.EFFECTIVE_DATE', $ncdid2)  
+        ->where('SUPER_RX_NETWORKS.super_rx_network_priority',$id3)
         ->first();
        
         return $this->respondWithToken($this->token(), '', $data);
