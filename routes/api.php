@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Exception\BenefitListController;
 use App\Http\Controllers\Exception\ReasonCodeExceptionController;
+use App\Http\Controllers\user_access\UserAccessControl;
 
 
 
@@ -546,6 +547,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('user-defination/get-client-groups', [UserDefinationController::class, 'getClientGroups']);
         Route::post('user-defination/submitGroup', [UserDefinationController::class, 'submitGroup']);
         Route::get('user-defination/get-group-id', [UserDefinationController::class, 'getGroupIds']);
+        Route::get('user-defination/get-user-access', [UserAccessControl::class, 'getUserAccessMenus']);
 
         //Verify Drug Coverage
         Route::get('verify-drug-coverage/get-pharmacy-var-ind', [VerifyDrugVCoverage::class, 'getPharmacyVarInd']);

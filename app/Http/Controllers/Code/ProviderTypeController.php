@@ -16,18 +16,13 @@ class ProviderTypeController extends Controller
 {
     public function get(Request $request)
     {
-       
-            $procedurecodes = DB::table('PROVIDER_TYPES')->get();
 
-                if($procedurecodes){
-                    return $this->respondWithToken($this->token(), 'data fetched ', $procedurecodes);
-                }
-                else{
+        $procedurecodes = DB::table('PROVIDER_TYPES')
+            ->where(DB::raw('UPPER(PROVIDER_TYPE)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
 
-                 return $this->respondWithToken($this->token(), 'There was An Error ', $procedurecodes);
-
-                }
-
+        return $this->respondWithToken($this->token(), '', $procedurecodes);
     }
 
 
