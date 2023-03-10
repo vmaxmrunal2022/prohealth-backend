@@ -26,10 +26,10 @@ class SuperProviderNetworkController extends Controller
 
 
 
-        if ( $request->add_new ==1 ) {
+        if ( $request->add_new == 1 ) {
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'This Record is  already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Super Network  Id is  already Exists ', $recordcheck);
 
             }
 

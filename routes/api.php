@@ -138,6 +138,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/procedure/submit', [ProcedureController::class, 'add'])->name('procedure.submit');  // add
         Route::post('/procedure/delete', [ProcedureController::class, 'delete'])->name('procedure.delete'); // DELETE
         Route::get('/check-procedure-exist', [ProcedureController::class, 'checkProcedureCodeExist']);
+        Route::get('/procedure/codes', [ProcedureController::class, 'getCodes'])->name('procedure.get'); // SEARCH
 
 
         // PROVIDER TYPE
