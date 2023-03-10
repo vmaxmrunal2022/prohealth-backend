@@ -63,11 +63,10 @@ class PlanEditController extends Controller
 
                 return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getData);
             } else {
-
                 $addData = DB::table('PLAN_BENEFIT_TABLE')
                     ->insert([
                         'PLAN_ID' => strtoupper($request->plan_id),
-                        'EFFECTIVE_DATE' => strtotime($request->effective_date),
+                        'EFFECTIVE_DATE' => date('Ymd', strtotime($request->effective_date)),
                         'PLAN_NAME' => strtoupper($request->plan_name),
                         'DEFAULT_DRUG_STATUS' => strtoupper($request->default_drug_status),
                         'DEFAULT_PRICE_SCHEDULE' => strtoupper($request->default_price_schedule),
@@ -78,7 +77,7 @@ class PlanEditController extends Controller
                         'NDC_EXCEPTION_LIST' => strtoupper($request->ndc_exception_list),
                         'GPI_EXCEPTION_LIST' => strtoupper($request->gpi_exception_list),
                         'THER_CLASS_EXCEPTION_LIST' => strtoupper($request->ther_class_exception_list),
-                        'TERMINATION_DATE' => strtoupper($request->terminate_date),
+                        'TERMINATION_DATE' => date('Ymd', strtotime($request->termination_date)),
                         'MIN_RX_QTY' => strtoupper($request->min_rx_qty),
                         'MAX_RX_QTY' => strtoupper($request->max_rx_qty),
                         'MIN_RX_DAYS' => strtoupper($request->min_rx_days),
@@ -112,7 +111,7 @@ class PlanEditController extends Controller
                         'MAX_BRAND_COPAY_OPT' => $request->max_brand_copay_opt,
                         'MIN_GENERIC_COPAY_AMT' => $request->min_generic_copay_amt,
                         'MAX_GENERIC_COPAY_AMT' => $request->max_generic_copay_amt,
-                        'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_test,
+                        'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_list,
                         'STARTER_DOSE_DAYS' => $request->starter_dose_days,
                         'STARTER_DOSE_BYPASS_DAYS' => $request->starter_dose_bypass_days,
                         'DRUG_COV_START_DAYS' => $request->drug_cov_start_days,
@@ -137,6 +136,7 @@ class PlanEditController extends Controller
                         'SUPER_BENEFIT_LIST_ID' => $request->super_benefit_list_id,
                         'SUPER_BENEFIT_LIST_ID_2' => $request->super_benefit_list_id_2,
                         'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
+                        'prov_type_list_id' => $request->prov_type_list_id,
                     ]);
 
                 $add_extensions = DB::table('plan_table_extensions')
@@ -145,6 +145,7 @@ class PlanEditController extends Controller
                         // 'DEFAULT_DRUG_STATUS' => $request->default_drug_status,
                         // 'TERMINATION_DATE' => $request->termination_date,
                         // 'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                        'EFFECTIVE_DATE' => date('Ymd', strtotime($request->effective_date)),
                         'DATE_WRITTEN_TO_FIRST_FILL' => $request->date_written_to_first_fill,
                         'DATE_FILLED_TO_SUB_ONLINE' => $request->date_filled_to_sub_online,
                         'DATE_FILLED_TO_SUB_DMR' => $request->date_filled_to_sub_dmr,
@@ -165,11 +166,16 @@ class PlanEditController extends Controller
                         'MO_ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->mo_er_limit_1_max_days_supply, //LIMIT1 (RX MAXIMUM DAYS SUPPLY
                         'MO_ER_LIMIT_1_MINIMUM_USE' => $request->mo_er_limit_1_minimum_use, //LIMIT1  MINIMUM USE PERCENTAGE) 
                         'MO_ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->mo_er_limit_2_max_days_supply, //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
-                        'MO_ER_LIMIT_X_MINIMUM_USE' => $request->mo_er_limit_x_minimum_use
+                        'MO_ER_LIMIT_X_MINIMUM_USE' => $request->mo_er_limit_x_minimum_use,
+                        // 'mo_er_limit_x_max_days_supply' => $request->mo_er_limit_x_max_days_supply,
+                        'plan_notes' => $request->plan_notes,
+                        'mo_er_limit_2_minimum_use' => $request->mo_er_limit_2_minimum_use,
+                        'ER_BYPASS_HIST_DAYS_SUPPLY' => $request->er_bypass_hist_days_supply,
+                        'MO_ER_BYPASS_HIST_DAYS_SUPPLY' => $request->mo_er_bypass_hist_days_supply,
                     ]);
 
                 $addData = DB::table('PLAN_BENEFIT_TABLE')
-                    // ->join('PLAN_TABLE_EXTENSIONS', 'PLAN_BENEFIT_TABLE.plan_id', '=', 'PLAN_TABLE_EXTENSIONS.plan_id')
+                    ->join('PLAN_TABLE_EXTENSIONS', 'PLAN_BENEFIT_TABLE.plan_id', '=', 'PLAN_TABLE_EXTENSIONS.plan_id')
                     ->where('PLAN_BENEFIT_TABLE.plan_id', $request->plan_id)
                     ->first();
 
@@ -178,11 +184,12 @@ class PlanEditController extends Controller
                 }
             }
         } else { {
+                // dd($request->all());
                 $updateData = DB::table('PLAN_BENEFIT_TABLE')
                     ->where('PLAN_ID', $request->plan_id)
                     ->update([
-
-                        'EFFECTIVE_DATE' => strtotime($request->effective_date),
+                        'EFFECTIVE_DATE' => date('Ymd', strtotime($request->effective_date)),
+                        // 'effective_date' => $request->effective_date,
                         'PLAN_NAME' => strtoupper($request->plan_name),
                         'DEFAULT_DRUG_STATUS' => strtoupper($request->default_drug_status),
                         'DEFAULT_PRICE_SCHEDULE' => strtoupper($request->default_price_schedule),
@@ -193,7 +200,7 @@ class PlanEditController extends Controller
                         'NDC_EXCEPTION_LIST' => strtoupper($request->ndc_exception_list),
                         'GPI_EXCEPTION_LIST' => strtoupper($request->gpi_exception_list),
                         'THER_CLASS_EXCEPTION_LIST' => strtoupper($request->ther_class_exception_list),
-                        'TERMINATION_DATE' => strtoupper($request->terminate_date),
+                        'TERMINATION_DATE' => date('Ymd', strtotime($request->termination_date)),
                         'MIN_RX_QTY' => strtoupper($request->min_rx_qty),
                         'MAX_RX_QTY' => strtoupper($request->max_rx_qty),
                         'MIN_RX_DAYS' => strtoupper($request->min_rx_days),
@@ -227,7 +234,7 @@ class PlanEditController extends Controller
                         'MAX_BRAND_COPAY_OPT' => $request->max_brand_copay_opt,
                         'MIN_GENERIC_COPAY_AMT' => $request->min_generic_copay_amt,
                         'MAX_GENERIC_COPAY_AMT' => $request->max_generic_copay_amt,
-                        'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_test,
+                        'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_list,
                         'STARTER_DOSE_DAYS' => $request->starter_dose_days,
                         'STARTER_DOSE_BYPASS_DAYS' => $request->starter_dose_bypass_days,
                         'DRUG_COV_START_DAYS' => $request->drug_cov_start_days,
@@ -253,16 +260,13 @@ class PlanEditController extends Controller
                         'SUPER_BENEFIT_LIST_ID_2' => $request->super_benefit_list_id_2,
                         'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
                         'PROCEDURE_XREF_ID' => $request->procedure_xref_id,
-
+                        'prov_type_list_id' => $request->prov_type_list_id,
                     ]);
 
                 $update_extensions = DB::table('plan_table_extensions')
                     ->where('PLAN_ID', $request->plan_id)
                     ->update([
-                        // 'plan_id' => $request->plan_id,
-                        // 'DEFAULT_DRUG_STATUS' => $request->default_drug_status,
-                        // 'TERMINATION_DATE' => $request->days_untile,
-                        // 'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                        'EFFECTIVE_DATE' => date('Ymd', strtotime($request->effective_date)),
                         'DATE_WRITTEN_TO_FIRST_FILL' => $request->date_written_to_first_fill,
                         'DATE_FILLED_TO_SUB_ONLINE' => $request->date_filled_to_sub_online,
                         'DATE_FILLED_TO_SUB_DMR' => $request->date_filled_to_sub_dmr,
@@ -274,7 +278,7 @@ class PlanEditController extends Controller
                         'MISC_FLAG_5' => $request->misc_flag_5, //EXCLUDE SYSTEM NDC/GPI FORMULARY EDITS FOR OUT OF NETWORK CLAIM
                         'MISC_FLAG_6' => $request->misc_flag_6, //EXCLUDE PLAN NDC/GPI FORMULARY EDITS FOR OUT OF NETWORK CLAIM
                         'MISC_FLAG_7' => $request->misc_flag_7, //REJECT CLAIM FOR MISSING CARDHOLDER ID
-                        'ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->er_limit_max_days_supply, //LIMIT1 (RX MAXIMUM DAYS SUPPLY
+                        'ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->er_limit_1_max_days_supply, //LIMIT1 (RX MAXIMUM DAYS SUPPLY
                         'ER_LIMIT_1_MINIMUM_USE' => $request->er_limit_1_minimum_use, //LIMIT1  MINIMUM USE PERCENTAGE) 
                         'ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->er_limit_2_max_days_supply, //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
                         'ER_LIMIT_2_MINIMUM_USE' => $request->er_limit_minimum_use, //LIMIT 2 - ABOVE LIMIT 1 MINIMUM USE PERCENTAGE)
@@ -283,11 +287,17 @@ class PlanEditController extends Controller
                         'MO_ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->mo_er_limit_1_max_days_supply, //LIMIT1 (RX MAXIMUM DAYS SUPPLY
                         'MO_ER_LIMIT_1_MINIMUM_USE' => $request->mo_er_limit_1_minimum_use, //LIMIT1  MINIMUM USE PERCENTAGE) 
                         'MO_ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->mo_er_limit_2_max_days_supply, //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
-                        'MO_ER_LIMIT_X_MINIMUM_USE' => $request->mo_er_limit_x_minimum_use
+                        'MO_ER_LIMIT_X_MINIMUM_USE' => $request->mo_er_limit_x_minimum_use,
+                        // 'mo_er_limit_x_max_days_supply' => $request->mo_er_limit_x_max_days_supply
+                        'plan_notes' => $request->plan_notes,
+                        // 'prov_type_list_id' => $request->prov_type_list_id,
+                        'mo_er_limit_2_minimum_use' => $request->mo_er_limit_2_minimum_use,
+                        'ER_BYPASS_HIST_DAYS_SUPPLY' => $request->er_bypass_hist_days_supply,
+                        'MO_ER_BYPASS_HIST_DAYS_SUPPLY' => $request->mo_er_bypass_hist_days_supply,
                     ]);
 
                 $updateData = DB::table('PLAN_BENEFIT_TABLE')
-                    // ->join('PLAN_TABLE_EXTENSIONS', 'PLAN_BENEFIT_TABLE.plan_id', '=', 'PLAN_TABLE_EXTENSIONS.plan_id')
+                    ->join('PLAN_TABLE_EXTENSIONS', 'PLAN_BENEFIT_TABLE.plan_id', '=', 'PLAN_TABLE_EXTENSIONS.plan_id')
                     ->where('PLAN_BENEFIT_TABLE.plan_id', $request->plan_id)
                     ->first();
                 return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateData);
