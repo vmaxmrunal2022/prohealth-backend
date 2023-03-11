@@ -28,7 +28,7 @@ class ReasonCodeExceptionController extends Controller
         if ( $request->has( 'new' ) ) {
 
             if($check){
-             return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $check);
+             return $this->respondWithToken($this->token(), 'Reason Code List Id Already Exists', $check);
 
             }
             else{
