@@ -11,16 +11,15 @@ class TraditionalNetworkController extends Controller
 
 
 
-    public function add( Request $request ) {
-        $createddate = date( 'y-m-d' );
+    public function add(Request $request)
+    {
+        $createddate = date('y-m-d');
 
-        if ( $request->has( 'new' ) ) {
-
-
+        if ($request->add_new) {
 
             $accum_benfit_stat_names = DB::table('RX_NETWORK_NAMES')->insert(
                 [
-                    'network_id' => strtoupper( $request->network_id ),
+                    'network_id' => strtoupper($request->network_id),
                     'network_name' => $request->network_name,
 
 
@@ -28,54 +27,48 @@ class TraditionalNetworkController extends Controller
             );
 
 
-            $accum_benfit_stat = DB::table('RX_NETWORKS' )->insert(
+            $accum_benfit_stat = DB::table('RX_NETWORKS')->insert(
                 [
-                    'network_id' => strtoupper( $request->network_id ),
-                    'pharmacy_nabp'=>$request->pharmacy_nabp,
-                    'price_schedule_ovrd'=>$request->price_schedule_ovrd,
-                    'effective_date'=>$request->effective_date,
-                    'termination_date'=>$request->termination_date,
+                    'network_id' => strtoupper($request->network_id),
+                    'pharmacy_nabp' => $request->pharmacy_nabp,
+                    'price_schedule_ovrd' => $request->price_schedule_ovrd,
+                    'effective_date' => $request->effective_date,
+                    'termination_date' => $request->termination_date,
 
                 ]
             );
-            $benefitcode = DB::table( 'RX_NETWORKS' )->where( 'network_id', 'like', $request->network_id )->first();
-
-
+            $benefitcode = DB::table('RX_NETWORKS')->where('network_id', 'like', $request->network_id)->first();
         } else {
+            $benefitcode = DB::table('RX_NETWORK_NAMES')
+                ->where('network_id', $request->network_id)
+                ->update(
+                    [
+                        'network_id' => strtoupper($request->network_id),
+                        'network_name' => $request->network_name,
+
+                    ]
+                );
+
+            $accum_benfit_stat = DB::table('RX_NETWORKS')
+                ->where('pharmacy_nabp', $request->pharmacy_nabp)
+                ->update(
+                    [
+                        'network_id' => strtoupper($request->network_id),
+                        'pharmacy_nabp' => $request->pharmacy_nabp,
+                        'price_schedule_ovrd' => $request->price_schedule_ovrd,
+                        'effective_date' => $request->effective_date,
+                        'termination_date' => $request->termination_date,
 
 
-            $benefitcode = DB::table('RX_NETWORK_NAMES' )
-            ->where( 'network_id', $request->network_id )
-            ->update(
-                [
-                    'network_id' => strtoupper( $request->network_id ),
-                    'network_name' => $request->network_name,
-
-                ]
-            );
-
-            $accum_benfit_stat = DB::table( 'RX_NETWORKS' )
-            ->where('pharmacy_nabp', $request->pharmacy_nabp )
-            ->update(
-                [
-                    'network_id' => strtoupper( $request->network_id ),
-                    'pharmacy_nabp'=>$request->pharmacy_nabp,
-                    'price_schedule_ovrd'=>$request->price_schedule_ovrd,
-                    'effective_date'=>$request->effective_date,
-                    'termination_date'=>$request->termination_date,
+                    ]
+                );
 
 
-                ]
-            );
-
-
-            $benefitcode = DB::table( 'RX_NETWORKS' )->where( 'network_id', 'like', $request->network_id )->first();
-
-
+            $benefitcode = DB::table('RX_NETWORKS')->where('network_id', 'like', $request->network_id)->first();
         }
 
 
-        return $this->respondWithToken( $this->token(), 'Successfully added', $benefitcode );
+        return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
     }
 
 
@@ -83,43 +76,36 @@ class TraditionalNetworkController extends Controller
 
     {
 
-        if($request->pharmacy_nabp){
+        if ($request->pharmacy_nabp) {
 
             $ndc = DB::table('RX_NETWORK_NAMES')
-            ->join('RX_NETWORKS', 'RX_NETWORK_NAMES.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
-            ->where('RX_NETWORKS.PHARMACY_NABP',$request->pharmacy_nabp)->get();
-    
-            if($ndc){
+                ->join('RX_NETWORKS', 'RX_NETWORK_NAMES.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
+                ->where('RX_NETWORKS.PHARMACY_NABP', $request->pharmacy_nabp)->get();
+
+            if ($ndc) {
                 return $this->respondWithToken($this->token(), '', $ndc);
-    
             }
-
-        }
-
-       
-        else{
+        } else {
 
             return $this->respondWithToken($this->token(), 'No Data Found');
-
-
         }
     }
 
 
-   
+
 
 
 
     public function search(Request $request)
 
     {
-      $ndc  = DB::select("SELECT * FROM RX_NETWORK_NAMES");
+        $ndc  = DB::select("SELECT * FROM RX_NETWORK_NAMES");
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 
 
-    
+
     public function ProviderIdsearch(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')
@@ -133,33 +119,35 @@ class TraditionalNetworkController extends Controller
 
 
 
-    public function getList ($ndcid)
+    public function getList($ndcid)
     {
-        $ndc =DB::table('RX_NETWORK_NAMES')
-        ->join('RX_NETWORKS', 'RX_NETWORKS.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
-        ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
+
+        // $ndc = DB::table('RX_NETWORK_NAMES')
+        //     ->join('RX_NETWORKS', 'RX_NETWORKS.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
+        //     ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
+
+        //     ->where('RX_NETWORK_NAMES.NETWORK_NAME', $ndcid)
+        //     ->orWhere('RX_NETWORKS.NETWORK_ID', $ndcid)
+        //     ->get();
+
+        $ndc = DB::table('RX_NETWORK_NAMES')
+            ->join('RX_NETWORKS', 'RX_NETWORKS.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
+            ->where('RX_NETWORK_NAMES.NETWORK_ID', $ndcid)
+            ->first();
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
 
 
-        ->where('RX_NETWORK_NAMES.NETWORK_NAME', 'like', '%' .$ndcid. '%')
-        ->orWhere('RX_NETWORKS.NETWORK_ID', 'like', '%' .$ndcid. '%')
-        ->get();
+    public function getDetails($ndcid)
+    {
+        $ndc = DB::table('RX_NETWORKS')
+            ->join('RX_NETWORK_NAMES', 'RX_NETWORK_NAMES.NETWORK_ID', '=', 'RX_NETWORKS.NETWORK_ID')
+            ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
+
+
+            ->where('PHARMACY_TABLE.PHARMACY_NABP', 'like', '%' . $ndcid . '%')
+            ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
-
     }
-
-
-    public function getDetails( $ndcid ) {
-        $ndc = DB::table('RX_NETWORKS' )
-        ->join('RX_NETWORK_NAMES', 'RX_NETWORK_NAMES.NETWORK_ID', '=', 'RX_NETWORKS.NETWORK_ID')
-        ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
-
-
-        ->where( 'PHARMACY_TABLE.PHARMACY_NABP', 'like', '%' .$ndcid. '%' )
-        ->first();
-
-        return $this->respondWithToken( $this->token(), '', $ndc );
-
-    }
-
 }

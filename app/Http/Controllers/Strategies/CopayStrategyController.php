@@ -59,7 +59,6 @@ class CopayStrategyController extends Controller
                 ->where('copay_strategy_id', $request->copay_strategy_id)
                 ->update(
                     [
-
                         'copay_strategy_id' => strtoupper($request->copay_strategy_id),
                         'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
                         'formulary_variation_ind' => $request->formulary_variation_ind,
