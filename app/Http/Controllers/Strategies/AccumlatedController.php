@@ -104,6 +104,16 @@ class AccumlatedController extends Controller
         return $this->respondWithToken($this->token(), 'Successfully updated', $data);
     }
 
+    public function getAllAcuumlatedBenefits(Request $request){
+
+        $existdata = DB::table('accum_bene_strategy_names')
+        ->get();
+
+        return $this->respondWithToken($this->token(), 'Successfully added', $existdata);
+
+
+    }
+
     public function search(Request $request)
     {
         $ndc = DB::table('ACCUM_BENEFIT_STRATEGY')
