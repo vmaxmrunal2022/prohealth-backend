@@ -440,4 +440,22 @@ class PlanEditController extends Controller
 
         return $this->respondWithToken($this->token(), '', $formulary);
     }
+
+    public function getSuperProviderNetwork(Request  $request)
+    {
+        $super_provider_network = DB::table('SUPER_RX_NETWORKS')
+            ->join('SUPER_RX_NETWORK_NAMES', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $super_provider_network);
+    }
+
+    public function getExhaustedBenefits(Request $request)
+    {
+        $exhausetd_benefit = [
+            ['exhausted_id' => 'R', 'exhausted_name' => 'Reject The Application'],
+            ['exhausted_id' => 'N', 'exhausted_name' => 'New Plan Is Specified'],
+        ];
+
+        return $this->respondWithToken($this->token(), '', $exhausetd_benefit);
+    }
 }

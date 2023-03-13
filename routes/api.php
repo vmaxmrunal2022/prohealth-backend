@@ -543,6 +543,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('plan-edit/get-uc-plan', [PlanEditController::class, 'getUCPlan']);
         Route::get('plan-edit/get-search-indication', [PlanEditController::class, 'getSearchIndication']);
         Route::get('plan-edit/get-formulary', [PlanEditController::class, 'getFormulary']);
+        Route::get('plan-edit/get-super-provider-network', [PlanEditController::class, 'getSuperProviderNetwork']);
+        Route::get('plan-edit/get-exhausted-benefits', [PlanEditController::class, 'getExhaustedBenefits']);
     });
 
     //Membership
