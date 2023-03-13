@@ -12,35 +12,59 @@ class ProviderTypeValidationController extends Controller
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
+        
+        $recordcheck = DB::table('PROVIDER_TYPE_VALIDATIONS')
+        ->where('prov_type_list_id', strtoupper($request->prov_type_list_id))
+        ->first();
+        
+
         if ( $request->has( 'new' ) ) {
 
+           
+            if($recordcheck){
+                return $this->respondWithToken($this->token(), 'Provider Type  ID Already Exists', $recordcheck);
+
+            }
+
+            else{
+
+                $accum_benfit_stat_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')->insert(
+                    [
+                        'prov_type_list_id' => strtoupper( $request->prov_type_list_id ),
+                        'description'=>$request->description,
+                        'DATE_TIME_CREATED'=>$createddate,
+                        
+    
+                    ]
+                );
+    
+    
+                $accum_benfit_stat = DB::table('PROVIDER_TYPE_VALIDATIONS')->insert(
+                    [
+                        'PROC_CODE_LIST_ID'=>$request->procedure_code_list_id,
+                        'PROV_TYPE_LIST_ID'=>$request->prov_type_list_id,
+                        'PROVIDER_TYPE'=>$request->provider_type,
+                        'EFFECTIVE_DATE'=>$request->effective_date,
+                        'TERMINATION_DATE'=>$request->termination_date,
+                        'DATE_TIME_CREATED'=>$createddate,
+    
+                    ]
+                );
 
 
-            $accum_benfit_stat_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')->insert(
-                [
-                    'prov_type_list_id' => strtoupper( $request->benefit_list_id ),
-                    'description'=>$request->description
-                    
-
-                ]
-            );
+                return $this->respondWithToken( $this->token(), 'Record Added Successfully',$accum_benfit_stat);
 
 
-            $accum_benfit_stat = DB::table('PROVIDER_TYPE_VALIDATIONS' )->insert(
-                [
-                    'prov_type_list_id'=>$request->prov_type_list_id,
-                    'provider_type'=>$request->provider_type,
+            }
 
-                ]
-            );
 
-            $benefitcode = DB::table('PROVIDER_TYPE_VALIDATIONS')->where('prov_type_list_id', 'like', '%'.$request->prov_type_list_id .'%')->first();
+
 
         } else {
 
 
             $benefitcode = DB::table('PROVIDER_TYPE_VALIDATION_NAMES' )
-            ->where('prov_type_list_id', $request->prov_type_list_id )
+            ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id )
 
 
             ->update(
@@ -55,19 +79,21 @@ class ProviderTypeValidationController extends Controller
             ->where('provider_type',$request->provider_type)
             ->update(
                 [
-                    'provider_type'=>$request->provider_type,
-                    'effective_date'=>$request->effective_date,
+                        'PROC_CODE_LIST_ID'=>$request->procedure_code_list_id,
+                        'PROVIDER_TYPE'=>$request->provider_type,
+                        'EFFECTIVE_DATE'=>$request->effective_date,
+                        'TERMINATION_DATE'=>$request->termination_date,
+                        'DATE_TIME_CREATED'=>$createddate,
                   
 
                 ]
             );
 
-            $benefitcode = DB::table('PROVIDER_TYPE_VALIDATIONS')->where('proc_code_list_id', 'like', $request->proc_code_list_id )->first();
+            return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$accum_benfit_stat);
 
         }
 
 
-        return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
     }
     
 

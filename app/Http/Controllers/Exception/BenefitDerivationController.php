@@ -14,25 +14,45 @@ class BenefitDerivationController extends Controller {
         $effective_date = date( 'Ymd', strtotime( $request->effective_date ) );
         $terminate_date = date( 'Ymd', strtotime( $request->termination_date ) );
 
+
+        $recordcheck = DB::table('PROVIDER_TYPE_VALIDATIONS')
+        ->where('prov_type_list_id', strtoupper($request->prov_type_list_id))
+        ->first();
+        
+
         if ( $request->has( 'new' ) ) {
+
+            if($recordcheck){
+
+                return $this->respondWithToken($this->token(), 'Benefit Derivation ID Already Exists', $recordcheck);
+
+            }
 
             $accum_benfit_stat_names = DB::table( 'BENEFIT_DERIVATION_NAMES' )->insert(
                 [
-                    'benefit_derivation_id' => strtoupper( $request->benefit_derivation_id ),
-                    'description'=>$request->description,
+                    'BENEFIT_DERIVATION_ID' => strtoupper( $request->benefit_derivation_id ),
+                    'DESCRIPTION'=>$request->description,
+                    'DATE_TIME_CREATED'=>$createddate
 
                 ]
             );
 
             $accum_benfit_stat = DB::table( 'BENEFIT_DERIVATION' )->insert(
                 [
-                    'benefit_derivation_id' => strtoupper( $request->benefit_derivation_id ),
-                    'service_type'=>$request->service_type,
+                    'BENEFIT_DERIVATION_ID' => strtoupper( $request->benefit_derivation_id ),
+                    'SERVICE_TYPE'=>$request->service_type,
+                    'SERVICE_MODIFIER'=>$request->service_modifier,
+                    'BENEFIT_CODE'=>$request->benefit_code,
+                    'EFFECTIVE_DATE'=>$request->effective_date,
+                    'TERMINATION_DATE'=>$request->termination_date,
+                    'DATE_TIME_CREATED'=>$createddate,
 
                 ]
             );
 
-            $benefitcode = DB::table( 'BENEFIT_DERIVATION_NAMES' )->where( 'benefit_derivation_id', 'like', '%'.$request->benefit_derivation_id .'%' )->first();
+            return $this->respondWithToken( $this->token(), 'Record Added Successfully', $accum_benfit_stat );
+
+
 
         } else {
 
@@ -41,8 +61,8 @@ class BenefitDerivationController extends Controller {
 
             ->update(
                 [
-                    'description'=>$request->description,
-
+                    'DESCRIPTION'=>$request->description,
+                    'DATE_TIME_CREATED'=>$createddate
                 ]
             );
 
@@ -54,17 +74,16 @@ class BenefitDerivationController extends Controller {
 
             ->update(
                 [
-                    'effective_date'=>$effective_date,
-                    'termination_date'=>$terminate_date,
+                    'effective_date'=>$request->effective_date,
+                    'termination_date'=>$request->termination_date,
 
                 ]
             );
 
-            $benefitcode = DB::table( 'BENEFIT_DERIVATION' )->where( 'benefit_derivation_id', 'like', $request->benefit_derivation_id )->first();
+            return $this->respondWithToken( $this->token(), 'Record Updated Successfully', $accum_benfit_stat );
 
         }
 
-        return $this->respondWithToken( $this->token(), 'Successfully added', $benefitcode );
     }
 
 
