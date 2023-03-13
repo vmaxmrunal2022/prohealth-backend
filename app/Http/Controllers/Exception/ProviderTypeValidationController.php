@@ -39,7 +39,7 @@ class ProviderTypeValidationController extends Controller
                 );
     
     
-                $accum_benfit_stat = DB::table('PROVIDER_TYPE_VALIDATIONS')->insert(
+                $add = DB::table('PROVIDER_TYPE_VALIDATIONS')->insert(
                     [
                         'PROC_CODE_LIST_ID'=>$request->procedure_code_list_id,
                         'PROV_TYPE_LIST_ID'=>$request->prov_type_list_id,
@@ -52,13 +52,10 @@ class ProviderTypeValidationController extends Controller
                 );
 
 
-                return $this->respondWithToken( $this->token(), 'Record Added Successfully',$accum_benfit_stat);
+                return $this->respondWithToken( $this->token(), 'Record Added Successfully',$add);
 
 
             }
-
-
-
 
         } else {
 
@@ -74,7 +71,7 @@ class ProviderTypeValidationController extends Controller
                 ]
             );
 
-            $accum_benfit_stat = DB::table('PROVIDER_TYPE_VALIDATIONS' )
+            $update = DB::table('PROVIDER_TYPE_VALIDATIONS' )
             ->where('proc_code_list_id', $request->proc_code_list_id )
             ->where('provider_type',$request->provider_type)
             ->update(
@@ -89,7 +86,7 @@ class ProviderTypeValidationController extends Controller
                 ]
             );
 
-            return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$accum_benfit_stat);
+            return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$update);
 
         }
 

@@ -164,7 +164,10 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/service-type/submit', [ServiceTypeController::class, 'add'])->name('servicetype.submit'); // add
         Route::post('/service-type/delete', [ServiceTypeController::class, 'delete'])->name('servicetype.delete'); // DELETE
         Route::get('/check-service-type-exist', [ServiceTypeController::class, 'checkServiceTypeExist']);
+        Route::get('/service-type/all', [ServiceTypeController::class, 'getallServicetypes'])->name('servicetype.all.servicetypes'); // SEARCH
 
+
+        
 
         // SERVICE MODIFIER
         Route::get('/service-modifier', [ServiceModifierController::class, 'get'])->name('servicemodifier.get');  // SEARCH

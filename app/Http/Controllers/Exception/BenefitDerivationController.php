@@ -11,8 +11,8 @@ class BenefitDerivationController extends Controller {
     public function add( Request $request ) {
 
         $createddate = date( 'y-m-d' );
-        $effective_date = date( 'Ymd', strtotime( $request->effective_date ) );
-        $terminate_date = date( 'Ymd', strtotime( $request->termination_date ) );
+        // $effective_date = date( 'Ymd', strtotime( $request->effective_date ) );
+        // $terminate_date = date( 'Ymd', strtotime( $request->termination_date ) );
 
 
         $recordcheck = DB::table('PROVIDER_TYPE_VALIDATIONS')
