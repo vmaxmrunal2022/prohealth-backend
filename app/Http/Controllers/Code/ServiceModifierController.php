@@ -29,6 +29,16 @@ class ServiceModifierController extends Controller
         }
     }
 
+    public function get_all(Request $request)
+    {
+        $modifiers = $procedurecodes = DB::table('SERVICE_MODIFIERS')->get();
+        if ($modifiers) {
+            return $this->respondWithToken($this->token(), '', $modifiers);
+        } else {
+            return $this->respondWithToken($this->token(), 'data not found', $modifiers);
+        }
+    }
+
     public function add(Request $request)
     {
         if ($request->new) {

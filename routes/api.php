@@ -168,6 +168,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/service-modifier/submit', [ServiceModifierController::class, 'add'])->name('servicemodifier.submit'); // add
         Route::post('/service-modifier/delete', [ServiceModifierController::class, 'delete'])->name('servicemodifier.delete'); // DELETE
         Route::get('/check-service-modifier-exist', [ServiceModifierController::class, 'checkServiceExist']);
+        Route::get('/service-modifier-all', [ServiceModifierController::class, 'get_all'])->name('servicemodifier.get.all');  // SEARCH
 
 
         // COUSE OF LOSS
@@ -916,8 +917,6 @@ Route::get('/provider', [Controller::class, 'getProvider']);
 
 
 Route::group(['prefix' => 'providerdata'], function ($router) {
-
-
     Route::get('/provider/search', [ProviderDataProviderController::class, 'search'])->name('provider.search'); // SEARCH
     Route::get('/provider/get/{ndcid}', [ProviderDataProviderController::class, 'getProviderList'])->name('provider.list.get'); // LIST ITEMS
     Route::get('/provider/details/{ndcid}', [ProviderDataProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
