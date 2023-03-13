@@ -27,7 +27,7 @@ class PrcedureCodeListController extends Controller
 
             if($recordcheck){
 
-                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Procedure Code List Id Already Exists', $recordcheck);
 
 
             }else{
@@ -52,7 +52,7 @@ class PrcedureCodeListController extends Controller
 
 
                 if ($accum_benfit_stat) {
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully!!!', $accum_benfit_stat);
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $accum_benfit_stat);
                 }
     
     
