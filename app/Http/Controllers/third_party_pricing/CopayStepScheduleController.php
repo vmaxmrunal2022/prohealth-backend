@@ -28,8 +28,13 @@ class CopayStepScheduleController extends Controller
         $validate = $request->validate([
             'copay_list' => ['required', 'unique:copay_list'],
         ]);
+        $copayStepSchedule = DB::table('COPAY_MATRIX')->where('copay_list',  $request->copay_list)->first();
         if ($validate) {
-            if ($request->has('new')) {
+            if ($request->add_new == 1) {
+
+                if ($copayStepSchedule->count() > 0) {
+                    return $this->respondWithToken($this->token(), 'Record Alredy Exists',  $copayStepSchedule, true, 200, 1);
+                }
                 if ($request->cost_max) {
                     $days_supply = "0";
                     $cost_max = $request->cost_max;
@@ -50,7 +55,10 @@ class CopayStepScheduleController extends Controller
                         'step_schedule_indicator' => $step_schedule_indicator
                     ]);
                 return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addCopay);
-            } else {
+            } else if ($request->add_new == 0) {
+                if ($copayStepSchedule->count() < 1) {
+                    return $this->respondWithToken($this->token(), 'Record Not Found',  [], false, 404, 0);
+                }
                 if ($request->cost_max) {
                     $days_supply = "0";
                     $cost_max = $request->cost_max;
@@ -78,8 +86,8 @@ class CopayStepScheduleController extends Controller
     public function checkCopayListExist(Request $request)
     {
         $exist = DB::table('copay_matrix')
-                 ->where('copay_list', $request->copay_list)
-                 ->count();
+            ->where('copay_list', $request->copay_list)
+            ->count();
         return $this->respondWithToken($this->token(), '', $exist);
     }
 }

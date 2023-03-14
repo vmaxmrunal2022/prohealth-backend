@@ -30,27 +30,38 @@ class ProcedureUcrList extends Controller
 
     public function submitProcedureList(Request $request)
     {
-        $validate = DB::table('procedure_ucr_names')->where('procedure_ucr_id', $request->procedure_ucr_id)->get()->count();
-        if ($validate <= "0") {
-            if ($request->add_new) {
-                $add_procedure_names = DB::table('procedure_ucr_names')
-                    ->insert([
-                        'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
-                        'DESCRIPTION' => $request->description
-                    ]);
 
-                $add_procedure_list = DB::table('PROCEDURE_UCR_LIST')
-                    ->insert([
-                        'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
-                        'procedure_code' => $request->procedure_code,
-                        'effective_date' => $request->effective_date,
-                        'termination_date' => $request->termination_date,
-                        'unit_value' => $request->unit_value,
-                        'UCR_CURRENCY' => $request->ucr_currency,
-                    ]);
-                return $this->respondWithToken($this->token(), 'Added Successfully!', $add_procedure_list);
+        $validate = DB::table('procedure_ucr_names')->where('procedure_ucr_id', $request->procedure_ucr_id)->get();
+        // return "hi" . $validate->count();
+
+        if ($request->add_new == 1) {
+            // echo $request->add_new;
+
+            if ($validate->count() > 0) {
+                return $this->respondWithToken($this->token(), 'Record Alredy Exists', $validate, true, 200, 1);
             }
-        } else {
+
+            $add_procedure_names = DB::table('procedure_ucr_names')
+                ->insert([
+                    'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
+                    'DESCRIPTION' => $request->description
+                ]);
+
+            $add_procedure_list = DB::table('PROCEDURE_UCR_LIST')
+                ->insert([
+                    'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
+                    'procedure_code'   => $request->procedure_code,
+                    'effective_date'   => $request->effective_date,
+                    'termination_date' => $request->termination_date,
+                    'unit_value'       => $request->unit_value,
+                    'UCR_CURRENCY'     => $request->ucr_currency,
+                ]);
+            return $this->respondWithToken($this->token(), 'Added Successfully!', $add_procedure_list);
+        } else if ($request->add_new == 0) {
+            if ($validate->count() < 1) {
+                return $this->respondWithToken($this->token(), 'Record Not Found', $validate, false, 404, 0);
+            }
+
             $update_procedure_names = DB::table('PROCEDURE_UCR_NAMES')
                 ->where('procedure_ucr_id', $request->procedure_ucr_id)
                 ->update([
