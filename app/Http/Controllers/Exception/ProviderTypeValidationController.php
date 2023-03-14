@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ProviderTypeValidationController extends Controller
 {
@@ -15,68 +17,77 @@ class ProviderTypeValidationController extends Controller
 
         $createddate = date('y-m-d');
 
-        if ($request->new) {
+        $validator = Validator::make($request->all(), [
+            'prov_type_list_id' => ['required', 'max:10', Rule::unique('PROVIDER_TYPE_VALIDATION_NAMES')->where(function ($q) {
+                $q->whereNotNull('prov_type_list_id');
+            })],
+        ]);
 
-            $accum_benfit_stat_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')->insert(
-                [
-                    'prov_type_list_id' => strtoupper($request->prov_type_list_id),
-                    'description' => $request->description,
-                    'DATE_TIME_CREATED' => date('Ymd H:i:s'),
-                    'USER_ID_CREATED' => Auth::id(),
-                    'DATE_TIME_MODIFIED' => date('Ymd H:i:s'),
-                ]
-            );
-
-
-            $accum_benfit_stat = DB::table('PROVIDER_TYPE_VALIDATIONS')->insert(
-                [
-                    'prov_type_list_id' => strtoupper($request->prov_type_list_id),
-                    'provider_type' => $request->provider_type,
-                    'DATE_TIME_CREATED' => date('Ymd H:i:s'),
-                    'DATE_TIME_CREATED' => date('Ymd H:i:s'),
-                    'USER_ID_CREATED' => Auth::id(),
-                    'DATE_TIME_MODIFIED' => date('Ymd H:i:s'),
-                    'effective_date' => $request->effective_date,
-                    'proc_code_list_id' => $request->proc_code_list_id,
-                    'provider_type' => $request->provider_type,
-                    'termination_date' => $request->termination_date,
-                    'proc_code_list_id' => $request->proc_code_list_id,
-
-                ]
-            );
-
-            $benefitcode = DB::table('PROVIDER_TYPE_VALIDATIONS')->where('prov_type_list_id', 'like', '%' . $request->prov_type_list_id . '%')->first();
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), '', $validator->errors(), false);
         } else {
+            if ($request->new) {
 
-
-            $benefitcode = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
-                ->where('prov_type_list_id', $request->prov_type_list_id)
-
-
-                ->update(
+                $accum_benfit_stat_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')->insert(
                     [
+                        'prov_type_list_id' => strtoupper($request->prov_type_list_id),
                         'description' => $request->description,
-
+                        'DATE_TIME_CREATED' => date('Ymd H:i:s'),
+                        'USER_ID_CREATED' => Auth::id(),
+                        'DATE_TIME_MODIFIED' => date('Ymd H:i:s'),
                     ]
                 );
 
-            $accum_benfit_stat = DB::table('PROVIDER_TYPE_VALIDATIONS')
-                ->where('proc_code_list_id', $request->proc_code_list_id)
-                ->where('provider_type', $request->provider_type)
-                ->update(
+
+                $accum_benfit_stat = DB::table('PROVIDER_TYPE_VALIDATIONS')->insert(
                     [
+                        'prov_type_list_id' => strtoupper($request->prov_type_list_id),
                         'provider_type' => $request->provider_type,
+                        'DATE_TIME_CREATED' => date('Ymd H:i:s'),
+                        'DATE_TIME_CREATED' => date('Ymd H:i:s'),
+                        'USER_ID_CREATED' => Auth::id(),
+                        'DATE_TIME_MODIFIED' => date('Ymd H:i:s'),
                         'effective_date' => $request->effective_date,
-
+                        'proc_code_list_id' => $request->proc_code_list_id,
+                        'provider_type' => $request->provider_type,
+                        'termination_date' => $request->termination_date,
+                        'proc_code_list_id' => $request->proc_code_list_id,
 
                     ]
                 );
 
-            $benefitcode = DB::table('PROVIDER_TYPE_VALIDATIONS')->where('proc_code_list_id', 'like', $request->proc_code_list_id)->first();
+                $benefitcode = DB::table('PROVIDER_TYPE_VALIDATIONS')->where('prov_type_list_id', 'like', '%' . $request->prov_type_list_id . '%')->first();
+                return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
+            } else {
+
+
+                $benefitcode = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
+                    ->where('prov_type_list_id', $request->prov_type_list_id)
+
+
+                    ->update(
+                        [
+                            'description' => $request->description,
+
+                        ]
+                    );
+
+                $accum_benfit_stat = DB::table('PROVIDER_TYPE_VALIDATIONS')
+                    ->where('proc_code_list_id', $request->proc_code_list_id)
+                    ->where('provider_type', $request->provider_type)
+                    ->update(
+                        [
+                            'provider_type' => $request->provider_type,
+                            'effective_date' => $request->effective_date,
+
+
+                        ]
+                    );
+
+                $benefitcode = DB::table('PROVIDER_TYPE_VALIDATIONS')->where('proc_code_list_id', 'like', $request->proc_code_list_id)->first();
+                return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
+            }
         }
-
-
-        return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
     }
 
 
@@ -97,7 +108,7 @@ class ProviderTypeValidationController extends Controller
             // ->where('effective_date', 'like', '%'.$request->search.'%')
             ->Where(DB::raw('UPPER(prov_type_list_id)'), 'like', '%' . strtoupper($request->search) . '%')
             // ->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->first();
+            ->get();
         // dd($request->all());
         return $this->respondWithToken($this->token(), '', $providerTypeValidations);
     }
