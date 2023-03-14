@@ -131,6 +131,30 @@ class AccumlatedBenifitController extends Controller
     }
 
 
+    
+
+
+    public function get_all(Request $request)
+
+    {
+        $accumlated_benefit_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')->get();
+
+        if($accumlated_benefit_names){
+            return $this->respondWithToken($this->token(), 'Data fetched Successfully', $accumlated_benefit_names);
+        }
+
+        else{
+            return $this->respondWithToken($this->token(), 'Data Not Found', $accumlated_benefit_names);
+
+        }
+
+    }
+
+
+
+    
+
+
     public function search(Request $request)
 
     {

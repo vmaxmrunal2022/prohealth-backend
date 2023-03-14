@@ -29,6 +29,21 @@ class BenifitController extends Controller
         }
     }
 
+    public function get_all(Request $request)
+    {
+        
+            $benefitcodes = DB::table('benefit_codes')->get();
+            if($benefitcodes){
+
+                return $this->respondWithToken($this->token(), 'Datafetched Successfully', $benefitcodes);
+
+            }else{
+                return $this->respondWithToken($this->token(), 'something went wrong', $benefitcodes);
+
+            }
+        
+    }
+
     public function add(Request $request)
     {
         $response  = new Response();

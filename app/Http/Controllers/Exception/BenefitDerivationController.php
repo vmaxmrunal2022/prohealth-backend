@@ -15,8 +15,8 @@ class BenefitDerivationController extends Controller {
         // $terminate_date = date( 'Ymd', strtotime( $request->termination_date ) );
 
 
-        $recordcheck = DB::table('PROVIDER_TYPE_VALIDATIONS')
-        ->where('prov_type_list_id', strtoupper($request->prov_type_list_id))
+        $recordcheck = DB::table('BENEFIT_DERIVATION')
+        ->where('BENEFIT_DERIVATION_ID', strtoupper($request->benefit_derivation_id))
         ->first();
         
 
@@ -46,6 +46,7 @@ class BenefitDerivationController extends Controller {
                     'EFFECTIVE_DATE'=>$request->effective_date,
                     'TERMINATION_DATE'=>$request->termination_date,
                     'DATE_TIME_CREATED'=>$createddate,
+                    'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
 
                 ]
             );
@@ -76,6 +77,7 @@ class BenefitDerivationController extends Controller {
                 [
                     'effective_date'=>$request->effective_date,
                     'termination_date'=>$request->termination_date,
+
 
                 ]
             );
@@ -109,8 +111,15 @@ class BenefitDerivationController extends Controller {
 
     public function getBLList( $ndcid ) {
         $ndclist = DB::table( 'BENEFIT_DERIVATION' )
-        // ->select( 'NDC_EXCEPTION_LIST', 'EXCEPTION_NAME' )
-        ->where( 'BENEFIT_DERIVATION_ID', $ndcid )
+        ->join('BENEFIT_DERIVATION_NAMES','BENEFIT_DERIVATION_NAMES.BENEFIT_DERIVATION_ID','=','BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID')
+        ->join('PROC_CODE_LIST_NAMES','PROC_CODE_LIST_NAMES.PROC_CODE_LIST_ID','=','BENEFIT_DERIVATION.PROC_CODE_LIST_ID')
+        ->select( 'BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID', 'BENEFIT_DERIVATION.SERVICE_TYPE', 
+        'BENEFIT_DERIVATION_NAMES.DESCRIPTION',
+        'BENEFIT_DERIVATION.*'
+        )
+        
+        ->where('BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID', $ndcid )
+
         // ->orWhere( 'EXCEPTION_NAME', 'like', '%' . strtoupper( $ndcid ) . '%' )
         ->get();
 
@@ -119,8 +128,24 @@ class BenefitDerivationController extends Controller {
 
     public function getBLItemDetails( $ndcid, $ndcid2 ) {
         $ndclist = DB::table( 'BENEFIT_DERIVATION' )
-        // ->select( 'NDC_EXCEPTION_LIST', 'EXCEPTION_NAME' )
-        ->join( 'BENEFIT_DERIVATION_NAMES', 'BENEFIT_DERIVATION_NAMES.BENEFIT_DERIVATION_ID', '=', 'BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID' )
+        ->join('BENEFIT_DERIVATION_NAMES as benefitnames', 'benefitnames.BENEFIT_DERIVATION_ID', '=', 'BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID' )
+        ->join('SERVICE_TYPES','SERVICE_TYPES.SERVICE_TYPE','=','BENEFIT_DERIVATION.SERVICE_TYPE')
+        ->join('SERVICE_MODIFIERS','SERVICE_MODIFIERS.SERVICE_MODIFIER','=','BENEFIT_DERIVATION.SERVICE_MODIFIER')
+        ->join('PROC_CODE_LIST_NAMES','PROC_CODE_LIST_NAMES.PROC_CODE_LIST_ID','=','BENEFIT_DERIVATION.PROC_CODE_LIST_ID')
+        ->join('BENEFIT_CODES','BENEFIT_CODES.BENEFIT_CODE','=','BENEFIT_DERIVATION.BENEFIT_CODE')
+        ->select('BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID',
+        'BENEFIT_DERIVATION.SERVICE_TYPE',
+        'BENEFIT_DERIVATION.SERVICE_MODIFIER',
+        'BENEFIT_DERIVATION.BENEFIT_CODE',
+        'BENEFIT_DERIVATION.EFFECTIVE_DATE',
+        'BENEFIT_DERIVATION.TERMINATION_DATE',
+        'SERVICE_TYPES.DESCRIPTION as service_type_description',
+        'SERVICE_MODIFIERS.DESCRIPTION as service_modifier_description',
+        'PROC_CODE_LIST_NAMES.PROC_CODE_LIST_ID as proc_code_list_id',
+        'PROC_CODE_LIST_NAMES.DESCRIPTION as procedure_code_description',
+        'BENEFIT_CODES.DESCRIPTION as benefit_code_description',
+        'benefitnames.description as description')
+
         ->where( 'BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID', $ndcid )
         ->where( 'BENEFIT_DERIVATION.BENEFIT_CODE', $ndcid2 )
 

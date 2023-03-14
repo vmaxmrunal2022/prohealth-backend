@@ -27,6 +27,26 @@ class PricingStrategyController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+
+    public function get_all(Request $request)
+    {
+       
+        $pricing_strategies = DB::table('PRICING_STRATEGY_NAMES')->get();
+
+        if($pricing_strategies){
+
+            return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $pricing_strategies);
+
+        }else{
+
+            return $this->respondWithToken($this->token(), 'something Went Wrong', $pricing_strategies);
+
+        }
+
+    }
+
+    
+
     public function getProviderList($ndcid)
     {
         $ndclist = DB::table('PRICING_STRATEGY')

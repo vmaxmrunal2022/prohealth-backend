@@ -27,6 +27,15 @@ class BenefitListController extends Controller
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
+
+        $recordcheck=DB::table('BENEFIT_LIST')
+        ->where('customer_id', strtoupper($request->customer_id))
+        ->where('client_id',strtoupper($request->client_id))
+        ->where('client_group_id',strtoupper($request->client_group_id))
+        ->first();
+
+
+
         if ( $request->has( 'new' ) ) {
 
 
@@ -41,11 +50,27 @@ class BenefitListController extends Controller
             );
 
 
-            $accum_benfit_stat = DB::table('BENEFIT_LIST' )->insert(
+            $accum_benfit_stat = DB::table('BENEFIT_LIST')->insert(
                 [
-                    'benefit_code'=>$request->benefit_code,
-                    'effective_date'=>$request->effective_date,
-                    'termination_date'=>$request->termination_date,
+                    'BENEFIT_LIST_ID'=>$request->benefit_list_id,
+                    'BENEFIT_CODE'=>$request->benefit_code,
+                    'EFFECTIVE_DATE'=>$request->effective_date,
+                    'TERMINATION_DATE'=>$request->termination_date,
+                    'DATE_TIME_CREATED'=>$createddate,
+                    'USER_ID_CREATED'=>'',
+                    'USER_ID'=>'',
+                    'PRICING_STRATEGY_ID'=>$request->pricing_strategy_id,
+                    'ACCUM_BENE_STRATEGY_ID'=>$request->accum_bene_strategy_id,
+                    'COPAY_STRATEGY_ID'=>$request->copay_strategy_id,
+                    'MESSAGE'=>$request->message,
+                    'MESSAGE_STOP_DATE'=>'',
+                    'MIN_AGE'=>$request->min_age,
+                    'MAX_AGE'=>$request->max_age,
+                    'MIN_PRICE'=>$request->min_price,
+                    'MAX_PRICE'=>$request->max_price,
+                    'MIN_PRICE_OPT'=>$request->max_price_opt,
+                    'MAX_PRICE_OPT'=>$request->max_price_opt,
+                    // 'VALID_RELATION_CODE'=>$request
 
                 ]
             );

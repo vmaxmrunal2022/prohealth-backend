@@ -41,7 +41,7 @@ class ChainController extends Controller
 
                 if($recordcheck){
 
-                    return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $recordcheck);
+                    return $this->respondWithToken($this->token(), 'Pharmacy Chain Id Already Exists', $recordcheck);
 
 
                 }
@@ -80,7 +80,7 @@ class ChainController extends Controller
                             // 'COMPLETE_CODE_IND' => ''
                         ]
                     );
-                 return  $this->respondWithToken($this->token(), 'Record Added Successfully!', $procedurecode);
+                 return  $this->respondWithToken($this->token(), 'Record Added Successfully', $procedurecode);
                 
 
                 }

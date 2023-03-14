@@ -126,6 +126,9 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/benefits/delete', [BenifitController::class, 'delete'])->name('benefit.delete'); // DELETE
         Route::get('/check-benifit-exist', [BenifitController::class, 'checkBenifitCodeExist']);
 
+        Route::get('/benefits/all_codes', [BenifitController::class, 'get_all'])->name('benefit.all.get'); // SEARCH
+
+
         // REASON CODES
         Route::get('/reasons', [ReasonsController::class, 'get'])->name('reasons.get'); // SEARCH
         Route::post('/reasons/submit', [ReasonsController::class, 'add'])->name('reasons.submit'); // add
@@ -257,6 +260,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/pricingstrategy/get/{ndcid}', [PricingStrategyController::class, 'getProviderList'])->name('pricingstrategy.list.get'); // LIST ITEMS
         Route::get('/pricingstrategy/details/{ndcid}', [PricingStrategyController::class, 'getNDCItemDetails'])->name('pricingstrategy.details.get'); // DETAIL
         Route::post('/pricingstrategy/add', [PricingStrategyController::class, 'add'])->name('pricingstrategy.add'); // SEARCH
+        Route::get('/pricingstrategy/all', [PricingStrategyController::class, 'get_all'])->name('pricingstrategy.get.all'); // SEARCH
 
 
 
