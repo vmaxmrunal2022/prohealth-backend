@@ -180,7 +180,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/service-modifier-all', [ServiceModifierController::class, 'get_all'])->name('servicemodifier.get.all');  // SEARCH
 
 
-
         // COUSE OF LOSS
         Route::get('/couse-of-loss', [CouseOfLossController::class, 'get'])->name('couseofloss.get'); // SEARCH
         Route::post('/couse-of-loss/submit', [CouseOfLossController::class, 'add'])->name('couseofloss.submit'); // add
@@ -773,6 +772,8 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/super-benefit-list/get', [SuperBenefitControler::class, 'get']);
     Route::get('/super-benefit-list/get-super-benefit-code', [SuperBenefitControler::class, 'getBenefitCode']);
     Route::post('/super-benefit-list/add', [SuperBenefitControler::class, 'add']);
+
+    Route::get('/super-benefit-list/get/{id}', [SuperBenefitControler::class, 'getNDCItemDetails']);
 });
 
 
@@ -952,8 +953,6 @@ Route::get('/validationlist/eligibility/details/{elig_lis_id}', [Controller::cla
 
 
 Route::group(['prefix' => 'providerdata'], function ($router) {
-
-
     Route::get('/provider/search', [ProviderDataProviderController::class, 'search'])->name('provider.search'); // SEARCH
     Route::get('/provider/get/{ndcid}', [ProviderDataProviderController::class, 'getProviderList'])->name('provider.list.get'); // LIST ITEMS
     Route::get('/provider/details/{ndcid}', [ProviderDataProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL

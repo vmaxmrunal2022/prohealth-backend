@@ -151,16 +151,23 @@ class Controller extends BaseController
         }
     }
 
-    public function respondWithToken($token, $responseMessage, $data = [], $status = true, $code = 200)
+
+    public function respondWithToken($token, $responseMessage, $data = [], $status = true, $code = 200, $record = null)
     {
-        return \response()->json([
+        $response = [
             "success" => $status,
             "message" => $responseMessage,
             "data" => $data,
             "token" => $token ?? '',
             // "token_type" => "bearer",
             "status_code" => $code,
-        ], $code,);
+
+        ];
+        if (!is_null($record)) {
+            ($record == 1) ? $response['record'] = 'Exist' : '';
+            ($record == 0) ? $response['record'] = 'Not Found' : '';
+        }
+        return \response()->json($response, $code);
     }
 
     public function defaultAuthGuard()
