@@ -284,6 +284,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/accumulated/benifit/get/{ndcid}', [AccumlatedBenifitController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
         Route::get('/accumulated/benifit/details/{ndcid}', [AccumlatedBenifitController::class, 'getDetails'])->name('accumulated.benifit.details.get'); // DETAIL
         Route::post('/accumulated/benifit/add', [AccumlatedBenifitController::class, 'add'])->name('accumulated.benifit.add'); // SEARCH
+        Route::get('/accumulated/benifit/all', [AccumlatedBenifitController::class, 'get_all'])->name('accumulated.benifit.search'); // SEARCH
 
         Route::get('/accumulated/drop-down', [AccumlatedController::class, 'getAllAcuumlatedBenefits'])->name('accumulated.all'); // SEARCH
 
@@ -500,6 +501,10 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('plan-edit/get-uc-plan', [PlanEditController::class, 'getUCPlan']);
         Route::get('plan-edit/get-search-indication', [PlanEditController::class, 'getSearchIndication']);
         Route::get('plan-edit/get-formulary', [PlanEditController::class, 'getFormulary']);
+
+        Route::get('plan-edit/get-super-provider-network', [PlanEditController::class, 'getSuperProviderNetwork']);
+        Route::get('plan-edit/get-exhausted-benefits', [PlanEditController::class, 'getExhaustedBenefits']);
+        Route::get('plan-edit/get-procedure-exception', [PlanEditController::class, 'getProcedureException']);
     });
 
     //Membership
