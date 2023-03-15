@@ -29,53 +29,62 @@ class BenefitListController extends Controller
 
 
         $recordcheck=DB::table('BENEFIT_LIST')
-        ->where('customer_id', strtoupper($request->customer_id))
-        ->where('client_id',strtoupper($request->client_id))
-        ->where('client_group_id',strtoupper($request->client_group_id))
+        ->where('benefit_list_id', strtoupper($request->benefit_list_id))
         ->first();
 
 
 
         if ( $request->has( 'new' ) ) {
 
+            if($recordcheck){
+
+                return $this->respondWithToken( $this->token(), 'Benefit List Id Already Exists',$recordcheck);
 
 
-            $accum_benfit_stat_names = DB::table('BENEFIT_LIST_NAMES')->insert(
-                [
-                    'benefit_list_id' => strtoupper( $request->benefit_list_id ),
-                    'description'=>$request->description
-                    
+            }else{
 
-                ]
-            );
+                $accum_benfit_stat_names = DB::table('BENEFIT_LIST_NAMES')->insert(
+                    [
+                        'benefit_list_id' => strtoupper( $request->benefit_list_id ),
+                        'description'=>$request->description
+                        
+    
+                    ]
+                );
+    
+    
+                $accum_benfit_stat = DB::table('BENEFIT_LIST')->insert(
+                    [
+                        'BENEFIT_LIST_ID'=>$request->benefit_list_id,
+                        'BENEFIT_CODE'=>$request->benefit_code,
+                        'EFFECTIVE_DATE'=>$request->effective_date,
+                        'TERMINATION_DATE'=>$request->termination_date,
+                        'DATE_TIME_CREATED'=>$createddate,
+                        'USER_ID_CREATED'=>'',
+                        'USER_ID'=>'',
+                        'PRICING_STRATEGY_ID'=>$request->pricing_strategy_id,
+                        'ACCUM_BENE_STRATEGY_ID'=>$request->accum_bene_strategy_id,
+                        'COPAY_STRATEGY_ID'=>$request->copay_strategy_id,
+                        'MESSAGE'=>$request->message,
+                        'MESSAGE_STOP_DATE'=>'',
+                        'MIN_AGE'=>$request->min_age,
+                        'MAX_AGE'=>$request->max_age,
+                        'MIN_PRICE'=>$request->min_price,
+                        'MAX_PRICE'=>$request->max_price,
+                        'MIN_PRICE_OPT'=>$request->max_price_opt,
+                        'MAX_PRICE_OPT'=>$request->max_price_opt,
+                        // 'VALID_RELATION_CODE'=>$request
+    
+                    ]
+                );
+
+            }
 
 
-            $accum_benfit_stat = DB::table('BENEFIT_LIST')->insert(
-                [
-                    'BENEFIT_LIST_ID'=>$request->benefit_list_id,
-                    'BENEFIT_CODE'=>$request->benefit_code,
-                    'EFFECTIVE_DATE'=>$request->effective_date,
-                    'TERMINATION_DATE'=>$request->termination_date,
-                    'DATE_TIME_CREATED'=>$createddate,
-                    'USER_ID_CREATED'=>'',
-                    'USER_ID'=>'',
-                    'PRICING_STRATEGY_ID'=>$request->pricing_strategy_id,
-                    'ACCUM_BENE_STRATEGY_ID'=>$request->accum_bene_strategy_id,
-                    'COPAY_STRATEGY_ID'=>$request->copay_strategy_id,
-                    'MESSAGE'=>$request->message,
-                    'MESSAGE_STOP_DATE'=>'',
-                    'MIN_AGE'=>$request->min_age,
-                    'MAX_AGE'=>$request->max_age,
-                    'MIN_PRICE'=>$request->min_price,
-                    'MAX_PRICE'=>$request->max_price,
-                    'MIN_PRICE_OPT'=>$request->max_price_opt,
-                    'MAX_PRICE_OPT'=>$request->max_price_opt,
-                    // 'VALID_RELATION_CODE'=>$request
 
-                ]
-            );
+            return $this->respondWithToken( $this->token(), 'Record Added Succefully',$accum_benfit_stat);
 
-            $benefitcode = DB::table('BENEFIT_LIST')->where('benefit_list_id', 'like', '%'.$request->benefit_list_id .'%')->first();
+
 
         } else {
 
@@ -104,12 +113,11 @@ class BenefitListController extends Controller
                 ]
             );
 
-            $benefitcode = DB::table('BENEFIT_LIST')->where('benefit_list_id', 'like', $request->benefit_list_id )->first();
+            return $this->respondWithToken( $this->token(), 'Record Updated Succefully',$accum_benfit_stat);
 
         }
 
 
-        return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
     }
 
 
@@ -140,6 +148,7 @@ class BenefitListController extends Controller
         $ndc = DB::table('BENEFIT_LIST')
         // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
         ->join('BENEFIT_LIST_NAMES', 'BENEFIT_LIST_NAMES.BENEFIT_LIST_ID', '=', 'BENEFIT_LIST.BENEFIT_LIST_ID')
+        ->join('BENEFIT_CODES','BENEFIT_CODES.BENEFIT_CODE','=','BENEFIT_LIST.BENEFIT_CODE')
         ->where('BENEFIT_LIST.BENEFIT_LIST_ID',$ndcid)
 
         // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
