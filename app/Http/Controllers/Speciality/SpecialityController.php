@@ -28,6 +28,14 @@ class SpecialityController extends Controller
         }
     }
 
+    public function specialityValidationList(){
+        $ndclist = DB::table('SPECIALTY_VALIDATIONS')
+        ->join('SPECIALTY_EXCEPTIONS', 'SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', '=', 'SPECIALTY_VALIDATIONS.SPECIALTY_LIST')
+            ->get();
+
+        return $this->respondWithToken($this->token(), '', $ndclist);
+    }
+
     public function getSpecialityList($specialty_id)
     {
         $ndclist = DB::table('SPECIALTY_VALIDATIONS')

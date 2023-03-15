@@ -28,7 +28,7 @@ class CopayStepScheduleController extends Controller
         $validate = $request->validate([
             'copay_list' => ['required', 'unique:copay_list'],
         ]);
-        $copayStepSchedule = DB::table('COPAY_MATRIX')->where('copay_list',  $request->copay_list)->first();
+        $copayStepSchedule = DB::table('COPAY_MATRIX')->where('copay_list',  $request->copay_list)->get();
         if ($validate) {
             if ($request->add_new == 1) {
 

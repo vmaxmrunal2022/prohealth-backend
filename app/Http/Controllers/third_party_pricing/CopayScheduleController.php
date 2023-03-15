@@ -76,7 +76,14 @@ class CopayScheduleController extends Controller
 
     public function submitCopaySchedule(Request $request)
     {
-        if ($request->add_new) {
+        $copaySchedule = DB::table('copay_schedule')->where('copay_schedule',  $request->copay_schedule)->get();
+
+        if ($request->add_new  == 1) {
+
+            if ($copaySchedule->count() > 0) {
+                return $this->respondWithToken($this->token(), 'Record Alredy Exists',  $copaySchedule, true, 200, 1);
+            }
+
             $add_copay_schedule = DB::table('copay_schedule')
                 ->insert([
                     'copay_schedule' => $request->copay_schedule,
@@ -199,7 +206,12 @@ class CopayScheduleController extends Controller
                 ]);
 
             return $this->respondWithToken($this->token(), 'Added successfully!', $add_copay_schedule);
-        } else {
+        } else if ($request->add_new == 0) {
+
+            if ($copaySchedule->count() < 1) {
+                return $this->respondWithToken($this->token(), 'Record Not Found',  [], false, 404, 0);
+            }
+
             $update_copay_schedule = DB::table('copay_schedule')
                 ->where('copay_schedule', $request->copay_schedule)
                 ->update([

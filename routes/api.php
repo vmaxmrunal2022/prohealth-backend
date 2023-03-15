@@ -211,6 +211,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/speciality/details/{specialty_id}/{specialty_list}', [SpecialityController::class, 'getSpecialityDetails'])->name('ndsc.details.get'); // DETAIL
         Route::post('/speciality/submit-speciality-form', [SpecialityController::class, 'addSpeciality']); // add update speciality
 
+        Route::get('/speciality/list', [SpecialityController::class, 'specialityValidationList'])->name('speciality.list'); 
 
 
         Route::get('/eligibility/search', [EligibilityValidationListController::class, 'search']); // SEARCH
@@ -818,7 +819,6 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
 
     Route::get('/gpiExclusion/get/{ndcid}', [GpiExclusionController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
-
     Route::get('/gpiExclusion/details/{ndcid}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
     Route::post('/gpiExclusion/add', [GpiExclusionController::class, 'add'])->name('gpiExclusion.add'); // ADD
     Route::get('/gpi/dropdowns', [GpiExclusionController::class, 'GPIS'])->name('gpi.search'); // SEARCH
@@ -856,6 +856,12 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/prescriber/details/{physicain_list}/{physicain_id}', [PrescriberValidationController::class, 'getProviderDetails'])->name('prescriber.details.get'); // DETAIL
     Route::get('prescriber/prescriber-list-drop-down', [PrescriberValidationController::class, 'searchDropDownPrescriberList']);
     Route::post('/prescriber/submit-prescriber-form', [PrescriberValidationController::class, 'addPrescriberData']);
+    Route::get('/prescriber/list', [PrescriberValidationController::class, 'prescriberValidationList'])->name('prescriber.list'); 
+
+    
+    
+
+
 });
 
 
