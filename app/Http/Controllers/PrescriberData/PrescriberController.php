@@ -17,9 +17,13 @@ class PrescriberController extends Controller
 
                 ->get();
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
-
+    public function getAll(Request $request)
+    {
+        $ndc = DB::table('PHYSICIAN_TABLE')->get();
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
 
     public function getDetails($ndcid)
     {

@@ -18,6 +18,11 @@ class CopayScheduleController extends Controller
 
         return $this->respondWithToken($this->token(), '', $copayList);
     }
+    public function getAll(Request $request)
+    {
+        $copayList = DB::table('COPAY_SCHEDULE')->get();
+        return $this->respondWithToken($this->token(), '', $copayList);
+    }
 
     public function getCopayData(Request $request)
     {

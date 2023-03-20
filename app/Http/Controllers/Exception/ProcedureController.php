@@ -16,6 +16,12 @@ class ProcedureController extends Controller
 
         if ( $request->has( 'new' ) ) {
 
+            $exist = DB::table('PROCEDURE_EXCEPTION_LISTS')
+            ->where('procedure_exception_list',$request->procedure_exception_list)->get();
+            if($exist->count() > 0){
+                return $this->respondWithToken( $this->token(), 'Procedure List ID Already Existed',[]);
+            }
+
 
             $accum_benfit_stat_names = DB::table('PROCEDURE_EXCEPTION_NAMES')->insert(
                 [
@@ -33,33 +39,32 @@ class ProcedureController extends Controller
                     'accum_bene_strategy_id'=>$request->accum_bene_strategy_id,
                     'benefit_code'=>$request->benefit_code,
                     'copay_strategy_id'=>$request->copay_strategy_id,
-                    // 'coverage_start_days'=>$request->coverage_start_days,
-                    // 'diagnosis_id'=>$request->diagnosis_id,
-                    // 'diagnosis_list'=>$request->diagnosis_list,
+                    'coverage_start_days'=>$request->coverage_start_days,
+                    'diagnosis_id'=>$request->diagnosis_id,
+                    'diagnosis_list'=>$request->diagnosis_list,
                     // 'exception_list'=>$request->exception_list,
-                    // // 'exception_name'=>$request->exception_name,
-                    // 'max_age'=>$request->max_age,
-                    // 'max_price'=>$request->max_price,
-                    // 'max_price_opt'=>$request->max_price_opt,
-                    // 'module_exit'=>$request->module_exit,
-                    // 'new_claim_status'=>$request->new_claim_status,
-                    // 'physician_list'=>$request->physician_list,
-                    // 'physician_specialty_list'=>$request->physician_specialty_list,
-                    // 'pricing_strategy_id'=>$request->pricing_strategy_id,
-                    // 'proc_code_list_id'=>$request->proc_code_list_id,
+                    // 'exception_name'=>$request->exception_name,
+                    'max_age'=>$request->max_age,
+                    'max_price'=>$request->max_price,
+                    'max_price_opt'=>$request->max_price_opt,
+                    'module_exit'=>$request->module_exit,
+                    'new_claim_status'=>$request->new_claim_status,
+                    'physician_list'=>$request->physician_list,
+                    'physician_specialty_list'=>$request->physician_specialty_list,
+                    'pricing_strategy_id'=>$request->pricing_strategy_id,
+                    'proc_code_list_id'=>$request->proc_code_list_id,
                     // 'procedure_exception_list'=>$request->procedure_exception_list,
-                    // 'process_rule'=>$request->process_rule,
-                    // 'provider_type'=>$request->provider_type,
-                    // 'reject_only_msg_flag'=>$request->reject_only_msg_flag,
-                    // 'rx_qty_opt_multiplier'=>$request->rx_qty_opt_multiplier,
-                    // 'service_modifier'=>$request->service_modifier,
-                    // 'service_type'=>$request->service_type,
-                    // 'sex_restriction'=>$request->sex_restriction,
-                    // 'valid_relation_code'=>$request->valid_relation_code,
-
-                
-                   
-                 
+                    'process_rule'=>$request->process_rule,
+                    'provider_type'=>$request->provider_type,
+                    'reject_only_msg_flag'=>$request->reject_only_msg_flag,
+                    'rx_qty_opt_multiplier'=>$request->rx_qty_opt_multiplier,
+                    'service_modifier'=>$request->service_modifier,
+                    'service_type'=>$request->service_type,
+                    'sex_restriction'=>$request->sex_restriction,
+                    'valid_relation_code'=>$request->valid_relation_code,
+                    'effective_date' => $request->effective_date,
+                    'termination_date' => $request->termination_date,
+                    'message_stop_date' => $request->message_stop_date,
                 ]
             );
             $benefitcode = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('procedure_exception_list', 'like', '%'.$request->procedure_exception_list .'%')->first();
@@ -70,36 +75,41 @@ class ProcedureController extends Controller
 
             // dd($request->all())
 
-            $benefitcode = DB::table('PROCEDURE_EXCEPTION_LISTS' )
-            // ->where('procudure_exception_list',$request->procudure_exception_list)
-            ->where('new_claim_status', $request->new_claim_status )
+            $benefitcode = DB::table('PROCEDURE_EXCEPTION_LISTS')
+            ->where('procedure_exception_list',$request->procedure_exception_list)
+            // ->where('new_claim_status', $request->new_claim_status )
             ->update(
                 [
+                    // 'procedure_exception_list'=>$request->procedure_exception_list,
                     'accum_bene_strategy_id'=>$request->accum_bene_strategy_id,
-                    // 'benefit_code'=>$request->benefit_code,
-                    // 'copay_strategy_id'=>$request->copay_strategy_id,
-                    // 'coverage_start_days'=>$request->coverage_start_days,
-                    // 'diagnosis_id'=>$request->diagnosis_id,
-                    // 'diagnosis_list'=>$request->diagnosis_list,
+                    'benefit_code'=>$request->benefit_code,
+                    'copay_strategy_id'=>$request->copay_strategy_id,
+                    'coverage_start_days'=>$request->coverage_start_days,
+                    'diagnosis_id'=>$request->diagnosis_id,
+                    'diagnosis_list'=>$request->diagnosis_list,
                     // 'exception_list'=>$request->exception_list,
                     // 'exception_name'=>$request->exception_name,
-                    // 'max_age'=>$request->max_age,
-                    // 'max_price'=>$request->max_price,
-                    // 'max_price_opt'=>$request->max_price_opt,
-                    // 'module_exit'=>$request->module_exit,
+                    'max_age'=>$request->max_age,
+                    'max_price'=>$request->max_price,
+                    'max_price_opt'=>$request->max_price_opt,
+                    'module_exit'=>$request->module_exit,
                     // 'new_claim_status'=>$request->new_claim_status,
-                    // 'physician_list'=>$request->physician_list,
-                    // 'physician_specialty_list'=>$request->physician_specialty_list,
-                    // 'pricing_strategy_id'=>$request->pricing_strategy_id,
-                    // 'proc_code_list_id'=>$request->proc_code_list_id,
+                    'physician_list'=>$request->physician_list,
+                    'physician_specialty_list'=>$request->physician_specialty_list,
+                    'pricing_strategy_id'=>$request->pricing_strategy_id,
+                    'proc_code_list_id'=>$request->proc_code_list_id,
                     // 'procedure_exception_list'=>$request->procedure_exception_list,
-                    // 'process_rule'=>$request->process_rule,
-                    // 'provider_type'=>$request->provider_type,
-                    // 'reject_only_msg_flag'=>$request->reject_only_msg_flag,
-                    // 'rx_qty_opt_multiplier'=>$request->rx_qty_opt_multiplier,
-                    // 'service_modifier'=>$request->service_modifier,
-                    // 'service_type'=>$request->service_type,
-                    // 'sex_restriction'=>$request->sex_restriction,
+                    'process_rule'=>$request->process_rule,
+                    'provider_type'=>$request->provider_type,
+                    'reject_only_msg_flag'=>$request->reject_only_msg_flag,
+                    'rx_qty_opt_multiplier'=>$request->rx_qty_opt_multiplier,
+                    'service_modifier'=>$request->service_modifier,
+                    'service_type'=>$request->service_type,
+                    'sex_restriction'=>$request->sex_restriction,
+                    'valid_relation_code'=>$request->valid_relation_code,
+                    'effective_date' => $request->effective_date,
+                    'termination_date' => $request->termination_date,
+                    'message_stop_date' => $request->message_stop_date
                 
 
                 ]
@@ -138,7 +148,7 @@ class ProcedureController extends Controller
                 ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 
     public function getPCList($ndcid)
@@ -147,7 +157,7 @@ class ProcedureController extends Controller
                 // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
                 ->where('PROCEDURE_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
                 // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
-                ->get();
+                ->first();
 
         return $this->respondWithToken($this->token(), '', $ndclist);
     }

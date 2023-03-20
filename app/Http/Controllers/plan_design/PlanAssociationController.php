@@ -14,8 +14,13 @@ class PlanAssociationController extends Controller
     {
 
         $planAssociation = DB::table('PLAN_LOOKUP_TABLE')
-            ->where('PLAN_LOOKUP_TABLE.BIN_NUMBER', $id)
-            ->get();
+                ->select('PLAN_LOOKUP_TABLE.*', 'client.client_name', 'client_group.group_name', 'customer.customer_name')
+                ->join('client', 'PLAN_LOOKUP_TABLE.client_id', '=', 'client.client_id')
+                ->join('client_group', 'PLAN_LOOKUP_TABLE.client_group_id', '=', 'client_group.client_group_id')
+                ->join('customer', 'PLAN_LOOKUP_TABLE.customer_id', '=', 'customer.customer_id')
+                ->where('PLAN_LOOKUP_TABLE.BIN_NUMBER', strtoupper($id))
+                // ->where('PLAN_LOOKUP_TABLE.BIN_NUMBER', $id)
+                ->get();
         return $this->respondWithToken($this->token(), '', $planAssociation);
     }
 

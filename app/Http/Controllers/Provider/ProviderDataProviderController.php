@@ -281,6 +281,12 @@ class ProviderDataProviderController extends Controller
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
+    public function getAll(Request $request)
+    {
+        $ndc = DB::table('PHARMACY_TABLE')->get();
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
 
 
 

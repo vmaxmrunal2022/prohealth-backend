@@ -13,8 +13,7 @@ class NDCExceptionController extends Controller
 
         $createddate = date( 'y-m-d' );
 
-        if ( $request->has( 'new' ) ) {
-
+        if ( $request->has('add_new') ) {
 
             $accum_benfit_stat_names = DB::table('NDC_EXCEPTIONS')->insert(
                 [
@@ -238,13 +237,24 @@ class NDCExceptionController extends Controller
 
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
+    public function getNDC($ndcid, $name)
+    {
+        $ndclist = DB::table('NDC_EXCEPTION_LISTS')
+                ->leftjoin('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
+                // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
+                ->where('NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
+                ->Where('NDC_EXCEPTIONS.EXCEPTION_NAME', 'like', '%' . strtoupper($name) . '%')
+                ->get();
+
+        return $this->respondWithToken($this->token(), '', $ndclist);
+    }
 
     public function getNDCItemDetails($ndcid)
     {
         $ndc = DB::table('NDC_EXCEPTION_LISTS')
                     ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list', 'NDC_EXCEPTIONS.EXCEPTION_NAME as exception_name')
                     ->leftjoin('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
-                    ->where('NDC_EXCEPTION_LISTS.NDC', 'like', '%' . strtoupper($ndcid) . '%')
+                    ->where('NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
                     ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

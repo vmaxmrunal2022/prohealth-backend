@@ -105,6 +105,12 @@ class PrcedureCodeListController extends Controller
         return $this->respondWithToken( $this->token(), '', $providerCodeList );
     }
 
+    public function getAll( Request $request )
+    {
+        $providerCodeList = DB::table( 'PROC_CODE_LIST_NAMES')->get();
+        return $this->respondWithToken( $this->token(), '', $providerCodeList );
+    }
+
     public function getProcCodeList( Request $request )
  {
         $providerCodeList = DB::table( 'PROC_CODE_LISTS' )
