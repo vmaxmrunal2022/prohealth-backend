@@ -132,6 +132,16 @@ class TherapyClassController extends Controller
 
         return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
     }
+
+    public function exceptionswithDesc(Request $request){
+
+        $ndc = DB::table('TC_EXCEPTION_LISTS')
+        ->select('TC_EXCEPTION_LISTS.THERAPY_CLASS','TC_EXCEPTIONS.EXCEPTION_NAME')
+        ->join('TC_EXCEPTIONS','TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
+        ->get();
+        return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
     public function search(Request $request)
     {
         $ndc = DB::table('TC_EXCEPTIONS')

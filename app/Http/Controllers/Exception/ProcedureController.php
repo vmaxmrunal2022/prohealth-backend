@@ -152,7 +152,8 @@ class ProcedureController extends Controller
     {
         $ndclist = DB::table('PROCEDURE_EXCEPTION_LISTS')
                 // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
-                ->where('PROCEDURE_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
+                ->join('PROCEDURE_EXCEPTION_NAMES','PROCEDURE_EXCEPTION_NAMES.PROCEDURE_EXCEPTION_LIST','=','PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST')
+                ->where('PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
                 // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
                 ->first();
 
@@ -162,8 +163,36 @@ class ProcedureController extends Controller
     public function getPCItemDetails($ndcid)
     {
         $ndc = DB::table('PROCEDURE_EXCEPTION_LISTS')
-                    ->select('PROCEDURE_EXCEPTION_LISTS.*', 'PROCEDURE_EXCEPTION_NAMES.PROCEDURE_EXCEPTION_LIST as exception_list', 'PROCEDURE_EXCEPTION_NAMES.EXCEPTION_NAME as exception_name')
+
+                    ->select('PROCEDURE_EXCEPTION_LISTS.*', 'PROCEDURE_EXCEPTION_NAMES.PROCEDURE_EXCEPTION_LIST as exception_list', 'PROCEDURE_EXCEPTION_NAMES.EXCEPTION_NAME as exception_name',
+                    'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_strategy_description',
+                    'CODES.DESCRIPTION AS benefit_code_description',
+                    'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_description',
+                    'PRICING_STRATEGY_NAMES.PRICING_STRATEGY_NAME as pricing_strategy_description',
+                    'SERVICE_TYPES.description as service_type_description',
+                    'DIAGNOSIS_EXCEPTIONS.EXCEPTION_NAME as diagnosis_list_description',
+                    'DIAGNOSIS_CODES.DESCRIPTION as diagnosis_code_description',
+                    'PROVIDER_TYPES.DESCRIPTION as provider_type_description',
+                    'PROC_CODE_LIST_NAMES.DESCRIPTION as proc_code_description',
+                    'SPECIALTY_EXCEPTIONS.EXCEPTION_NAME as physician_speciality_list_description',
+                    'SERVICE_MODIFIERS.DESCRIPTION as service_modifier_description',
+                    'PHYSICIAN_EXCEPTIONS.EXCEPTION_NAME as physician_list_description',
+                    
+                    )
+
                     ->join('PROCEDURE_EXCEPTION_NAMES', 'PROCEDURE_EXCEPTION_NAMES.PROCEDURE_EXCEPTION_LIST', '=', 'PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST')
+                    ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'PROCEDURE_EXCEPTION_LISTS.ACCUM_BENE_STRATEGY_ID')
+                    ->join('BENEFIT_CODES AS CODES','CODES.BENEFIT_CODE','=','PROCEDURE_EXCEPTION_LISTS.BENEFIT_CODE')
+                    ->join('COPAY_STRATEGY_NAMES','COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID','=','PROCEDURE_EXCEPTION_LISTS.COPAY_STRATEGY_ID')
+                    ->join('PRICING_STRATEGY_NAMES','PRICING_STRATEGY_NAMES.PRICING_STRATEGY_ID','=','PROCEDURE_EXCEPTION_LISTS.PRICING_STRATEGY_ID')
+                    ->join('SERVICE_TYPES','SERVICE_TYPES.SERVICE_TYPE','=','PROCEDURE_EXCEPTION_LISTS.SERVICE_TYPE')
+                    ->join('DIAGNOSIS_EXCEPTIONS','DIAGNOSIS_EXCEPTIONS.DIAGNOSIS_LIST','=','PROCEDURE_EXCEPTION_LISTS.DIAGNOSIS_LIST')
+                    ->join('DIAGNOSIS_CODES','DIAGNOSIS_CODES.DIAGNOSIS_ID','=','PROCEDURE_EXCEPTION_LISTS.DIAGNOSIS_ID')
+                    ->join('PROVIDER_TYPES','PROVIDER_TYPES.PROVIDER_TYPE','=','PROCEDURE_EXCEPTION_LISTS.PROVIDER_TYPE')
+                    ->join('PROC_CODE_LIST_NAMES','PROC_CODE_LIST_NAMES.PROC_CODE_LIST_ID','=','PROCEDURE_EXCEPTION_LISTS.PROC_CODE_LIST_ID')
+                    ->join('SPECIALTY_EXCEPTIONS','SPECIALTY_EXCEPTIONS.SPECIALTY_LIST','=','PROCEDURE_EXCEPTION_LISTS.physician_specialty_list')
+                    ->join('SERVICE_MODIFIERS','SERVICE_MODIFIERS.SERVICE_MODIFIER','=','PROCEDURE_EXCEPTION_LISTS.SERVICE_MODIFIER')
+                    ->join('PHYSICIAN_EXCEPTIONS','PHYSICIAN_EXCEPTIONS.PHYSICIAN_LIST','=','PROCEDURE_EXCEPTION_LISTS.PHYSICIAN_LIST')
                     ->where('PROCEDURE_EXCEPTION_LISTS.PROC_CODE_LIST_ID', 'like', '%' . strtoupper($ndcid) . '%')  
                     ->first();
 

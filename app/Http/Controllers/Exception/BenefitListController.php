@@ -180,8 +180,7 @@ class BenefitListController extends Controller
 
     public function search(Request $request)
     {
-        $ndc = DB::table('BENEFIT_LIST_NAMES')
-                ->select('BENEFIT_LIST_ID', 'DESCRIPTION')
+        $ndc = DB::table('BENEFIT_LIST')
                 ->where('BENEFIT_LIST_ID', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
