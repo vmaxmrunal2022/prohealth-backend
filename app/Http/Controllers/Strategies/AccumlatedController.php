@@ -112,10 +112,10 @@ class AccumlatedController extends Controller
     {
         $ndclist = DB::table('ACCUM_BENEFIT_STRATEGY')
             // ->select( 'DIAGNOSIS_LIST', 'DIAGNOSIS_ID', 'PRIORITY' )
-            ->where('ACCUM_BENE_STRATEGY_ID', 'like', '%' . strtoupper($ndcid) . '%')
+            // ->where('ACCUM_BENE_STRATEGY_ID', 'like', '%' . strtoupper($ndcid) . '%')
+            ->where('ACCUM_BENE_STRATEGY_ID', $ndcid)
             // ->orWhere( 'EXCEPTION_NAME', 'like', '%' . strtoupper( $ndcid ) . '%' )
             ->get();
-
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 

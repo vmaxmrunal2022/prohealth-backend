@@ -138,7 +138,8 @@ class PlanEditController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+                $errors = $validator->errors();
+                return $this->respondWithToken($this->token(), $validator->messages(), $errors, false);
             } else {
                 $addData = DB::table('PLAN_BENEFIT_TABLE')
                     ->insert([
@@ -235,7 +236,7 @@ class PlanEditController extends Controller
                         'MISC_FLAG_5' => $request->misc_flag_5, //EXCLUDE SYSTEM NDC/GPI FORMULARY EDITS FOR OUT OF NETWORK CLAIM
                         'MISC_FLAG_6' => $request->misc_flag_6, //EXCLUDE PLAN NDC/GPI FORMULARY EDITS FOR OUT OF NETWORK CLAIM
                         'MISC_FLAG_7' => $request->misc_flag_7, //REJECT CLAIM FOR MISSING CARDHOLDER ID
-                        'ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->er_limit_max_days_supply, //LIMIT1 (RX MAXIMUM DAYS SUPPLY
+                        'ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->er_limit_1_max_days_supply, //LIMIT1 (RX MAXIMUM DAYS SUPPLY
                         'ER_LIMIT_1_MINIMUM_USE' => $request->er_limit_1_minimum_use, //LIMIT1  MINIMUM USE PERCENTAGE) 
                         'ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->er_limit_2_max_days_supply, //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
                         'ER_LIMIT_2_MINIMUM_USE' => $request->er_limit_2_minimum_use, //LIMIT 2 - ABOVE LIMIT 1 MINIMUM USE PERCENTAGE)

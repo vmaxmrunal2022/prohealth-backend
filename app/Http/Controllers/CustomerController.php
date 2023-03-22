@@ -168,14 +168,14 @@ class CustomerController extends Controller
                 'zip_code' => ['max:10'],
                 'effective_date' => ['max:10'],
                 'termination_date' => ['max:10', 'after:effective_date'],
-                'comm_charge_paid' => ['numeric'],
-                'comm_charge_reject' => ['numeric'],
+                // 'comm_charge_paid' => ['numeric'],
+                // 'comm_charge_reject' => ['numeric'],
 
             ]);
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
                 // dd($fieldsWithErrorMessagesArray);
-                // return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, 'false');
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, 'false');
             } else {
                 $accum_benfit_stat_names = DB::table('CUSTOMER')->insert(
                     [
@@ -193,6 +193,14 @@ class CustomerController extends Controller
                         'edi_address' => $request->edi_address,
                         'effective_date' => date('Ymd', strtotime($request->effective_date)),
                         'termination_date' => date('Ymd', strtotime($request->termination_date)),
+                        'policy_anniv_month' => $request->policy_anniv_month,
+                        'policy_anniv_day' => $request->policy_anniv_day,
+                        'census_date' => $request->census_date,
+                        'num_of_active_contracts' => $request->num_of_active_contracts,
+                        'num_of_active_members' => $request->num_of_active_members,
+                        'num_of_termed_contracts' => $request->num_of_termed_contracts,
+                        'num_of_pending_members' => $request->num_of_pending_members,
+                        'super_rx_network_id' => $request->super_rx_network_id,
                         'customer_type' => $request->customer_type,
                         'cap_amount' => $request->cap_amount,
                         'comm_charge_paid' => $request->comm_charge_paid,
@@ -210,57 +218,151 @@ class CustomerController extends Controller
                         'mail_ord_letter_fee' => $request->mail_ord_letter_fee,
                         'msg_priority_id' => $request->msg_priority_id,
                         'dur_exception_list' => $request->dur_exception_list,
+
+                        'pharmacy_exceptions_flag' => $request->pharmacy_exceptions_flag,
+                        'super_rx_network_id' => $request->super_rx_network_id,
+                        'PRESCRIBER_EXCEPTIONS_FLAG' => $request->prescriber_exceptions_flag,
+                        'PRESCRIBER_EXCEPTIONS_FLAG_2' => $request->prescriber_exceptions_flag_2,
+                        'plan_id_1' => $request->plan_id_1,
+                        'plan_id_2' => $request->plan_id_2,
+                        'plan_id_3' => $request->plan_id_3,
+                        'auto_term_level' => $request->auto_term_level,
+                        'auto_fam_member_term' => $request->auto_fam_member_term,
+                        'elig_type' => $request->elig_type,
+                        'membership_processing_flag' => $request->membership_processing_flag,
+                        'overlap_coverage_tie_breaker' => $request->overlap_coverage_tie_breaker,
+                        'elig_date_edit_ovr_flag' => $request->elig_date_edit_ovr_flag == 'on' ? '1' : '0',
+                        'auth_xfer_ind' => $request->auth_xfer_ind,
+                        'member_change_log_opt' => $request->member_change_log_opt,
+                        'other_cov_proc_flag' => $request->other_cov_proc_flag,
+                        'accum_bene_fam_sum_ind' => $request->accum_bene_fam_sum_ind,
+                        'max_num_trans_interim_elig' => $request->max_num_trans_interim_elig,
+                        'max_days_interim_elig' => $request->max_days_interim_elig,
+                        'excl_plan_ndc_gpi_excep_flag' => $request->excl_plan_ndc_gpi_excep_flag == 'on' ? '1' : '0',
+                        'date_written_to_first_fill' => $request->date_written_to_first_fill,
+                        'date_filled_to_sub_online' => $request->date_filled_to_sub_online,
+                        'date_filled_to_sub_dmr' => $request->date_filled_to_sub_dmr,
+                        'date_sub_to_filled_future' => $request->date_sub_to_filled_future,
+                        'days_for_reversals' => $request->days_for_reversals,
+                        'non_profit_tax_exempt_flag' => $request->non_profit_tax_exempt_flag,
+                        'reqd_u_and_c_flag' => $request->reqd_u_and_c_flag,
+                        'excl_sys_ndc_gpi_excep_flag' => $request->excl_sys_ndc_gpi_excep_flag,
+                        'smbpp' => $request->smbpp,
+                        'rva_list_id' => $request->rva_list_id,
+                        'admin_fee' => $request->admin_fee,
+                        'admin_percent' => $request->admin_percent,
+                        'dmr_fee' => $request->dmr_fee,
+                        'ucf_fee' => $request->ucf_fee,
+                        'elig_upd_fee' => $request->elig_upd_fee,
+                        'prior_auth_fee' => $request->prior_auth_fee,
+                        'mail_ord_letter_fee' => $request->mail_ord_letter_fee,
                     ]
                 );
+
                 $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
                 return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
             }
         } else {
+            $validator = Validator::make($request->all(), [
+                'customer_id' => ['required', 'max:10'],
+                'customer_name' => ['max:25'],
+                'address_1' => ['max:25'],
+                'address_2' => ['max:25'],
+                'city' => ['max:18'],
+                'state' => ['max:2'],
+                'zip_code' => ['max:10'],
+                'effective_date' => ['max:10'],
+                'termination_date' => ['max:10', 'after:effective_date'],
+                // 'comm_charge_paid' => ['numeric'],
+                // 'comm_charge_reject' => ['numeric'],
+
+            ]);
+            if ($validator->fails()) {
+                $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
+                // dd($fieldsWithErrorMessagesArray);
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, 'false');
+            } else {
+
+                $accum_benfit_stat = DB::table('CUSTOMER')
+                    ->where('CUSTOMER_ID', $request->customer_id)
+                    ->update(
+                        [
+                            'customer_name' => strtoupper($request->customer_name),
+                            'address_1' => $request->address_1,
+                            'address_2' => $request->address_2,
+                            'city' => $request->city,
+                            'state' => $request->state,
+                            'zip_code' => $request->zip_code,
+                            'zip_plus_2' => $request->zip_plus_2,
+                            'phone' => $request->phone,
+                            'fax' => $request->fax,
+                            'contact' => $request->contact,
+                            'edi_address' => $request->edi_address,
+                            'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                            'termination_date' => date('Ymd', strtotime($request->termination_date)),
+                            'customer_type' => $request->customer_type,
+                            'cap_amount' => $request->cap_amount,
+                            'comm_charge_paid' => $request->comm_charge_paid,
+                            'comm_charge_reject' => $request->comm_charge_reject,
+                            'date_time_created' => $request->date_time_created,
+                            'user_id' => $request->user_id,
+                            'processing_cycle' => $request->processing_cycle,
+                            'auto_term_days' => $request->auto_term_days,
+                            'admin_fee' => $request->admin_fee,
+                            'dmr_fee' => $request->dmr_fee,
+                            'auto_term_level' => $request->auto_term_level,
+                            'census_date' => $request->census_date,
+                            'ucf_fee' => $request->ucf_fee,
+                            'prior_auth_fee' => $request->prior_auth_fee,
+                            'mail_ord_letter_fee' => $request->mail_ord_letter_fee,
+                            'msg_priority_id' => $request->msg_priority_id,
+                            'dur_exception_list' => $request->dur_exception_list,
+
+                            'pharmacy_exceptions_flag' => $request->pharmacy_exceptions_flag,
+                            'super_rx_network_id' => $request->super_rx_network_id,
+                            'PRESCRIBER_EXCEPTIONS_FLAG' => $request->prescriber_exceptions_flag,
+                            'PRESCRIBER_EXCEPTIONS_FLAG_2' => $request->prescriber_exceptions_flag_2,
+                            'plan_id_1' => $request->plan_id_1,
+                            'plan_id_2' => $request->plan_id_2,
+                            'plan_id_3' => $request->plan_id_3,
+                            'auto_term_level' => $request->auto_term_level,
+                            'auto_fam_member_term' => $request->auto_fam_member_term,
+                            'elig_type' => $request->elig_type,
+                            'membership_processing_flag' => $request->membership_processing_flag,
+                            'overlap_coverage_tie_breaker' => $request->overlap_coverage_tie_breaker,
+                            'elig_date_edit_ovr_flag' => $request->elig_date_edit_ovr_flag == 'on' ? '1' : '0',
+                            'auth_xfer_ind' => $request->auth_xfer_ind,
+                            'member_change_log_opt' => $request->member_change_log_opt,
+                            'other_cov_proc_flag' => $request->other_cov_proc_flag,
+                            'accum_bene_fam_sum_ind' => $request->accum_bene_fam_sum_ind,
+                            'max_num_trans_interim_elig' => $request->max_num_trans_interim_elig,
+                            'max_days_interim_elig' => $request->max_days_interim_elig,
+                            'excl_plan_ndc_gpi_excep_flag' => $request->excl_plan_ndc_gpi_excep_flag == 'on' ? '1' : '',
+                            'date_written_to_first_fill' => $request->date_written_to_first_fill,
+                            'date_filled_to_sub_online' => $request->date_filled_to_sub_online,
+                            'date_filled_to_sub_dmr' => $request->date_filled_to_sub_dmr,
+                            'date_sub_to_filled_future' => $request->date_sub_to_filled_future,
+                            'days_for_reversals' => $request->days_for_reversals,
+                            'non_profit_tax_exempt_flag' => $request->non_profit_tax_exempt_flag,
+                            'reqd_u_and_c_flag' => $request->reqd_u_and_c_flag,
+                            'excl_sys_ndc_gpi_excep_flag' => $request->excl_sys_ndc_gpi_excep_flag == 'on' ? '1' : '',
+                            'smbpp' => $request->smbpp,
+                            'rva_list_id' => $request->rva_list_id,
+                            'admin_fee' => $request->admin_fee,
+                            'admin_percent' => $request->admin_percent,
+                            'dmr_fee' => $request->dmr_fee,
+                            'ucf_fee' => $request->ucf_fee,
+                            'elig_upd_fee' => $request->elig_upd_fee,
+                            'prior_auth_fee' => $request->prior_auth_fee,
+                            'mail_ord_letter_fee' => $request->mail_ord_letter_fee,
+                        ]
+                    );
 
 
-            $accum_benfit_stat = DB::table('CUSTOMER')
-                ->where('CUSTOMER_ID', $request->customer_id)
-                ->update(
-                    [
-                        'customer_name' => strtoupper($request->customer_name),
-                        'address_1' => $request->address_1,
-                        'address_2' => $request->address_2,
-                        'city' => $request->city,
-                        'state' => $request->state,
-                        'zip_code' => $request->zip_code,
-                        'zip_plus_2' => $request->zip_plus_2,
-                        'phone' => $request->phone,
-                        'fax' => $request->fax,
-                        'contact' => $request->contact,
-                        'edi_address' => $request->edi_address,
-                        'effective_date' => date('Ymd', strtotime($request->effective_date)),
-                        'termination_date' => date('Ymd', strtotime($request->termination_date)),
-                        'customer_type' => $request->customer_type,
-                        'cap_amount' => $request->cap_amount,
-                        'comm_charge_paid' => $request->comm_charge_paid,
-                        'comm_charge_reject' => $request->comm_charge_reject,
-                        'date_time_created' => $request->date_time_created,
-                        'user_id' => $request->user_id,
-                        'processing_cycle' => $request->processing_cycle,
-                        'auto_term_days' => $request->auto_term_days,
-                        'admin_fee' => $request->admin_fee,
-                        'dmr_fee' => $request->dmr_fee,
-                        'auto_term_level' => $request->auto_term_level,
-                        'census_date' => $request->census_date,
-                        'ucf_fee' => $request->ucf_fee,
-                        'prior_auth_fee' => $request->prior_auth_fee,
-                        'mail_ord_letter_fee' => $request->mail_ord_letter_fee,
-                        'msg_priority_id' => $request->msg_priority_id,
-                        'dur_exception_list' => $request->dur_exception_list,
 
-
-                    ]
-                );
-
-
-
-            $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
-            return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
+                $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
+                return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
+            }
         }
     }
 

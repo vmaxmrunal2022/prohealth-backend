@@ -172,4 +172,18 @@ class ProviderController extends Controller
 
         return $this->respondWithToken($this->token(), '', $data);
     }
+
+    public  function getProviderOptions(Request $request)
+    {
+        $provider_options = [
+            ['provider_id' => '', 'provider_name' => 'Not Specified'],
+            ['provider_id' => 'N', 'provider_name' => 'NONE (no provider check)'],
+            ['provider_id' => 'F', 'provider_name' => 'Validate Provider Format'],
+            ['provider_id' => 'M', 'provider_name' => 'Must Exist Within Provider Master'],
+            ['provider_id' => 'P', 'provider_name' => 'Must Exist Nn Provider Network'],
+            ['provider_id' => 'V', 'provider_name' => 'Validate Provider In/Out Of Network'],
+        ];
+
+        return $this->respondWithToken($this->token(), '', $provider_options);
+    }
 }
