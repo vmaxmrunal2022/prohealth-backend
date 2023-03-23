@@ -14,14 +14,15 @@ class GPIExceptionController extends Controller
         $createddate = date( 'y-m-d' );
 
 
-        $recordcheck = DB::table('GPI_EXCEPTIONS')
+        $recordcheck = DB::table('GPI_EXCEPTION_LISTS')
         ->where('gpi_exception_list', strtoupper($request->gpi_exception_list))
+        ->where('generic_product_id', strtoupper($request->generic_product_id))
         ->first();
 
         if ( $request->has( 'new' ) ) {
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'GPI   Exception ID already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'GPI  ID already exists in the system..!!!', $recordcheck);
 
             }
 
@@ -112,6 +113,7 @@ class GPIExceptionController extends Controller
                             'GEN_INC_EXC_IND'=>$request->gen_inc_exc_ind,
                             'RX_QTY_OPT_MULTIPLIER'=>$request->rx_qty_opt_multiplier,
                             'DAYS_SUPPLY_OPT_MULTIPLIER'=>$request->days_supply_opt_multiplier,
+                            'MODULE_EXIT'=>$request->module_exit,
     
                     ]
                 );
@@ -203,7 +205,9 @@ class GPIExceptionController extends Controller
                     'BGA_INC_EXC_IND'=>$request->bga_inc_exc_ind,
                     'GEN_INC_EXC_IND'=>$request->gen_inc_exc_ind,
                     'RX_QTY_OPT_MULTIPLIER'=>$request->rx_qty_opt_multiplier,
-                    'DAYS_SUPPLY_OPT_MULTIPLIER'=>$request->days_supply_opt_multiplier
+                    'DAYS_SUPPLY_OPT_MULTIPLIER'=>$request->days_supply_opt_multiplier,
+                    'MODULE_EXIT'=>$request->module_exit,
+
                 ]
             );
 
@@ -252,20 +256,28 @@ class GPIExceptionController extends Controller
     public function getNDCList($ndcid)
     {
         $ndclist = DB::table('GPI_EXCEPTION_LISTS')
-                // ->select('gpi_exception_list', 'EXCEPTION_NAME')
-                ->where('GPI_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
+        ->join('GPI_EXCEPTIONS', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
+        // ->select('gpi_exception_list', 'EXCEPTION_NAME')
+                ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
                 // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
                 ->get();
 
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
-    public function getNDCItemDetails($ndcid)
+    public function getNDCItemDetails($ndcid,$ncdid2)
     {
         $ndc = DB::table('GPI_EXCEPTION_LISTS')
-                    ->select('GPI_EXCEPTION_LISTS.*', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST as exception_list', 'GPI_EXCEPTIONS.EXCEPTION_NAME as exception_name')
+                    ->select('GPI_EXCEPTION_LISTS.*', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST as exception_list', 'GPI_EXCEPTIONS.EXCEPTION_NAME as exception_name',
+                    'GPI_EXCEPTIONS.EXCEPTION_NAME as gpi_exception_description',
+                    'NDC_EXCEPTIONS1.EXCEPTION_NAME as preferd_ndc_description',
+                    'NDC_EXCEPTIONS2.EXCEPTION_NAME as conversion_ndc_description')
                     ->join('GPI_EXCEPTIONS', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
+                    ->join('NDC_EXCEPTIONS as NDC_EXCEPTIONS1', 'NDC_EXCEPTIONS1.NDC_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
+                    ->join('NDC_EXCEPTIONS as NDC_EXCEPTIONS2', 'NDC_EXCEPTIONS2.NDC_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
+
                     ->where('GPI_EXCEPTION_LISTS.generic_product_id',$ndcid)
+                    ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST',$ncdid2)
                     ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

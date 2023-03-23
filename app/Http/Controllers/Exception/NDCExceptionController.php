@@ -14,8 +14,9 @@ class NDCExceptionController extends Controller
         $createddate = date( 'y-m-d' );
 
 
-        $recordcheck = DB::table('NDC_EXCEPTIONS')
+        $recordcheck = DB::table('NDC_EXCEPTION_LISTS')
         ->where('ndc_exception_list', strtoupper($request->ndc_exception_list))
+        ->where('ndc', strtoupper($request->ndc))
         ->first();
 
 
@@ -40,10 +41,10 @@ class NDCExceptionController extends Controller
                     ]
                 );
     
-                $insert = DB::table('NDC_EXCEPTION_LISTS' )->insert(
+                $insert = DB::table('NDC_EXCEPTION_LISTS')->insert(
                     [
                         'NDC_EXCEPTION_LIST' =>strtoupper($request->ndc_exception_list),
-                        'NDC'=>strtoupper($request->ndc),
+                        'NDC'=>$request->ndc,
                         'NEW_DRUG_STATUS'=>$request->new_drug_status,
                         'PROCESS_RULE'=>$request->process_rule,
                         'MAXIMUM_ALLOWABLE_COST'=>$request->maximum_allowable_cost,
@@ -116,10 +117,8 @@ class NDCExceptionController extends Controller
                         'BGA_INC_EXC_IND'=>$request->bga_inc_exc_ind,
                         'GEN_INC_EXC_IND'=>$request->gen_inc_exc_ind,
                         'RX_QTY_OPT_MULTIPLIER'=>$request->rx_qty_opt_multiplier,
-                        'DAYS_SUPPLY_OPT_MULTIPLIER'=>$request->days_supply_opt_multiplier
-    
-    
-                     
+                        'DAYS_SUPPLY_OPT_MULTIPLIER'=>$request->days_supply_opt_multiplier,
+                        'MODULE_EXIT'=>$request->module_exit,
                     ]
                 );
                 return $this->respondWithToken( $this->token(), 'Record Added Successfully',$insert);
@@ -132,7 +131,7 @@ class NDCExceptionController extends Controller
         } else {
 
             $update = DB::table('NDC_EXCEPTION_LISTS' )
-            ->where('ndc', $request->ndc )
+            ->where('ndc',$request->ndc)
             ->update(
                 [
                     'NDC_EXCEPTION_LIST' => $request->ndc_exception_list,
@@ -208,8 +207,8 @@ class NDCExceptionController extends Controller
                     'BGA_INC_EXC_IND'=>$request->bga_inc_exc_ind,
                     'GEN_INC_EXC_IND'=>$request->gen_inc_exc_ind,
                     'RX_QTY_OPT_MULTIPLIER'=>$request->rx_qty_opt_multiplier,
-                    'DAYS_SUPPLY_OPT_MULTIPLIER'=>$request->days_supply_opt_multiplier
-                  
+                    'DAYS_SUPPLY_OPT_MULTIPLIER'=>$request->days_supply_opt_multiplier,
+                    'MODULE_EXIT'=>$request->module_exit,
 
                 ]
             );
@@ -220,7 +219,6 @@ class NDCExceptionController extends Controller
             ->where('ndc_exception_list', $request->ndc_exception_list )
             ->update(
                 [
-                    'ndc_exception_list' => $request->ndc_exception_list,
                     'exception_name'=>$request->exception_name,
 
 
@@ -261,10 +259,9 @@ class NDCExceptionController extends Controller
     public function getNDCList($ndcid)
     {
         $ndclist = DB::table('NDC_EXCEPTION_LISTS')
-                // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
-                ->where('NDC_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
-                // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
-                ->get();
+        ->join('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
+        ->where('NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
+        ->get();
 
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
@@ -283,11 +280,18 @@ class NDCExceptionController extends Controller
     public function getNDCItemDetails($ndcid,$ndcid2)
     {
         $ndc = DB::table('NDC_EXCEPTION_LISTS')
-                    ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list', 'NDC_EXCEPTIONS.EXCEPTION_NAME as exception_name')
+                    ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list', 'NDC_EXCEPTIONS.EXCEPTION_NAME as exception_name',
+                    'NDC_EXCEPTIONS1.EXCEPTION_NAME as preferd_ndc_description',
+                    'NDC_EXCEPTIONS2.EXCEPTION_NAME as conversion_ndc_description',
+                    'NDC_EXCEPTIONS.EXCEPTION_NAME as ndc_exception_description',
+                    )
+
                     ->leftjoin('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
+                    ->join('NDC_EXCEPTIONS as NDC_EXCEPTIONS1', 'NDC_EXCEPTIONS1.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
+                    ->join('NDC_EXCEPTIONS as NDC_EXCEPTIONS2', 'NDC_EXCEPTIONS2.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
+
                     ->where('NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST',strtoupper($ndcid))
                     ->where('NDC_EXCEPTION_LISTS.NDC',strtoupper($ndcid2))
-
                     ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

@@ -729,7 +729,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::post('/gpi/add', [GPIExceptionController::class, 'add'])->name('gpi.search'); // SEARCH
     Route::get('/gpi/search', [GPIExceptionController::class, 'search'])->name('gpi.search'); // SEARCH
     Route::get('/gpi/get/{ndcid}', [GPIExceptionController::class, 'getNDCList'])->name('gpi.list.get'); // LIST ITEMS
-    Route::get('/gpi/details/{ndcid}', [GPIExceptionController::class, 'getNDCItemDetails'])->name('gpi.details.get'); // DETAILS
+    Route::get('/gpi/details/{ndcid}/{ncdid2}', [GPIExceptionController::class, 'getNDCItemDetails'])->name('gpi.details.get'); // DETAILS
     Route::post('/gpi/add', [GPIExceptionController::class, 'add'])->name('gpi.add'); // add
     Route::get('/gpi/gpi-drop-down', [GPIExceptionController::class, 'getGpiDropDown']);
     Route::get('/gpi/list', [GPIExceptionController::class, 'GpiList'])->name('gpi.search'); // SEARCH
