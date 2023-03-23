@@ -211,6 +211,26 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/speciality/details/{specialty_id}/{specialty_list}', [SpecialityController::class, 'getSpecialityDetails'])->name('ndsc.details.get'); // DETAIL
         Route::post('/speciality/submit-speciality-form', [SpecialityController::class, 'addSpeciality']); // add update speciality
 
+        //exception provider list
+        Route::get('/provider/getAll', [ProviderDataProviderController::class, 'getAll'])->name('exception.provider.getAll');
+
+        //exception Price Schedule list
+        Route::get('price-schedule/getAll', [PriceScheduleController::class, 'getAll']);
+
+        //exception speciality list
+        Route::get('/speciality/getAll', [SpecialityController::class, 'getAll'])->name('exception.speciality.getAll');
+
+        //exception copay Schedule list
+        Route::get('copay-schedule/getAll', [CopayScheduleController::class, 'getAll'])->name('exception.getAll.copay');
+
+        //exception prescriber list
+        Route::get('/prescriber/getAll', [PrescriberController::class, 'getAll'])->name('exception.prescriber.getAll');
+
+        //exception diagnosis list
+        Route::get('/diagnosis/all', [DiagnosisController::class, 'all'])->name('exception.diagnosis.get');
+
+        //exception copay Schedule list
+        Route::get('copay-schedule/getAll', [CopayScheduleController::class, 'getAll'])->name('exception.getAll.copay');
 
 
         Route::get('/eligibility/search', [EligibilityValidationListController::class, 'search']); // SEARCH
@@ -738,10 +758,10 @@ Route::group(['prefix' => 'exception'], function ($router) {
     // Drug Classification
     Route::get('/drugcalss/search', [DrugClassController::class, 'search'])->name('drugclass.search'); // SEARCH
     Route::get('drugcalss/get-ndc', [DrugClassController::class, 'getNdc']);
-    Route::get('/drugcalss/get/{ndcid}', [DrugClassController::class, 'getNDCList'])->name('drugclass.list.get'); // LIST ITEMS
+    Route::get('/drugcalss/get/{ndcid}', [DrugClassController::class, 'getDetailsList'])->name('drugclass.list.get'); // LIST ITEMS
     Route::get('/drugcalss/details/{ndcid}', [DrugClassController::class, 'getNDCItemDetails'])->name('drugclass.details.get'); // DETAILS
-    Route::post('/drugcalss/add', [DrugClassController::class, 'add'])->name('drugclass.search'); // add
-    Route::get('/drugcategories', [DrugClassController::class, 'DrugCategoryList'])->name('drugclass.search'); // SEARCH
+    Route::post('/drugcalss/add', [DrugClassController::class, 'add']); // add
+    Route::get('/drugcategories', [DrugClassController::class, 'DrugCategoryList']); // SEARCH
 
 
     // GPI
@@ -885,7 +905,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
 
     Route::get('/gpiExclusion/get/{ndcid}', [GpiExclusionController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
-
+    Route::get('/gpi/dropdowns', [GpiExclusionController::class, 'GPIS'])->name('gpi.search'); // SEARCH
     Route::get('/gpiExclusion/details/{ndcid}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
     Route::post('/gpiExclusion/add', [GpiExclusionController::class, 'add'])->name('gpiExclusion.add'); // ADD
 

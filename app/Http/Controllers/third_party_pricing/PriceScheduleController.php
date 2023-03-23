@@ -11,6 +11,12 @@ use Illuminate\Validation\Rule;
 
 class PriceScheduleController extends Controller
 {
+    public function getAll(Request $request)
+    {
+        $priceShedule = DB::table('PRICE_SCHEDULE')->get();
+        return $this->respondWithToken($this->token(), '', $priceShedule);
+    }
+
     public function get(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')

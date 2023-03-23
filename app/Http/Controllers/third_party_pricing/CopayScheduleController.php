@@ -9,6 +9,12 @@ use LDAP\Result;
 
 class CopayScheduleController extends Controller
 {
+    public function getAll(Request $request)
+    {
+        $copayList = DB::table('COPAY_SCHEDULE')->get();
+        return $this->respondWithToken($this->token(), '', $copayList);
+    }
+
     public function get(Request $request)
     {
         $copayList = DB::table('COPAY_SCHEDULE')
