@@ -129,7 +129,7 @@ class GPIExceptionController extends Controller
 
 
             $update = DB::table('GPI_EXCEPTION_LISTS' )
-            ->where('gpi_exception_list', $request->gpi_exception_list )
+            ->where('gpi_exception_list', strtoupper($request->gpi_exception_list ))
             ->where('GENERIC_PRODUCT_ID', $request->generic_product_id )
 
             ->update(
@@ -214,10 +214,9 @@ class GPIExceptionController extends Controller
 
 
             $updateexceptions = DB::table('GPI_EXCEPTIONS' )
-            ->where('gpi_exception_list', $request->gpi_exception_list )
+            ->where('gpi_exception_list', strtoupper($request->gpi_exception_list) )
             ->update(
                 [
-                    'gpi_exception_list' => $request->gpi_exception_list,
                     'exception_name'=>$request->exception_name,
 
 
@@ -268,13 +267,16 @@ class GPIExceptionController extends Controller
     public function getNDCItemDetails($ndcid,$ncdid2)
     {
         $ndc = DB::table('GPI_EXCEPTION_LISTS')
-                    ->select('GPI_EXCEPTION_LISTS.*', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST as exception_list', 'GPI_EXCEPTIONS.EXCEPTION_NAME as exception_name',
-                    'GPI_EXCEPTIONS.EXCEPTION_NAME as gpi_exception_description',
+                    ->select('GPI_EXCEPTION_LISTS.*', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST as exception_list','GPI_EXCEPTIONS.EXCEPTION_NAME as exception_name',
                     'NDC_EXCEPTIONS1.EXCEPTION_NAME as preferd_ndc_description',
-                    'NDC_EXCEPTIONS2.EXCEPTION_NAME as conversion_ndc_description')
-                    ->join('GPI_EXCEPTIONS', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
-                    ->join('NDC_EXCEPTIONS as NDC_EXCEPTIONS1', 'NDC_EXCEPTIONS1.NDC_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
-                    ->join('NDC_EXCEPTIONS as NDC_EXCEPTIONS2', 'NDC_EXCEPTIONS2.NDC_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
+                    'NDC_EXCEPTIONS2.EXCEPTION_NAME as conversion_ndc_description',
+                    'GPI_EXCEPTIONS3.EXCEPTION_NAME as gpi_exception_description',
+                    )
+
+                    ->leftjoin('GPI_EXCEPTIONS', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
+                    ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS1', 'NDC_EXCEPTIONS1.NDC_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
+                    ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS2', 'NDC_EXCEPTIONS2.NDC_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
+                    ->join('GPI_EXCEPTIONS as GPI_EXCEPTIONS3', 'GPI_EXCEPTIONS3.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
 
                     ->where('GPI_EXCEPTION_LISTS.generic_product_id',$ndcid)
                     ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST',$ncdid2)

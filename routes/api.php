@@ -25,6 +25,9 @@ use App\Http\Controllers\Exception\BenefitDerivationController;
 
 use App\Http\Controllers\Exception\GPIExceptionController;
 use App\Http\Controllers\Exception\NDCExceptionController;
+use App\Http\Controllers\Exception\LimitationsController;
+
+
 
 // use App\Http\Controllers\membership\PlanValidationController;
 // use App\Http\Controllers\membership\PriorAuthController;
@@ -212,7 +215,9 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/diagnosis/details/{ndcid}', [ValidationListsController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
         Route::get('/limitations', [DiagnosisController::class, 'getLimitations'])->name('diagnosis.get'); // SEARCH
+        Route::get('/limitations/search', [LimitationsController::class, 'search'])->name('limitations.search'); // SEARCH
 
+        Route::get('/limitations/details/{id}', [LimitationsController::class, 'getDetails'])->name('limitations.search'); // SEARCH
 
 
         Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('speciality.search'); // SEARCH

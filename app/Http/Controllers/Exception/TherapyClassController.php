@@ -142,10 +142,11 @@ class TherapyClassController extends Controller
            
 
             $update = DB::table('TC_EXCEPTION_LISTS' )
+            ->where('THER_CLASS_EXCEPTION_LIST',strtoupper($request->ther_class_exception_list))
             ->where('therapy_class', strtoupper($request->therapy_class ))
+
             ->update(
                 [
-                    'THER_CLASS_EXCEPTION_LIST' => $request->ther_class_exception_list,
                     'NEW_DRUG_STATUS'=>$request->new_drug_status,
                     'PROCESS_RULE'=>$request->process_rule,
                     'MAXIMUM_ALLOWABLE_COST'=>$request->maximum_allowable_cost,
@@ -283,10 +284,9 @@ class TherapyClassController extends Controller
         'ndcexp1.EXCEPTION_NAME as prefered_ndc_exception',
         'ndcexp2.EXCEPTION_NAME as conversion_ndc_exception',
         )
-        ->join('NDC_EXCEPTION_LISTS', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST', '=', 'TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
-        ->join('TC_EXCEPTIONS', 'TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST', '=', 'TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
-        ->join('NDC_EXCEPTIONS as ndcexp1','ndcexp1.NDC_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
-        ->join('NDC_EXCEPTIONS as ndcexp2','ndcexp2.NDC_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
+        ->leftjoin('TC_EXCEPTIONS', 'TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST', '=', 'TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
+        ->leftjoin('NDC_EXCEPTIONS as ndcexp1','ndcexp1.NDC_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
+        ->leftjoin('NDC_EXCEPTIONS as ndcexp2','ndcexp2.NDC_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
 
         ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST',strtoupper($ndcid))
         ->where('TC_EXCEPTION_LISTS.THERAPY_CLASS',strtoupper($ncdid2))
