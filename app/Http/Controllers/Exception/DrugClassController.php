@@ -42,10 +42,10 @@ class DrugClassController extends Controller
     public function search(Request $request)
     {
         $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+            ->select('DRUG_CATGY_EXCEPTION_LIST', 'DRUG_CATGY_EXCEPTION_NAME')
             ->where('DRUG_CATGY_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('DRUG_CATGY_EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
-
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
@@ -125,7 +125,7 @@ class DrugClassController extends Controller
                     'PROCESS_RULE' => $request->process_rule,
                     'MAXIMUM_ALLOWABLE_COST' => $request->maximum_allowable_cost,
                     'PHYSICIAN_LIST' => $request->physician_list,
-                    'PHYSICIAN_SPECIALTY_LIST' => $request->physician_speciality_list,
+                    'PHYSICIAN_SPECIALTY_LIST' => $request->physician_specialty_list,
                     'PHARMACY_LIST' => $request->pharmacy_list,
                     'DIAGNOSIS_LIST' => $request->diagnosis_list,
                     'PREFERRED_PRODUCT_NDC' => $request->preferred_product_ndc,
@@ -133,7 +133,7 @@ class DrugClassController extends Controller
                     'ALTERNATE_PRICE_SCHEDULE' => $request->alternate_price_schedule,
                     'ALTERNATE_COPAY_SCHED' => $request->alternate_copay_sched,
                     'MESSAGE' => $request->message,
-                    'MESSAGE_STOP_DATE' => $request->message_stop_date,
+                    'MESSAGE_STOP_DATE' => date('Ymd', strtotime($request->message_stop_date)),
                     'MIN_RX_QTY' => $request->min_rx_qty,
                     'MAX_RX_QTY' => $request->max_rx_qty,
                     'MIN_RX_DAYS' => $request->min_rx_days,
@@ -147,7 +147,8 @@ class DrugClassController extends Controller
                     'MAX_AGE' => $request->max_age,
                     'MIN_PRICE' => $request->min_price,
                     'MAX_PRICE' => $request->max_price,
-                    'MAX_RXS_PATIENT' => $request->max_rxa_patient,
+                    'MAX_RXS_PATIENT' => $request->max_rxs_patient,
+                    'max_price_patient' => $request->max_price_patient,
                     'GENERIC_COPAY_AMT' => $request->generic_copay_amt,
                     'BRAND_COPAY_AMT' => $request->brand_copay_amt,
                     'MAINT_DOSE_UNITS_DAY' => $request->maint_dose_units_day,
@@ -182,6 +183,10 @@ class DrugClassController extends Controller
                     'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
                     'STARTER_DOSE_MAINT_BYPASS_DAYS' => $request->starter_dose_maint_bypass_days,
                     'MAX_QTY_PER_FILL' => $request->max_qty_per_fill,
+                    'BNG_SNGL_INC_EXC_IND' => $request->bng_sngl_inc_exc_ind,
+                    'BNG_MULTI_INC_EXC_IND' => $request->bng_multi_inc_exc_ind,
+                    'BGA_INC_EXC_IND' => $request->bga_inc_exc_ind,
+                    'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
                 ]
             );
             return $this->respondWithToken($this->token(), 'Added Successfully!', $drugcatgy);
@@ -209,6 +214,7 @@ class DrugClassController extends Controller
         if ($check_exist <= 0) {
             $plan = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->insert(
                 [
+                    'max_price_patient' => $request->max_price_patient,
                     'effective_date' => date('Ymd', strtotime($request->effective_date)),
                     'termination_date' => date('Ymd', strtotime($request->termination_date)),
                     'PLAN_ID' => $request->plan_id,
@@ -218,7 +224,7 @@ class DrugClassController extends Controller
                     'PROCESS_RULE' => $request->process_rule,
                     'MAXIMUM_ALLOWABLE_COST' => $request->maximum_allowable_cost,
                     'PHYSICIAN_LIST' => $request->physician_list,
-                    'PHYSICIAN_SPECIALTY_LIST' => $request->physician_speciality_list,
+                    'PHYSICIAN_SPECIALTY_LIST' => $request->physician_specialty_list,
                     'PHARMACY_LIST' => $request->pharmacy_list,
                     'DIAGNOSIS_LIST' => $request->diagnosis_list,
                     'PREFERRED_PRODUCT_NDC' => $request->preferred_product_ndc,
@@ -226,7 +232,7 @@ class DrugClassController extends Controller
                     'ALTERNATE_PRICE_SCHEDULE' => $request->alternate_price_schedule,
                     'ALTERNATE_COPAY_SCHED' => $request->alternate_copay_sched,
                     'MESSAGE' => $request->message,
-                    'MESSAGE_STOP_DATE' => $request->message_stop_date,
+                    'MESSAGE_STOP_DATE' => date('Ymd', strtotime($request->message_stop_date)),
                     'MIN_RX_QTY' => $request->min_rx_qty,
                     'MAX_RX_QTY' => $request->max_rx_qty,
                     'MIN_RX_DAYS' => $request->min_rx_days,
@@ -240,7 +246,7 @@ class DrugClassController extends Controller
                     'MAX_AGE' => $request->max_age,
                     'MIN_PRICE' => $request->min_price,
                     'MAX_PRICE' => $request->max_price,
-                    'MAX_RXS_PATIENT' => $request->max_rxa_patient,
+                    'MAX_RXS_PATIENT' => $request->max_rxs_patient,
                     'GENERIC_COPAY_AMT' => $request->generic_copay_amt,
                     'BRAND_COPAY_AMT' => $request->brand_copay_amt,
                     'MAINT_DOSE_UNITS_DAY' => $request->maint_dose_units_day,
@@ -275,6 +281,11 @@ class DrugClassController extends Controller
                     'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
                     'STARTER_DOSE_MAINT_BYPASS_DAYS' => $request->starter_dose_maint_bypass_days,
                     'MAX_QTY_PER_FILL' => $request->max_qty_per_fill,
+                    'BNG_SNGL_INC_EXC_IND' => $request->bng_sngl_inc_exc_ind,
+                    'BNG_MULTI_INC_EXC_IND' => $request->bng_multi_inc_exc_ind,
+                    'BGA_INC_EXC_IND' => $request->bga_inc_exc_ind,
+                    'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
+
                 ]
             );
         } else {
@@ -285,6 +296,7 @@ class DrugClassController extends Controller
                 ->where('termination_date', date('Ymd', strtotime($request->termination_date)))
                 ->update(
                     [
+                        'max_price_patient' => $request->max_price_patient,
                         'effective_date' => date('Ymd', strtotime($request->effective_date)),
                         'termination_date' => date('Ymd', strtotime($request->termination_date)),
                         'PLAN_ID' => $request->plan_id,
@@ -294,7 +306,7 @@ class DrugClassController extends Controller
                         'PROCESS_RULE' => $request->process_rule,
                         'MAXIMUM_ALLOWABLE_COST' => $request->maximum_allowable_cost,
                         'PHYSICIAN_LIST' => $request->physician_list,
-                        'PHYSICIAN_SPECIALTY_LIST' => $request->physician_speciality_list,
+                        'PHYSICIAN_SPECIALTY_LIST' => $request->physician_specialty_list,
                         'PHARMACY_LIST' => $request->pharmacy_list,
                         'DIAGNOSIS_LIST' => $request->diagnosis_list,
                         'PREFERRED_PRODUCT_NDC' => $request->preferred_product_ndc,
@@ -302,7 +314,6 @@ class DrugClassController extends Controller
                         'ALTERNATE_PRICE_SCHEDULE' => $request->alternate_price_schedule,
                         'ALTERNATE_COPAY_SCHED' => $request->alternate_copay_sched,
                         'MESSAGE' => $request->message,
-                        'MESSAGE_STOP_DATE' => $request->message_stop_date,
                         'MIN_RX_QTY' => $request->min_rx_qty,
                         'MAX_RX_QTY' => $request->max_rx_qty,
                         'MIN_RX_DAYS' => $request->min_rx_days,
@@ -316,7 +327,7 @@ class DrugClassController extends Controller
                         'MAX_AGE' => $request->max_age,
                         'MIN_PRICE' => $request->min_price,
                         'MAX_PRICE' => $request->max_price,
-                        'MAX_RXS_PATIENT' => $request->max_rxa_patient,
+                        'MAX_RXS_PATIENT' => $request->max_rxs_patient,
                         'GENERIC_COPAY_AMT' => $request->generic_copay_amt,
                         'BRAND_COPAY_AMT' => $request->brand_copay_amt,
                         'MAINT_DOSE_UNITS_DAY' => $request->maint_dose_units_day,
@@ -351,6 +362,11 @@ class DrugClassController extends Controller
                         'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
                         'STARTER_DOSE_MAINT_BYPASS_DAYS' => $request->starter_dose_maint_bypass_days,
                         'MAX_QTY_PER_FILL' => $request->max_qty_per_fill,
+                        'BNG_SNGL_INC_EXC_IND' => $request->bng_sngl_inc_exc_ind,
+                        'BNG_MULTI_INC_EXC_IND' => $request->bng_multi_inc_exc_ind,
+                        'BGA_INC_EXC_IND' => $request->bga_inc_exc_ind,
+                        'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
+                        'MESSAGE_STOP_DATE' => date('Ymd', strtotime($request->message_stop_date)),
                     ]
                 );
 
