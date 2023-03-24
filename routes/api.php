@@ -722,12 +722,11 @@ Route::group(['prefix' => 'exception'], function ($router) {
 
     // NDC
     Route::get('/drugcalss/search', [DrugClassController::class, 'search'])->name('drugclass.search'); // SEARCH
-    Route::get('/drugcalss/get/{ndcid}', [DrugClassController::class, 'getNDCList'])->name('drugclass.list.get'); // LIST ITEMS
+    Route::get('drugcalss/get-ndc', [DrugClassController::class, 'getNdc']);
+    Route::get('/drugcalss/get/{ndcid}', [DrugClassController::class, 'getDetailsList'])->name('drugclass.list.get'); // LIST ITEMS
     Route::get('/drugcalss/details/{ndcid}', [DrugClassController::class, 'getNDCItemDetails'])->name('drugclass.details.get'); // DETAILS
-    Route::post('/drugcalss/add', [DrugClassController::class, 'add'])->name('drugclass.search'); // add
-    Route::get('/drugcategories', [DrugClassController::class, 'DrugCategoryList'])->name('drugclass.search'); // SEARCH
-
-
+    Route::post('/drugcalss/add', [DrugClassController::class, 'add']); // add
+    Route::get('/drugcategories', [DrugClassController::class, 'DrugCategoryList']); // SEARCH
 
     // GPI
 
