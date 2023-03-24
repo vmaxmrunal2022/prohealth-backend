@@ -84,7 +84,6 @@ class TherapyClassController extends Controller
                         'ACUTE_DOSING_DAYS'=>$request->acute_dosing_days,
                         'DENIAL_OVERRIDE'=>$request->denial_override,
                         'MAINTENANCE_DRUG'=>$request->maintenance_drug,
-                        'GENERIC_INDICATOR'=>$request->generic_indicator,
                         'MERGE_DEFAULTS'=>$request->merge_defaults,
                         'SEX_RESTRICTION'=>$request->sex_restriction,
                         'MAIL_ORDER_MIN_RX_DAYS'=>$request->mail_order_min_rx_days,
@@ -121,6 +120,7 @@ class TherapyClassController extends Controller
                         'BNG_MULTI_INC_EXC_IND'=>$request->bng_multi_inc_exc_ind,
                         'BGA_INC_EXC_IND'=>$request->bga_inc_exc_ind,
                         'GEN_INC_EXC_IND'=>$request->gen_inc_exc_ind,
+                        'MODULE_EXIT'=>$request->module_exit,
                         
     
     
@@ -180,7 +180,6 @@ class TherapyClassController extends Controller
                     'ACUTE_DOSING_DAYS'=>$request->acute_dosing_days,
                     'DENIAL_OVERRIDE'=>$request->denial_override,
                     'MAINTENANCE_DRUG'=>$request->maintenance_drug,
-                    'GENERIC_INDICATOR'=>$request->generic_indicator,
                     'MERGE_DEFAULTS'=>$request->merge_defaults,
                     'SEX_RESTRICTION'=>$request->sex_restriction,
                     'MAIL_ORDER_MIN_RX_DAYS'=>$request->mail_order_min_rx_days,
@@ -217,9 +216,9 @@ class TherapyClassController extends Controller
                     'BNG_MULTI_INC_EXC_IND'=>$request->bng_multi_inc_exc_ind,
                     'BGA_INC_EXC_IND'=>$request->bga_inc_exc_ind,
                     'GEN_INC_EXC_IND'=>$request->gen_inc_exc_ind,
+                    'MODULE_EXIT'=>$request->module_exit,
+
                     
-
-
                 ]
             );
 
@@ -268,20 +267,30 @@ class TherapyClassController extends Controller
     {
         $ndclist = DB::table('TC_EXCEPTION_LISTS')
                 // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
-                ->where('THER_CLASS_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
+                ->join('TC_EXCEPTIONS','TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
+                ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
                 // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
                 ->get();
 
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
-    public function getTCItemDetails($ndcid)
+    public function getTCItemDetails($ndcid,$ncdid2)
     {
         $ndc = DB::table('TC_EXCEPTION_LISTS')
-                    ->select('TC_EXCEPTION_LISTS.*', 'TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST as exception_list', 'TC_EXCEPTIONS.EXCEPTION_NAME as exception_name')
-                    ->join('TC_EXCEPTIONS', 'TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST', '=', 'TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
-                    ->where('TC_EXCEPTION_LISTS.therapy_class', $ndcid)  
-                    ->first();
+        ->select('TC_EXCEPTION_LISTS.*', 'TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST as exception_list', 'TC_EXCEPTIONS.EXCEPTION_NAME as exception_name',
+        'TC_EXCEPTIONS.EXCEPTION_NAME as tc_exception_description',
+        'ndcexp1.EXCEPTION_NAME as prefered_ndc_exception',
+        'ndcexp2.EXCEPTION_NAME as conversion_ndc_exception',
+        )
+        ->join('NDC_EXCEPTION_LISTS', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST', '=', 'TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
+        ->join('TC_EXCEPTIONS', 'TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST', '=', 'TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
+        ->join('NDC_EXCEPTIONS as ndcexp1','ndcexp1.NDC_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
+        ->join('NDC_EXCEPTIONS as ndcexp2','ndcexp2.NDC_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
+
+        ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST',strtoupper($ndcid))
+        ->where('TC_EXCEPTION_LISTS.THERAPY_CLASS',strtoupper($ncdid2))
+        ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
 
