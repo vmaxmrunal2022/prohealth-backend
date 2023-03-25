@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Exception\BenefitListController;
 use App\Http\Controllers\Exception\ReasonCodeExceptionController;
+use App\Http\Controllers\Exception\ProviderTypeProcController;
 use App\Http\Controllers\user_access\UserAccessControl;
 
 
@@ -217,7 +218,15 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/limitations', [DiagnosisController::class, 'getLimitations'])->name('diagnosis.get'); // SEARCH
         Route::get('/limitations/search', [LimitationsController::class, 'search'])->name('limitations.search'); // SEARCH
         Route::get('/limitations/details/{id}', [LimitationsController::class, 'getDetails'])->name('limitations.search'); // SEARCH
-        Route::get('/limitations/add', [LimitationsController::class, 'add'])->name('limitations.add'); // SEARCH
+        Route::post('/limitations/add', [LimitationsController::class, 'add'])->name('limitations.add'); // SEARCH
+
+
+        Route::get('/providertype-proc/search', [ProviderTypeProcController::class, 'search'])->name('provtype.search'); // SEARCH
+        Route::get('/providertype-proc/details/{id}', [ProviderTypeProcController::class, 'getDetails'])->name('provtype.get'); // SEARCH
+        Route::post('/providertype-proc/add', [ProviderTypeProcController::class, 'add'])->name('provtype.add'); // SEARCH
+
+
+        
 
         Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('speciality.search'); // SEARCH
         Route::get('/speciality/get/{specialty_id}', [SpecialityController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
