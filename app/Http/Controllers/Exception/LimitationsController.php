@@ -39,7 +39,7 @@ class LimitationsController extends Controller
         ->first();
 
 
-        if ( $request->has( 'new' ) ) {
+        if ( $request->has('new') ) {
 
 
             if($recordcheck){
@@ -55,8 +55,8 @@ class LimitationsController extends Controller
                     [
                         'LIMITATIONS_LIST' => $request->limitations_list,
                         'LIMITATIONS_LIST_NAME'=>$request->limitations_list_name,
-                        // 'EFFECTIVE_DATE'=>$request->effective_date,
-                        // 'TERMINATION_DATE'=>$request->termination_date,
+                        'EFFECTIVE_DATE'=>$request->effective_date,
+                        'TERMINATION_DATE'=>$request->termination_date,
                         'MIN_RX_QTY'=>$request->min_rx_qty,
                         'MAX_RX_QTY'=>$request->max_rx_qty,
                         'QTY_DSUP_COMPARE_RULE'=>$request->qty_dsup_compare_rule,
@@ -127,8 +127,8 @@ class LimitationsController extends Controller
             ->update(
                 [
                         'LIMITATIONS_LIST_NAME'=>$request->limitations_list_name,
-                        // 'EFFECTIVE_DATE'=>$request->effective_date,
-                        // 'TERMINATION_DATE'=>$request->termination_date,
+                        'EFFECTIVE_DATE'=>$request->effective_date,
+                        'TERMINATION_DATE'=>$request->termination_date,
                         'MIN_RX_QTY'=>$request->min_rx_qty,
                         'MAX_RX_QTY'=>$request->max_rx_qty,
                         'QTY_DSUP_COMPARE_RULE'=>$request->qty_dsup_compare_rule,
