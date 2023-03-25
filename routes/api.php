@@ -216,9 +216,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::get('/limitations', [DiagnosisController::class, 'getLimitations'])->name('diagnosis.get'); // SEARCH
         Route::get('/limitations/search', [LimitationsController::class, 'search'])->name('limitations.search'); // SEARCH
-
         Route::get('/limitations/details/{id}', [LimitationsController::class, 'getDetails'])->name('limitations.search'); // SEARCH
-
+        Route::get('/limitations/add', [LimitationsController::class, 'add'])->name('limitations.add'); // SEARCH
 
         Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('speciality.search'); // SEARCH
         Route::get('/speciality/get/{specialty_id}', [SpecialityController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS

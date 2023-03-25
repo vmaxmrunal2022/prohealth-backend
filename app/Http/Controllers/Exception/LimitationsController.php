@@ -51,7 +51,6 @@ class LimitationsController extends Controller
             else{
 
                 
-    
                 $insert = DB::table('LIMITATIONS_LIST')->insert(
                     [
                         'LIMITATIONS_LIST' => $request->limitations_list,
@@ -181,9 +180,6 @@ class LimitationsController extends Controller
                 ]
             );
 
-
-
-          
 
             return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$update);
 
