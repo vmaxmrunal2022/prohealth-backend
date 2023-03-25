@@ -34,8 +34,9 @@ class ClientController extends Controller
                     'user_id' => '1',
                     'date_time_modified' => date('Ymd H:i:s'),
                     'form_id' => '1',
-                    // 'auto_term_level'=>$request->auto_term_level,
-                    // 'census_date'=>$request->census_date,
+                    'auto_term_level' => $request->auto_term_level,
+                    'census_date' => date('Ymd', strtotime($request->census_date)),
+                    'policy_anniv_day' => $request->policy_anniv_day,
                 ]
             );
             $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
@@ -61,8 +62,31 @@ class ClientController extends Controller
                         'effective_date' => date('Ymd', strtotime($request->effective_date)),
                         'termination_date' => date('Ymd', strtotime($request->termination_date)),
                         'user_id' => '1',
+
                         'auto_term_level' => $request->auto_term_level,
-                        'census_date' => $request->census_date,
+                        'census_date' => date('Ymd', strtotime($request->census_date)),
+                        'policy_anniv_month' => $request->policy_anniv_month,
+                        'policy_anniv_day' => $request->policy_anniv_day,
+                        'num_of_active_contracts' => $request->num_of_active_contracts,
+                        'num_of_active_members' => $request->num_of_active_members,
+                        'num_of_termed_contracts' => $request->num_of_termed_contracts,
+                        'num_of_termed_members' => $request->num_of_termed_members,
+                        'num_of_pending_contracts' => $request->num_of_pending_contracts,
+                        'num_of_pending_members' => $request->num_of_pending_members,
+                        'pharmacy_exceptions_flag' => $request->pharmacy_exceptions_flag,
+                        'prescriber_exceptions_flag' => $request->prescriber_exceptions_flag,
+                        // 'prescriber_exceptions_flag' => $request->prescriber_exceptions_flag,
+                        // 'Prescriber_Grouping_id' => $request->Prescriber_Grouping_id,
+                        'super_rx_network_id' => $request->super_rx_network_id,
+                        'auto_term_level' => $request->auto_term_level,
+                        'auto_fam_member_term' => $request->auto_fam_member_term,
+                        'elig_type' => $request->elig_type,
+                        'membership_processing_flag' => $request->membership_processing_flag,
+                        'overlap_coverage_tie_breaker' => $request->overlap_coverage_tie_breaker,
+                        'elig_date_edit_ovr_flag' => $request->elig_date_edit_ovr_flag,
+                        // 'rule_id' => $request->rule_id,
+                        'auth_xfer_ind' => $request->auth_xfer_ind,
+                        'member_change_log_opt' => $request->member_change_log_opt,
 
 
                     ]
