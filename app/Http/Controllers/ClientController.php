@@ -12,6 +12,7 @@ class ClientController extends Controller
 
     public function add(Request $request)
     {
+
         $createddate = date('y-m-d');
         if ($request->add_new) {
             $accum_benfit_stat_names = DB::table('CLIENT')->insert(
@@ -37,6 +38,47 @@ class ClientController extends Controller
                     'auto_term_level' => $request->auto_term_level,
                     'census_date' => date('Ymd', strtotime($request->census_date)),
                     'policy_anniv_day' => $request->policy_anniv_day,
+                    'auto_term_level' => $request->auto_term_level,
+                    'census_date' => date('Ymd', strtotime($request->census_date)),
+                    'policy_anniv_month' => $request->policy_anniv_month,
+                    'policy_anniv_day' => $request->policy_anniv_day,
+                    'num_of_active_contracts' => $request->num_of_active_contracts,
+                    'num_of_active_members' => $request->num_of_active_members,
+                    'num_of_termed_contracts' => $request->num_of_termed_contracts,
+                    'num_of_termed_members' => $request->num_of_termed_members,
+                    'num_of_pending_contracts' => $request->num_of_pending_contracts,
+                    'num_of_pending_members' => $request->num_of_pending_members,
+                    'pharmacy_exceptions_flag' => $request->pharmacy_exceptions_flag,
+                    'prescriber_exceptions_flag' => $request->prescriber_exceptions_flag,
+                    'prescriber_exceptions_flag_2' => $request->prescriber_exceptions_flag_2,
+                    // 'Prescriber_Grouping_id' => $request->Prescriber_Grouping_id,
+                    'super_rx_network_id' => $request->super_rx_network_id,
+                    'auto_term_level' => $request->auto_term_level,
+                    'auto_fam_member_term' => $request->auto_fam_member_term,
+                    'elig_type' => $request->elig_type,
+                    'membership_processing_flag' => $request->membership_processing_flag,
+                    'overlap_coverage_tie_breaker' => $request->overlap_coverage_tie_breaker,
+                    'elig_date_edit_ovr_flag' => $request->elig_date_edit_ovr_flag,
+                    // 'rule_id' => $request->rule_id,
+                    'auth_xfer_ind' => $request->auth_xfer_ind,
+                    'member_change_log_opt' => $request->member_change_log_opt,
+                    'rva_list_id' => $request->rva_list_id,
+                    'elig_validation_id' => $request->elig_validation_id,
+                    'smbpp' => $request->smbpp,
+                    'other_cov_proc_flag' => $request->other_cov_proc_flag,
+                    'accum_bene_fam_sum_ind' => $request->accum_bene_fam_sum_ind,
+                    'max_num_trans_interim_elig' => $request->max_num_trans_interim_elig,
+                    'max_days_interim_elig' => $request->max_days_interim_elig,
+                    'date_written_to_first_fill' => $request->date_written_to_first_fill,
+                    'date_filled_to_sub_online' => $request->date_filled_to_sub_online,
+                    'date_filled_to_sub_dmr' => $request->date_filled_to_sub_dmr,
+                    'date_sub_to_filled_future' => $request->date_sub_to_filled_future,
+                    'days_for_reversals' => $request->days_for_reversals,
+                    'non_profit_tax_exempt_flag' => $request->non_profit_tax_exempt_flag,
+                    'reqd_u_and_c_flag' => $request->reqd_u_and_c_flag,
+                    'excl_plan_ndc_gpi_excep_flag' => $request->excl_plan_ndc_gpi_excep_flag,
+                    'excl_sys_ndc_gpi_excep_flag' => $request->excl_sys_ndc_gpi_excep_flag,
+
                 ]
             );
             $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
@@ -75,7 +117,7 @@ class ClientController extends Controller
                         'num_of_pending_members' => $request->num_of_pending_members,
                         'pharmacy_exceptions_flag' => $request->pharmacy_exceptions_flag,
                         'prescriber_exceptions_flag' => $request->prescriber_exceptions_flag,
-                        // 'prescriber_exceptions_flag' => $request->prescriber_exceptions_flag,
+                        'prescriber_exceptions_flag_2' => $request->prescriber_exceptions_flag_2,
                         // 'Prescriber_Grouping_id' => $request->Prescriber_Grouping_id,
                         'super_rx_network_id' => $request->super_rx_network_id,
                         'auto_term_level' => $request->auto_term_level,
@@ -87,8 +129,22 @@ class ClientController extends Controller
                         // 'rule_id' => $request->rule_id,
                         'auth_xfer_ind' => $request->auth_xfer_ind,
                         'member_change_log_opt' => $request->member_change_log_opt,
-
-
+                        'rva_list_id' => $request->rva_list_id,
+                        'elig_validation_id' => $request->elig_validation_id,
+                        'smbpp' => $request->smbpp,
+                        'other_cov_proc_flag' => $request->other_cov_proc_flag,
+                        'accum_bene_fam_sum_ind' => $request->accum_bene_fam_sum_ind,
+                        'max_num_trans_interim_elig' => $request->max_num_trans_interim_elig,
+                        'max_days_interim_elig' => $request->max_days_interim_elig,
+                        'date_written_to_first_fill' => $request->date_written_to_first_fill,
+                        'date_filled_to_sub_online' => $request->date_filled_to_sub_online,
+                        'date_filled_to_sub_dmr' => $request->date_filled_to_sub_dmr,
+                        'date_sub_to_filled_future' => $request->date_sub_to_filled_future,
+                        'days_for_reversals' => $request->days_for_reversals,
+                        'non_profit_tax_exempt_flag' => $request->non_profit_tax_exempt_flag,
+                        'reqd_u_and_c_flag' => $request->reqd_u_and_c_flag,
+                        'excl_plan_ndc_gpi_excep_flag' => $request->excl_plan_ndc_gpi_excep_flag,
+                        'excl_sys_ndc_gpi_excep_flag' => $request->excl_sys_ndc_gpi_excep_flag,
                     ]
                 );
 
