@@ -11,7 +11,9 @@ class TaxScheduleController extends Controller
     //
     public function get(Request $request)
     {
-        $taxData = DB::table('tax_schedule')->get();
+        $taxData = DB::table('tax_schedule')
+        ->where('tax_schedule_id', 'like', '%' . $request->search. '%')
+        ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->get();
 
         return $this->respondWithToken($this->token(), '', $taxData);
     }

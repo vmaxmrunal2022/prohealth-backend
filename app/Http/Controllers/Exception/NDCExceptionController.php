@@ -132,9 +132,10 @@ class NDCExceptionController extends Controller
 
             $update = DB::table('NDC_EXCEPTION_LISTS' )
             ->where('ndc',$request->ndc)
+            ->where('ndc_exception_list',$request->ndc_exception_list)
             ->update(
                 [
-                    'NDC_EXCEPTION_LIST' => $request->ndc_exception_list,
+                    // 'NDC_EXCEPTION_LIST' => $request->ndc_exception_list,
                     'NEW_DRUG_STATUS'=>$request->new_drug_status,
                     'PROCESS_RULE'=>$request->process_rule,
                     'MAXIMUM_ALLOWABLE_COST'=>$request->maximum_allowable_cost,
