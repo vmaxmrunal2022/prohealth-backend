@@ -543,6 +543,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('plan-association/get-membership-process-flag', [PlanAssociationController::class, 'getMemProcFlag']);
         Route::get('plan-association/get-customer', [PlanAssociationController::class, 'getCustomer']);
         Route::get('plan-association/get-client', [PlanAssociationController::class, 'getClient']);
+        Route::get('plan-association/get-client-customer', [PlanAssociationController::class, 'getClientCustomer']);
         Route::get('plan-association/get-client-group', [PlanAssociationController::class, 'getClientGroup']);
         Route::get('plan-association/get-transaction-type', [PlanAssociationController::class, 'getTransactionType']);
         Route::get('plan-association/get-transaction-association', [PlanAssociationController::class, 'getTransactionAssociation']);
