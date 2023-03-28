@@ -21,6 +21,16 @@ class ProviderTypeProcController extends Controller
     return $this->respondWithToken($this->token(), '', $data);
     }
 
+    public function getList($id){
+
+        $data = DB::table('PROV_TYPE_PROC_ASSOC')
+        ->where('prov_type_proc_assoc_id', 'like', '%' . strtoupper($id) . '%')
+        ->get();
+        return $this->respondWithToken($this->token(), '', $data);
+
+
+    }
+
     public function getDetails($id){
 
         $Details = DB::table('PROV_TYPE_PROC_ASSOC')
@@ -43,11 +53,7 @@ class ProviderTypeProcController extends Controller
         ->leftjoin('SERVICE_MODIFIERS','SERVICE_MODIFIERS.SERVICE_MODIFIER','=','PROV_TYPE_PROC_ASSOC.SERVICE_MODIFIER')
         ->leftjoin('PROVIDER_TYPES','PROVIDER_TYPES.PROVIDER_TYPE','=','PROV_TYPE_PROC_ASSOC.PROVIDER_TYPE')
 
-        
-        
-        
-
-        
+    
         ->where('PROV_TYPE_PROC_ASSOC.PROV_TYPE_PROC_ASSOC_ID',$id)
         ->first();
         return $this->respondWithToken($this->token(), '', $Details);

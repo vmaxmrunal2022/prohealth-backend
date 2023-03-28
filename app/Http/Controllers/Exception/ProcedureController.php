@@ -43,7 +43,6 @@ class ProcedureController extends Controller
                     'coverage_start_days'=>$request->coverage_start_days,
                     'diagnosis_id'=>$request->diagnosis_id,
                     'diagnosis_list'=>$request->diagnosis_list,
-                    'max_age'=>$request->max_age,
                     'max_price'=>$request->max_price,
                     'max_price_opt'=>$request->max_price_opt,
                     'module_exit'=>$request->module_exit,

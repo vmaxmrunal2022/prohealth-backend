@@ -11,12 +11,12 @@ class LimitationsController extends Controller
     public function search(Request $request)
     {
         $ndc = DB::table('LIMITATIONS_LIST')
-                ->select('LIMITATIONS_LIST', 'LIMITATIONS_LIST_NAME')
+                ->select('LIMITATIONS_LIST', 'LIMITATIONS_LIST_NAME','EFFECTIVE_DATE')
                 ->where('LIMITATIONS_LIST', 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere('LIMITATIONS_LIST_NAME', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
 
@@ -43,7 +43,7 @@ class LimitationsController extends Controller
 
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'Limitation List Id already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Limitation List ID Already Exists', $recordcheck);
 
 
             }
