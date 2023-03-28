@@ -11,7 +11,7 @@ class MacListController extends Controller
     public function get(Request $request)
     {
         $macList = DB::table('MAC_LIST')
-            ->where('MAC_LIST', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('MAC_LIST', 'like', '%' . $request->search. '%')
             ->orWhere('MAC_DESC', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
@@ -64,7 +64,7 @@ class MacListController extends Controller
 
         if ($request->add_new == 1) {
             if ($validation->count() > 0) {
-                return $this->respondWithToken($this->token(), 'Record Alredy Exists', $validation, true, 200, 1);
+                return $this->respondWithToken($this->token(), 'MAC List ID is already existed', $validation, true, 200, 1);
             }
             $add_mac_list = DB::table('mac_list')
                 ->insert([

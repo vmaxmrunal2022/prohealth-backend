@@ -55,7 +55,7 @@ class BenefitListController extends Controller
     
                 $accum_benfit_stat = DB::table('BENEFIT_LIST')->insert(
                     [
-                        'BENEFIT_LIST_ID'=>$request->benefit_list_id,
+                        'BENEFIT_LIST_ID'=>strtoupper($request->benefit_list_id),
                         'BENEFIT_CODE'=>$request->benefit_code,
                         'EFFECTIVE_DATE'=>$request->effective_date,
                         'TERMINATION_DATE'=>$request->termination_date,
@@ -181,7 +181,8 @@ class BenefitListController extends Controller
     public function search(Request $request)
     {
         $ndc = DB::table('BENEFIT_LIST')
-                ->where('BENEFIT_LIST_ID', 'like', '%' . strtoupper($request->search) . '%')
+        ->join('BENEFIT_LIST_NAMES','BENEFIT_LIST_NAMES.BENEFIT_LIST_ID','=','BENEFIT_LIST.BENEFIT_LIST_ID')
+        ->where('BENEFIT_LIST.BENEFIT_LIST_ID', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
     return $this->respondWithToken($this->token(), '', $ndc);
@@ -210,11 +211,11 @@ class BenefitListController extends Controller
         'CODES.DESCRIPTION AS benefit_code_description',
         'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_starategy_description')
         
-        ->join('BENEFIT_LIST_NAMES AS NAMES', 'NAMES.BENEFIT_LIST_ID', '=', 'BENEFIT_LIST.BENEFIT_LIST_ID')
-        ->join('BENEFIT_CODES AS CODES','CODES.BENEFIT_CODE','=','BENEFIT_LIST.BENEFIT_CODE')
-        ->join('PRICING_STRATEGY as pricing_strategies','pricing_strategies.PRICING_STRATEGY_ID','=','BENEFIT_LIST.PRICING_STRATEGY_ID')
-        ->join('ACCUM_BENE_STRATEGY_NAMES','ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID','=','BENEFIT_LIST.ACCUM_BENE_STRATEGY_ID')
-        ->join('COPAY_STRATEGY_NAMES','COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID','=','BENEFIT_LIST.COPAY_STRATEGY_ID')
+        ->leftjoin('BENEFIT_LIST_NAMES AS NAMES', 'NAMES.BENEFIT_LIST_ID', '=', 'BENEFIT_LIST.BENEFIT_LIST_ID')
+        ->leftjoin('BENEFIT_CODES AS CODES','CODES.BENEFIT_CODE','=','BENEFIT_LIST.BENEFIT_CODE')
+        ->leftjoin('PRICING_STRATEGY as pricing_strategies','pricing_strategies.PRICING_STRATEGY_ID','=','BENEFIT_LIST.PRICING_STRATEGY_ID')
+        ->leftjoin('ACCUM_BENE_STRATEGY_NAMES','ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID','=','BENEFIT_LIST.ACCUM_BENE_STRATEGY_ID')
+        ->leftjoin('COPAY_STRATEGY_NAMES','COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID','=','BENEFIT_LIST.COPAY_STRATEGY_ID')
 
 
         ->where('BENEFIT_LIST.BENEFIT_LIST_ID',$ndcid)

@@ -24,7 +24,30 @@ class ProviderTypeProcController extends Controller
     public function getDetails($id){
 
         $Details = DB::table('PROV_TYPE_PROC_ASSOC')
-        ->join('PROV_TYPE_PROC_ASSOC_NAMES','PROV_TYPE_PROC_ASSOC_NAMES.PROV_TYPE_PROC_ASSOC_ID','=','PROV_TYPE_PROC_ASSOC.PROV_TYPE_PROC_ASSOC_ID')
+
+
+->select('PROV_TYPE_PROC_ASSOC.*',
+'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_strategy_description',
+'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name_description',
+'PRICING_STRATEGY_NAMES.PRICING_STRATEGY_NAME as pricing_strategy_name_description',
+'PROC_CODE_LIST_NAMES.DESCRIPTION as proc_code_list_description',
+'PROV_TYPE_PROC_ASSOC_NAMES.DESCRIPTION as description',
+'SERVICE_MODIFIERS.DESCRIPTION as service_modifier_description',
+'PROVIDER_TYPES.DESCRIPTION as provider_type_description'
+)
+        ->leftjoin('ACCUM_BENE_STRATEGY_NAMES','ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID','=','PROV_TYPE_PROC_ASSOC.ACCUM_BENE_STRATEGY_ID')
+        ->leftjoin('COPAY_STRATEGY_NAMES','COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID','=','PROV_TYPE_PROC_ASSOC.COPAY_STRATEGY_ID')
+        ->leftjoin('PRICING_STRATEGY_NAMES','PRICING_STRATEGY_NAMES.PRICING_STRATEGY_ID','=','PROV_TYPE_PROC_ASSOC.PRICING_STRATEGY_ID')
+        ->leftjoin('PROC_CODE_LIST_NAMES','PROC_CODE_LIST_NAMES.PROC_CODE_LIST_ID','=','PROV_TYPE_PROC_ASSOC.PROC_CODE_LIST_ID')
+        ->leftjoin('PROV_TYPE_PROC_ASSOC_NAMES','PROV_TYPE_PROC_ASSOC_NAMES.PROV_TYPE_PROC_ASSOC_ID','=','PROV_TYPE_PROC_ASSOC.PROV_TYPE_PROC_ASSOC_ID')
+        ->leftjoin('SERVICE_MODIFIERS','SERVICE_MODIFIERS.SERVICE_MODIFIER','=','PROV_TYPE_PROC_ASSOC.SERVICE_MODIFIER')
+        ->leftjoin('PROVIDER_TYPES','PROVIDER_TYPES.PROVIDER_TYPE','=','PROV_TYPE_PROC_ASSOC.PROVIDER_TYPE')
+
+        
+        
+        
+
+        
         ->where('PROV_TYPE_PROC_ASSOC.PROV_TYPE_PROC_ASSOC_ID',$id)
         ->first();
         return $this->respondWithToken($this->token(), '', $Details);
@@ -121,7 +144,7 @@ class ProviderTypeProcController extends Controller
             ->where('PROV_TYPE_PROC_ASSOC_ID', strtoupper($request->prov_type_proc_assoc_id ))
             ->update(
                 [
-                    'DESCRIPTION'=>$request->discription,
+                    'DESCRIPTION'=>$request->description,
                     'DATE_TIME_CREATED'=>'',
                     'USER_ID_CREATED'=>'',
                     'USER_ID'=>''
