@@ -16,19 +16,12 @@ class NDCExceptionController extends Controller
 
         $recordcheck = DB::table('NDC_EXCEPTION_LISTS')
         ->where('ndc_exception_list', strtoupper($request->ndc_exception_list))
-        ->where('ndc', strtoupper($request->ndc))
-        ->where('effective_date', $request->effective_date)
-
         ->first();
-
-
-
-
         if ( $request->has('add_new') ) {
 
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'Ndc  Exception ID already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Ndc  Exception ID Already Exists', $recordcheck);
 
 
             }

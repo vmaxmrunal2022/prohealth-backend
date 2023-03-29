@@ -133,6 +133,16 @@ class ProcedureController extends Controller
 
     }
 
+    public function AllPhysicainLists(Request $request){
+
+        $ndc = DB::table('PHYSICIAN_EXCEPTIONS')
+        ->select('physician_list','exception_name')
+        ->get();
+
+         return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
+
 
    
 

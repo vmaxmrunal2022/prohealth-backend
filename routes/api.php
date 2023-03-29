@@ -772,7 +772,8 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/procedure/get/{ndcid}', [ExceptionProcedureController::class, 'getPCList'])->name('procedure.list.get'); // LIST ITEMS
     Route::get('/procedure/details/{ndcid}/{ncdid2}', [ExceptionProcedureController::class, 'getPCItemDetails'])->name('procedure.details.get'); // DETAILS
     Route::post('/procedure/add', [ExceptionProcedureController::class, 'add'])->name('procedure.add'); // SEARCH
-    
+    Route::get('/allphysicain_lists', [ExceptionProcedureController::class, 'AllPhysicainLists'])->name('allphysicians'); // SEARCH
+
 
     // BENEFIT LIST EXCEPTION
     Route::get('/benefit/search', [BenefitListController::class, 'search'])->name('benefit.search'); // SEARCH
