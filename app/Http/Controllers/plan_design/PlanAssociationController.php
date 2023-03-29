@@ -175,7 +175,7 @@ class PlanAssociationController extends Controller
         $cust_id = strtoupper($request->customerData);
         // dd($cust_id);
         $clients = DB::table('client')
-            // ->where('customer_id', $cust_id)
+            ->where('customer_id', $cust_id)
             ->get();
         return $this->respondWithToken($this->token(), '', $clients);
     }
