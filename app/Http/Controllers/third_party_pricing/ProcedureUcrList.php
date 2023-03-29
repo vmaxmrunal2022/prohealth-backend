@@ -56,7 +56,7 @@ class ProcedureUcrList extends Controller
                     'unit_value'       => $request->unit_value,
                     'UCR_CURRENCY'     => $request->ucr_currency,
                 ]);
-            return $this->respondWithToken($this->token(), 'Procedure UCR  List ID  Added Successfully', $add_procedure_list);
+            return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_procedure_list);
         } else if ($request->add_new == 0) {
             if ($validate->count() < 1) {
                 return $this->respondWithToken($this->token(), 'Record Not Found', $validate, false, 404, 0);
@@ -81,7 +81,7 @@ class ProcedureUcrList extends Controller
                     'UCR_CURRENCY' => $request->ucr_currency,
                 ]);
             // dd($update_procedure_list);
-            return $this->respondWithToken($this->token(), 'Procedure UCR  List ID Updated Successfully', $update_procedure_list);
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_procedure_list);
         }
     }
 

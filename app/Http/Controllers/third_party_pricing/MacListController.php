@@ -64,7 +64,7 @@ class MacListController extends Controller
 
         if ($request->add_new == 1) {
             if ($validation->count() > 0) {
-                return $this->respondWithToken($this->token(), 'MAC List ID is already existed', $validation, true, 200, 1);
+                return $this->respondWithToken($this->token(), 'MAC List ID is Already Exists', $validation, true, 200, 1);
             }
             $add_mac_list = DB::table('mac_list')
                 ->insert([
@@ -85,7 +85,7 @@ class MacListController extends Controller
                 ]);
 
             $add = DB::table('mac_table')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
-            return $this->respondWithToken($this->token(), 'Added Successfully!', $add);
+            return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
         } else if ($request->add_new == 0) {
             if ($validation->count() < 1) {
                 return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
@@ -130,7 +130,7 @@ class MacListController extends Controller
             }
 
             $update = DB::table('mac_table')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
-            return $this->respondWithToken($this->token(), 'Updated Successfully!', $update);
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
         }
     }
 }

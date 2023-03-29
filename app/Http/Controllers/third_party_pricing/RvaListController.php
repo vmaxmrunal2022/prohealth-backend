@@ -71,7 +71,7 @@ class RvaListController extends Controller
                 ]);
 
             // $add = DB::table('mac_table')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
-            return $this->respondWithToken($this->token(), 'Rva List Id Added Successfully', $add);
+            return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
         } else if ($request->add_new == 0) {
             if (!$check_record) {
                 return $this->respondWithToken($this->token(), 'Record Not Found', $check_record, false, 404, 0);
@@ -95,7 +95,7 @@ class RvaListController extends Controller
                     'FORM_ID' => $request->form_id,
                 ]);
 
-            return $this->respondWithToken($this->token(), 'Rva List Id  Updated Successfully', $updatecode);
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updatecode);
         }
     }
 }
