@@ -89,11 +89,33 @@ class GpiExclusionController extends Controller
 
     }
 
+    public function allGpiExclusions(Request $request){
+
+        $data = DB::table('GPI_EXCLUSION_LISTS')
+        ->get();
+
+        if($data){
+
+            return $this->respondWithToken($this->token(), 'Data fetched succefully', $data);
+
+
+        }else{
+
+            return $this->respondWithToken($this->token(), 'Something went wrong', $data);
+
+
+        }
+
+
+
+
+    }
+
 
 
     public function GPIS(Request $request){
-        $gpis=  DB::table('GPI_EXCLUSION_LISTS')->get();
-        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $gpis);
+        $gpis=  DB::table('GPI_EXCEPTION_LISTS')->get();
+        return $this->respondWithToken($this->token(), 'data fetched successfully ', $gpis);
 
 
     }
@@ -125,12 +147,13 @@ class GpiExclusionController extends Controller
     }
 
 
-    public function getDetails($ndcid)
+    public function getDetails($gpi)
     {
         $ndc = DB::table('GPI_EXCLUSION_LISTS')
         ->join('GPI_EXCLUSIONS', 'GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST', '=', 'GPI_EXCLUSIONS.GPI_EXCLUSION_LIST')
         ->join('DRUG_MASTER', 'GPI_EXCLUSION_LISTS.GENERIC_PRODUCT_ID', '=', 'DRUG_MASTER.GENERIC_PRODUCT_ID')
-        ->where('GPI_EXCLUSION_LISTS.GENERIC_PRODUCT_ID', 'like', '%' .$ndcid. '%')
+        ->where('GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST',$gpi)
+
         ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

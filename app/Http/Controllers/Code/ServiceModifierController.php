@@ -97,6 +97,8 @@ class ServiceModifierController extends Controller
         }
     }
 
+    
+
     public function delete(Request $request)
     {
         return  DB::table('SERVICE_MODIFIERS')->where('SERVICE_MODIFIER', $request->id)->delete()

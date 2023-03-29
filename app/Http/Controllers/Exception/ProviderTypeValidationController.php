@@ -12,35 +12,56 @@ class ProviderTypeValidationController extends Controller
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
+        
+        $recordcheck = DB::table('PROVIDER_TYPE_VALIDATIONS')
+        ->where('prov_type_list_id', strtoupper($request->prov_type_list_id))
+        ->first();
+        
+
         if ( $request->has( 'new' ) ) {
 
+           
+            if($recordcheck){
+                return $this->respondWithToken($this->token(), 'Provider Type  ID Already Exists', $recordcheck);
+
+            }
+
+            else{
+
+                $accum_benfit_stat_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')->insert(
+                    [
+                        'prov_type_list_id' => strtoupper( $request->prov_type_list_id ),
+                        'description'=>$request->description,
+                        'DATE_TIME_CREATED'=>$createddate,
+                        
+    
+                    ]
+                );
+    
+    
+                $add = DB::table('PROVIDER_TYPE_VALIDATIONS')->insert(
+                    [
+                        'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
+                        'PROV_TYPE_LIST_ID'=>$request->prov_type_list_id,
+                        'PROVIDER_TYPE'=>$request->provider_type,
+                        'EFFECTIVE_DATE'=>$request->effective_date,
+                        'TERMINATION_DATE'=>$request->termination_date,
+                        'DATE_TIME_CREATED'=>$createddate,
+    
+                    ]
+                );
 
 
-            $accum_benfit_stat_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')->insert(
-                [
-                    'prov_type_list_id' => strtoupper( $request->benefit_list_id ),
-                    'description'=>$request->description
-                    
-
-                ]
-            );
+                return $this->respondWithToken( $this->token(), 'Record Added Successfully',$add);
 
 
-            $accum_benfit_stat = DB::table('PROVIDER_TYPE_VALIDATIONS' )->insert(
-                [
-                    'prov_type_list_id'=>$request->prov_type_list_id,
-                    'provider_type'=>$request->provider_type,
-
-                ]
-            );
-
-            $benefitcode = DB::table('PROVIDER_TYPE_VALIDATIONS')->where('prov_type_list_id', 'like', '%'.$request->prov_type_list_id .'%')->first();
+            }
 
         } else {
 
 
             $benefitcode = DB::table('PROVIDER_TYPE_VALIDATION_NAMES' )
-            ->where('prov_type_list_id', $request->prov_type_list_id )
+            ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id )
 
 
             ->update(
@@ -50,24 +71,26 @@ class ProviderTypeValidationController extends Controller
                 ]
             );
 
-            $accum_benfit_stat = DB::table('PROVIDER_TYPE_VALIDATIONS' )
+            $update = DB::table('PROVIDER_TYPE_VALIDATIONS' )
             ->where('proc_code_list_id', $request->proc_code_list_id )
             ->where('provider_type',$request->provider_type)
             ->update(
                 [
-                    'provider_type'=>$request->provider_type,
-                    'effective_date'=>$request->effective_date,
+                        'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
+                        'PROVIDER_TYPE'=>$request->provider_type,
+                        'EFFECTIVE_DATE'=>$request->effective_date,
+                        'TERMINATION_DATE'=>$request->termination_date,
+                        'DATE_TIME_CREATED'=>$createddate,
                   
 
                 ]
             );
 
-            $benefitcode = DB::table('PROVIDER_TYPE_VALIDATIONS')->where('proc_code_list_id', 'like', $request->proc_code_list_id )->first();
+            return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$update);
 
         }
 
 
-        return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
     }
     
 
@@ -96,8 +119,8 @@ class ProviderTypeValidationController extends Controller
     public function getList($ncdid)
     {
         $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATIONS')
-
-        ->Where('PROV_TYPE_LIST_ID', 'like', '%'.strtoupper($ncdid).'%')
+        ->join('PROVIDER_TYPE_VALIDATION_NAMES', 'PROVIDER_TYPE_VALIDATION_NAMES.PROV_TYPE_LIST_ID', '=', 'PROVIDER_TYPE_VALIDATIONS.PROV_TYPE_LIST_ID')
+        ->Where('PROVIDER_TYPE_VALIDATIONS.PROV_TYPE_LIST_ID',$ncdid)
         ->get();
         return $this->respondWithToken($this->token(), '', $providerTypeValidations);
        
@@ -109,10 +132,24 @@ class ProviderTypeValidationController extends Controller
     public function getNDCItemDetails($ndcid,$ndcid2)
     {
         $ndc = DB::table('PROVIDER_TYPE_VALIDATIONS')
-        ->join('PROVIDER_TYPE_VALIDATION_NAMES', 'PROVIDER_TYPE_VALIDATION_NAMES.PROV_TYPE_LIST_ID', '=', 'PROVIDER_TYPE_VALIDATIONS.PROV_TYPE_LIST_ID')
-        // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
-        ->where('proc_code_list_id',$ndcid)
-        ->where('provider_type',$ndcid2)
+        ->join('PROVIDER_TYPE_VALIDATION_NAMES as valdation_names', 'valdation_names.PROV_TYPE_LIST_ID', '=', 'PROVIDER_TYPE_VALIDATIONS.PROV_TYPE_LIST_ID')
+        ->join('PROC_CODE_LIST_NAMES as list_names','list_names.PROC_CODE_LIST_ID','=','PROVIDER_TYPE_VALIDATIONS.PROC_CODE_LIST_ID')
+        ->join('PROVIDER_TYPES as types','types.PROVIDER_TYPE','=','PROVIDER_TYPE_VALIDATIONS.PROVIDER_TYPE')
+        ->select('PROVIDER_TYPE_VALIDATIONS.PROC_CODE_LIST_ID',
+        'PROVIDER_TYPE_VALIDATIONS.prov_type_list_id',
+        'PROVIDER_TYPE_VALIDATIONS.provider_type',
+        'PROVIDER_TYPE_VALIDATIONS.date_time_created',
+        'PROVIDER_TYPE_VALIDATIONS.date_time_modified',
+        'PROVIDER_TYPE_VALIDATIONS.effective_date',
+        'PROVIDER_TYPE_VALIDATIONS.form_id',
+        'PROVIDER_TYPE_VALIDATIONS.termination_date',
+        'PROVIDER_TYPE_VALIDATIONS.user_id',
+        'PROVIDER_TYPE_VALIDATIONS.user_id_created',
+        'valdation_names.DESCRIPTION as description',
+        'list_names.DESCRIPTION as Procedure_code_description',
+        'types.DESCRIPTION as provider_type_description')
+        ->where('PROVIDER_TYPE_VALIDATIONS.proc_code_list_id',$ndcid)
+        ->where('PROVIDER_TYPE_VALIDATIONS.provider_type',$ndcid2)
 
 
         // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')

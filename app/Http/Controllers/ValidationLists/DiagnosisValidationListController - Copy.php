@@ -76,19 +76,13 @@ class DiagnosisValidationListController extends Controller
 
     public function addDiagnosisValidations(Request $request)
     {
-        $limitations_form = json_decode(json_encode($request->limitations_form, true));
-        $limitations_form = $limitations_form[0];
-        $effective_date = $limitations_form->effective_date;
-        $termination_date   = $limitations_form->termination_date;
-        $limitations_list   = $limitations_form->limitations_list;
-
         if ($request->has('new')) {
             $validator = Validator::make($request->all(), [
                 "diagnosis_list" => ['required', 'max:10', Rule::unique('DIAGNOSIS_EXCEPTIONS')->where(function ($q) {
                     $q->whereNotNull('diagnosis_list');
                 })],
                 "EXCEPTION_NAME" => ['max:35'],
-                // "diagnosis_list" => ['max:8'],
+                "diagnosis_list" => ['max:8'],
                 "diagnosis_status" => ['max:1', 'alpha_num'],
                 "priority" => ['max:1', 'alpha_num'],
                 "effective_date" => ['max:8', 'numeric'],
@@ -117,9 +111,9 @@ class DiagnosisValidationListController extends Controller
                         ->insert([
                             'DIAGNOSIS_LIST' => $request->diagnosis_list,
                             'DIAGNOSIS_ID' => $request->diagnosis_id,
-                            'LIMITATIONS_LIST' => $limitations_list,
-                            'EFFECTIVE_DATE' => date('Ydm', strtotime($effective_date)),
-                            'TERMINATION_DATE' => date('Ydm', strtotime($termination_date)),
+                            'LIMITATIONS_LIST' => $request->limitations_list,
+                            'EFFECTIVE_DATE' => date('Ydm', strtotime($request->effective_date)),
+                            'TERMINATION_DATE' => date('Ydm', strtotime($request->termination_date)),
                             'DATE_TIME_CREATED' => date('d-M-y'),
 
                         ]);
@@ -182,7 +176,7 @@ class DiagnosisValidationListController extends Controller
                             'DATE_TIME_MODIFIED' => date('d-M-y'),
                         ]);
 
-                    if (isset($request->diagnosis_id) && isset($request->diagnosis_list)) {
+                    if (isset($request->diagnosis_id)) {
                         $updateDataValid = DB::table('DIAGNOSIS_VALIDATIONS')
                             ->where('DIAGNOSIS_ID', $request->diagnosis_id)
                             ->where('DIAGNOSIS_LIST',$request->diagnosis_list)
@@ -191,7 +185,7 @@ class DiagnosisValidationListController extends Controller
                                 'PRIORITY' => $request->priority,
                                 'DATE_TIME_MODIFIED' => date('d-M-y'),
                                 'USER_ID_MODIFIED' => $request->user_name,
-                                // 'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                'DIAGNOSIS_LIST' => $request->diagnosis_list,
                                 'DIAGNOSIS_STATUS'=>$request->diagnosis_status,
                             ]);
                     }
@@ -287,13 +281,6 @@ class DiagnosisValidationListController extends Controller
             ->where('a.DIAGNOSIS_LIST', $diagnosis_list)
             ->where('a.DIAGNOSIS_ID', $diagnosis_id)
             ->first();
-        return $this->respondWithToken($this->token(), '', $data);
-    }
-    public function getAll()
-    {
-        $data = DB::table('DIAGNOSIS_VALIDATIONS as a')
-            ->join('DIAGNOSIS_EXCEPTIONS as b', 'b.DIAGNOSIS_LIST', '=', 'a.DIAGNOSIS_LIST')
-            ->get();
         return $this->respondWithToken($this->token(), '', $data);
     }
 

@@ -27,7 +27,7 @@ class PrcedureCodeListController extends Controller
 
             if($recordcheck){
 
-                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Procedure Code List Id Already Exists', $recordcheck);
 
 
             }else{
@@ -52,7 +52,7 @@ class PrcedureCodeListController extends Controller
 
 
                 if ($accum_benfit_stat) {
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully!!!', $accum_benfit_stat);
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $accum_benfit_stat);
                 }
     
     
@@ -105,11 +105,29 @@ class PrcedureCodeListController extends Controller
         return $this->respondWithToken( $this->token(), '', $providerCodeList );
     }
 
+    public function getAll( Request $request )
+    {
+        $providerCodeList = DB::table( 'PROC_CODE_LIST_NAMES')->get();
+        return $this->respondWithToken( $this->token(), '', $providerCodeList );
+    }
+
     public function getProcCodeList( Request $request )
  {
         $providerCodeList = DB::table( 'PROC_CODE_LISTS' )
         ->join( 'PROC_CODE_LIST_NAMES', 'PROC_CODE_LIST_NAMES.PROC_CODE_LIST_ID', '=', 'PROC_CODE_LISTS.PROC_CODE_LIST_ID' )
+        ->join('PROCEDURE_CODES','PROCEDURE_CODES.PROCEDURE_CODE','=','PROC_CODE_LISTS.PROCEDURE_CODE')
         ->where( 'PROC_CODE_LISTS.PROC_CODE_LIST_ID', 'like', '%'.strtoupper( $request->search ).'%' )
+        ->select('PROC_CODE_LISTS.proc_code_list_id',
+        'PROC_CODE_LISTS.procedure_code',
+        'PROC_CODE_LISTS.effective_date',
+        'PROC_CODE_LISTS.termination_date',
+        'PROC_CODE_LISTS.date_time_created',
+        'PROC_CODE_LISTS.user_id_created',
+        'PROC_CODE_LISTS.user_id',
+        'PROC_CODE_LISTS.date_time_modified',
+        'PROC_CODE_LIST_NAMES.description',
+        'PROCEDURE_CODES.DESCRIPTION as procedure_code_description'
+        )
         ->get();
         return $this->respondWithToken( $this->token(), '', $providerCodeList );
     }

@@ -16,6 +16,13 @@ class ProcedureController extends Controller
         $createddate = date('y-m-d');
 
         if ($request->has('new')) {
+            $exist = DB::table('PROCEDURE_EXCEPTION_LISTS')
+            ->where('procedure_exception_list',strtoupper($request->procedure_exception_list))->first();
+
+            if($exist){
+                return $this->respondWithToken( $this->token(), 'Procedure List ID Already Existed');
+            }
+
 
             // return $request->all();
             $accum_benfit_stat_names = DB::table('PROCEDURE_EXCEPTION_NAMES')->insert(
@@ -24,6 +31,9 @@ class ProcedureController extends Controller
 
                     // 'exception_name' => $request->exception_name,
 
+
+                    'exception_name'=>$request->exception_name,
+                    
 
                 ]
             );
@@ -77,8 +87,14 @@ class ProcedureController extends Controller
             $benefitcode = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('procedure_exception_list', 'like', '%' . $request->procedure_exception_list . '%')->first();
         } else {
 
+            $exceptipon_names = DB::table('PROCEDURE_EXCEPTION_NAMES')
+            ->where('procedure_exception_list',strtoupper($request->procedure_exception_list))
+            // ->where('new_claim_status', $request->new_claim_status )
+            ->update(
+                [
+                    'exception_name'=>$request->exception_name,
 
-            // dd($request->all())
+                ]);
 
             $benefitcode = DB::table('PROCEDURE_EXCEPTION_LISTS')
                 ->where('procudure_exception_list', $request->procudure_exception_list)

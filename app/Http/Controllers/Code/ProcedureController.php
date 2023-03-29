@@ -27,6 +27,26 @@ class ProcedureController extends Controller
         }
     }
 
+
+    public function getCodes(Request $request){
+
+        $procedurecodes = DB::table('PROCEDURE_CODES')->get();
+
+        if($procedurecodes){
+
+            return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $procedurecodes);
+
+
+        }else{
+
+            return $this->respondWithToken($this->token(), 'There Was an Error', $procedurecodes);
+
+
+        }
+
+
+    }
+
     public function add(Request $request)
     {
         if ($request->new) {

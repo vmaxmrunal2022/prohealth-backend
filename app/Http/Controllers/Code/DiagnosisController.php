@@ -28,6 +28,17 @@ class DiagnosisController extends Controller
     }
 
 
+    public function all(Request $request)
+    {
+        
+            $benefitcodes = DB::table('DIAGNOSIS_CODES')
+                ->get();
+            return $this->respondWithToken($this->token(), '', $benefitcodes);
+        }
+    
+
+
+
     public function getLimitations(Request $request)
     {
         $benefitcodes = DB::table('LIMITATIONS_LIST')

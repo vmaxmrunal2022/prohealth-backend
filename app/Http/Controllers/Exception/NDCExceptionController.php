@@ -13,183 +13,212 @@ class NDCExceptionController extends Controller
 
         $createddate = date( 'y-m-d' );
 
-        if ( $request->has( 'new' ) ) {
+
+        $recordcheck = DB::table('NDC_EXCEPTION_LISTS')
+        ->where('ndc_exception_list', strtoupper($request->ndc_exception_list))
+        ->where('ndc', strtoupper($request->ndc))
+        ->first();
 
 
-            $accum_benfit_stat_names = DB::table('NDC_EXCEPTIONS')->insert(
-                [
-                    'ndc_exception_list' => $request->ndc_exception_list,
-                    'exception_name'=>$request->exception_name,
-                    
-                ]
-            );
 
-            $accum_benfit_stat = DB::table('NDC_EXCEPTION_LISTS' )->insert(
-                [
-                    'ndc_exception_list' => $request->ndc_exception_list,
-                    'min_rx_qty'=>$request->min_rx_qty,
 
-                    'acute_dosing_days'=>$request->acute_dosing_days,
-                    'alternate_copay_sched'=>$request->alternate_copay_sched,
-                    'alternate_price_schedule'=>$request->alternate_price_schedule,
-                    'bga_inc_exc_ind'=>$request->bga_inc_exc_ind,
-                    'bng_multi_inc_exc_ind'=>$request->bng_multi_inc_exc_ind,
-                    'bng_sngl_inc_exc_ind'=>$request->bng_sngl_inc_exc_ind,
-                    'brand_copay_amt'=>$request->brand_copay_amt,
-                    'conversion_product_ndc'=>$request->conversion_product_ndc,
-                    'copay_network_ovrd'=>$request->copay_network_ovrd,
-                    'days_supply_opt_multiplier'=>$request->days_supply_opt_multiplier,
-                    'denial_override'=>$request->denial_override,
-                    'diagnosis_list'=>$request->diagnosis_list,
-                    'drug_cov_start_days'=>$request->drug_cov_start_days,
-                  
-                    'gen_inc_exc_ind'=>$request->gen_inc_exc_ind,
-                    'generic_copay_amt'=>$request->generic_copay_amt,
-                    'generic_indicator'=>$request->generic_indicator,
-                    'mail_ord_max_days_supply_opt'=>$request->mail_ord_max_days_supply_opt,
-                    'mail_ord_max_fills_opt'=>$request->mail_ord_max_fills_opt,
-                    'mail_order_max_refills'=>$request->mail_order_max_refills,
-                    'mail_order_max_rx_days'=>$request->mail_order_max_rx_days,
-                    'mail_order_min_rx_days'=>$request->mail_order_min_rx_days,
-                    'maint_dose_units_day'=>$request->maint_dose_units_day,
-                    'maintenance_drug'=>$request->maintenance_drug,
-                    'max_age'=>$request->max_age,
-                    'max_ctl_days'=>$request->max_ctl_days,
-                    'max_days_over_time'=>$request->max_days_over_time,
-                    'max_days_per_fill'=>$request->max_days_per_fill,
-                    'max_days_supply_opt'=>$request->max_days_supply_opt,
-                    'max_dose'=>$request->max_dose,
-                    'max_price'=>$request->max_price,
-                    'max_price_opt'=>$request->max_price_opt,
-                    'max_price_patient'=>$request->max_price_patient,
-                    'max_price_time_flag'=>$request->max_price_time_flag,
-                    'max_qty_over_time'=>$request->max_qty_over_time,
-                    'max_qty_per_fill'=>$request->max_qty_per_fill,
-                    'max_refills'=>$request->max_refills,
-                    'max_rx_days'=>$request->max_rx_days,
-                    'max_rx_qty'=>$request->max_rx_qty,
-                    'max_rx_qty_opt'=>$request->max_rx_qty_opt,
-                    'max_rxs_patient'=>$request->max_rxs_patient,
-                    'max_rxs_time_flag'=>$request->max_rxs_time_flag,
-                    'maximum_allowable_cost'=>$request->maximum_allowable_cost,
-                    'merge_defaults'=>$request->merge_defaults,
-                    'message'=>$request->message,
-                    'message_stop_date'=>$request->message_stop_date,
-                    'min_age'=>$request->min_age,
-                    'min_rx_days'=>$request->min_rx_days,
-                    'min_rx_qty'=>$request->min_rx_qty,
-                    'module_exit'=>$request->module_exit,
-                    // 'ndc_exception_list'=>$request->ndc_exception_list,
-                    'new_drug_status'=>$request->new_drug_status,
-                    'pharmacy_list'=>$request->pharmacy_list,
-                    'physician_list'=>$request->physician_list,
-                    'physician_specialty_list'=>$request->physician_specialty_list,
-                    'pkg_determine_id'=>$request->pkg_determine_id,
-                    'preferred_product_ndc'=>$request->preferred_product_ndc,
-                    'process_rule'=>$request->process_rule,
-                    'qty_dsup_compare_rule'=>$request->qty_dsup_compare_rule,
-                    'reject_only_msg_flag'=>$request->reject_only_msg_flag,
-                    'retail_max_fills_opt'=>$request->retail_max_fills_opt,
-                    'rx_qty_opt_multiplier'=>$request->rx_qty_opt_multiplier,
-                    'sex_restriction'=>$request->sex_restriction,
-                    'starter_dose_bypass_days'=>$request->starter_dose_bypass_days,
-                    'starter_dose_days'=>$request->starter_dose_days,
-                    'starter_dose_maint_bypass_days'=>$request->starter_dose_maint_bypass_days,
-                    'valid_relation_code'=>$request->valid_relation_code,
-                 
-                ]
-            );
-            $benefitcode = DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', 'like', '%'.$request->ndc_exception_list .'%')->first();
+        if ( $request->has('add_new') ) {
+
+
+            if($recordcheck){
+                return $this->respondWithToken($this->token(), 'Ndc  Exception ID already exists in the system..!!!', $recordcheck);
+
+
+            }
+
+            else{
+
+                $accum_benfit_stat_names = DB::table('NDC_EXCEPTIONS')->insert(
+                    [
+                        'ndc_exception_list' => strtoupper($request->ndc_exception_list),
+                        'exception_name'=>$request->exception_name,
+                        
+                    ]
+                );
+    
+                $insert = DB::table('NDC_EXCEPTION_LISTS')->insert(
+                    [
+                        'NDC_EXCEPTION_LIST' =>strtoupper($request->ndc_exception_list),
+                        'NDC'=>$request->ndc,
+                        'NEW_DRUG_STATUS'=>$request->new_drug_status,
+                        'PROCESS_RULE'=>$request->process_rule,
+                        'MAXIMUM_ALLOWABLE_COST'=>$request->maximum_allowable_cost,
+                        'PHYSICIAN_LIST'=>$request->physician_list,
+                        'PHYSICIAN_SPECIALTY_LIST'=>$request->physician_specialty_list,
+                        'PHARMACY_LIST'=>$request->pharmacy_list,
+                        'DIAGNOSIS_LIST'=>$request->diagnosis_list,
+                        'PREFERRED_PRODUCT_NDC'=>$request->preferred_product_ndc,
+                        'CONVERSION_PRODUCT_NDC'=>$request->conversion_product_ndc,
+                        'ALTERNATE_PRICE_SCHEDULE'=>$request->alternate_price_schedule,
+                        'ALTERNATE_COPAY_SCHED'=>$request->alternate_copay_sched,
+                        'MESSAGE'=>$request->message,
+                        'MESSAGE_STOP_DATE'=>$request->message_stop_date,
+                        'MIN_RX_QTY'=>$request->min_rx_qty,
+                        'MAX_RX_QTY'=>$request->max_rx_qty,
+                        'MIN_RX_DAYS'=>$request->min_rx_days,
+                        'MAX_RX_DAYS'=>$request->max_rx_days,
+                        'MIN_CTL_DAYS'=>$request->min_ctl_days,
+                        'MAX_CTL_DAYS'=>$request->max_ctl_days,
+                        'MAX_REFILLS'=>$request->max_refills,
+                        'MAX_DAYS_PER_FILL'=>$request->max_days_per_fill,
+                        'MAX_DOSE'=>$request->max_dose,
+                        'MIN_AGE'=>$request->min_age,
+                        'MAX_AGE'=>$request->max_age,
+                        'MIN_PRICE'=>$request->min_price,
+                        'MAX_PRICE'=>$request->max_price,
+                        'MAX_RXS_PATIENT'=>$request->max_rxs_patient,
+                        'MAX_PRICE_PATIENT'=>$request->max_price_patient,
+                        'GENERIC_COPAY_AMT'=>$request->generic_copay_amt,
+                        'BRAND_COPAY_AMT'=>$request->brand_copay_amt,
+                        'MAINT_DOSE_UNITS_DAY'=>$request->maint_dose_units_day,
+                        'ACUTE_DOSING_DAYS'=>$request->acute_dosing_days,
+                        'DENIAL_OVERRIDE'=>$request->denial_override,
+                        'MAINTENANCE_DRUG'=>$request->maintenance_drug,
+                        'GENERIC_INDICATOR'=>$request->generic_indicator,
+                        'MERGE_DEFAULTS'=>$request->merge_defaults,
+                        'SEX_RESTRICTION'=>$request->sex_restriction,
+                        'MAIL_ORDER_MIN_RX_DAYS'=>$request->mail_order_min_rx_days,
+                        'MAIL_ORDER_MAX_RX_DAYS'=>$request->mail_order_max_rx_days,
+                        'MAIL_ORDER_MAX_REFILLS'=>$request->mail_order_max_refills,
+                        'MAX_RXS_TIME_FLAG'=>$request->max_rxs_time_flag,
+                        'MAX_PRICE_TIME_FLAG'=>$request->max_price_time_flag,
+                        'QTY_DSUP_COMPARE_RULE'=>$request->qty_dsup_compare_rule,
+                        'DATE_TIME_CREATED'=>$createddate,
+                        'USER_ID'=>'',
+                        'DATE_TIME_MODIFIED'=>$createddate,
+                        'COPAY_NETWORK_OVRD'=>$request->copay_network_ovrd,
+                        'MAX_DAYS_SUPPLY_OPT'=>$request->max_days_supply_opt,
+                        'MAIL_ORD_MAX_DAYS_SUPPLY_OPT'=>$request->mail_ord_max_days_supply_opt,
+                        'RETAIL_MAX_FILLS_OPT'=>$request->retail_max_fills_opt,
+                        'MAIL_ORD_MAX_FILLS_OPT'=>$request->mail_ord_max_fills_opt,
+                        'MIN_PRICE_OPT'=>$request->min_price_opt,
+                        'MAX_PRICE_OPT'=>$request->max_price_opt,
+                        'VALID_RELATION_CODE'=>$request->valid_relation_code,
+                        'STARTER_DOSE_DAYS'=>$request->starter_dose_days,
+                        'STARTER_DOSE_BYPASS_DAYS'=>$request->starter_dose_bypass_days,
+                        'DRUG_COV_START_DAYS'=>$request->drug_cov_start_days,
+                        'PKG_DETERMINE_ID'=>$request->pkg_determine_id,
+                        'MAX_RX_QTY_OPT'=>$request->max_rx_qty_opt,
+                        'EFFECTIVE_DATE'=>$request->effective_date,
+                        'TERMINATION_DATE'=>$request->termination_date,
+                        'MAX_QTY_OVER_TIME'=>$request->max_qty_over_time,
+                        'MAX_DAYS_OVER_TIME'=>$request->max_days_over_time,
+                        'REJECT_ONLY_MSG_FLAG'=>$request->reject_only_msg_flag,
+                        'USER_ID_CREATED'=>'',
+                        'STARTER_DOSE_MAINT_BYPASS_DAYS'=>$request->starter_dose_maint_bypass_days,
+                        'MAX_QTY_PER_FILL'=>$request->max_qty_per_fill,
+                        'BNG_SNGL_INC_EXC_IND'=>$request->bng_sngl_inc_exc_ind,
+                        'BNG_MULTI_INC_EXC_IND'=>$request->bng_multi_inc_exc_ind,
+                        'BGA_INC_EXC_IND'=>$request->bga_inc_exc_ind,
+                        'GEN_INC_EXC_IND'=>$request->gen_inc_exc_ind,
+                        'RX_QTY_OPT_MULTIPLIER'=>$request->rx_qty_opt_multiplier,
+                        'DAYS_SUPPLY_OPT_MULTIPLIER'=>$request->days_supply_opt_multiplier,
+                        'MODULE_EXIT'=>$request->module_exit,
+                    ]
+                );
+                return $this->respondWithToken( $this->token(), 'Record Added Successfully',$insert);
+
+            }
+
+           
 
 
         } else {
 
-            $benefitcode = DB::table('NDC_EXCEPTION_LISTS' )
-            ->where('ndc', $request->ndc )
+            $update = DB::table('NDC_EXCEPTION_LISTS' )
+            ->where('ndc',$request->ndc)
             ->update(
                 [
-                    'min_rx_qty'=>$request->min_rx_qty,
-
-                    'acute_dosing_days'=>$request->acute_dosing_days,
-                    'alternate_copay_sched'=>$request->alternate_copay_sched,
-                    'alternate_price_schedule'=>$request->alternate_price_schedule,
-                    'bga_inc_exc_ind'=>$request->bga_inc_exc_ind,
-                    'bng_multi_inc_exc_ind'=>$request->bng_multi_inc_exc_ind,
-                    'bng_sngl_inc_exc_ind'=>$request->bng_sngl_inc_exc_ind,
-                    'brand_copay_amt'=>$request->brand_copay_amt,
-                    'conversion_product_ndc'=>$request->conversion_product_ndc,
-                    'copay_network_ovrd'=>$request->copay_network_ovrd,
-                    'days_supply_opt_multiplier'=>$request->days_supply_opt_multiplier,
-                    'denial_override'=>$request->denial_override,
-                    'diagnosis_list'=>$request->diagnosis_list,
-                    'drug_cov_start_days'=>$request->drug_cov_start_days,
-                  
-                    'gen_inc_exc_ind'=>$request->gen_inc_exc_ind,
-                    'generic_copay_amt'=>$request->generic_copay_amt,
-                    'generic_indicator'=>$request->generic_indicator,
-                    'mail_ord_max_days_supply_opt'=>$request->mail_ord_max_days_supply_opt,
-                    'mail_ord_max_fills_opt'=>$request->mail_ord_max_fills_opt,
-                    'mail_order_max_refills'=>$request->mail_order_max_refills,
-                    'mail_order_max_rx_days'=>$request->mail_order_max_rx_days,
-                    'mail_order_min_rx_days'=>$request->mail_order_min_rx_days,
-                    'maint_dose_units_day'=>$request->maint_dose_units_day,
-                    'maintenance_drug'=>$request->maintenance_drug,
-                    'max_age'=>$request->max_age,
-                    'max_ctl_days'=>$request->max_ctl_days,
-                    'max_days_over_time'=>$request->max_days_over_time,
-                    'max_days_per_fill'=>$request->max_days_per_fill,
-                    'max_days_supply_opt'=>$request->max_days_supply_opt,
-                    'max_dose'=>$request->max_dose,
-                    'max_price'=>$request->max_price,
-                    'max_price_opt'=>$request->max_price_opt,
-                    'max_price_patient'=>$request->max_price_patient,
-                    'max_price_time_flag'=>$request->max_price_time_flag,
-                    'max_qty_over_time'=>$request->max_qty_over_time,
-                    'max_qty_per_fill'=>$request->max_qty_per_fill,
-                    'max_refills'=>$request->max_refills,
-                    'max_rx_days'=>$request->max_rx_days,
-                    'max_rx_qty'=>$request->max_rx_qty,
-                    'max_rx_qty_opt'=>$request->max_rx_qty_opt,
-                    'max_rxs_patient'=>$request->max_rxs_patient,
-                    'max_rxs_time_flag'=>$request->max_rxs_time_flag,
-                    'maximum_allowable_cost'=>$request->maximum_allowable_cost,
-                    'merge_defaults'=>$request->merge_defaults,
-                    'message'=>$request->message,
-                    'message_stop_date'=>$request->message_stop_date,
-                    'min_age'=>$request->min_age,
-                    'min_rx_days'=>$request->min_rx_days,
-                    'min_rx_qty'=>$request->min_rx_qty,
-                    'module_exit'=>$request->module_exit,
-                    // 'ndc_exception_list'=>$request->ndc_exception_list,
-                    'new_drug_status'=>$request->new_drug_status,
-                    'pharmacy_list'=>$request->pharmacy_list,
-                    'physician_list'=>$request->physician_list,
-                    'physician_specialty_list'=>$request->physician_specialty_list,
-                    'pkg_determine_id'=>$request->pkg_determine_id,
-                    'preferred_product_ndc'=>$request->preferred_product_ndc,
-                    'process_rule'=>$request->process_rule,
-                    'qty_dsup_compare_rule'=>$request->qty_dsup_compare_rule,
-                    'reject_only_msg_flag'=>$request->reject_only_msg_flag,
-                    'retail_max_fills_opt'=>$request->retail_max_fills_opt,
-                    'rx_qty_opt_multiplier'=>$request->rx_qty_opt_multiplier,
-                    'sex_restriction'=>$request->sex_restriction,
-                    'starter_dose_bypass_days'=>$request->starter_dose_bypass_days,
-                    'starter_dose_days'=>$request->starter_dose_days,
-                    'starter_dose_maint_bypass_days'=>$request->starter_dose_maint_bypass_days,
-                    'valid_relation_code'=>$request->valid_relation_code,
-                  
+                    'NDC_EXCEPTION_LIST' => $request->ndc_exception_list,
+                    'NEW_DRUG_STATUS'=>$request->new_drug_status,
+                    'PROCESS_RULE'=>$request->process_rule,
+                    'MAXIMUM_ALLOWABLE_COST'=>$request->maximum_allowable_cost,
+                    'PHYSICIAN_LIST'=>$request->physician_list,
+                    'PHYSICIAN_SPECIALTY_LIST'=>$request->physician_specialty_list,
+                    'PHARMACY_LIST'=>$request->pharmacy_list,
+                    'DIAGNOSIS_LIST'=>$request->diagnosis_list,
+                    'PREFERRED_PRODUCT_NDC'=>$request->preferred_product_ndc,
+                    'CONVERSION_PRODUCT_NDC'=>$request->conversion_product_ndc,
+                    'ALTERNATE_PRICE_SCHEDULE'=>$request->alternate_price_schedule,
+                    'ALTERNATE_COPAY_SCHED'=>$request->alternate_copay_sched,
+                    'MESSAGE'=>$request->message,
+                    'MESSAGE_STOP_DATE'=>$request->message_stop_date,
+                    'MIN_RX_QTY'=>$request->min_rx_qty,
+                    'MAX_RX_QTY'=>$request->max_rx_qty,
+                    'MIN_RX_DAYS'=>$request->min_rx_days,
+                    'MAX_RX_DAYS'=>$request->max_rx_days,
+                    'MIN_CTL_DAYS'=>$request->min_ctl_days,
+                    'MAX_CTL_DAYS'=>$request->max_ctl_days,
+                    'MAX_REFILLS'=>$request->max_refills,
+                    'MAX_DAYS_PER_FILL'=>$request->max_days_per_fill,
+                    'MAX_DOSE'=>$request->max_dose,
+                    'MIN_AGE'=>$request->min_age,
+                    'MAX_AGE'=>$request->max_age,
+                    'MIN_PRICE'=>$request->min_price,
+                    'MAX_PRICE'=>$request->max_price,
+                    'MAX_RXS_PATIENT'=>$request->max_rxs_patient,
+                    'MAX_PRICE_PATIENT'=>$request->max_price_patient,
+                    'GENERIC_COPAY_AMT'=>$request->generic_copay_amt,
+                    'BRAND_COPAY_AMT'=>$request->brand_copay_amt,
+                    'MAINT_DOSE_UNITS_DAY'=>$request->maint_dose_units_day,
+                    'ACUTE_DOSING_DAYS'=>$request->acute_dosing_days,
+                    'DENIAL_OVERRIDE'=>$request->denial_override,
+                    'MAINTENANCE_DRUG'=>$request->maintenance_drug,
+                    'GENERIC_INDICATOR'=>$request->generic_indicator,
+                    'MERGE_DEFAULTS'=>$request->merge_defaults,
+                    'SEX_RESTRICTION'=>$request->sex_restriction,
+                    'MAIL_ORDER_MIN_RX_DAYS'=>$request->mail_order_min_rx_days,
+                    'MAIL_ORDER_MAX_RX_DAYS'=>$request->mail_order_max_rx_days,
+                    'MAIL_ORDER_MAX_REFILLS'=>$request->mail_order_max_refills,
+                    'MAX_RXS_TIME_FLAG'=>$request->max_rxs_time_flag,
+                    'MAX_PRICE_TIME_FLAG'=>$request->max_price_time_flag,
+                    'QTY_DSUP_COMPARE_RULE'=>$request->qty_dsup_compare_rule,
+                    'DATE_TIME_CREATED'=>$createddate,
+                    'USER_ID'=>'',
+                    'DATE_TIME_MODIFIED'=>$createddate,
+                    'COPAY_NETWORK_OVRD'=>$request->copay_network_ovrd,
+                    'MAX_DAYS_SUPPLY_OPT'=>$request->max_days_supply_opt,
+                    'MAIL_ORD_MAX_DAYS_SUPPLY_OPT'=>$request->mail_ord_max_days_supply_opt,
+                    'RETAIL_MAX_FILLS_OPT'=>$request->retail_max_fills_opt,
+                    'MAIL_ORD_MAX_FILLS_OPT'=>$request->mail_ord_max_fills_opt,
+                    'MIN_PRICE_OPT'=>$request->min_price_opt,
+                    'MAX_PRICE_OPT'=>$request->max_price_opt,
+                    'VALID_RELATION_CODE'=>$request->valid_relation_code,
+                    'STARTER_DOSE_DAYS'=>$request->starter_dose_days,
+                    'STARTER_DOSE_BYPASS_DAYS'=>$request->starter_dose_bypass_days,
+                    'DRUG_COV_START_DAYS'=>$request->drug_cov_start_days,
+                    'PKG_DETERMINE_ID'=>$request->pkg_determine_id,
+                    'MAX_RX_QTY_OPT'=>$request->max_rx_qty_opt,
+                    'EFFECTIVE_DATE'=>$request->effective_date,
+                    'TERMINATION_DATE'=>$request->termination_date,
+                    'MAX_QTY_OVER_TIME'=>$request->max_qty_over_time,
+                    'MAX_DAYS_OVER_TIME'=>$request->max_days_over_time,
+                    'REJECT_ONLY_MSG_FLAG'=>$request->reject_only_msg_flag,
+                    'USER_ID_CREATED'=>'',
+                    'STARTER_DOSE_MAINT_BYPASS_DAYS'=>$request->starter_dose_maint_bypass_days,
+                    'MAX_QTY_PER_FILL'=>$request->max_qty_per_fill,
+                    'BNG_SNGL_INC_EXC_IND'=>$request->bng_sngl_inc_exc_ind,
+                    'BNG_MULTI_INC_EXC_IND'=>$request->bng_multi_inc_exc_ind,
+                    'BGA_INC_EXC_IND'=>$request->bga_inc_exc_ind,
+                    'GEN_INC_EXC_IND'=>$request->gen_inc_exc_ind,
+                    'RX_QTY_OPT_MULTIPLIER'=>$request->rx_qty_opt_multiplier,
+                    'DAYS_SUPPLY_OPT_MULTIPLIER'=>$request->days_supply_opt_multiplier,
+                    'MODULE_EXIT'=>$request->module_exit,
 
                 ]
             );
 
-            $benefitcode = DB::table('NDC_EXCEPTION_LISTS')->where('ndc', 'like', '%'.$request->ndc .'%')->first();
 
 
             $accum_benfit_stat = DB::table('NDC_EXCEPTIONS' )
             ->where('ndc_exception_list', $request->ndc_exception_list )
             ->update(
                 [
-                    'ndc_exception_list' => $request->ndc_exception_list,
                     'exception_name'=>$request->exception_name,
 
 
@@ -197,12 +226,11 @@ class NDCExceptionController extends Controller
                 ]
             );
 
-            $benefitcode = DB::table('NDC_EXCEPTIONS')->where('ndc_exception_list', 'like', '%'.$request->ndc_exception_list .'%')->first();
+            return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$update);
 
         }
 
 
-        return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
     }
 
 
@@ -231,24 +259,58 @@ class NDCExceptionController extends Controller
     public function getNDCList($ndcid)
     {
         $ndclist = DB::table('NDC_EXCEPTION_LISTS')
+        ->join('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
+        ->where('NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
+        ->get();
+
+        return $this->respondWithToken($this->token(), '', $ndclist);
+    }
+    public function getNDC($ndcid, $name)
+    {
+        $ndclist = DB::table('NDC_EXCEPTION_LISTS')
+                ->leftjoin('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
                 // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
-                ->where('NDC_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
-                // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
+                ->where('NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
+                ->Where('NDC_EXCEPTIONS.EXCEPTION_NAME', 'like', '%' . strtoupper($name) . '%')
                 ->get();
 
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
-    public function getNDCItemDetails($ndcid)
+    public function getNDCItemDetails($ndcid,$ndcid2)
+
     {
-        $ndc = DB::table('NDC_EXCEPTION_LISTS')
-                    ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list', 'NDC_EXCEPTIONS.EXCEPTION_NAME as exception_name')
+
+
+       
+      
+ 
+            $ifset = DB::table('NDC_EXCEPTION_LISTS')
+        
+                    ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list', 'NDC_EXCEPTIONS.EXCEPTION_NAME as exception_name',
+                    'NDC_EXCEPTIONS3.EXCEPTION_NAME as ndc_exception_description',
+                    'NDC_EXCEPTIONS1.EXCEPTION_NAME as preferd_ndc_description',
+                    'NDC_EXCEPTIONS2.EXCEPTION_NAME as conversion_ndc_description',
+                    )
                     ->leftjoin('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
-                    ->where('NDC_EXCEPTION_LISTS.NDC', 'like', '%' . strtoupper($ndcid) . '%')
+                    ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS1', 'NDC_EXCEPTIONS1.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
+                    ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS2', 'NDC_EXCEPTIONS2.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
+                    ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS3', 'NDC_EXCEPTIONS3.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
+
+
+                    ->where('NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST',strtoupper($ndcid))
+                    ->where('NDC_EXCEPTION_LISTS.NDC',strtoupper($ndcid2))
                     ->first();
 
-        return $this->respondWithToken($this->token(), '', $ndc);
+             return $this->respondWithToken($this->token(), '', $ifset);
 
+
+        
+
+       
+
+
+       
     }
 
     public function getNdcDropDown(){

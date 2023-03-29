@@ -69,13 +69,11 @@ class ProviderController extends Controller
             ->first();
         if ($request->has('new')) {
             $validator = Validator::make($request->all(), [
-                "pharmacy_list" => [
-                    'required', 'max:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
-                        $q->whereNotNull('pharmacy_list');
-                    })
-                ],
+                "pharmacy_list" => ['required', 'max:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
+                    $q->whereNotNull('pharmacy_list');
+                })],
                 "exception_name" => ['max:35'],
-                "pharmacy_list" => ['required'],
+                "pharmacy_nabp" => ['required'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -123,7 +121,7 @@ class ProviderController extends Controller
             $validator = Validator::make($request->all(), [
                 "pharmacy_list" => ['required', 'max:10'],
                 "exception_name" => ['max:35'],
-                "pharmacy_list" => ['required'],
+                "pharmacy_nabp" => ['required'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");

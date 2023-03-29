@@ -48,7 +48,7 @@ class RvaListController extends Controller
 
 
             if ($check_record) {
-                return $this->respondWithToken($this->token(), 'Record Alredy Exists', $check_record, true, 200, 1);
+                return $this->respondWithToken($this->token(), 'RVA List ID is already existed', $check_record, true, 200, 1);
             }
 
 

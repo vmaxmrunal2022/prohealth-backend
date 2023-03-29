@@ -43,7 +43,7 @@ class TaxScheduleController extends Controller
         if ($request->add_new == 1) {
 
             if ($validation->count() > 0) {
-                return $this->respondWithToken($this->token(), 'Record Alredy Exists', $validation, true, 200, 1);
+                return $this->respondWithToken($this->token(), 'Tax schedule Id is already exists', $validation, true, 200, 1);
             }
             $add_tax_schedule = DB::table('tax_schedule')
                 ->insert([

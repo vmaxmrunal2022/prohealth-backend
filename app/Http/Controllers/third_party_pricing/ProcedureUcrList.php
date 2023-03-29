@@ -12,7 +12,7 @@ class ProcedureUcrList extends Controller
     public function get(Request $request)
     {
         $ucrName = DB::table('procedure_ucr_names')
-            ->where('PROCEDURE_UCR_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('PROCEDURE_UCR_ID', 'like', '%' . $request->search. '%')
             ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
@@ -38,7 +38,7 @@ class ProcedureUcrList extends Controller
             // echo $request->add_new;
 
             if ($validate->count() > 0) {
-                return $this->respondWithToken($this->token(), 'Record Alredy Exists', $validate, true, 200, 1);
+                return $this->respondWithToken($this->token(), 'Procedure UCR Id is already exists', $validate, true, 200, 1);
             }
 
             $add_procedure_names = DB::table('procedure_ucr_names')

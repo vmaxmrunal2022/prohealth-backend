@@ -14,14 +14,26 @@ class TraditionalNetworkController extends Controller
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
 
-        if ( $request->has( 'new' ) ) {
-
-
+        if ( $request->add_new) {
 
             $accum_benfit_stat_names = DB::table('RX_NETWORK_NAMES')->insert(
                 [
-                    'network_id' => strtoupper( $request->network_id ),
-                    'network_name' => $request->network_name,
+                    'NETWORK_ID' => strtoupper( $request->network_id ),
+                    'NETWORK_NAME' => $request->network_name,
+                    'DATE_TIME_CREATED'=>$createddate,
+                    'DEFAULT_PRICE_SCHEDULE_OVRD'=>$request->default_price_schedule_ovrd,
+                    'DEFAULT_BILLING_TYPE'=>$request->default_billing_type,
+                    'DEFAULT_CAP_AMOUNT'=>$request->default_cap_amount,
+                    'DEFAULT_COMM_CHARGE_PAID'=>$request->deafult_comm_charge_paid,
+                    'DEFAULT_COMM_CHARGE_REJECT'=>$request->default_comm_charge_reject,
+                    'GPI_EXCEPTION_LIST_OVRD'=>$request->gpi_exception_list_ovrd,
+                    'NDC_EXCEPTION_LIST_OVRD'=>$request->ndc_exception_list_ovrd,
+                    'WITHHOLD_PAID_AMT'=>$request->withhold_paid_amt,
+                    'WITHHOLD_PAID_PERCENT'=>$request->withhold_paid_percent,
+                    'WITHHOLD_U_AND_C_FLAG'=>$request->withhold_u_and_c_flag,
+                    'WITHHOLD_ACTIVE_FLAG'=>$request->withhold_active_flag,
+                    'MIN_RX_QTY'=>$request->min_rx_qty,
+                    'MAX_RX_QTY'=>$request->max_rx_qty,
 
 
                 ]
@@ -30,11 +42,14 @@ class TraditionalNetworkController extends Controller
 
             $accum_benfit_stat = DB::table('RX_NETWORKS' )->insert(
                 [
-                    'network_id' => strtoupper( $request->network_id ),
-                    'pharmacy_nabp'=>$request->pharmacy_nabp,
-                    'price_schedule_ovrd'=>$request->price_schedule_ovrd,
-                    'effective_date'=>$request->effective_date,
-                    'termination_date'=>$request->termination_date,
+                    'NETWORK_ID' => strtoupper( $request->network_id ),
+                    'PHARMACY_NABP'=>$request->pharmacy_nabp,
+                    'PRICE_SCHEDULE_OVRD'=>$request->price_schedule_ovrd,
+                    'PARTICIPATION_OVRD'=>$request->participation_ovrd,
+                    'DATE_TIME_CREATED'=>$createddate,
+                    'DATE_TIME_MODIFIED'=>$createddate,
+                    'EFFECTIVE_DATE'=>$request->effective_date,
+                    'TERMINATION_DATE'=>$request->termination_date,
 
                 ]
             );
@@ -138,8 +153,6 @@ class TraditionalNetworkController extends Controller
         $ndc =DB::table('RX_NETWORK_NAMES')
         ->join('RX_NETWORKS', 'RX_NETWORKS.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
         ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
-
-
         ->where('RX_NETWORK_NAMES.NETWORK_NAME', 'like', '%' .$ndcid. '%')
         ->orWhere('RX_NETWORKS.NETWORK_ID', 'like', '%' .$ndcid. '%')
         ->get();
@@ -153,8 +166,6 @@ class TraditionalNetworkController extends Controller
         $ndc = DB::table('RX_NETWORKS' )
         ->join('RX_NETWORK_NAMES', 'RX_NETWORK_NAMES.NETWORK_ID', '=', 'RX_NETWORKS.NETWORK_ID')
         ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
-
-
         ->where( 'PHARMACY_TABLE.PHARMACY_NABP', 'like', '%' .$ndcid. '%' )
         ->first();
 
