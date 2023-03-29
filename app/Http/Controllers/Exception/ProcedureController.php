@@ -159,7 +159,7 @@ class ProcedureController extends Controller
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
-    public function getPCItemDetails($ndcid)
+    public function getPCItemDetails($ndcid,$ndcid2)
     {
         $ndc = DB::table('PROCEDURE_EXCEPTION_LISTS')
 
@@ -192,7 +192,10 @@ class ProcedureController extends Controller
                     ->leftjoin('SPECIALTY_EXCEPTIONS','SPECIALTY_EXCEPTIONS.SPECIALTY_LIST','=','PROCEDURE_EXCEPTION_LISTS.physician_specialty_list')
                     ->leftjoin('SERVICE_MODIFIERS','SERVICE_MODIFIERS.SERVICE_MODIFIER','=','PROCEDURE_EXCEPTION_LISTS.SERVICE_MODIFIER')
                     ->leftjoin('PHYSICIAN_EXCEPTIONS','PHYSICIAN_EXCEPTIONS.PHYSICIAN_LIST','=','PROCEDURE_EXCEPTION_LISTS.PHYSICIAN_LIST')
-                    ->where('PROCEDURE_EXCEPTION_LISTS.PROC_CODE_LIST_ID', 'like', '%' . strtoupper($ndcid) . '%')  
+                    ->where('PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST', $ndcid)  
+                    ->where('PROCEDURE_EXCEPTION_LISTS.PROC_CODE_LIST_ID', $ndcid2)  
+
+                    
                     ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

@@ -17,6 +17,8 @@ class NDCExceptionController extends Controller
         $recordcheck = DB::table('NDC_EXCEPTION_LISTS')
         ->where('ndc_exception_list', strtoupper($request->ndc_exception_list))
         ->where('ndc', strtoupper($request->ndc))
+        ->where('effective_date', $request->effective_date)
+
         ->first();
 
 
@@ -44,7 +46,7 @@ class NDCExceptionController extends Controller
                 $insert = DB::table('NDC_EXCEPTION_LISTS')->insert(
                     [
                         'NDC_EXCEPTION_LIST' =>strtoupper($request->ndc_exception_list),
-                        'NDC'=>$request->ndc,
+                        'NDC'=>strtoupper($request->ndc),
                         'NEW_DRUG_STATUS'=>$request->new_drug_status,
                         'PROCESS_RULE'=>$request->process_rule,
                         'MAXIMUM_ALLOWABLE_COST'=>$request->maximum_allowable_cost,
@@ -131,11 +133,12 @@ class NDCExceptionController extends Controller
         } else {
 
             $update = DB::table('NDC_EXCEPTION_LISTS' )
-            ->where('ndc',$request->ndc)
-            ->where('ndc_exception_list',$request->ndc_exception_list)
+            ->where('ndc',strtoupper($request->ndc))
+            ->where('ndc_exception_list',strtoupper($request->ndc_exception_list))
+            ->where('effective_date',$request->effective_date)
+
             ->update(
                 [
-                    // 'NDC_EXCEPTION_LIST' => $request->ndc_exception_list,
                     'NEW_DRUG_STATUS'=>$request->new_drug_status,
                     'PROCESS_RULE'=>$request->process_rule,
                     'MAXIMUM_ALLOWABLE_COST'=>$request->maximum_allowable_cost,
@@ -217,11 +220,10 @@ class NDCExceptionController extends Controller
 
 
             $accum_benfit_stat = DB::table('NDC_EXCEPTIONS' )
-            ->where('ndc_exception_list', $request->ndc_exception_list )
+            ->where('ndc_exception_list', strtoupper($request->ndc_exception_list ))
             ->update(
                 [
-                    'exception_name'=>$request->exception_name,
-
+                    'exception_name'=>strtoupper($request->exception_name),
 
 
                 ]
