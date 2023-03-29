@@ -914,6 +914,8 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
     Route::get('/ndcExclusion/all', [NdcExlusionController::class, 'AllNdcGpisExcusions'])->name('ndcExclusion.list.get'); // LIST ITEMS
 
+    Route::get('/ndcExclusion/dropdown', [NdcExlusionController::class, 'NdcExclusiondropdowns'])->name('ndcExclusion.get'); // LIST ITEMS
+
 
     Route::get('customer/search', [MajorMedicalController::class, 'search']);
     Route::get('client/get/{customerid}', [MajorMedicalController::class, 'getClient']);
