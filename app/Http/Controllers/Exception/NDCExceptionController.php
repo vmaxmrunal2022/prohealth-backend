@@ -132,9 +132,10 @@ class NDCExceptionController extends Controller
 
             $update = DB::table('NDC_EXCEPTION_LISTS' )
             ->where('ndc',$request->ndc)
+            ->where('ndc_exception_list',$request->ndc_exception_list)
             ->update(
                 [
-                    'NDC_EXCEPTION_LIST' => $request->ndc_exception_list,
+                    // 'NDC_EXCEPTION_LIST' => $request->ndc_exception_list,
                     'NEW_DRUG_STATUS'=>$request->new_drug_status,
                     'PROCESS_RULE'=>$request->process_rule,
                     'MAXIMUM_ALLOWABLE_COST'=>$request->maximum_allowable_cost,
@@ -233,6 +234,16 @@ class NDCExceptionController extends Controller
 
     }
 
+    public function getAllNDCS(){
+
+        $ndc = DB::table('DRUG_MASTER')
+        ->select('NDC','LABEL_NAME')
+                ->get();
+
+    return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
+
 
     public function ndcList(Request $request)
     {
@@ -288,14 +299,14 @@ class NDCExceptionController extends Controller
             $ifset = DB::table('NDC_EXCEPTION_LISTS')
         
                     ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list', 'NDC_EXCEPTIONS.EXCEPTION_NAME as exception_name',
-                    'NDC_EXCEPTIONS3.EXCEPTION_NAME as ndc_exception_description',
+                    'DRUG_MASTER.LABEL_NAME as ndc_exception_description',
                     'NDC_EXCEPTIONS1.EXCEPTION_NAME as preferd_ndc_description',
                     'NDC_EXCEPTIONS2.EXCEPTION_NAME as conversion_ndc_description',
                     )
                     ->leftjoin('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
                     ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS1', 'NDC_EXCEPTIONS1.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
                     ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS2', 'NDC_EXCEPTIONS2.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
-                    ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS3', 'NDC_EXCEPTIONS3.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
+                    ->leftjoin('DRUG_MASTER', 'DRUG_MASTER.NDC', '=', 'NDC_EXCEPTION_LISTS.NDC')
 
 
                     ->where('NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST',strtoupper($ndcid))
