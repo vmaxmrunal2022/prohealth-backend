@@ -24,7 +24,8 @@ class ProviderTypeProcController extends Controller
     public function getList($id){
 
         $data = DB::table('PROV_TYPE_PROC_ASSOC')
-        ->where('prov_type_proc_assoc_id', 'like', '%' . strtoupper($id) . '%')
+        ->join('PROV_TYPE_PROC_ASSOC_NAMES','PROV_TYPE_PROC_ASSOC_NAMES.PROV_TYPE_PROC_ASSOC_ID','=','PROV_TYPE_PROC_ASSOC.PROV_TYPE_PROC_ASSOC_ID')
+        ->where('PROV_TYPE_PROC_ASSOC.prov_type_proc_assoc_id', 'like', '%' . strtoupper($id) . '%')
         ->get();
         return $this->respondWithToken($this->token(), '', $data);
 
