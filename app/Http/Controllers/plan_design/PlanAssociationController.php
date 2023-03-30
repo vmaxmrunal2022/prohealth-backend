@@ -208,6 +208,17 @@ class PlanAssociationController extends Controller
         return $this->respondWithToken($this->token(), '', $clients);
     }
 
+    public function getClientCustomer(Request $request)
+    {
+        // dd($request->customerData);
+        $cust_id = strtoupper($request->customerData);
+        // dd($cust_id);
+        $clients = DB::table('client')
+            ->where('customer_id', $cust_id)
+            ->get();
+        return $this->respondWithToken($this->token(), '', $clients);
+    }
+
     public function getClientGroup(Request $rqeuest)
     {
         $client_groups =  DB::table('client_group')
