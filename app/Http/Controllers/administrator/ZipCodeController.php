@@ -39,9 +39,9 @@ class ZipCodeController extends Controller
                 ->insert([
                     'ZIP_CODE' => $request->zip_code,
                     'CITY' => $request->city,
-                    'STATE' => $request->state_code['value'],
+                    'STATE' => $request->state_code,
                     'COUNTY' => $request->county,
-                    'COUNTRY_CODE' => $request->country_code['value'],
+                    'COUNTRY_CODE' => $request->country_code,
                     'USER_ID' => $request->user_name
                 ]);
 
@@ -53,9 +53,9 @@ class ZipCodeController extends Controller
                 ->where('ZIP_CODE', $request->zip_code)
                 ->update([
                     'CITY' => $request->city,
-                    'STATE' => $request->state_code['value'],
+                    'STATE' => $request->state_code,
                     'COUNTY' => $request->county,
-                    'COUNTRY_CODE' => $request->country_code['value'],
+                    'COUNTRY_CODE' => $request->country_code,
                     'USER_ID' => $request->user_name
                 ]);
 
