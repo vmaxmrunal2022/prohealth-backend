@@ -78,7 +78,8 @@ class ClientController extends Controller
                     'reqd_u_and_c_flag' => $request->reqd_u_and_c_flag,
                     'excl_plan_ndc_gpi_excep_flag' => $request->excl_plan_ndc_gpi_excep_flag,
                     'excl_sys_ndc_gpi_excep_flag' => $request->excl_sys_ndc_gpi_excep_flag,
-
+                    'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
+                    'phys_file_srce_id' => $request->phys_file_srce_id,
                 ]
             );
             $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
@@ -145,6 +146,8 @@ class ClientController extends Controller
                         'reqd_u_and_c_flag' => $request->reqd_u_and_c_flag,
                         'excl_plan_ndc_gpi_excep_flag' => $request->excl_plan_ndc_gpi_excep_flag,
                         'excl_sys_ndc_gpi_excep_flag' => $request->excl_sys_ndc_gpi_excep_flag,
+                        'phys_file_srce_id' => $request->phys_file_srce_id,
+                        'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
                     ]
                 );
 

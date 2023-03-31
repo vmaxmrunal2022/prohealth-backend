@@ -88,6 +88,9 @@ class ClientGroupController extends Controller
                     'smbpp' => $request->smbpp,
                     'rva_list_id' => $request->rva_list_id,
                     'person_code_reqd_flag' => $request->person_code_reqd_flag,
+                    'super_rx_network_id' => $request->super_rx_network_id,
+                    'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
+                    'phys_file_srce_id' => $request->phys_file_srce_id,
                 ]
             );
 
@@ -168,6 +171,9 @@ class ClientGroupController extends Controller
                         'smbpp' => $request->smbpp,
                         'rva_list_id' => $request->rva_list_id,
                         'person_code_reqd_flag' => $request->person_code_reqd_flag,
+                        'super_rx_network_id' => $request->super_rx_network_id,
+                        'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
+                        'phys_file_srce_id' => $request->phys_file_srce_id,
                     ]
                 );
 
