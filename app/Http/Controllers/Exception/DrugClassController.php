@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 class DrugClassController extends Controller
 {
+    
+
     public function search_old(Request $request)
     {
         if ($request->search_mode == 'category') {

@@ -10,6 +10,16 @@ use Illuminate\Validation\Rule;
 
 class SpecialityController extends Controller
 {
+    public function getAll(Request $request)
+    {
+
+        $data = DB::table('SPECIALTY_EXCEPTIONS')
+            // ->join('SPECIALTY_EXCEPTIONS', 'SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', '=', 'SPECIALTY_VALIDATIONS.SPECIALTY_LIST')
+            ->select('SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', 'SPECIALTY_EXCEPTIONS.EXCEPTION_NAME')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $data);
+    }
+
     public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [

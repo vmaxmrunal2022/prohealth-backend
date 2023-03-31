@@ -9,9 +9,10 @@ use Illuminate\Support\Facades\DB;
 class GPIExceptionController extends Controller
 {
 
-    public function add( Request $request ) {
+    public function add(Request $request)
+    {
 
-        $createddate = date( 'y-m-d' );
+        $createddate = date('y-m-d');
 
 
         $recordcheck = DB::table('GPI_EXCEPTION_LISTS')
@@ -208,8 +209,8 @@ class GPIExceptionController extends Controller
                     'DAYS_SUPPLY_OPT_MULTIPLIER'=>$request->days_supply_opt_multiplier,
                     'MODULE_EXIT'=>$request->module_exit,
 
-                ]
-            );
+                    ]
+                );
 
 
 
@@ -221,8 +222,8 @@ class GPIExceptionController extends Controller
 
 
 
-                ]
-            );
+                    ]
+                );
 
             return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$update);
 
@@ -232,11 +233,11 @@ class GPIExceptionController extends Controller
     }
 
 
-    public function GpiList(Request $request){
+    public function GpiList(Request $request)
+    {
 
         $benefitcode = DB::table('GPI_EXCEPTIONS')->get();
-        return $this->respondWithToken( $this->token(), 'Successfully Fetched Data',$benefitcode);
-
+        return $this->respondWithToken($this->token(), 'Successfully Fetched Data', $benefitcode);
     }
 
 
@@ -244,12 +245,12 @@ class GPIExceptionController extends Controller
     public function search(Request $request)
     {
         $ndc = DB::table('GPI_EXCEPTIONS')
-                ->select('GPI_EXCEPTION_LIST', 'EXCEPTION_NAME')
-                ->where('GPI_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
-                ->get();
+            ->select('GPI_EXCEPTION_LIST', 'EXCEPTION_NAME')
+            ->where('GPI_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 
     public function getNDCList($ndcid)
@@ -261,8 +262,10 @@ class GPIExceptionController extends Controller
                 // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
                 ->get();
 
+
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
+
 
     public function getNDCItemDetails($ndcid,$ncdid2)
     {
@@ -283,11 +286,11 @@ class GPIExceptionController extends Controller
                     ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
-
     }
 
-    public function getGpiDropDown(){
+    public function getGpiDropDown()
+    {
         $data = DB::table('GPI_EXCEPTIONS')->get();
-        return $this->respondWithToken($this->token(),'',$data);
+        return $this->respondWithToken($this->token(), '', $data);
     }
 }

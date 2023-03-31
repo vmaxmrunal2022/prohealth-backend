@@ -4,13 +4,17 @@ namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ProviderTypeValidationController extends Controller
 {
 
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );
+        if ( $request->has( 'new' ) ) {
 
         
         $recordcheck = DB::table('PROVIDER_TYPE_VALIDATIONS')
@@ -18,7 +22,7 @@ class ProviderTypeValidationController extends Controller
         ->first();
         
 
-        if ( $request->has( 'new' ) ) {
+        $createddate = date('y-m-d');
 
            
             if($recordcheck){
@@ -64,12 +68,12 @@ class ProviderTypeValidationController extends Controller
             ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id )
 
 
-            ->update(
-                [
-                    'description'=>$request->description,
+                    ->update(
+                        [
+                            'description' => $request->description,
 
-                ]
-            );
+                        ]
+                    );
 
             $update = DB::table('PROVIDER_TYPE_VALIDATIONS' )
             ->where('proc_code_list_id', $request->proc_code_list_id )
@@ -83,36 +87,36 @@ class ProviderTypeValidationController extends Controller
                         'DATE_TIME_CREATED'=>$createddate,
                   
 
-                ]
-            );
+                        ]
+                    );
 
             return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$update);
 
         }
 
 
-    }
-    
+}
 
-    public function getAllNames(Request $request){
+
+    public function getAllNames(Request $request)
+    {
 
         $data = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
-        ->where('PROV_TYPE_PROC_ASSOC_ID','LIKE','%'.strtoupper($request->search).'%')
-        ->get();
+            ->where('PROV_TYPE_PROC_ASSOC_ID', 'LIKE', '%' . strtoupper($request->search) . '%')
+            ->get();
 
-        return $this->respondWithToken( $this->token(), 'data fetched  successfully',$data);
-
-
+        return $this->respondWithToken($this->token(), 'data fetched  successfully', $data);
     }
-  
+
     public function get(Request $request)
     {
         $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
-
-                            // ->where('effective_date', 'like', '%'.$request->search.'%')
-                            ->Where('PROV_TYPE_LIST_ID', 'like', '%'.strtoupper($request->search).'%')
-                            ->orWhere('DESCRIPTION', 'like', '%'.strtoupper($request->search).'%')
-                            ->get();
+            // $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATIONS')
+            // ->where('effective_date', 'like', '%'.$request->search.'%')
+            ->Where(DB::raw('UPPER(prov_type_list_id)'), 'like', '%' . strtoupper($request->search) . '%')
+            // ->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
+        // dd($request->all());
         return $this->respondWithToken($this->token(), '', $providerTypeValidations);
     }
 
@@ -123,13 +127,12 @@ class ProviderTypeValidationController extends Controller
         ->Where('PROVIDER_TYPE_VALIDATIONS.PROV_TYPE_LIST_ID',$ncdid)
         ->get();
         return $this->respondWithToken($this->token(), '', $providerTypeValidations);
-       
     }
 
 
 
 
-    public function getNDCItemDetails($ndcid,$ndcid2)
+    public function getNDCItemDetails($ndcid, $ndcid2)
     {
         $ndc = DB::table('PROVIDER_TYPE_VALIDATIONS')
         ->join('PROVIDER_TYPE_VALIDATION_NAMES as valdation_names', 'valdation_names.PROV_TYPE_LIST_ID', '=', 'PROVIDER_TYPE_VALIDATIONS.PROV_TYPE_LIST_ID')
@@ -152,12 +155,9 @@ class ProviderTypeValidationController extends Controller
         ->where('PROVIDER_TYPE_VALIDATIONS.provider_type',$ndcid2)
 
 
-        // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
-        ->first();
+            // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
+            ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
-
     }
 }
-
-

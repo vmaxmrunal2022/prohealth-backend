@@ -4,14 +4,19 @@ namespace App\Http\Controllers\AccumlatedBenifits;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DB;
- 
+use Illuminate\Support\Facades\DB;
+
 class GpiExclusionController extends Controller
 {
+    public function GPIS(Request $request)
+    {
+        $gpis =  DB::table('GPI_EXCEPTION_LISTS')->get();
+        return $this->respondWithToken($this->token(), 'data fetched successfully ', $gpis);
+    }
 
 
-
-    public function add( Request $request ) {
+    public function add(Request $request)
+    {
 
 
         $recordcheck = DB::table('GPI_EXCLUSION_LISTS')
@@ -19,7 +24,12 @@ class GpiExclusionController extends Controller
         ->first();
 
 
-        if ( $request->has( 'new' ) ) {
+        $recordcheck = DB::table('GPI_EXCLUSION_LISTS')
+        ->where('GPI_EXCLUSION_LIST', strtoupper($request->gpi_exclusion_list))
+        ->first();
+
+
+        if ($request->has('new')) {
 
             if($recordcheck){
                 return $this->respondWithToken($this->token(), 'GPI Exclusion List ID already exists in the system..!!!', $recordcheck);
@@ -59,23 +69,23 @@ class GpiExclusionController extends Controller
         }else{
 
             $createddate = DB::table('GPI_EXCLUSION_LISTS')
-            ->where('gpi_exclusion_list', $request->gpi_exclusion_list )
-            ->update(
-                [
-                    'generic_product_id' => $request->generic_product_id,
-                   
-                ]
-            );
+                ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
+                ->update(
+                    [
+                        'generic_product_id' => $request->generic_product_id,
+
+                    ]
+                );
 
 
             $update = DB::table('GPI_EXCLUSIONS')
-            ->where('gpi_exclusion_list', $request->gpi_exclusion_list )
-            ->update(
-                [
-                    'exclusion_name' => $request->exclusion_name,
-                   
-                ]
-            );
+                ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
+                ->update(
+                    [
+                        'exclusion_name' => $request->exclusion_name,
+
+                    ]
+                );
 
     
 
@@ -109,29 +119,25 @@ class GpiExclusionController extends Controller
 
 
 
-    }
-
-
-
-    public function GPIS(Request $request){
-        $gpis=  DB::table('GPI_EXCEPTION_LISTS')->get();
-        return $this->respondWithToken($this->token(), 'data fetched successfully ', $gpis);
-
 
     }
+
+
+
+   
 
 
 
     public function search(Request $request)
 
     {
-        $ndc =DB::table('GPI_EXCLUSION_LISTS')
-        ->join('GPI_EXCLUSIONS', 'GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST', '=', 'GPI_EXCLUSIONS.GPI_EXCLUSION_LIST')
-                ->where('GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST', 'like', '%' .$request->search. '%')
-                ->orWhere('GPI_EXCLUSIONS.EXCLUSION_NAME', 'like', '%' .$request->search. '%')
-                ->get();
+        $ndc = DB::table('GPI_EXCLUSION_LISTS')
+            ->join('GPI_EXCLUSIONS', 'GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST', '=', 'GPI_EXCLUSIONS.GPI_EXCLUSION_LIST')
+            ->where('GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST', 'like', '%' . $request->search . '%')
+            ->orWhere('GPI_EXCLUSIONS.EXCLUSION_NAME', 'like', '%' . $request->search . '%')
+            ->get();
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 
 
@@ -143,7 +149,6 @@ class GpiExclusionController extends Controller
                 ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
-
     }
 
 
@@ -157,8 +162,5 @@ class GpiExclusionController extends Controller
         ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
-
     }
-    
 }
- 

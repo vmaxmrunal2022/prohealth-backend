@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Provider;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 
-class ProviderDataController extends Controller {
+class ProviderDataController extends Controller
+{
 
 
-    public function add( Request $request ) {
+    public function add(Request $request)
+    {
 
 
         // $benefitcode = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', 'like', $request->pharmacy_nabp)->first();
@@ -20,14 +22,14 @@ class ProviderDataController extends Controller {
 
         // $createddate = date( 'y-m-d' );
 
-       
 
-            $createddate = DB::table('PHARMACY_TABLE')
-            ->where('pharmacy_nabp', $request->pharmacy_nabp )
+
+        $createddate = DB::table('PHARMACY_TABLE')
+            ->where('pharmacy_nabp', $request->pharmacy_nabp)
             ->update(
                 [
                     'pharmacy_nabp' => $request->pharmacy_nabp,
-                    'pharmacy_name'=>$request->pharmacy_name,
+                    'pharmacy_name' => $request->pharmacy_name,
                     // 'address_1'=>$request->address_1,
                     // 'provider_first_name'=>$request->provider_first_name,
                     // 'provider_last_name'=>$request->provider_last_name,
@@ -66,39 +68,40 @@ class ProviderDataController extends Controller {
                 ]
             );
 
-            // // dd($request->pharmacy_nabp);
+        // // dd($request->pharmacy_nabp);
 
-            // $benefitcode = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', 'like', $request->pharmacy_nabp)->first();
+        // $benefitcode = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', 'like', $request->pharmacy_nabp)->first();
 
-        $benefitcode = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', 'like', '%'.$request->pharmacy_nabp .'%')->first();
-
-
-        return $this->respondWithToken( $this->token(), 'Successfully added',$benefitcode);
-    }
- 
+        $benefitcode = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', 'like', '%' . $request->pharmacy_nabp . '%')->first();
 
 
-
-
-    public function search( Request $request ) {
-        $ndc = DB::table( 'PHARMACY_TABLE' )
-
-        ->where( 'PHARMACY_NABP', 'like', '%' . strtoupper( $request->search ) . '%' )
-        ->orWhere( 'PHARMACY_NAME', 'like', '%' . strtoupper( $request->search ) . '%' )
-
-        ->get();
-
-        return $this->respondWithToken( $this->token(), '', $ndc );
+        return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
     }
 
-    public function networkDetails( $ndcid ) {
 
-        $ndc =  DB::table( 'PHARMACY_TABLE' )
 
-        ->where( 'PHARMACY_NABP', 'like', '%' . strtoupper( $ndcid ) . '%' )
-        ->first();
 
-        return $this->respondWithToken( $this->token(), '', $ndc );
 
+    public function search(Request $request)
+    {
+        $ndc = DB::table('PHARMACY_TABLE')
+
+            ->where('PHARMACY_NABP', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('PHARMACY_NAME', 'like', '%' . strtoupper($request->search) . '%')
+
+            ->get();
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+    public function networkDetails($ndcid)
+    {
+
+        $ndc =  DB::table('PHARMACY_TABLE')
+
+            ->where('PHARMACY_NABP', 'like', '%' . strtoupper($ndcid) . '%')
+            ->first();
+
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 }
