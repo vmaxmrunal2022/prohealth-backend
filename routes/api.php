@@ -962,7 +962,7 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
 
     //Flexible Network
 
-    Route::get('flexiblenetwork/search', [FlexibleNetworkController::class, 'search']);
+    Route::get('flexiblenetwork/searchfhfjg', [FlexibleNetworkController::class, 'search']);
     Route::get('flexiblenetwork/get/{ndcid}', [FlexibleNetworkController::class, 'getList']);
 
     Route::get('flexiblenetwork/details/{ndcid}', [FlexibleNetworkController::class, 'getDetails']);
