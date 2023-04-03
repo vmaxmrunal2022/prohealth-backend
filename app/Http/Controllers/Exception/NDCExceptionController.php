@@ -293,14 +293,14 @@ class NDCExceptionController extends Controller
  
             $ifset = DB::table('NDC_EXCEPTION_LISTS')
         
-                    ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list', 'NDC_EXCEPTIONS.EXCEPTION_NAME as exception_name',
+                    ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list',
                     'DRUG_MASTER.LABEL_NAME as ndc_exception_description',
-                    'NDC_EXCEPTIONS1.EXCEPTION_NAME as preferd_ndc_description',
-                    'NDC_EXCEPTIONS2.EXCEPTION_NAME as conversion_ndc_description',
+                    'DRUG_MASTER1.LABEL_NAME as preferd_ndc_description',
+                    'DRUG_MASTER2.LABEL_NAME as conversion_ndc_description',
                     )
                     ->leftjoin('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
-                    ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS1', 'NDC_EXCEPTIONS1.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
-                    ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS2', 'NDC_EXCEPTIONS2.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
+                    ->leftjoin('DRUG_MASTER as DRUG_MASTER1', 'DRUG_MASTER1.NDC', '=', 'NDC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
+                    ->leftjoin('DRUG_MASTER as DRUG_MASTER2', 'DRUG_MASTER2.NDC', '=', 'NDC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
                     ->leftjoin('DRUG_MASTER', 'DRUG_MASTER.NDC', '=', 'NDC_EXCEPTION_LISTS.NDC')
 
 

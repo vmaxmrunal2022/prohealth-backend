@@ -85,8 +85,15 @@ class CopayScheduleController extends Controller
     {
         if ($request->add_new == 1) {
 
-            
-            $add_copay_schedule = DB::table('copay_schedule')
+            $check=DB::table('COPAY_SCHEDULE')
+            ->where('copay_schedule',$request->copay_schedule)
+            ->first();
+
+            if($check){
+            return $this->respondWithToken($this->token(), 'Copay Schedule ID Already Exists', $check);
+
+            }else{
+                $add_copay_schedule = DB::table('copay_schedule')
                 ->insert([
                     'bga1_copay_amount'=> $request->bga1_copay_amount,
                     'bga1_copay_factor'=> $request->bga1_copay_factor,
@@ -122,7 +129,7 @@ class CopayScheduleController extends Controller
                     'bga6_copay_amount'=> $request->bga6_copay_amount,
                     'bga6_copay_factor'=> $request->bga6_copay_factor,
                     'bga6_copay_matrix'=> $request->bga6_copay_matrix,
-                    'bga6_copay_percent'=> $request->bga6_copay_matrix,
+                    'bga6_copay_percent'=> $request->bga6_copay_percent,
                     'bga6_source'=> $request->bga6_source,
                     'bga6_type'=> $request->bga6_type,
                     'bga7_copay_amount'=> $request->bga7_copay_amount,
@@ -252,9 +259,13 @@ class CopayScheduleController extends Controller
                     'gen4_type'=> $request->gen4_type,
                     'gen_comparison'=> $request->gen_comparison,
                     'gen_copay_modification'=> $request->gen_copay_modification,
+                    'bga1_4_daw'=>$request->bga1_4_daw,
                 ]);
 
             return $this->respondWithToken($this->token(), 'Added successfully!', $add_copay_schedule);
+                
+            }
+           
         } else if($request->add_new == 0) {
             $update_copay_schedule = DB::table('copay_schedule')
                 ->where('copay_schedule', $request->copay_schedule)
@@ -294,7 +305,7 @@ class CopayScheduleController extends Controller
                     'bga6_copay_amount'=> $request->bga6_copay_amount,
                     'bga6_copay_factor'=> $request->bga6_copay_factor,
                     'bga6_copay_matrix'=> $request->bga6_copay_matrix,
-                    'bga6_copay_percent'=> $request->bga6_copay_matrix,
+                    'bga6_copay_percent'=> $request->bga6_copay_percent,
                     'bga6_source'=> $request->bga6_source,
                     'bga6_type'=> $request->bga6_type,
                     'bga7_copay_amount'=> $request->bga7_copay_amount,
@@ -423,6 +434,8 @@ class CopayScheduleController extends Controller
                     'gen4_type'=> $request->gen4_type,
                     'gen_comparison'=> $request->gen_comparison,
                     'gen_copay_modification'=> $request->gen_copay_modification,
+                    'bga1_4_daw'=>$request->bga1_4_daw,
+
                     
                 ]);
 

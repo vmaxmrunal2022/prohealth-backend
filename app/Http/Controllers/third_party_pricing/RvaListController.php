@@ -22,6 +22,16 @@ class RvaListController extends Controller
         return $this->respondWithToken($this->token(), '', $rvaNames);
     }
 
+    public function RvaListDropdown(Request $request)
+    {
+        // return "hi";
+        $rvaNames = DB::table('rva_names')
+           
+            ->get();
+
+        return $this->respondWithToken($this->token(), '', $rvaNames);
+    }
+
     public function getRvaList(Request $request)
     {
         $rvaLists = DB::table('rva_names')

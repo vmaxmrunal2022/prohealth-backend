@@ -26,11 +26,7 @@ class PriceScheduleController extends Controller
             ->get();
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }
-    public function getAll(Request $request)
-    {
-        $priceShedule = DB::table('PRICE_SCHEDULE')->get();
-        return $this->respondWithToken($this->token(), '', $priceShedule);
-    }
+   
     
 
     public function getPriceScheduleDetails(Request $erquest)

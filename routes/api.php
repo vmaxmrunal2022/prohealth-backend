@@ -921,7 +921,6 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/gpi/dropdowns', [GpiExclusionController::class, 'GPIS'])->name('gpi.search'); // SEARCH
     Route::get('/gpiExclusion/details/{ndcid}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
     Route::post('/gpiExclusion/add', [GpiExclusionController::class, 'add'])->name('gpiExclusion.add'); // ADD
-    Route::get('/gpi/dropdowns', [GpiExclusionController::class, 'GPIS'])->name('gpi.search'); // SEARCH
     Route::get('/gpi/exclusions/dropdowns', [GpiExclusionController::class, 'allGpiExclusions'])->name('gpi.search'); // SEARCH
 
 
@@ -1135,6 +1134,10 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('rva-list/get', [RvaListController::class, 'get']);
     Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
     Route::post('rva-list/submit', [RvaListController::class, 'submitRva']);
+    Route::get('rva-list/dropdown', [RvaListController::class, 'RvaListDropdown']);
+
+
+    
 });
 
 

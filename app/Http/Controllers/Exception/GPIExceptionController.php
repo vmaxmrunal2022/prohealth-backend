@@ -270,19 +270,19 @@ class GPIExceptionController extends Controller
     public function getNDCItemDetails($ndcid,$ncdid2)
     {
         $ndc = DB::table('GPI_EXCEPTION_LISTS')
-                    ->select('GPI_EXCEPTION_LISTS.*', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST as exception_list','GPI_EXCEPTIONS.EXCEPTION_NAME as exception_name',
-                    'NDC_EXCEPTIONS1.EXCEPTION_NAME as preferd_ndc_description',
-                    'NDC_EXCEPTIONS2.EXCEPTION_NAME as conversion_ndc_description',
-                    'GPI_EXCEPTIONS3.EXCEPTION_NAME as gpi_exception_description',
+                    ->select('GPI_EXCEPTION_LISTS.*',
+                    'DRUG_MASTER1.LABEL_NAME as preferd_ndc_description',
+                    'DRUG_MASTER2.LABEL_NAME as conversion_ndc_description',
+                    'DRUG_MASTER3.LABEL_NAME as gpi_exception_description',
                     )
 
-                    ->leftjoin('GPI_EXCEPTIONS', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
-                    ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS1', 'NDC_EXCEPTIONS1.NDC_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
-                    ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS2', 'NDC_EXCEPTIONS2.NDC_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
-                    ->leftjoin('GPI_EXCEPTIONS as GPI_EXCEPTIONS3', 'GPI_EXCEPTIONS3.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
+                    // ->leftjoin('GPI_EXCEPTIONS', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
+                    ->leftjoin('DRUG_MASTER as DRUG_MASTER1', 'DRUG_MASTER1.NDC', '=', 'GPI_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
+                    ->leftjoin('DRUG_MASTER as DRUG_MASTER2', 'DRUG_MASTER2.NDC', '=', 'GPI_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
+                    ->leftjoin('DRUG_MASTER as DRUG_MASTER3', 'DRUG_MASTER3.GENERIC_PRODUCT_ID', '=', 'GPI_EXCEPTION_LISTS.GENERIC_PRODUCT_ID')
+                    ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST',$ncdid2)
 
                     ->where('GPI_EXCEPTION_LISTS.generic_product_id',$ndcid)
-                    ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST',$ncdid2)
                     ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

@@ -10,7 +10,7 @@ class GpiExclusionController extends Controller
 {
     public function GPIS(Request $request)
     {
-        $gpis =  DB::table('GPI_EXCEPTION_LISTS')->get();
+        $gpis =  DB::table('DRUG_MASTER')->get();
         return $this->respondWithToken($this->token(), 'data fetched successfully ', $gpis);
     }
 
