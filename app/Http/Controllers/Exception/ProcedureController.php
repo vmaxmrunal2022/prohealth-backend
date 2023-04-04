@@ -20,7 +20,7 @@ class ProcedureController extends Controller
             ->where('procedure_exception_list',strtoupper($request->procedure_exception_list))->first();
 
             if($exist){
-                return $this->respondWithToken( $this->token(), 'Procedure List ID Already Existed');
+                return $this->respondWithToken( $this->token(), 'Procedure List ID Already Exists');
             }
 
 

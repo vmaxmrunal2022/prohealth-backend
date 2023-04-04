@@ -116,7 +116,7 @@ class SystemParameterController extends Controller
                 'DATE_TIME_MODIFIED' => date('d-M-y'),
                 'NUM_GENS' => $request->num_gens,
                 'GEN_PRIORITY' => $request->gen_priority,
-                'GEN_PRIORITY' => $request->processor_number,
+                'PROCESSOR_NUMBER' => $request->processor_number,
                 'PROCESSOR_NAME' => $request->processor_name,
                 'PROCESSOR_ADDRESS' => $request->processor_address,
                 'PROCESSOR_CITY' => $request->processor_city,
@@ -128,7 +128,7 @@ class SystemParameterController extends Controller
                 'FRONT_END_RECORD_AUDIT' => $request->front_end_record_audit,
             ]);
 
-        return $this->respondWithToken($this->token(), 'System Parameters Updated Successfully!', $update_system_parameter);
+        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_system_parameter);
     }
 
     public function getSystemParameters(Request $request)

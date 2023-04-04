@@ -30,7 +30,7 @@ class TherapyClassController extends Controller
 
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'Therapy class   Exception ID already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Therapy Class ID is Already Exists', $recordcheck);
 
 
             }
