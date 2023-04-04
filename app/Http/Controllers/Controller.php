@@ -165,10 +165,12 @@ class Controller extends BaseController
     public function defaultAuthGuard()
     {
         return Auth::guard('api');
+        
     }
 
     public function token()
     {
+        //return Auth::check() ? $this->defaultAuthGuard()->user()->token() : 'dfsdvf';
         return Auth::check() ? $this->defaultAuthGuard()->user()->token() : 'dfsdvf';
     }
 
@@ -217,7 +219,9 @@ class Controller extends BaseController
                        ->where('member_id', 'like', '%'. $request->search .'%') 
                        ->get();
           return $this->respondWithToken($this->token(), '', $memberIds);
-      }
+      } 
+
+      
 
       //Provider
       public function getProvider(Request $request)
