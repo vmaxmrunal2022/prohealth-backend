@@ -1222,5 +1222,7 @@ Route::group(['prefix' => 'administrator/'], function () {
 
         //claim history
         Route::get('claim-history', [ClaimHistoryController::class, 'get']);
+        Route::get('claim-history', [ClaimHistoryController::class, 'get']);
+
     });
 });
