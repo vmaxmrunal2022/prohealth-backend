@@ -81,7 +81,7 @@ class UserController extends Controller
         // $user = User::where('USER_ID', $credentials['USER_ID'])->first();
 
 
-
+        // dd($user_password);
         $user = User::where('USER_ID', $request->USER_ID)
             // ->where('USER_PASSWORD', $request->USER_PASSWORD)
             ->where('USER_PASSWORD', $user_password)

@@ -15,48 +15,48 @@ class PlanEditController extends Controller
 
         $PolicyAnnualMonth = [
 
-            ['name' => 'January','code'=>'Jan'],
+            ['name' => 'January', 'code' => 'Jan'],
 
-            ['name' => 'February','code'=>'Feb'],
+            ['name' => 'February', 'code' => 'Feb'],
 
-            ['name' => 'March','code'=>'Mar'],
+            ['name' => 'March', 'code' => 'Mar'],
 
-            ['name' => 'April','code'=>'Apl'],
+            ['name' => 'April', 'code' => 'Apl'],
 
-            ['name' => 'May' ,'code'=>'May'],
+            ['name' => 'May', 'code' => 'May'],
 
-            ['name' => 'June' ,'code'=>''],
+            ['name' => 'June', 'code' => ''],
 
-            ['name' => 'July' ,'code'=>''],
+            ['name' => 'July', 'code' => ''],
 
-            ['name' => 'August' ,'code'=>'Aug'],
+            ['name' => 'August', 'code' => 'Aug'],
 
-            ['name' => 'September' ,'code'=>'Sep'],
+            ['name' => 'September', 'code' => 'Sep'],
 
-            ['name' => 'October' ,'code'=>'Oct'],
+            ['name' => 'October', 'code' => 'Oct'],
 
-            ['name' => 'November' ,'code'=>'Nov'],
+            ['name' => 'November', 'code' => 'Nov'],
 
-            ['name' => 'December' ,'code'=>'Dec'],
+            ['name' => 'December', 'code' => 'Dec'],
 
         ];
-        return $this->respondWithToken($this->token(),'',$PolicyAnnualMonth);
-
+        return $this->respondWithToken($this->token(), '', $PolicyAnnualMonth);
     }
 
 
-    
-    
+
+
 
 
     public function add(Request $request)
     {
+        dd($request->plan_id);
 
         $getData = DB::table('PLAN_BENEFIT_TABLE')
             ->where('PLAN_ID', strtoupper($request->plan_id))
-                // ->Where('LABEL_NAME',strtoupper($request->label_name))
-                // ->Where('GENERIC_NAME',strtoupper($request->generic_name))
-                // ->Where('PACKAGE_SIZE',strtoupper($request->package_size))
+            // ->Where('LABEL_NAME',strtoupper($request->label_name))
+            // ->Where('GENERIC_NAME',strtoupper($request->generic_name))
+            // ->Where('PACKAGE_SIZE',strtoupper($request->package_size))
             ->first();
 
         if ($request->add_new == 1) {
@@ -64,8 +64,6 @@ class PlanEditController extends Controller
             if ($getData) {
 
                 return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getData);
-
-
             } else {
 
 
@@ -113,35 +111,35 @@ class PlanEditController extends Controller
                         'MIN_PRICE_OPT' => $request->min_price_opt,
                         'MAX_PRICE_OPT' => $request->max_price_opt,
                         'MIN_BRAND_COPAY_AMT' => $request->min_brand_copay_amt,
-                        'MAX_BRAND_COPAY_AMT'=>$request->max_brand_copay_amt,
-                        'MAX_BRAND_COPAY_OPT'=>$request->max_brand_copay_opt,
-                        'MIN_GENERIC_COPAY_AMT'=>$request->min_generic_copay_amt,
-                        'MAX_GENERIC_COPAY_AMT'=>$request->max_generic_copay_amt,
-                        'DRUG_CATGY_EXCEPTION_LIST'=>$request->drug_catgy_exception_test,
-                        'STARTER_DOSE_DAYS'=>$request->starter_dose_days,
-                        'STARTER_DOSE_BYPASS_DAYS'=>$request->starter_dose_bypass_days,
-                        'DRUG_COV_START_DAYS'=>$request->drug_cov_start_days,
-                        'SUPER_RX_NETWORK_ID'=>$request->super_rx_network_id,
-                        'MAX_RX_QTY_OPT'=>$request->max_rx_qty_opt,
-                        'MAX_QTY_OVER_TIME'=>$request->max_qty_over_time,
-                        'MAX_DAYS_OVER_TIME'=>$request->max_days_over_time,
-                        'USER_ID_CREATED'=>$request->user_id_created,
-                        'STARTER_DOSE_MAINT_BYPASS_DAYS'=>$request->starter_dose_maint_bypass_days,
-                        'MAX_QTY_PER_FILL'=>$request->max_qty_per_fill,
-                        'AGE_LIMIT_OPT'=>$request->age_limit_opt,
-                        'AGE_LIMIT_MMDD'=>$request->age_limit_mmdd,
-                        'PRICING_STRATEGY_ID'=>$request->pricing_strategy_id,
-                        'ACCUM_BENE_STRATEGY_ID'=>$request->accum_bene_strategy_id,
-                        'COPAY_STRATEGY_ID'=>$request->copay_strategy_id,
-                        'PROCEDURE_EXCEPTION_LIST'=>$request->procedure_exception_list,
-                        'EXHAUSTED_BENEFIT_OPT'=>$request->exhausted_benefit_opt,
-                        'EXHAUSTED_BENEFIT_PLAN_ID'=>$request->exhausted_benefit_plan_id,
-                        'COVERAGE_START_DAYS'=>$request->coverage_start_days,
-                        'BENEFIT_DERIVATION_ID'=>$request->benefit_derivation_id,
-                        'PROV_TYPE_PROC_ASSOC_ID'=>$request->prov_type_proc_assoc_id,
-                        'SUPER_BENEFIT_LIST_ID'=>$request->super_benefit_list_id,
-                        'SUPER_BENEFIT_LIST_ID_2'=>$request->super_benefit_list_id_2,
-                        'PROCEDURE_UCR_ID'=>$request->procedure_ucr_id,
+                        'MAX_BRAND_COPAY_AMT' => $request->max_brand_copay_amt,
+                        'MAX_BRAND_COPAY_OPT' => $request->max_brand_copay_opt,
+                        'MIN_GENERIC_COPAY_AMT' => $request->min_generic_copay_amt,
+                        'MAX_GENERIC_COPAY_AMT' => $request->max_generic_copay_amt,
+                        'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_test,
+                        'STARTER_DOSE_DAYS' => $request->starter_dose_days,
+                        'STARTER_DOSE_BYPASS_DAYS' => $request->starter_dose_bypass_days,
+                        'DRUG_COV_START_DAYS' => $request->drug_cov_start_days,
+                        'SUPER_RX_NETWORK_ID' => $request->super_rx_network_id,
+                        'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
+                        'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
+                        'MAX_DAYS_OVER_TIME' => $request->max_days_over_time,
+                        'USER_ID_CREATED' => $request->user_id_created,
+                        'STARTER_DOSE_MAINT_BYPASS_DAYS' => $request->starter_dose_maint_bypass_days,
+                        'MAX_QTY_PER_FILL' => $request->max_qty_per_fill,
+                        'AGE_LIMIT_OPT' => $request->age_limit_opt,
+                        'AGE_LIMIT_MMDD' => $request->age_limit_mmdd,
+                        'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
+                        'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                        'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
+                        'PROCEDURE_EXCEPTION_LIST' => $request->procedure_exception_list,
+                        'EXHAUSTED_BENEFIT_OPT' => $request->exhausted_benefit_opt,
+                        'EXHAUSTED_BENEFIT_PLAN_ID' => $request->exhausted_benefit_plan_id,
+                        'COVERAGE_START_DAYS' => $request->coverage_start_days,
+                        'BENEFIT_DERIVATION_ID' => $request->benefit_derivation_id,
+                        'PROV_TYPE_PROC_ASSOC_ID' => $request->prov_type_proc_assoc_id,
+                        'SUPER_BENEFIT_LIST_ID' => $request->super_benefit_list_id,
+                        'SUPER_BENEFIT_LIST_ID_2' => $request->super_benefit_list_id_2,
+                        'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
                         // 'PROCEDURE_XREF_ID'=>$request->procedure_xref_id,
 
                     ]);
@@ -151,13 +149,8 @@ class PlanEditController extends Controller
                 if ($addData) {
                     return $this->respondWithToken($this->token(), 'Added Successfully!!!', $addData);
                 }
-
-
-
-
             }
-
-        } else if($request->add_new == 0){ {
+        } else if ($request->add_new == 0) { {
                 $updateData = DB::table('PLAN_BENEFIT_TABLE')
                     ->where('PLAN_ID', $request->plan_id)
                     ->update([
@@ -203,37 +196,37 @@ class PlanEditController extends Controller
                         'MIN_PRICE_OPT' => $request->min_price_opt,
                         'MAX_PRICE_OPT' => $request->max_price_opt,
                         'MIN_BRAND_COPAY_AMT' => $request->min_brand_copay_amt,
-                        'MAX_BRAND_COPAY_AMT'=>$request->max_brand_copay_amt,
-                        'MAX_BRAND_COPAY_OPT'=>$request->max_brand_copay_opt,
-                        'MIN_GENERIC_COPAY_AMT'=>$request->min_generic_copay_amt,
-                        'MAX_GENERIC_COPAY_AMT'=>$request->max_generic_copay_amt,
-                        'DRUG_CATGY_EXCEPTION_LIST'=>$request->drug_catgy_exception_test,
-                        'STARTER_DOSE_DAYS'=>$request->starter_dose_days,
-                        'STARTER_DOSE_BYPASS_DAYS'=>$request->starter_dose_bypass_days,
-                        'DRUG_COV_START_DAYS'=>$request->drug_cov_start_days,
-                        'SUPER_RX_NETWORK_ID'=>$request->super_rx_network_id,
-                        'MAX_RX_QTY_OPT'=>$request->max_rx_qty_opt,
-                        'MAX_QTY_OVER_TIME'=>$request->max_qty_over_time,
-                        'MAX_DAYS_OVER_TIME'=>$request->max_days_over_time,
-                        'USER_ID_CREATED'=>$request->user_id_created,
-                        'STARTER_DOSE_MAINT_BYPASS_DAYS'=>$request->starter_dose_maint_bypass_days,
-                        'MAX_QTY_PER_FILL'=>$request->max_qty_per_fill,
-                        'AGE_LIMIT_OPT'=>$request->age_limit_opt,
-                        'AGE_LIMIT_MMDD'=>$request->age_limit_mmdd,
-                        'PRICING_STRATEGY_ID'=>$request->pricing_strategy_id,
-                        'ACCUM_BENE_STRATEGY_ID'=>$request->accum_bene_strategy_id,
-                        'COPAY_STRATEGY_ID'=>$request->copay_strategy_id,
-                        'PROCEDURE_EXCEPTION_LIST'=>$request->procedure_exception_list,
-                        'EXHAUSTED_BENEFIT_OPT'=>$request->exhausted_benefit_opt,
-                        'EXHAUSTED_BENEFIT_PLAN_ID'=>$request->exhausted_benefit_plan_id,
-                        'COVERAGE_START_DAYS'=>$request->coverage_start_days,
-                        'BENEFIT_DERIVATION_ID'=>$request->benefit_derivation_id,
-                        'PROV_TYPE_PROC_ASSOC_ID'=>$request->prov_type_proc_assoc_id,
-                        'SUPER_BENEFIT_LIST_ID'=>$request->super_benefit_list_id,
-                        'SUPER_BENEFIT_LIST_ID_2'=>$request->super_benefit_list_id_2,
-                        'PROCEDURE_UCR_ID'=>$request->procedure_ucr_id,
-                        'PROCEDURE_XREF_ID'=>$request->procedure_xref_id,
-                       
+                        'MAX_BRAND_COPAY_AMT' => $request->max_brand_copay_amt,
+                        'MAX_BRAND_COPAY_OPT' => $request->max_brand_copay_opt,
+                        'MIN_GENERIC_COPAY_AMT' => $request->min_generic_copay_amt,
+                        'MAX_GENERIC_COPAY_AMT' => $request->max_generic_copay_amt,
+                        'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_test,
+                        'STARTER_DOSE_DAYS' => $request->starter_dose_days,
+                        'STARTER_DOSE_BYPASS_DAYS' => $request->starter_dose_bypass_days,
+                        'DRUG_COV_START_DAYS' => $request->drug_cov_start_days,
+                        'SUPER_RX_NETWORK_ID' => $request->super_rx_network_id,
+                        'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
+                        'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
+                        'MAX_DAYS_OVER_TIME' => $request->max_days_over_time,
+                        'USER_ID_CREATED' => $request->user_id_created,
+                        'STARTER_DOSE_MAINT_BYPASS_DAYS' => $request->starter_dose_maint_bypass_days,
+                        'MAX_QTY_PER_FILL' => $request->max_qty_per_fill,
+                        'AGE_LIMIT_OPT' => $request->age_limit_opt,
+                        'AGE_LIMIT_MMDD' => $request->age_limit_mmdd,
+                        'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
+                        'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                        'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
+                        'PROCEDURE_EXCEPTION_LIST' => $request->procedure_exception_list,
+                        'EXHAUSTED_BENEFIT_OPT' => $request->exhausted_benefit_opt,
+                        'EXHAUSTED_BENEFIT_PLAN_ID' => $request->exhausted_benefit_plan_id,
+                        'COVERAGE_START_DAYS' => $request->coverage_start_days,
+                        'BENEFIT_DERIVATION_ID' => $request->benefit_derivation_id,
+                        'PROV_TYPE_PROC_ASSOC_ID' => $request->prov_type_proc_assoc_id,
+                        'SUPER_BENEFIT_LIST_ID' => $request->super_benefit_list_id,
+                        'SUPER_BENEFIT_LIST_ID_2' => $request->super_benefit_list_id_2,
+                        'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
+                        'PROCEDURE_XREF_ID' => $request->procedure_xref_id,
+
                     ]);
 
 
@@ -245,29 +238,27 @@ class PlanEditController extends Controller
                 }
             }
         }
-
-
-
     }
 
 
     public function get(Request $request)
     {
+        // dd('test');
         $planEdit = DB::table('PLAN_BENEFIT_TABLE')
-                    ->where('PLAN_ID', 'like', '%'. strtoupper($request->search) .'%')
-                    ->orWhere('PLAN_NAME', 'like', '%'. strtoupper($request->search) .'%')
-                    ->get();
+            ->where('PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('PLAN_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
         return $this->respondWithToken($this->token(), '', $planEdit);
     }
 
     public function getPlanEditData($planid)
     {
         $plandata = DB::table('PLAN_BENEFIT_TABLE')
-                    // ->leftJoin('PLAN_VALIDATION_LISTS', 'plan_benefit_table.plan_id', '=', 'plan_benefit_table.plan_id')
-                    // ->leftJoin('PLAN_RX_NETWORK_RULES', 'plan_benefit_table.plan_id', '=', 'PLAN_RX_NETWORK_RULES.plan_id')
-                    // ->leftJoin('PLAN_RX_NETWORKS', 'plan_benefit_table.plan_id', '=', 'PLAN_RX_NETWORKS.plan_id')
-                    ->where('plan_benefit_table.plan_id',$planid)
-                    ->first();
+            // ->leftJoin('PLAN_VALIDATION_LISTS', 'plan_benefit_table.plan_id', '=', 'plan_benefit_table.plan_id')
+            // ->leftJoin('PLAN_RX_NETWORK_RULES', 'plan_benefit_table.plan_id', '=', 'PLAN_RX_NETWORK_RULES.plan_id')
+            // ->leftJoin('PLAN_RX_NETWORKS', 'plan_benefit_table.plan_id', '=', 'PLAN_RX_NETWORKS.plan_id')
+            ->where('plan_benefit_table.plan_id', $planid)
+            ->first();
         return $this->respondWithToken($this->token(), '', $plandata);
     }
 
