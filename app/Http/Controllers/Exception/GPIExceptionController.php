@@ -23,7 +23,7 @@ class GPIExceptionController extends Controller
         if ( $request->has( 'new' ) ) {
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'GPI  ID already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'GPI ID is Already Exists', $recordcheck);
 
             }
 

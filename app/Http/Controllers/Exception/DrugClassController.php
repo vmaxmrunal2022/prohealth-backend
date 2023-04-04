@@ -120,7 +120,7 @@ class DrugClassController extends Controller
 
             if($exist){
 
-                return $this->respondWithToken($this->token(), 'Drug Category List Id Already Exists in the System', $exist);
+                return $this->respondWithToken($this->token(), 'Drug Classification ID is Already Exists', $exist);
     
     
             }
@@ -213,7 +213,7 @@ class DrugClassController extends Controller
                         'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
                     ]
                 );
-                return $this->respondWithToken($this->token(), 'Added Successfully!', $drugcatgy);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $drugcatgy);
     
             }
     
@@ -413,7 +413,7 @@ class DrugClassController extends Controller
                 ->first();
         }
 
-        return $this->respondWithToken($this->token(), 'Updated Successfully! ', $drugcatgy);
+        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $drugcatgy);
     }
 
     public function getDetailsList($id)
