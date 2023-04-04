@@ -631,7 +631,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //Search Audit Trail
         Route::get('search-audit-trial/get-tables', [AuditTrailController::class, 'getTables'])->name('getAllTables');
-        Route::post('search-audit-trial/get-user-records', [AuditTrailController::class, 'getUserAllRecord']);
+        Route::get('search-audit-trial/get-user-records', [AuditTrailController::class, 'getUserAllRecord']);
         Route::get('search-audit-trial/get-user_ids', [AuditTrailController::class, 'getUserIds'])->name('getUserIds');
         Route::get('search-audit-trial/get-record-actions', [AuditTrailController::class, 'getRecordAction'])->name('getRecordAction');
         Route::post('search-audit-trial/search-user-log', [AuditTrailController::class, 'searchUserLog'])->name('searchUserLog');

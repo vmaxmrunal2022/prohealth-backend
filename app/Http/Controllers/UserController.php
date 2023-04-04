@@ -19,6 +19,7 @@ class UserController extends Controller
         $this->middleware("auth:api", ["except" => ["login", "register"]]);
         $this->user = new User;
     }
+
     public function register(Request $request)
     {
         $validator = FacadesValidator::make($request->all(), [
@@ -67,7 +68,7 @@ class UserController extends Controller
         }
         // print_r($hashFromThirdParty);
 
-        $validator = Validator::make($request->all(), [
+        $validator = FacadesValidator::make($request->all(), [
             'USER_ID' => 'required|string',
             'USER_PASSWORD' => 'required',
         ]);
@@ -106,9 +107,9 @@ class UserController extends Controller
         // }
 
         if ($user) {
-            Auth::login($user);
+            FacadesAuth::login($user);
             //    print_r(Auth::login($user));
-            if (!Auth::check()) {
+            if (!FacadesAuth::check()) {
                 $responseMessage = "Invalid username or password";
                 return response()->json([
                     "success" => false,
@@ -119,7 +120,8 @@ class UserController extends Controller
 
             $accessToken = auth()->user()->createToken('authToken')->accessToken;
             $responseMessage = "Login Successful";
-            Session::put('user', auth()->user()->user_id);
+            //Session::put('user', auth()->user()->user_id);  
+            Session::put('user', $user->user_id);
             // dd($request->session()->get('user'));
             return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
         } else {
@@ -143,7 +145,7 @@ class UserController extends Controller
     }
     public function logout()
     {
-        $user = Auth::guard("api")->user()->token();
+        $user = FacadesAuth::guard("api")->user()->token();
         $user->revoke();
         $responseMessage = "successfully logged out";
         return response()->json([

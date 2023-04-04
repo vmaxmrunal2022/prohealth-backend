@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Auth;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
-use Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
@@ -47,7 +45,7 @@ class UserController extends Controller
     public function login(Request $request)
     {
 
-        $validator = Validator::make($request->all(), [
+        $validator = FacadesValidator::make($request->all(), [
             'USER_ID' => 'required|string',
             'USER_PASSWORD' => 'required',
         ]);
@@ -65,12 +63,12 @@ class UserController extends Controller
             ->first();
 
 
-            // return response()->json([
-            //     'data' => Auth::check(),
-            //     "success" => false,
-            //     "message" => '',
-            //     "error" => ''
-            // ], 422);
+        // return response()->json([
+        //     'data' => Auth::check(),
+        //     "success" => false,
+        //     "message" => '',
+        //     "error" => ''
+        // ], 422);
 
         // if ($user) {
         //     Auth::loginUsingId($user->id);
@@ -83,9 +81,9 @@ class UserController extends Controller
 
         if ($user) {
 
-            Auth::login($user);
-        //    print_r(Auth::login($user));
-            if (!Auth::check()) {
+            FacadesAuth::login($user);
+            //    print_r(Auth::login($user));
+            if (!FacadesAuth::check()) {
                 $responseMessage = "Invalid username or password";
                 return response()->json([
                     "success" => false,
@@ -119,7 +117,7 @@ class UserController extends Controller
     }
     public function logout()
     {
-        $user = Auth::guard("api")->user()->token();
+        $user = FacadesAuth::guard("api")->user()->token();
         $user->revoke();
         $responseMessage = "successfully logged out";
         return response()->json([
