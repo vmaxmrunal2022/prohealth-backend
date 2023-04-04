@@ -20,6 +20,7 @@ final class Helper
 
         return $array[array_rand($array, 1)];
     }
+    
 
     /**
      * Replaces all hash sign ('#') occurrences with a random number

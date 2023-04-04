@@ -41,7 +41,7 @@ class ChainController extends Controller
 
                 if($recordcheck){
 
-                    return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $recordcheck);
+                    return $this->respondWithToken($this->token(), 'Pharmacy Chain Id Already Exists', $recordcheck);
 
 
                 }
@@ -54,7 +54,7 @@ class ChainController extends Controller
                             'PHARMACY_CHAIN_NAME' => strtoupper($request->pharmacy_chain_name),
                             'MAILING_NAME'=>$request->mailing_name,
                             'MAILING_ADDRESS_1'=>$request->mailing_address_1,
-                            'MAILING_ADDRESS_2'=>$request->mailling_address_2,
+                            'MAILING_ADDRESS_2'=>$request->mailing_address_2,
                             'MAILING_CITY'=>$request->mailing_city,
                             'MAILING_STATE'=>$request->mailing_state,
                             'MAILING_ZIP_CODE'=>$request->mailing_zip_code,
@@ -80,7 +80,7 @@ class ChainController extends Controller
                             // 'COMPLETE_CODE_IND' => ''
                         ]
                     );
-                 return  $this->respondWithToken($this->token(), 'Record Added Successfully!', $procedurecode);
+                 return  $this->respondWithToken($this->token(), 'Record Added Successfully', $procedurecode);
                 
 
                 }
@@ -96,7 +96,7 @@ class ChainController extends Controller
                         'PHARMACY_CHAIN_NAME' => strtoupper($request->pharmacy_chain_name),
                         'MAILING_NAME'=>$request->mailing_name,
                         'MAILING_ADDRESS_1'=>$request->mailing_address_1,
-                        'MAILING_ADDRESS_2'=>$request->mailling_address_2,
+                        'MAILING_ADDRESS_2'=>$request->mailing_address_2,
                         'MAILING_CITY'=>$request->mailing_city,
                         'MAILING_STATE'=>$request->mailing_state,
                         'MAILING_ZIP_CODE'=>$request->mailing_zip_code,

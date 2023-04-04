@@ -15,7 +15,6 @@ class MajorMedicalController extends Controller
     {
 
 
-<<<<<<< HEAD
         if ($request->has('new')) {
 
 
@@ -55,7 +54,6 @@ class MajorMedicalController extends Controller
                     ]
                 );
 
-=======
         $recordcheck=DB::table('MM_LIFE_MAX')
         ->where('customer_id', strtoupper($request->customer_id))
         ->where('client_id',strtoupper($request->client_id))
@@ -130,22 +128,10 @@ class MajorMedicalController extends Controller
         // $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%'.$request->mm_life_maximum .'%')->first();
         return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$recordcheck);
 
->>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
-
-
-            $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%' . $request->mm_life_maximum . '%')->first();
         }
 
-<<<<<<< HEAD
-
-
-
-
-
-        return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
-=======
+    }
     
->>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
     }
 
 
@@ -187,11 +173,9 @@ class MajorMedicalController extends Controller
     public function getDetails($ndcid)
     {
 
-<<<<<<< HEAD
         $ndc = DB::table('MM_LIFE_MAX')
             ->where('client_group_id', 'like', '%' . $ndcid . '%')
             ->first();
-=======
         $ndc =DB::table('MM_LIFE_MAX')
         ->select('MM_LIFE_MAX.CUSTOMER_ID','MM_LIFE_MAX.CLIENT_ID','MM_LIFE_MAX.CLIENT_GROUP_ID','MM_LIFE_MAX.EFFECTIVE_DATE','MM_LIFE_MAX.TERMINATION_DATE','MM_LIFE_MAX.MM_LIFE_MAXIMUM','MM_LIFE_MAX.MM_CLAIM_MAX','MM_LIFE_MAX.GROUPING_TYPE','MM_LIFE_MAX.MM_CLAIM_MAX_GROUP_TYPE','MM_LIFE_MAX.MM_CLAIM_MAX_PERIOD','CUSTOMER.CUSTOMER_NAME','CLIENT.CLIENT_NAME','CLIENT_GROUP.GROUP_NAME')
         ->join('CUSTOMER', 'CUSTOMER.CUSTOMER_ID', '=', 'MM_LIFE_MAX.CUSTOMER_ID')
@@ -199,7 +183,6 @@ class MajorMedicalController extends Controller
         ->join('CLIENT_GROUP', 'CLIENT_GROUP.CLIENT_GROUP_ID', '=', 'MM_LIFE_MAX.CLIENT_GROUP_ID')
         ->where('MM_LIFE_MAX.client_group_id',$ndcid)
          ->first();
->>>>>>> bc2b70e1aa2da9062fe3d09ef65b25d459ea3c8a
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }

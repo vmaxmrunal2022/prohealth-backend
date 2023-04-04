@@ -27,6 +27,26 @@ class ServiceTypeController extends Controller
         }
     }
 
+    public function getallServicetypes(Request $request){
+
+       $service_types_data= DB::table('SERVICE_TYPES')->get();
+
+       if($service_types_data){
+        return  $this->respondWithToken($this->token(), 'data Fetched Successfully', $service_types_data);
+       }
+
+       else{
+        return  $this->respondWithToken($this->token(), 'something went wrong', $service_types_data);
+
+       }
+
+
+
+
+
+
+    }
+
     public function add(Request $request)
     {
         if ($request->new) {

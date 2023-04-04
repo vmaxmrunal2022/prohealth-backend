@@ -27,6 +27,26 @@ class PricingStrategyController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+
+    public function get_all(Request $request)
+    {
+       
+        $pricing_strategies = DB::table('PRICING_STRATEGY_NAMES')->get();
+
+        if($pricing_strategies){
+
+            return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $pricing_strategies);
+
+        }else{
+
+            return $this->respondWithToken($this->token(), 'something Went Wrong', $pricing_strategies);
+
+        }
+
+    }
+
+    
+
     public function getProviderList($ndcid)
     {
         $ndclist = DB::table('PRICING_STRATEGY')
@@ -144,9 +164,8 @@ class PricingStrategyController extends Controller
                             'mac_list' => $request->mac_list,
                         ]
                     );
-                $benefitcode = DB::table('PRICING_STRATEGY')->where('pricing_strategy_id', 'like', $request->pricing_strategy_id)->first();
 
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $accum_benfit_stat);
 
             }
         }

@@ -5,13 +5,6 @@ namespace App\Http\Controllers\Code;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-<<<<<<< HEAD
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
-use Nette\Utils\Json;
-use Symfony\Component\HttpFoundation\Response;
-=======
->>>>>>> origin/mrunal
 
 use function PHPSTORM_META\elementType;
 
@@ -19,20 +12,13 @@ class ProviderTypeController extends Controller
 {
     public function get(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "search" => ['required'],
-        ]);
 
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        } else {
-            $procedurecodes = DB::table('PROVIDER_TYPES')
-                ->where(DB::raw('UPPER(PROVIDER_TYPE)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->get();
+        $procedurecodes = DB::table('PROVIDER_TYPES')
+            ->where(DB::raw('UPPER(PROVIDER_TYPE)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
 
-            return $this->respondWithToken($this->token(), '', $procedurecodes);
-        }
+        return $this->respondWithToken($this->token(), '', $procedurecodes);
     }
 
 
@@ -46,8 +32,6 @@ class ProviderTypeController extends Controller
 
     public function add(Request $request)
     {
-<<<<<<< HEAD
-=======
 
         // $procedurecode = DB::table('PROVIDER_TYPES')->updateOrInsert(
         //     [
@@ -64,7 +48,6 @@ class ProviderTypeController extends Controller
         //         // 'COMPLETE_CODE_IND' => ''
         //     ]
         // );
->>>>>>> origin/mrunal
         if ($request->new) {
             $validator = Validator::make($request->all(), [
                 "provider_type" => ['required', 'max:2', Rule::unique('PROVIDER_TYPES')->where(function ($q) {
@@ -89,38 +72,7 @@ class ProviderTypeController extends Controller
                         // 'COMPLETE_CODE_IND' => ''
                     ]
                 );
-<<<<<<< HEAD
-                return  $this->respondWithToken($this->token(), 'Record Added Successfully!', $procedurecode);
-            }
-        } else {
-            $validator = Validator::make($request->all(), [
-                "provider_type" => ['required', 'max:2'],
-                "description" => ['max:35']
-            ]);
-
-            if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            } else {
-                $procedurecode = DB::table('PROVIDER_TYPES')
-                    ->where(DB::raw('UPPER(PROVIDER_TYPE)'), strtoupper($request->provider_type))
-                    ->update(
-                        [
-                            // 'PROVIDER_TYPE' => strtoupper($request->provider_type),
-                            'DESCRIPTION' => strtoupper($request->description),
-                            'DATE_TIME_CREATED' => date('y-m-d'),
-                            'USER_ID_CREATED' => '',
-                            'USER_ID' => '',
-                            'DATE_TIME_MODIFIED' => '',
-                            'FORM_ID' => '',
-                            // 'COMPLETE_CODE_IND' => ''
-                        ]
-                    );
-                // dd($procedurecode);
-                return  $this->respondWithToken($this->token(), 'Record Updated Successfully', $procedurecode);
-            }
-=======
             return  $this->respondWithToken($this->token(), 'Updated successfully!', $procedurecode);
->>>>>>> origin/mrunal
         }
 
         // $procedurecode = DB::table('PROVIDER_TYPES')->where('PROVIDER_TYPE', $request->provider_type)->first();

@@ -11,7 +11,7 @@ class MacListController extends Controller
     public function get(Request $request)
     {
         $macList = DB::table('MAC_LIST')
-            ->where('MAC_LIST', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('MAC_LIST', 'like', '%' . $request->search. '%')
             ->orWhere('MAC_DESC', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
@@ -58,7 +58,14 @@ class MacListController extends Controller
         // print($effective_date);
         // print($termination_date);
         // dd($request->all());
-        if ($request->add_new) {
+        $validation = DB::table('mac_list')->where('mac_list', $request->mac_list)->get();
+
+
+
+        if ($request->add_new == 1) {
+            if ($validation->count() > 0) {
+                return $this->respondWithToken($this->token(), 'MAC List ID is Already Exists', $validation, true, 200, 1);
+            }
             $add_mac_list = DB::table('mac_list')
                 ->insert([
                     'mac_list' => $request->mac_list,
@@ -74,12 +81,15 @@ class MacListController extends Controller
                     'price_source' => $request->price_source,
                     'price_type' => $request->price_type,
                     'mac_amount' => $request->mac_amount,
-                    'allow_fee' => $request->allow_fee
+                    'allow_fee' => $request->allow_fee,
                 ]);
 
             $add = DB::table('mac_table')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
-            return $this->respondWithToken($this->token(), 'Added Successfully!', $add);
-        } else {
+            return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+        } else if ($request->add_new == 0) {
+            if ($validation->count() < 1) {
+                return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
+            }
             $update_mac_list = DB::table('mac_list')
                 ->where('mac_list', $request->mac_list)
                 ->update([
@@ -120,7 +130,7 @@ class MacListController extends Controller
             }
 
             $update = DB::table('mac_table')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
-            return $this->respondWithToken($this->token(), 'Updated Successfully!', $update);
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
         }
     }
 }

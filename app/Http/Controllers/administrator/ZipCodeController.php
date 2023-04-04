@@ -34,34 +34,52 @@ class ZipCodeController extends Controller
     public function submitFormData(Request $request)
     {
         // dd($request->all());
+        $record = DB::table('ZIP_CODES')
+        ->where('ZIP_CODE', $request->zip_code)
+        ->first();
+
+
         if ($request->has('new')) {
-            $addUser = DB::table('ZIP_CODES')
+
+            if($record){
+
+                return $this->respondWithToken($this->token(), 'ZipCode Already Exists', $record);
+
+
+            }
+            
+            else{
+
+                $addUser = DB::table('ZIP_CODES')
                 ->insert([
                     'ZIP_CODE' => $request->zip_code,
                     'CITY' => $request->city,
-                    'STATE' => $request->state_code['value'],
+                    'STATE' => $request->state,
                     'COUNTY' => $request->county,
-                    'COUNTRY_CODE' => $request->country_code['value'],
+                    'COUNTRY_CODE' => $request->country_code,
                     'USER_ID' => $request->user_name
                 ]);
 
             if ($addUser) {
-                return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addUser);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $addUser);
             }
-        } else {
+        }
+          } else {
             $updateUser = DB::table('ZIP_CODES')
                 ->where('ZIP_CODE', $request->zip_code)
                 ->update([
                     'CITY' => $request->city,
-                    'STATE' => $request->state_code['value'],
+                    'STATE' => $request->state,
                     'COUNTY' => $request->county,
-                    'COUNTRY_CODE' => $request->country_code['value'],
+                    'COUNTRY_CODE' => $request->country_code,
                     'USER_ID' => $request->user_name
                 ]);
 
             if ($updateUser) {
-                return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateUser);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateUser);
             }
         }
-    }
+                
+            
+  }
 }
