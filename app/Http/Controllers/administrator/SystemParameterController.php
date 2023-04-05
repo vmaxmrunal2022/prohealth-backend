@@ -5,12 +5,15 @@ namespace App\Http\Controllers\administrator;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
 
 class SystemParameterController extends Controller
 {
     public function updateSystemParameter(Request $request)
     {
-
+       
+        
         // $getusersData = DB::table('GLOBAL_PARAMS')
         //     ->where('user_id', $request->user_id)
         //     ->first();
@@ -126,6 +129,12 @@ class SystemParameterController extends Controller
                 'THIRD_PARTY_TYPE' => $request->third_party_type,
                 'VERSION_NUMBER' => $request->version_number,
                 'FRONT_END_RECORD_AUDIT' => $request->front_end_record_audit,
+                'reqd_u_and_c_flag'=>$request->reqd_u_and_c_flag,
+                'rva_list_id'=>$request->rva_list_id,
+                'dmr_preview_flag'=>$request->dmr_preview_flag,
+                'sys_date_filled_to_sub_dmr'=>$request->sys_date_filled_to_sub_dmr,
+                'ap_from_date'=>$request->ap_from_date,
+                'ap_to_date'=>$request->ap_to_date,
             ]);
 
         return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_system_parameter);
