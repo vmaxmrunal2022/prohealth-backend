@@ -135,6 +135,29 @@ class SystemParameterController extends Controller
                 'sys_date_filled_to_sub_dmr'=>$request->sys_date_filled_to_sub_dmr,
                 'ap_from_date'=>$request->ap_from_date,
                 'ap_to_date'=>$request->ap_to_date,
+                'confidentiality_flag_1'=>$request->confidentiality_flag_1,
+                'elig_load_pend_days'=>$request->elig_load_pend_days,
+                'elig_load_reject_days'=>$request->elig_load_reject_days,
+                'tba_percent'=>$request->tba_percent,
+                'case_sensitive_flag'=>$request->case_sensitive_flag,
+                'processor_cntl_num_cust_length'=>$request->processor_cntl_num_cust_length,
+                'allow_fe_cob_reversal'=>$request->allow_fe_cob_reversal,
+                'ap_run_flag'=>$request->ap_run_flag,
+                'auto_term_level'=>$request->auto_term_level,
+                'country'=>$request->country,
+                'default_locale_id'=>$request->default_locale_id,
+                'front_end_version_number'=>$request->front_end_version_number,
+                'max_ucr'=>$request->max_ucr,
+                'mbr_search_grp_key'=>$request->mbr_search_grp_key,
+                'member_change_log_opt'=>$request->member_change_log_opt,
+                'member_search_opt'=>$request->member_search_opt,
+                'non_profit_tax_exempt_flag'=>$request->non_profit_tax_exempt_flag,
+                'overlap_coverage_tie_breaker'=>$request->overlap_coverage_tie_breaker,
+                'plan_assoc_required_flag'=>$request->plan_assoc_required_flag,
+                
+                
+
+
             ]);
 
         return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_system_parameter);

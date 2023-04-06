@@ -262,7 +262,7 @@ class CopayScheduleController extends Controller
                     'bga1_4_daw'=>$request->bga1_4_daw,
                 ]);
 
-            return $this->respondWithToken($this->token(), 'Added successfully!', $add_copay_schedule);
+            return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_copay_schedule);
                 
             }
            
@@ -439,7 +439,7 @@ class CopayScheduleController extends Controller
                     
                 ]);
 
-            return $this->respondWithToken($this->token(), 'Update successfully!', $update_copay_schedule);
+            return $this->respondWithToken($this->token(), 'Record Update Successfully', $update_copay_schedule);
         }
     }
 
