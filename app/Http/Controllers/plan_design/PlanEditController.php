@@ -495,6 +495,7 @@ class PlanEditController extends Controller
             ->where('PLAN_BENEFIT_TABLE.PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('PLAN_BENEFIT_TABLE.PLAN_NAME', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
+            
         return $this->respondWithToken($this->token(), '', $planEdit);
     }
 

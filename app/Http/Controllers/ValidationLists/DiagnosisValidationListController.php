@@ -110,22 +110,22 @@ class DiagnosisValidationListController extends Controller
 
                     return $this->respondWithToken($this->token(), 'limitation data exists!!!', $limitationsdata);
                 } else {
-                    $limitation_list = json_decode(json_encode($request->limitations_form, true));
-                    $limitation_list = $limitation_list[0];
-                    $effective_date = $limitation_list->effective_date;
-                    $termination_date = $limitation_list->termination_date;
-                    $limitations_list = $limitation_list->limitations_list;
-
-                    $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-                        ->insert([
-                            'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                            'DIAGNOSIS_ID' => $request->diagnosis_id,
-                            'LIMITATIONS_LIST' => $limitations_list,
-                            'EFFECTIVE_DATE' => date('Ydm', strtotime($effective_date)),
-                            'TERMINATION_DATE' => date('Ydm', strtotime($termination_date)),
-                            'DATE_TIME_CREATED' => date('d-M-y'),
-
-                        ]);
+                    $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
+                    $limitation_list = $limitation_list_obj[0];
+                    // $effective_date   = $limitation_list->effective_date;
+                    // $termination_date = $limitation_list->termination_date;
+                    // $limitations_list = $limitation_list->limitations_list;
+                    foreach ($limitation_list_obj as $key => $limitation_list) {
+                        $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                            ->insert([
+                                'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                'DIAGNOSIS_ID'   => $request->diagnosis_id,
+                                'LIMITATIONS_LIST' => $limitation_list->limitations_list,
+                                'EFFECTIVE_DATE' => date('Ydm', strtotime($limitation_list->effective_date)),
+                                'TERMINATION_DATE' => date('Ydm', strtotime($limitation_list->termination_date)),
+                                'DATE_TIME_CREATED' => date('d-M-y'),
+                            ]);
+                    }
                 }
 
                 if ($exceptiondata) {
@@ -199,24 +199,35 @@ class DiagnosisValidationListController extends Controller
                             ]);
                     }
 
-                    $limitation_list = json_decode(json_encode($request->limitations_form, true));
-                    $limitation_list = $limitation_list[0];
-                    $effective_date = $limitation_list->effective_date;
-                    $termination_date = $limitation_list->termination_date;
-                    $limitations_list = $limitation_list->limitations_list;
+                    $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
+                    foreach ($limitation_list_obj as $key => $limitation_list) {
+                        $updateData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                            ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
+                            ->where('DIAGNOSIS_ID', $request->diagnosis_id)
+                            ->where('EFFECTIVE_DATE', $limitation_list->effective_date);
+                        if ($updateData->count() > 0) {
+                            $updateData->update([
+                                'LIMITATIONS_LIST' => $limitation_list->limitations_list,
+                                'TERMINATION_DATE' => date('Ydm', strtotime($limitation_list->termination_date)),
+                            ]);
+                        } else {
 
+                            $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                                ->insert([
+                                    'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                    'DIAGNOSIS_ID'   => $request->diagnosis_id,
+                                    'LIMITATIONS_LIST' => $limitation_list->limitations_list,
+                                    'EFFECTIVE_DATE' => date('Ydm', strtotime($limitation_list->effective_date)),
+                                    'TERMINATION_DATE' => date('Ydm', strtotime($limitation_list->termination_date)),
+                                    'DATE_TIME_CREATED' => date('d-M-y'),
+                                ]);
+                        }
+                    }
                     $updateData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
                         ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
-                        ->where('DIAGNOSIS_ID', $request->diagnosis_id)
-                        ->update([
-
-                            'LIMITATIONS_LIST' => $limitations_list,
-                            'EFFECTIVE_DATE' => date('Ydm', strtotime($effective_date)),
-                            'TERMINATION_DATE' => date('Ydm', strtotime($termination_date)),
-
-                        ]);
+                        ->where('DIAGNOSIS_ID', $request->diagnosis_id)->get();
                 }
-
+                return "sss";
                 if ($updateData) {
                     return $this->respondWithToken($this->token(), 'Record  Updated Successfully!!!', $updateData);
                 }
