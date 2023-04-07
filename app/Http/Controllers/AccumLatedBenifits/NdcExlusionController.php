@@ -115,6 +115,24 @@ class NdcExlusionController extends Controller
     }
 
 
+    public function NdcExclusiondropdowns(Request $request){
+
+        $data = DB::table('NDC_EXCLUSIONS')
+        ->get();
+
+        if($data){
+            return $this->respondWithToken($this->token(), 'Data fetched succefully', $data);
+
+        }
+        else{
+            return $this->respondWithToken($this->token(), 'Something went wrong', $data);
+
+        }
+
+
+    }
+
+
 
 
     public function search(Request $request)

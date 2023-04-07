@@ -1134,6 +1134,12 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
     Route::post('rva-list/submit', [RvaListController::class, 'submitRva']);
     Route::get('rva-list/dropdown', [RvaListController::class, 'RvaListDropdown']);
+<<<<<<< HEAD
+=======
+
+
+    
+>>>>>>> f0db5f387c2654f888753743f254d808733cab75
 });
 
 

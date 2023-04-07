@@ -16,17 +16,12 @@ class NDCExceptionController extends Controller
 
         $recordcheck = DB::table('NDC_EXCEPTION_LISTS')
         ->where('ndc_exception_list', strtoupper($request->ndc_exception_list))
-        ->where('ndc', strtoupper($request->ndc))
         ->first();
-
-
-
-
         if ( $request->has('add_new') ) {
 
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'Ndc  Exception ID already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Ndc  Exception ID Already Exists', $recordcheck);
 
 
             }
@@ -44,7 +39,7 @@ class NDCExceptionController extends Controller
                 $insert = DB::table('NDC_EXCEPTION_LISTS')->insert(
                     [
                         'NDC_EXCEPTION_LIST' =>strtoupper($request->ndc_exception_list),
-                        'NDC'=>$request->ndc,
+                        'NDC'=>strtoupper($request->ndc),
                         'NEW_DRUG_STATUS'=>$request->new_drug_status,
                         'PROCESS_RULE'=>$request->process_rule,
                         'MAXIMUM_ALLOWABLE_COST'=>$request->maximum_allowable_cost,
@@ -131,11 +126,12 @@ class NDCExceptionController extends Controller
         } else {
 
             $update = DB::table('NDC_EXCEPTION_LISTS' )
-            ->where('ndc',$request->ndc)
-            ->where('ndc_exception_list',$request->ndc_exception_list)
+            ->where('ndc',strtoupper($request->ndc))
+            ->where('ndc_exception_list',strtoupper($request->ndc_exception_list))
+            ->where('effective_date',$request->effective_date)
+
             ->update(
                 [
-                    // 'NDC_EXCEPTION_LIST' => $request->ndc_exception_list,
                     'NEW_DRUG_STATUS'=>$request->new_drug_status,
                     'PROCESS_RULE'=>$request->process_rule,
                     'MAXIMUM_ALLOWABLE_COST'=>$request->maximum_allowable_cost,
@@ -217,11 +213,10 @@ class NDCExceptionController extends Controller
 
 
             $accum_benfit_stat = DB::table('NDC_EXCEPTIONS' )
-            ->where('ndc_exception_list', $request->ndc_exception_list )
+            ->where('ndc_exception_list', strtoupper($request->ndc_exception_list ))
             ->update(
                 [
-                    'exception_name'=>$request->exception_name,
-
+                    'exception_name'=>strtoupper($request->exception_name),
 
 
                 ]
@@ -298,14 +293,14 @@ class NDCExceptionController extends Controller
  
             $ifset = DB::table('NDC_EXCEPTION_LISTS')
         
-                    ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list', 'NDC_EXCEPTIONS.EXCEPTION_NAME as exception_name',
+                    ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list',
                     'DRUG_MASTER.LABEL_NAME as ndc_exception_description',
-                    'NDC_EXCEPTIONS1.EXCEPTION_NAME as preferd_ndc_description',
-                    'NDC_EXCEPTIONS2.EXCEPTION_NAME as conversion_ndc_description',
+                    'DRUG_MASTER1.LABEL_NAME as preferd_ndc_description',
+                    'DRUG_MASTER2.LABEL_NAME as conversion_ndc_description',
                     )
                     ->leftjoin('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
-                    ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS1', 'NDC_EXCEPTIONS1.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
-                    ->leftjoin('NDC_EXCEPTIONS as NDC_EXCEPTIONS2', 'NDC_EXCEPTIONS2.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
+                    ->leftjoin('DRUG_MASTER as DRUG_MASTER1', 'DRUG_MASTER1.NDC', '=', 'NDC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
+                    ->leftjoin('DRUG_MASTER as DRUG_MASTER2', 'DRUG_MASTER2.NDC', '=', 'NDC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
                     ->leftjoin('DRUG_MASTER', 'DRUG_MASTER.NDC', '=', 'NDC_EXCEPTION_LISTS.NDC')
 
 

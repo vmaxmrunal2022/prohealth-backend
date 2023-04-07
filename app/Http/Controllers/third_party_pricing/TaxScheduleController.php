@@ -45,7 +45,7 @@ class TaxScheduleController extends Controller
         if ($request->add_new == 1) {
 
             if ($validation->count() > 0) {
-                return $this->respondWithToken($this->token(), 'Tax schedule Id is already exists', $validation, true, 200, 1);
+                return $this->respondWithToken($this->token(), 'Tax Schedule ID is Already Exists', $validation, true, 200, 1);
             }
             $add_tax_schedule = DB::table('tax_schedule')
                 ->insert([
@@ -60,7 +60,7 @@ class TaxScheduleController extends Controller
                     'OTC_TAX_CALCULATION' => $request->otc_tax_calculation,
                     'OTC_TAX_BASE_PRICE' => $request->otc_tax_base_price,
                 ]);
-            return $this->respondWithToken($this->token(), 'Added Successfully!', $add_tax_schedule);
+            return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_tax_schedule);
         } else if ($request->add_new == 0) {
             if ($validation->count() < 1) {
                 return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
@@ -79,7 +79,7 @@ class TaxScheduleController extends Controller
                     'OTC_TAX_CALCULATION' => $request->otc_tax_calculation,
                     'OTC_TAX_BASE_PRICE' => $request->otc_tax_base_price,
                 ]);
-            return $this->respondWithToken($this->token(), 'Updated Successfully!', $update_tax_schedule);
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_tax_schedule);
         }
     }
 }

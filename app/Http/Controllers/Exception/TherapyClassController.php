@@ -30,7 +30,7 @@ class TherapyClassController extends Controller
 
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'Therapy class   Exception ID already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Therapy Class ID is Already Exists', $recordcheck);
 
 
             }
@@ -246,9 +246,7 @@ class TherapyClassController extends Controller
 
     public function exceptionswithDesc(Request $request){
 
-        $ndc = DB::table('TC_EXCEPTION_LISTS')
-        ->select('TC_EXCEPTION_LISTS.THERAPY_CLASS','TC_EXCEPTIONS.EXCEPTION_NAME')
-        ->join('TC_EXCEPTIONS','TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
+        $ndc = DB::table('FE_THERAPY_CLASS')
         ->get();
         return $this->respondWithToken($this->token(), '', $ndc);
 
@@ -280,13 +278,14 @@ class TherapyClassController extends Controller
     {
         $ndc = DB::table('TC_EXCEPTION_LISTS')
         ->select('TC_EXCEPTION_LISTS.*', 'TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST as exception_list', 'TC_EXCEPTIONS.EXCEPTION_NAME as exception_name',
-        'TC_EXCEPTIONS.EXCEPTION_NAME as tc_exception_description',
-        'ndcexp1.EXCEPTION_NAME as prefered_ndc_exception',
-        'ndcexp2.EXCEPTION_NAME as conversion_ndc_exception',
+        'FE_THERAPY_CLASS.THERAPEUTIC_CLASS_DESC as tc_exception_description',
+        'DRUG_MASTER1.LABEL_NAME as prefered_ndc_exception',
+        'DRUG_MASTER2.LABEL_NAME as conversion_ndc_exception',
         )
-        ->leftjoin('TC_EXCEPTIONS', 'TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST', '=', 'TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
-        ->leftjoin('NDC_EXCEPTIONS as ndcexp1','ndcexp1.NDC_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
-        ->leftjoin('NDC_EXCEPTIONS as ndcexp2','ndcexp2.NDC_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
+        ->leftjoin('FE_THERAPY_CLASS', 'FE_THERAPY_CLASS.CLASS_CODE', '=', 'TC_EXCEPTION_LISTS.THERAPY_CLASS')
+        ->leftjoin('DRUG_MASTER as DRUG_MASTER1','DRUG_MASTER1.NDC','=','TC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
+        ->leftjoin('DRUG_MASTER as DRUG_MASTER2','DRUG_MASTER2.NDC','=','TC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
+        ->leftjoin('TC_EXCEPTIONS','TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
 
         ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST',strtoupper($ndcid))
         ->where('TC_EXCEPTION_LISTS.THERAPY_CLASS',strtoupper($ncdid2))

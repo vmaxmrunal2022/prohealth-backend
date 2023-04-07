@@ -427,7 +427,7 @@ class PriceScheduleController extends Controller
                 $price_schedule = DB::table('price_schedule')
                     ->where('price_schedule', $request->price_schedule)
                     ->first();
-                return $this->respondWithToken($this->token(), 'Added successfully!', $add_price_schedule);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_price_schedule);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -583,7 +583,7 @@ class PriceScheduleController extends Controller
                 $price_schedule = DB::table('price_schedule')
                     ->where('price_schedule', $request->price_schedule)
                     ->first();
-                return $this->respondWithToken($this->token(), 'Updated successfully!', $price_schedule);
+                return $this->respondWithToken($this->token(), 'record Updated Successfully', $price_schedule);
             }
         }
     }

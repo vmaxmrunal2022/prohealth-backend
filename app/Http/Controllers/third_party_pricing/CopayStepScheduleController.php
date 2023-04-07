@@ -22,9 +22,26 @@ class CopayStepScheduleController extends Controller
         return $this->respondWithToken($this->token(), '', $copayStepData);
     }
 
+    public function getDaysSupply(Request $requeest)
+    {
+        $copayStepData = DB::table('COPAY_MATRIX')
+            ->where('DAYS_SUPPLY', '!=', 0)
+            ->get();
+
+        return $this->respondWithToken($this->token(), 'for days supply', $copayStepData);
+    }
+
+    public function getMaxCost(Request $requeest)
+    {
+        $copayStepData = DB::table('COPAY_MATRIX')
+            ->where('COST_MAX', '!=', 0)
+            ->get();
+
+        return $this->respondWithToken($this->token(), 'for days supply', $copayStepData);
+    }
+
     public function submit(Request $request)
     {
-
         $validate = $request->validate([
             'copay_list' => ['required', 'unique:copay_list'],
         ]);

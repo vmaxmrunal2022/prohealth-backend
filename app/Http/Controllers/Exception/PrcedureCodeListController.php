@@ -27,7 +27,7 @@ class PrcedureCodeListController extends Controller
 
             if($recordcheck){
 
-                return $this->respondWithToken($this->token(), 'Procedure Code List Id Already Exists', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Procedure Code List ID Already Exists', $recordcheck);
 
 
             }else{

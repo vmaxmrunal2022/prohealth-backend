@@ -32,7 +32,8 @@ class PlanAssociationController extends Controller
             "search" => ['required'],
         ]);
         if ($validator->fails()) {
-            return response($validator->errors(), 400);
+            //return response($validator->errors(), 400);
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
         } else {
             $planAssociation = DB::table('PLAN_LOOKUP_TABLE')
                 ->select('PLAN_LOOKUP_TABLE.*', 'client.client_name', 'client_group.group_name', 'customer.customer_name')
@@ -208,6 +209,17 @@ class PlanAssociationController extends Controller
         return $this->respondWithToken($this->token(), '', $clients);
     }
 
+    public function getClientCustomer(Request $request)
+    {
+        // dd($request->customerData);
+        $cust_id = strtoupper($request->customerData);
+        // dd($cust_id);
+        $clients = DB::table('client')
+            ->where('customer_id', $cust_id)
+            ->get();
+        return $this->respondWithToken($this->token(), '', $clients);
+    }
+
     public function getClientGroup(Request $rqeuest)
     {
         $client_groups =  DB::table('client_group')
@@ -257,3 +269,5 @@ class PlanAssociationController extends Controller
         return $this->respondWithToken($this->token(), '', $planIds);
     }
 }
+
+
