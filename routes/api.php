@@ -105,8 +105,8 @@ use Nette\Schema\Context;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-
 Route::group(['middleware' => 'apisession'], function ($router) {
+
     Route::group(['prefix' => 'users'], function ($router) {
         Route::post('/register', [UserController::class, 'register'])->name('register.user');
         Route::post('/login', [UserController::class, 'login'])->name('login.user');
@@ -114,9 +114,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
     });
 
-
     Route::group(['prefix' => 'codes'], function ($router) {
-
         // BENEFITS
         Route::get('/benefits', [BenifitController::class, 'get'])->name('benefit.get'); // SEARCH
         Route::post('/benefits/submit', [BenifitController::class, 'add'])->name('benefit.submit');  // add
@@ -335,7 +333,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/prescriber/submit-prescriber-form', [PrescriberValidationController::class, 'addPrescriberData']);
     });
 
-
     Route::group(['prefix' => 'prescriberdata'], function ($router) {
 
 
@@ -348,9 +345,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
 
     });
-
-
-
 
     Route::post('customer/add', [CustomerController::class, 'add']);
     Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);

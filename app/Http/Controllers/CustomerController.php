@@ -5,25 +5,32 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\User;
+// use Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Auth as FacadesAuth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Session;
+//use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Session\Session as SessionSession;
+use Session;
+use App\getUserData;
+use App\getUserData1;
+use Illuminate\Support\Facades\Cache;
 
 class CustomerController extends Controller
 {
     public $customerIdPrefix = 'CN';
     public $customerIdMaxDigits = 4;
-    public $user_id;
+    // public $user_id;
+    // protected $user;
 
-    public function __construct()
-    {
-        $this->user_id = Session::get('user_id');
-    }
+    // public function __construct()
+    // {
+    //     $this->user = new User;
+    //     $this->middleware('apisession');
+    // }
 
     public  function saveIdentification(Request $request)
     {
@@ -54,7 +61,7 @@ class CustomerController extends Controller
             'COMM_CHARGE_PAID' => '',
             'COMM_CHARGE_REJECT' => '',
             'DATE_TIME_CREATED' => '',
-            'USER_ID' => $request->session()->get('user'),
+            'USER_ID' => Cache::get('userId'),
             'DATE_TIME_MODIFIED' => '',
             'FORM_ID' => '',
             'PROCESSING_CYCLE' => '',
@@ -164,14 +171,33 @@ class CustomerController extends Controller
 
     public function add(Request $request)
     {
-        // date_default_timezone_set('Asia/Kolkata');
-        $user = DB::table('FE_USERS')->where('user_id', $request->session()->get('user'))->first();
-        // print_r($user);
-        // if ($user) {
-        //     dd($user);
+        // return getUserData1();
+        // $userId = config('user_id');
+        // return $userId;
+        //return Session::get('username');
+
+        // $myData = app('my_global_data');
+        // return $myData;
+        $user_id = Cache::get('userId');
+        // return $user_id;
+
+
+
+        //$session_data = Session::get('login_id');
+        //$user_id = $session_data;
+
+        // if (Auth::guard('api')->check()) {
+        //     // Get the authenticated user's ID
+        //     //$userId = Auth::id();
+        //     // Use the user ID to retrieve user data from the database or perform other operations
+        //     return "yes";
         // } else {
-        //     dd("no user");
+        //     return "no";
         // }
+        $user = DB::table('FE_USERS')->where('user_id', $request->session()->get('user'))->first();
+
+        // return $this->respondWithToken($this->token(), Session::get('user'), $user);
+
         $user_id = $request->session()->get('user');
         // dd($user);
         $createddate = date('y-m-d');
@@ -217,8 +243,9 @@ class CustomerController extends Controller
                         'cap_amount' => $request->cap_amount,
                         'comm_charge_paid' => $request->comm_charge_paid,
                         'comm_charge_reject' => $request->comm_charge_reject,
-                        'date_time_created' => $request->date_time_created,
-                        'user_id' => $user->user_id,
+                        'date_time_created' => date('Ymd'),
+                        'date_time_modified' => date('Ymd'),
+                        'user_id' => Cache::get('userId'),
                         'processing_cycle' => $request->processing_cycle,
                         'auto_term_days' => $request->auto_term_days,
                         'admin_fee' => $request->admin_fee,
@@ -285,22 +312,18 @@ class CustomerController extends Controller
                 $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
 
                 //Audit 
-                    $record_snapshot = implode('|', (array) $benefitcode);
-                    $save_audit = DB::table('FE_RECORD_LOG')
-                        ->insert([
-                            'user_id' => $user->user_id,
-                            'date_created' => date('Ymd'),
-                            'time_created' => date('gisA'),
-                            'table_name' => 'CUSTOMER',
-                            'record_action' => 'UP',
-                            'application' => 'ProPBM',
-                            'record_snapshot' => $record_snapshot,
-                        ]);
-                    $check_audit =  DB::table('FE_RECORD_LOG')
-                        ->where('date_created', '20230404')
-                        ->orderBy('time_created', 'desc')
-                        ->first();
-                
+                $record_snapshot = implode('|', (array) $benefitcode);
+                $save_audit = DB::table('FE_RECORD_LOG')
+                    ->insert([
+                        'user_id' => Cache::get('userId'),
+                        'date_created' => date('Ymd'),
+                        'time_created' => date('gisA'),
+                        'table_name' => 'CUSTOMER',
+                        'record_action' => 'IN',
+                        'application' => 'ProPBM',
+                        'record_snapshot' => $record_snapshot,
+                    ]);
+
                 return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
             }
         } else {
@@ -345,8 +368,8 @@ class CustomerController extends Controller
                             'cap_amount' => $request->cap_amount,
                             'comm_charge_paid' => $request->comm_charge_paid,
                             'comm_charge_reject' => $request->comm_charge_reject,
-                            'date_time_created' => $request->date_time_created,
-                            'user_id' => $user->user_id,
+                            'date_time_modified' => date('Ymd'),
+                            'user_id' => Cache::get('userId'),
                             'processing_cycle' => $request->processing_cycle,
                             'auto_term_days' => $request->auto_term_days,
                             'admin_fee' => $request->admin_fee,
@@ -410,14 +433,12 @@ class CustomerController extends Controller
                             'phys_file_srce_id' => strtoupper($request->phys_file_srce_id),
                         ]
                     );
-
                 $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
-                // dd($request->session()->get('user'));
                 //Audit 
                 $record_snapshot = implode('|', (array) $benefitcode);
                 $save_audit = DB::table('FE_RECORD_LOG')
                     ->insert([
-                        'user_id' => $user->user_id,
+                        'user_id' => Cache::get('userId'),
                         'date_created' => date('Ymd'),
                         'time_created' => date('gisA'),
                         'table_name' => 'CUSTOMER',
@@ -425,12 +446,8 @@ class CustomerController extends Controller
                         'application' => 'ProPBM',
                         'record_snapshot' => $record_snapshot,
                     ]);
-                $check_audit =  DB::table('FE_RECORD_LOG')
-                    ->where('date_created', '20230404')
-                    ->orderBy('time_created', 'desc')
-                    ->first();
-                // dd($check_audit);                
-                return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
+                // return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
+                return $this->respondWithToken($this->token(), auth('web')->user(), $benefitcode);
             }
         }
     }

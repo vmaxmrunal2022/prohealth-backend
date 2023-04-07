@@ -86,23 +86,25 @@ class AuditTrailController extends Controller
 
     public function getUserAllRecord(Request $request)
     {
-        // dd($request->all());
-
-        $table_data = DB::table('FE_RECORD_LOG')
-            ->where('user_id', $request->user_id)
-            // ->where('time_created', '<', $request->time_created)
-            ->orderBy('date_created', 'desc')
-            ->where('table_name', $request->table_name)
+        // dd($request->date_created);
+        $date_for = strtoupper(date("d-M-y H:i:s", strtotime($request->date_created)));
+        // dd($date_for);
+        // 20230407
+        $check_date = DB::table($request->table_name)
+            ->select('date_time_modified')
+            // ->where(DB::raw('UPPER(date_time_modified)'), strtoupper(date("d-M-y H:i:s", strtotime($request->date_created))))
+            // ->where('date_time_modified', '2023-04-07 00:00:00')
+            ->where('date_time_modified', '2023-04-07 00:00:00')
             ->get();
 
+        // dd($check_date);
+
+        //working code DONT TOUCH HERE
         $get_column = DB::table($request->table_name)->get();
         $column_arr = [];
-        foreach ($get_column as $key => $val) {
-            foreach ($val as $key1 => $val1) {
-                // print_r($key1);
-                $arr2 = $key1;
-                array_push($column_arr, $arr2);
-            }
+        foreach ($get_column[0] as $key => $val) {
+            $arr2 = $key;
+            array_push($column_arr, $arr2);
         }
         // dd($column_arr);
 
@@ -114,9 +116,12 @@ class AuditTrailController extends Controller
         //$record[0] => latest
         //$record[1] => old
 
+
         $new_snapshot = explode('|', $record[0]->record_snapshot);
 
         $old_snapshot = explode('|', $record[1]->record_snapshot);
+
+
 
         // dd(similar_text($record[1]->record_snapshot, $record[0]->record_snapshot, $percent));
         //$data = ['user_record' => $user_record, 'record_snapshot' => $record_snapshot, 'old_record' => $old_snap, 'columns' => $col_array];
@@ -193,7 +198,7 @@ class AuditTrailController extends Controller
                 return $query->where('date_created', '<=', $toDate);
             })
 
-
+            ->orderBy('date_created', 'desc')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $search);
