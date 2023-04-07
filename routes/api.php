@@ -1087,6 +1087,7 @@ Route::get('/provider-type-validation/getFormData', [ProviderTypeValidationContr
 Route::group(['prefix' => 'third-party-pricing/'], function () {
     //Price Schedule
     Route::get('price-schedule/get', [PriceScheduleController::class, 'get']);
+    Route::get('price-schedule/get-all', [PriceScheduleController::class, 'getAll']);
     Route::get('price-schedule/get-price-schedule-data', [PriceScheduleController::class, 'getPriceScheduleDetails']);
     // Route::post('price-schedule/update', [PriceScheduleController::class, 'updateBrandItem'])->name('price_schedule_update');
     Route::get('price-schedule/get-brand-type', [PriceScheduleController::class, 'getBrandType']);
@@ -1134,12 +1135,6 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
     Route::post('rva-list/submit', [RvaListController::class, 'submitRva']);
     Route::get('rva-list/dropdown', [RvaListController::class, 'RvaListDropdown']);
-<<<<<<< HEAD
-=======
-
-
-    
->>>>>>> f0db5f387c2654f888753743f254d808733cab75
 });
 
 
