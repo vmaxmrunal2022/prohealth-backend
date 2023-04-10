@@ -18,4 +18,14 @@ class ProcedureCrossReferenceController extends Controller
         return $this->respondWithToken($this->token(), '', $codes);
 
     }
+
+    public function search( Request $request )
+    {
+           
+           $entity_names = DB::table( 'ENTITY_NAMES' )
+           ->where( 'ENTITY_USER_ID', 'like', '%'.strtoupper( $request->search ).'%' )
+           ->orWhere( 'ENTITY_USER_NAME', 'like', '%'.strtoupper( $request->search ).'%' )
+           ->get();
+           return $this->respondWithToken( $this->token(), '', $entity_names);
+    }
 }

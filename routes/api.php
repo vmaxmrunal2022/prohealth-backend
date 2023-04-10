@@ -245,7 +245,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/provider/getAll', [ProviderDataProviderController::class, 'getAll'])->name('exception.provider.getAll');
 
         //exception Price Schedule list
-        Route::get('price-schedule/getAll', [PriceScheduleController::class, 'getAll']);
 
         //exception speciality list
         Route::get('/speciality/getAll', [SpecialityController::class, 'getAll'])->name('exception.speciality.getAll');
@@ -1093,6 +1092,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('price-schedule/get-brand-type', [PriceScheduleController::class, 'getBrandType']);
     Route::get('price-schedule/get-brand-source', [PriceScheduleController::class, 'getBrandSource']);
     Route::post('price-schedule/submit', [PriceScheduleController::class, 'submitPriceSchedule']);
+    Route::get('price-schedule/get-all', [PriceScheduleController::class, 'getAll']);
 
     //Copay Schedule
     Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
