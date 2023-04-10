@@ -387,7 +387,15 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         //exception diagnosis list
         Route::get('/diagnosis/all', [DiagnosisController::class, 'all'])->name('exception.diagnosis.get'); 
 
+        Route::get('Procedure-cross-reference/search', [ProcedureCrossReferenceController::class, 'search'])->name('cross-reference.search'); 
 
+        Route::get('Procedure-cross-reference/list/{id}', [ProcedureCrossReferenceController::class, 'List'])->name('cross-reference.list'); 
+        Route::get('procedure-cross-reference/details/{id}/{id2}/{id3}', [ProcedureCrossReferenceController::class, 'getDetails'])->name('cross-reference.details'); 
+
+
+        Route::post('procedure-cross-reference/add', [ProcedureCrossReferenceController::class, 'add'])->name('cross-reference.add'); 
+
+        
     });
 
 

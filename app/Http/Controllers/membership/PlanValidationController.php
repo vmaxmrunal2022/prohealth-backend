@@ -42,7 +42,7 @@ class PlanValidationController extends Controller
   {
 
     $getEligibilityData = DB::table('plan_validation_lists')
-      ->where('customer_id', strtoupper($request->customer_id))
+      // ->where('customer_id', strtoupper($request->customer_id))
       ->where('client_id', strtoupper($request->client_id))
       ->where('client_group_id', strtoupper($request->client_group_id))
       ->where('plan_id', $request->plan_id)
