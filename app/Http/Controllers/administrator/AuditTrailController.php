@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use PDO;
 
 class AuditTrailController extends Controller
 {
@@ -24,80 +25,37 @@ class AuditTrailController extends Controller
         }
     }
 
-    public function getUserAllRecord_old(Request $request)
-    {
-        // dd($request->table_name);
-        $user_record = DB::table('FE_RECORD_LOG')
-            ->where('user_id', $request->user_id)
-            ->where('record_action', $request->record_action)
-            ->where('time_created', $request->time_created)
-            ->where('date_created', $request->date_created)
-            ->where('table_name', $request->table_name)
-            ->first();
-
-        // $old = DB::table('FE_RECORD_LOG')
-        //     ->where('user_id', $request->user_id)
-        //     ->where('record_action', $request->record_action)
-        //     ->where('time_created', '<', $user_record->time_created)
-        //     ->where('date_created', $request->date_created)
-        //     ->where('table_name', $request->table_name)
-        //     ->first();
-
-        $old = DB::table('FE_RECORD_LOG')
-            ->where('user_id', $request->user_id)
-            // ->where('record_action', $request->record_action)
-            // ->where('time_created', '<', $user_record->time_created)
-            // ->where('date_created', $request->date_created)
-            ->orderBy('date_created', 'desc')
-            ->where('table_name', $request->table_name)
-            ->limit(2)
-            ->get();
-
-        $columns = DB::table('all_tab_cols')->select('column_name')->where('owner', 'PHIDBA')
-            ->where('table_name', $request->table_name)->get();
-
-        // $columns = DB::table('all_tab_cols')
-        //     // ->select('column_name')
-        //     // ->where('table_name', $request->table_name)
-        //     //     ->where('owner', 'PHIDBA')
-        //     // ->where('table_name', 'CUSTOMER')
-        //     ->get();
-
-
-        // dd($columns);
-        $col_array = [];
-        foreach ($columns as  $col) {
-            $arr = $col->column_name;
-            // $arr = $key;
-            array_push($col_array, $arr);
-        }
-
-        // dd($col_array);
-
-
-
-        $record_snapshot = explode('|', $user_record->record_snapshot);
-
-        $old_snap = explode('|', $old[1]->record_snapshot);
-        // dd($old_snap);
-        $data = ['user_record' => $user_record, 'record_snapshot' => $record_snapshot, 'old_record' => $old_snap, 'columns' => $col_array];
-        return $this->respondWithToken($this->token(), '', $data);
-    }
-
     public function getUserAllRecord(Request $request)
     {
-        // dd($request->date_created);
-        $date_for = strtoupper(date("d-M-y H:i:s", strtotime($request->date_created)));
-        // dd($date_for);
-        // 20230407
-        $check_date = DB::table($request->table_name)
-            ->select('date_time_modified')
-            // ->where(DB::raw('UPPER(date_time_modified)'), strtoupper(date("d-M-y H:i:s", strtotime($request->date_created))))
-            // ->where('date_time_modified', '2023-04-07 00:00:00')
-            ->where('date_time_modified', '2023-04-07 00:00:00')
+
+
+
+        // $sql = 'select *from vu_FE_RECORD_LOG where record_snapshot like "%' . $request->record_snapshot . '"% ';
+        // $query = DB::select($sql);
+        // dd($query);
+
+        $results = DB::table('FE_RECORD_LOG')
+            ->select('*')
+            ->orderBy('DATE_CREATED', 'desc')
+            ->orderBy('TIME_CREATED', 'desc')
+            ->where('table_name', '=', $request->table_name)
+            ->take(2)
             ->get();
 
-        // dd($check_date);
+
+        $explode = explode('-', $request->record_snapshot);
+
+        $record = DB::table('FE_RECORD_LOG')
+            ->where('user_id', $request->user_id)
+            ->where('table_name', $request->table_name)
+            ->orderBy('date_created', 'desc')
+            ->where('date_created', $request->date_created)
+            ->get();
+
+        return $explode[0];
+        // exit();
+
+        // return ($results);
 
         //working code DONT TOUCH HERE
         $get_column = DB::table($request->table_name)->get();
@@ -112,14 +70,132 @@ class AuditTrailController extends Controller
             ->where('user_id', $request->user_id)
             ->where('table_name', $request->table_name)
             ->orderBy('date_created', 'desc')
+            ->where('date_created', $request->date_created)
             ->get();
         //$record[0] => latest
         //$record[1] => old
 
 
-        $new_snapshot = explode('|', $record[0]->record_snapshot);
+        $old_record = DB::connection('oracle')
+            ->table('vu_FE_RECORD_LOG')
+            //->where('record_snapshot', 'like', '%' . $request->record_snapshot . '%')
+            ->where(DB::raw('(record_snapshot)'), 'like', '%' . $request->record_snapshot . '%')
+            // ->where('name', 'John')
+            // ->orWhere('name', 'Jane')
+            // ->orderBy('date_created', 'desc')
+            // ->orderBy('time_created', 'desc')
+            ->limit(2)
+            ->get();
 
-        $old_snapshot = explode('|', $record[1]->record_snapshot);
+        // dd($old_record);
+        // print_r($old_record);
+        // echo count($old_record);
+        if (!empty(count($old_record))) {
+            $count = count($old_record);
+            if ($count > 1) {
+                // echo "in if";
+                // $new_snapshot = explode('|', $record[0]->record_snapshot);
+                $new_snapshot = explode('|', $old_record[0]->record_snapshot);
+                $old_snapshot = explode('|', $old_record[1]->record_snapshot);
+                // $old_snapshot = [];
+            } else {
+                // echo "in else";
+                //$new_snapshot = explode('|', $record[0]->record_snapshot);
+                $new_snapshot = explode('|', $old_record[0]->record_snapshot);
+                $old_snapshot = explode('|', $old_record[0]->record_snapshot);
+            }
+        } else {
+            $new_snapshot = [];
+            $old_snapshot = [];
+        }
+
+
+
+        //$new_snapshot = explode('|', $record[0]->record_snapshot);
+
+        // $old_snapshot = explode('|', $record[1]->record_snapshot);
+        // $new_snapshot = explode('|', $old_record[0]->record_snapshot);
+
+
+        // $old_snapshot = explode('|', $old_record[1]->record_snapshot);
+
+
+
+        // dd(similar_text($record[1]->record_snapshot, $record[0]->record_snapshot, $percent));
+        //$data = ['user_record' => $user_record, 'record_snapshot' => $record_snapshot, 'old_record' => $old_snap, 'columns' => $col_array];
+        $data = ['user_record' => $record[0], 'record_snapshot' => $new_snapshot, 'old_record' => $old_snapshot, 'columns' => $column_arr];
+        return $this->respondWithToken($this->token(), '', $data);
+    }
+
+    public function getUserAllRecord_old(Request $request)
+    {
+        dd($request->all());
+
+        // $sql = 'select *from vu_FE_RECORD_LOG where record_snapshot like "%' . $request->record_snapshot . '"% ';
+        // $query = DB::select($sql);
+        // dd($query);
+
+        //working code DONT TOUCH HERE
+        $get_column = DB::table($request->table_name)->get();
+        $column_arr = [];
+        foreach ($get_column[0] as $key => $val) {
+            $arr2 = $key;
+            array_push($column_arr, $arr2);
+        }
+        // dd($column_arr);
+
+        $record = DB::table('FE_RECORD_LOG')
+            ->where('user_id', $request->user_id)
+            ->where('table_name', $request->table_name)
+            ->orderBy('date_created', 'desc')
+            ->where('date_created', $request->date_created)
+            ->get();
+        //$record[0] => latest
+        //$record[1] => old
+
+
+        $old_record = DB::connection('oracle')
+            ->table('vu_FE_RECORD_LOG')
+            //->where('record_snapshot', 'like', '%' . $request->record_snapshot . '%')
+            ->where(DB::raw('(record_snapshot)'), 'like', '%' . $request->record_snapshot . '%')
+            // ->where('name', 'John')
+            // ->orWhere('name', 'Jane')
+            // ->orderBy('date_created', 'desc')
+            // ->orderBy('time_created', 'desc')
+            ->limit(2)
+            ->get();
+
+        // dd($old_record);
+        // print_r($old_record);
+        // echo count($old_record);
+        if (!empty(count($old_record))) {
+            $count = count($old_record);
+            if ($count > 1) {
+                // echo "in if";
+                // $new_snapshot = explode('|', $record[0]->record_snapshot);
+                $new_snapshot = explode('|', $old_record[0]->record_snapshot);
+                $old_snapshot = explode('|', $old_record[1]->record_snapshot);
+                // $old_snapshot = [];
+            } else {
+                // echo "in else";
+                //$new_snapshot = explode('|', $record[0]->record_snapshot);
+                $new_snapshot = explode('|', $old_record[0]->record_snapshot);
+                $old_snapshot = explode('|', $old_record[0]->record_snapshot);
+            }
+        } else {
+            $new_snapshot = [];
+            $old_snapshot = [];
+        }
+
+
+
+        //$new_snapshot = explode('|', $record[0]->record_snapshot);
+
+        // $old_snapshot = explode('|', $record[1]->record_snapshot);
+        // $new_snapshot = explode('|', $old_record[0]->record_snapshot);
+
+
+        // $old_snapshot = explode('|', $old_record[1]->record_snapshot);
 
 
 

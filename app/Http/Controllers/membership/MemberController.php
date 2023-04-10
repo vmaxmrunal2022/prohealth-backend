@@ -4,6 +4,7 @@ namespace App\Http\Controllers\membership;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 // use DB;
 use Illuminate\Support\Facades\DB;
 
@@ -502,6 +503,18 @@ class MemberController extends Controller
                     'DIAGNOSIS_ID' => $request->diagnosis_id,
                     'EFFECTIVE_DATE' => $request->effective_date,
                     'termination_date' => $request->termination_date,
+                ]);
+
+            $record_snapshot = json_encode($update_member);
+            $save_audit = DB::table('FE_RECORD_LOG')
+                ->insert([
+                    'user_id' => Cache::get('userId'),
+                    'date_created' => date('Ymd'),
+                    'time_created' => date('gisA'),
+                    'table_name' => 'CUSTOMER',
+                    'record_action' => 'UP',
+                    'application' => 'ProPBM',
+                    'record_snapshot' => $record_snapshot,
                 ]);
 
             return $this->respondWithToken($this->token(), 'Updated successfully!', $update_member);

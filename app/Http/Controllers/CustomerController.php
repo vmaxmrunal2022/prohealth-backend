@@ -435,7 +435,8 @@ class CustomerController extends Controller
                     );
                 $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
                 //Audit 
-                $record_snapshot = implode('|', (array) $benefitcode);
+                //$record_snapshot = implode('|', (array) $benefitcode);
+                $record_snapshot = json_encode($benefitcode);
                 $save_audit = DB::table('FE_RECORD_LOG')
                     ->insert([
                         'user_id' => Cache::get('userId'),
@@ -444,7 +445,7 @@ class CustomerController extends Controller
                         'table_name' => 'CUSTOMER',
                         'record_action' => 'UP',
                         'application' => 'ProPBM',
-                        'record_snapshot' => $record_snapshot,
+                        'record_snapshot' => $request->customer_id . '-' . $record_snapshot,
                     ]);
                 // return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
                 return $this->respondWithToken($this->token(), auth('web')->user(), $benefitcode);

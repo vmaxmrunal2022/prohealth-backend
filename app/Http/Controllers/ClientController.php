@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
@@ -155,6 +156,19 @@ class ClientController extends Controller
             $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
                 ->where('customer_id', 'like', '%' . $request->customer_id . '%')
                 ->first();
+
+            $record_snapshot = json_encode($benefitcode);
+            $save_audit = DB::table('FE_RECORD_LOG')
+                ->insert([
+                    'user_id' => Cache::get('userId'),
+                    'date_created' => date('Ymd'),
+                    'time_created' => date('gisA'),
+                    'table_name' => 'CLIENT',
+                    'record_action' => 'UP',
+                    'application' => 'ProPBM',
+                    'record_snapshot' => $record_snapshot,
+                ]);
+
             return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
         }
     }
