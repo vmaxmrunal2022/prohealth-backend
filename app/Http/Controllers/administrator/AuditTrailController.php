@@ -27,9 +27,7 @@ class AuditTrailController extends Controller
 
     public function getUserAllRecord(Request $request)
     {
-
-
-
+        return $request->all();
         // $sql = 'select *from vu_FE_RECORD_LOG where record_snapshot like "%' . $request->record_snapshot . '"% ';
         // $query = DB::select($sql);
         // dd($query);
@@ -38,9 +36,14 @@ class AuditTrailController extends Controller
             ->select('*')
             ->orderBy('DATE_CREATED', 'desc')
             ->orderBy('TIME_CREATED', 'desc')
-            ->where('table_name', '=', $request->table_name)
+            ->where(
+                'table_name',
+                '=',
+                $request->table_name
+            )
             ->take(2)
             ->get();
+        dd($results);
 
 
         $explode = explode('-', $request->record_snapshot);
@@ -127,13 +130,40 @@ class AuditTrailController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function getUserAllRecord_old(Request $request)
+    public function check_query(Request $request)
     {
-        dd($request->all());
+        // return $request->all();
+        $results = DB::table('FE_RECORD_LOG')
+            ->select('*')
+            ->orderBy('DATE_CREATED', 'desc')
+            ->orderBy('TIME_CREATED', 'desc')
+            ->where('table_name', '=', $request->table_name)
+            ->take(2)
+            ->get();
+
+        return $results;
+    }
+
+    public function getUserAllRecord_mrunal(Request $request)
+    {
+        // return ($request->all());
 
         // $sql = 'select *from vu_FE_RECORD_LOG where record_snapshot like "%' . $request->record_snapshot . '"% ';
         // $query = DB::select($sql);
         // dd($query);
+        $results = DB::table('FE_RECORD_LOG')
+            ->select('*')
+            ->orderBy('DATE_CREATED', 'desc')
+            ->orderBy('TIME_CREATED', 'desc')
+            ->where(
+                'table_name',
+                '=',
+                $request->table_name
+            )
+            ->take(2)
+            ->get();
+
+        return $results;
 
         //working code DONT TOUCH HERE
         $get_column = DB::table($request->table_name)->get();
@@ -157,12 +187,16 @@ class AuditTrailController extends Controller
         $old_record = DB::connection('oracle')
             ->table('vu_FE_RECORD_LOG')
             //->where('record_snapshot', 'like', '%' . $request->record_snapshot . '%')
-            ->where(DB::raw('(record_snapshot)'), 'like', '%' . $request->record_snapshot . '%')
+            //->where(DB::raw('(record_snapshot)'), 'like', '%' . $request->record_snapshot . '%')
             // ->where('name', 'John')
             // ->orWhere('name', 'Jane')
-            // ->orderBy('date_created', 'desc')
-            // ->orderBy('time_created', 'desc')
-            ->limit(2)
+            ->where('user_id', $request->user_id)
+            ->where('table_name', $request->table_name)
+            ->orderBy('date_created', 'desc')
+            ->orderBy('time_created', 'desc')
+            ->where('table_name', $request->table_name)
+
+            ->take(2)
             ->get();
 
         // dd($old_record);

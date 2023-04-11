@@ -156,8 +156,8 @@ class ClientController extends Controller
             $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
                 ->where('customer_id', 'like', '%' . $request->customer_id . '%')
                 ->first();
-
-            $record_snapshot = json_encode($benefitcode);
+            $record_snapshot = implode('|', (array) $benefitcode);
+            // $record_snapshot = json_encode($benefitcode);
             $save_audit = DB::table('FE_RECORD_LOG')
                 ->insert([
                     'user_id' => Cache::get('userId'),
@@ -166,6 +166,7 @@ class ClientController extends Controller
                     'table_name' => 'CLIENT',
                     'record_action' => 'UP',
                     'application' => 'ProPBM',
+                    // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
                     'record_snapshot' => $record_snapshot,
                 ]);
 

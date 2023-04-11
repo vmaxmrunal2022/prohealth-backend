@@ -132,12 +132,7 @@ class UserDefinationController extends Controller
 
     public function submitFormData(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'user_id' => ['required', Rule::unique('fe_users')->where(function ($q) {
-                $q->whereNotNull('user_id');
-            })],
-            'user_password' => ['required'],
-        ]);
+        dd($request->all());
         $prefix = '$2y$';
         $cost = '10';
         $salt = '$thisisahardcodedsalt$';
@@ -147,47 +142,69 @@ class UserDefinationController extends Controller
         $hashToThirdParty = substr($hash, -32);
         $hashFromThirdParty = $hashToThirdParty;
 
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else  if ($request->has('new')) {
-            //$addUser = DB::table('FE_USERS')->insert([
-            $addUser = UserDefinition::insert([
-                'user_id' => $request->user_id,
-                'application' => 'PBM',
-                'SQL_SERVER_USER_ID' => 'phi',
-                'SQL_SERVER_USER_PASSWORD' => 'comet',
-                //'user_password' => $request->user_password,
-                'user_password' => $hashFromThirdParty,
-                'user_first_name' => $request->user_first_name,
-                'user_last_name' => $request->user_last_name,
-                'group_id' => $request->group_id,
-                // 'user_id_created' => $request->session()->get('user'),
-                'user_id_created' => '',
-                'privs' => $request->default_system_user,
-                'restrict_security_flag' => $request->restrict_security_flag
+        dd($request->all());
+
+        if($request->new)
+        {
+            $validator = Validator::make($request->all(), [
+                'user_id' => ['required', Rule::unique('fe_users')->where(function ($q) {
+                    $q->whereNotNull('user_id');
+                })],
+                'user_password' => ['required'],
             ]);
 
-            //TODO
-            // 1.Table name
-            // 2. record action
-            // 3. record snapshot log
-            $addUserLog = DB::table('FE_RECORD_LOG')->insert([
-                'user_id' => $request->user_id,
-                'application' => 'PBM',
-                'date_created' => date('Ymd'),
-                'time_created' => date('HiA'),
-                // 'SQL_SERVER_USER_ID' => 'phi',
-                // 'SQL_SERVER_USER_PASSWORD' => 'comet',
-                // 'user_password' => $request->user_password,
-                // 'user_first_name' => $request->user_first_name,
-                // 'user_last_name' => $request->user_last_name,
-                // 'group_id' => $request->group_id,
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else  if ($request->has('new')) {
+                //$addUser = DB::table('FE_USERS')->insert([
+                $addUser = UserDefinition::insert([
+                    'user_id' => $request->user_id,
+                    'application' => 'PBM',
+                    'SQL_SERVER_USER_ID' => 'phi',
+                    'SQL_SERVER_USER_PASSWORD' => 'comet',
+                    //'user_password' => $request->user_password,
+                    'user_password' => $hashFromThirdParty,
+                    'user_first_name' => $request->user_first_name,
+                    'user_last_name' => $request->user_last_name,
+                    'group_id' => $request->group_id,
+                    // 'user_id_created' => $request->session()->get('user'),
+                    'user_id_created' => '',
+                    'privs' => $request->default_system_user,
+                    'restrict_security_flag' => $request->restrict_security_flag
+                ]);
+
+                //TODO
+                // 1.Table name
+                // 2. record action
+                // 3. record snapshot log
+                $addUserLog = DB::table('FE_RECORD_LOG')->insert([
+                    'user_id' => $request->user_id,
+                    'application' => 'PBM',
+                    'date_created' => date('Ymd'),
+                    'time_created' => date('HiA'),
+                    // 'SQL_SERVER_USER_ID' => 'phi',
+                    // 'SQL_SERVER_USER_PASSWORD' => 'comet',
+                    // 'user_password' => $request->user_password,
+                    // 'user_first_name' => $request->user_first_name,
+                    // 'user_last_name' => $request->user_last_name,
+                    // 'group_id' => $request->group_id,
+                ]);
+
+                if ($addUser) {
+                    return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addUser);
+                }
+            } 
+        }
+       else {
+            $validator = Validator::make($request->all(), [
+                'user_id' => ['required'],
+                'user_password' => ['required'],
             ]);
 
-            if ($addUser) {
-                return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addUser);
-            }
-        } else {
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else
+
             $updateUser = DB::table('FE_USERS')
                 ->where('user_id', $request->user_id)
                 ->update([
@@ -220,6 +237,7 @@ class UserDefinationController extends Controller
             if ($updateUser) {
                 return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateUser);
             }
+        }
         }
 
         // $prefix = '$2y$';

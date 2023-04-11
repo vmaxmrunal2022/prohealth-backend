@@ -629,6 +629,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('search-audit-trial/get-user_ids', [AuditTrailController::class, 'getUserIds'])->name('getUserIds');
         Route::get('search-audit-trial/get-record-actions', [AuditTrailController::class, 'getRecordAction'])->name('getRecordAction');
         Route::post('search-audit-trial/search-user-log', [AuditTrailController::class, 'searchUserLog'])->name('searchUserLog');
+        Route::post('check-query', [AuditTrailController::class, 'check_query']);
         Route::post('search-audit-trial/get-old-user-log', [AuditTrailController::class, 'getOldUserLog']);
 
         //System parameters
@@ -1153,7 +1154,8 @@ Route::group(['prefix' => 'membership/'], function () {
     Route::get('memberdata/accumulated-benifit-strategy', [MemberController::class, 'getAccumulatedBenifitStrategy']);
     Route::get('memberdata/pricing-strategy', [MemberController::class, 'getPricingStrategy']);
     Route::get('memberdata/view-limitations', [MemberController::class, 'getViewLimitations']);
-    Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
+    // Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
+    Route::post('memberdata/submit', [MemberController::class, 'submitMemberForm']);
 
     //tab table routes
     Route::get('memberdata/get-coverage-information-table', [MemberController::class, 'getCoverageInformationTable']);
