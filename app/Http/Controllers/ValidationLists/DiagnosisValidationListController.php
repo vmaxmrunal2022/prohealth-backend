@@ -216,7 +216,7 @@ class DiagnosisValidationListController extends Controller
                         // $termination_date = $limitation_list->termination_date;
                         // $limitations_list = $limitation_list->limitations_list;
                         if(!empty($request->limitations_form)){
-                            
+
                             $limitation_list = $limitation_list_obj[0];
 
 
@@ -337,5 +337,12 @@ class DiagnosisValidationListController extends Controller
         if ($data) {
             return $this->respondWithToken($this->token(), 'updatd successfully', $data);
         }
+    }
+    public function getAll()
+    {
+        $data = DB::table('DIAGNOSIS_VALIDATIONS as a')
+            ->join('DIAGNOSIS_EXCEPTIONS as b', 'b.DIAGNOSIS_LIST', '=', 'a.DIAGNOSIS_LIST')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $data);
     }
 }
