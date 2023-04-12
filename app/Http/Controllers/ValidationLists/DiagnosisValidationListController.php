@@ -110,10 +110,14 @@ class DiagnosisValidationListController extends Controller
 
                 if ($limitationsdata) {
 
-                    return $this->respondWithToken($this->token(), 'limitation data exists!!!', $limitationsdata);
+                    return $this->respondWithToken($this->token(), 'Limitation Data Already Exists', $limitationsdata);
                 } else {
                     $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
-                    $limitation_list = $limitation_list_obj[0];
+
+
+                    if(!empty($request->limitations_form)){
+
+                        $limitation_list = $limitation_list_obj[0];
                     // $effective_date   = $limitation_list->effective_date;
                     // $termination_date = $limitation_list->termination_date;
                     // $limitations_list = $limitation_list->limitations_list;
@@ -129,9 +133,10 @@ class DiagnosisValidationListController extends Controller
                             ]);
                     }
                 }
+                }
 
                 if ($exceptiondata) {
-                    return $this->respondWithToken($this->token(), 'exception data exists!!!', $exceptiondata);
+                    return $this->respondWithToken($this->token(), 'Diagnosis List ID Already Exists', $exceptiondata);
                 } else {
                     $exceptionAddData = DB::table('DIAGNOSIS_EXCEPTIONS')
                         ->insert([
@@ -150,7 +155,7 @@ class DiagnosisValidationListController extends Controller
 
                 if ($validationsdata) {
 
-                    return $this->respondWithToken($this->token(), 'validations data exists!!!', $validationsdata);
+                    return $this->respondWithToken($this->token(), 'Diagnosis Validations List Data Already Exists', $validationsdata);
                 } else {
 
                     $validationAddData = DB::table('DIAGNOSIS_VALIDATIONS')
