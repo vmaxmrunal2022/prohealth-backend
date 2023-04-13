@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
 
 class ClientGroupController extends Controller
 {
@@ -93,8 +95,19 @@ class ClientGroupController extends Controller
                     'phys_file_srce_id' => $request->phys_file_srce_id,
                 ]
             );
-
             $benefitcode = DB::table('CLIENT_GROUP')->where('client_group_id', 'like', '%' . $request->client_group_id . '%')->first();
+            $record_snapshot = json_encode($benefitcode);
+            $save_audit = DB::table('FE_RECORD_LOG')
+                ->insert([
+                    'user_id' => Cache::get('userId'),
+                    'date_created' => date('Ymd'),
+                    'time_created' => date('gisA'),
+                    'table_name' => 'CLIENT_GROUP',
+                    'record_action' => 'IN',
+                    'application' => 'ProPBM',
+                    'record_snapshot' => $record_snapshot,
+                    // 'record_snapshot' => $record_snapshot,
+                ]);
         } else {
 
 
@@ -176,9 +189,24 @@ class ClientGroupController extends Controller
                         'phys_file_srce_id' => $request->phys_file_srce_id,
                     ]
                 );
-
-
             $benefitcode = DB::table('CLIENT_GROUP')->where('client_group_id', 'like', '%' . $request->client_group_id . '%')->first();
+            if (!Cache::get('userId')) {
+
+                $responseMessage = "Sorry, this user does not exist";
+                return redirect()->route('login.user');
+            }
+            $record_snapshot = json_encode($benefitcode);
+            $save_audit = DB::table('FE_RECORD_LOG')
+                ->insert([
+                    'user_id' => Cache::get('userId'),
+                    'date_created' => date('Ymd'),
+                    'time_created' => date('gisA'),
+                    'table_name' => 'CLIENT_GROUP',
+                    'record_action' => 'UP',
+                    'application' => 'ProPBM',
+                    'record_snapshot' => $record_snapshot,
+                    // 'record_snapshot' => $record_snapshot,
+                ]);
         }
 
 

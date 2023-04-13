@@ -85,6 +85,19 @@ class ClientController extends Controller
             );
             $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
                 ->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
+            $record_snapshot = json_encode($benefitcode);
+            // $record_snapshot = json_encode($benefitcode);
+            $save_audit = DB::table('FE_RECORD_LOG')
+                ->insert([
+                    'user_id' => Cache::get('userId'),
+                    'date_created' => date('Ymd'),
+                    'time_created' => date('gisA'),
+                    'table_name' => 'CLIENT',
+                    'record_action' => 'IN',
+                    'application' => 'ProPBM',
+                    // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
+                    'record_snapshot' => $record_snapshot,
+                ]);
             return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
         } else {
             $accum_benfit_stat = DB::table('CLIENT')
@@ -156,7 +169,8 @@ class ClientController extends Controller
             $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
                 ->where('customer_id', 'like', '%' . $request->customer_id . '%')
                 ->first();
-            $record_snapshot = implode('|', (array) $benefitcode);
+            // $record_snapshot = implode('|', (array) $benefitcode);
+            $record_snapshot = json_encode($benefitcode);
             // $record_snapshot = json_encode($benefitcode);
             $save_audit = DB::table('FE_RECORD_LOG')
                 ->insert([

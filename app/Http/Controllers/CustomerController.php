@@ -312,7 +312,8 @@ class CustomerController extends Controller
                 $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
 
                 //Audit 
-                $record_snapshot = implode('|', (array) $benefitcode);
+                // $record_snapshot = implode('|', (array) $benefitcode);
+                $record_snapshot = json_encode($benefitcode);
                 $save_audit = DB::table('FE_RECORD_LOG')
                     ->insert([
                         'user_id' => Cache::get('userId'),
