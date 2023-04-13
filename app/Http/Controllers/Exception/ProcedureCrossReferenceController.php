@@ -23,8 +23,8 @@ class ProcedureCrossReferenceController extends Controller
     {
            
            $entity_names = DB::table( 'ENTITY_NAMES' )
-           ->where( 'ENTITY_USER_ID', 'like', '%'.strtoupper( $request->search ).'%' )
-           ->orWhere( 'ENTITY_USER_NAME', 'like', '%'.strtoupper( $request->search ).'%' )
+           ->where( 'ENTITY_USER_ID', 'like', '%'.$request->search.'%' )
+           ->orWhere( 'ENTITY_USER_NAME', 'like', '%'.$request->search.'%' )
            ->get();
            return $this->respondWithToken( $this->token(), '', $entity_names);
     }
@@ -33,7 +33,12 @@ class ProcedureCrossReferenceController extends Controller
     public function List($id){
 
         $details=DB::table('PROCEDURE_XREF')
+        // ->select('PROCEDURE_XREF.*','PROCEDURE_CODES1.DESCRIPTION as sub_procedure_code_description','PROCEDURE_CODES2.DESCRIPTION as hist_procedure_code_description')
+        ->join('ENTITY_NAMES','ENTITY_NAMES.ENTITY_USER_ID','=','PROCEDURE_XREF.PROCEDURE_XREF_ID')
+        // ->join('PROCEDURE_CODES as PROCEDURE_CODES1','PROCEDURE_CODES1.PROCEDURE_CODE','=','PROCEDURE_XREF.sub_procedure_code')
+        // ->join('PROCEDURE_CODES as PROCEDURE_CODES2','PROCEDURE_CODES2.PROCEDURE_CODE','=','PROCEDURE_XREF.hist_procedure_code')
         ->where('PROCEDURE_XREF_ID',$id)
+
          ->get();
 
         return $this->respondWithToken($this->token(), '', $details);
@@ -41,13 +46,18 @@ class ProcedureCrossReferenceController extends Controller
 
     }
 
-    public function getDetails($date,$subpro,$hispro){
+    public function getDetails($date,$subpro,$hispro,$id){
 
         $details=DB::table('PROCEDURE_XREF')
+        ->select('PROCEDURE_XREF.*','PROCEDURE_CODES1.DESCRIPTION as sub_procedure_code_description','PROCEDURE_CODES2.DESCRIPTION as hist_procedure_code_description','ENTITY_NAMES.ENTITY_USER_NAME')
         ->join('ENTITY_NAMES','ENTITY_NAMES.ENTITY_USER_ID','=','PROCEDURE_XREF.PROCEDURE_XREF_ID')
+        ->join('PROCEDURE_CODES as PROCEDURE_CODES1','PROCEDURE_CODES1.PROCEDURE_CODE','=','PROCEDURE_XREF.sub_procedure_code')
+        ->join('PROCEDURE_CODES as PROCEDURE_CODES2','PROCEDURE_CODES2.PROCEDURE_CODE','=','PROCEDURE_XREF.hist_procedure_code')
         ->where('PROCEDURE_XREF.EFFECTIVE_DATE',$date)
         ->where('PROCEDURE_XREF.SUB_PROCEDURE_CODE',$subpro)
         ->where('PROCEDURE_XREF.HIST_PROCEDURE_CODE',$hispro)
+        ->where('PROCEDURE_XREF.PROCEDURE_XREF_ID',$id)
+
          ->first();
 
         return $this->respondWithToken($this->token(), '', $details);
@@ -68,7 +78,7 @@ class ProcedureCrossReferenceController extends Controller
 
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), ' Id already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Procedure Cross Reference List ID is Already Existed', $recordcheck);
 
 
             }
@@ -120,7 +130,7 @@ class ProcedureCrossReferenceController extends Controller
 
 
             $update1 = DB::table('ENTITY_NAMES' )
-            ->where('ENTITY_USER_ID', $request->entity_user_id)
+            ->where('ENTITY_USER_ID', $request->procedure_xref_id)
             ->update(
                 [
                         'ENTITY_TYPE' => 'PROCEDURE_XREF',

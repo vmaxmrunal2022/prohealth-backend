@@ -294,7 +294,7 @@ class DiagnosisValidationListController extends Controller
 
 
             if ($addData) {
-                return $this->respondWithToken($this->token(), 'Added Succcessfully Limitation!!!');
+                return $this->respondWithToken($this->token(), 'Record Added Succcessfully');
             }
         } else if ($request->add_new == 0) {
             $updateData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
@@ -306,7 +306,7 @@ class DiagnosisValidationListController extends Controller
                 ]);
         }
         if ($updateData) {
-            return $this->respondWithToken($this->token(), 'Limitation Update Successfully !!!', $updateData);
+            return $this->respondWithToken($this->token(), 'Record  Update Successfully', $updateData);
         }
     }
 

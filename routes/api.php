@@ -390,7 +390,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('Procedure-cross-reference/search', [ProcedureCrossReferenceController::class, 'search'])->name('cross-reference.search'); 
 
         Route::get('Procedure-cross-reference/list/{id}', [ProcedureCrossReferenceController::class, 'List'])->name('cross-reference.list'); 
-        Route::get('procedure-cross-reference/details/{id}/{id2}/{id3}', [ProcedureCrossReferenceController::class, 'getDetails'])->name('cross-reference.details'); 
+        Route::get('procedure-cross-reference/details/{id}/{id2}/{id3}/{id4}', [ProcedureCrossReferenceController::class, 'getDetails'])->name('cross-reference.details'); 
 
 
         Route::post('procedure-cross-reference/add', [ProcedureCrossReferenceController::class, 'add'])->name('cross-reference.add'); 
@@ -772,6 +772,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/drugcalss/details/{ndcid}', [DrugClassController::class, 'getNDCItemDetails'])->name('drugclass.details.get'); // DETAILS
     Route::post('/drugcalss/add', [DrugClassController::class, 'add']); // add
     Route::get('/drugcategories', [DrugClassController::class, 'DrugCategoryList']); // SEARCH
+    Route::get('/drugclass/dropdown', [DrugClassController::class, 'drugClassDropDown']); // SEARCH
 
     // GPI
 

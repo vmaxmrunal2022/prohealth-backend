@@ -41,6 +41,15 @@ class DrugClassController extends Controller
         }
     }
 
+    public function drugClassDropDown(Request $request){
+        
+        $drug_classes = DB::table('FE_SYSTEM_CATEGORIES')
+                ->where('SCATEGORY','DRGCAT')
+                ->get();
+      return $this->respondWithToken($this->token(), '', $drug_classes);
+
+    }
+
     public function search(Request $request)
     {
         $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')

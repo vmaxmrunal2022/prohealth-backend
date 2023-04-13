@@ -14,9 +14,9 @@ class PriceScheduleController extends Controller
     public function get(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')
-            ->where('PRICE_SCHEDULE',  strtoupper($request->search))
-            ->orWhere('PRICE_SCHEDULE_NAME', strtoupper($request->search))
-            ->orWhere('COPAY_SCHEDULE', strtoupper($request->search))
+            ->where('PRICE_SCHEDULE',  $request->search)
+            ->orWhere('PRICE_SCHEDULE_NAME',$request->search)
+            ->orWhere('COPAY_SCHEDULE', $request->search)
             ->get();
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }

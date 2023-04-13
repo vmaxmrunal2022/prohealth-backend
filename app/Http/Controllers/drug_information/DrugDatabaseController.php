@@ -25,7 +25,7 @@ class DrugDatabaseController extends Controller
 
             if ($getData) {
 
-                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getData);
+                return $this->respondWithToken($this->token(), 'NDC ID Already Exists', $getData);
 
 
             } else {
@@ -84,17 +84,34 @@ class DrugDatabaseController extends Controller
                     ]);
 
 
+                    
+
+
+                    $pricing_list_obj = json_decode(json_encode($request->pricing_form, true));
+
+
+                    if(!empty($request->pricing_form)){
+
+                        $pricing_list = $pricing_list_obj[0];
+                    // $effective_date   = $limitation_list->effective_date;
+                    // $termination_date = $limitation_list->termination_date;
+                    // $limitations_list = $limitation_list->limitations_list;
+                    foreach ($pricing_list_obj as $key => $pricing_list) {
+                       
+
+
+
                     $drug_price = DB::table('DRUG_PRICE')
                     ->insert([
                         'NDC' => strtoupper($request->ndc),
-                        'PRICE_SOURCE' => strtoupper($request->price_source),
-                        'PRICE_TYPE' => strtoupper($request->price_type),
-                        'PRICE_EFF_DATE_1' => strtoupper($request->price_eff_date_1),
-                        'PRICE_AMT_1' => strtoupper($request->price_amt_1),
-                        'PRICE_EFF_DATE_2' => strtoupper($request->price_eff_date_2),
-                        'PRICE_AMT_2' => strtoupper($request->price_amt_2),
-                        'PRICE_EFF_DATE_3' => strtoupper($request->price_eff_date_3),
-                        'PRICE_AMT_3' => strtoupper($request->price_amt_3),
+                        'PRICE_SOURCE' => strtoupper($pricing_list->price_source),
+                        'PRICE_TYPE' => strtoupper($pricing_list->price_type),
+                        'PRICE_EFF_DATE_1' => strtoupper($pricing_list->price_eff_date_1),
+                        'PRICE_AMT_1' => strtoupper($pricing_list->price_amt_1),
+                        'PRICE_EFF_DATE_2' => strtoupper($pricing_list->price_eff_date_2),
+                        'PRICE_AMT_2' => strtoupper($pricing_list->price_amt_2),
+                        'PRICE_EFF_DATE_3' => strtoupper($pricing_list->price_eff_date_3),
+                        'PRICE_AMT_3' => strtoupper($pricing_list->price_amt_3),
 
 
 
@@ -102,8 +119,16 @@ class DrugDatabaseController extends Controller
 
 
 
+                    }
+                }
+
+
+
+
+
+
                 if ($addData) {
-                    return $this->respondWithToken($this->token(), 'Added Successfully!!!', $addData);
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
                 }
 
 
@@ -161,18 +186,43 @@ class DrugDatabaseController extends Controller
                     ]);
 
 
-                    $updateUser = DB::table('DRUG_PRICE')
-                    ->where('NDC', $request->ndc)
-                    ->update([
-                        'PRICE_SOURCE' => strtoupper($request->price_source),
-                        'PRICE_TYPE' => strtoupper($request->price_type),
-                        'PRICE_EFF_DATE_1' => strtoupper($request->price_eff_date_1),
-                        'PRICE_AMT_1' => strtoupper($request->price_amt_1),
-                        'PRICE_EFF_DATE_2' => strtoupper($request->price_eff_date_2),
-                        'PRICE_AMT_2' => strtoupper($request->price_amt_2),
-                        'PRICE_EFF_DATE_3' => strtoupper($request->price_eff_date_3),
-                        'PRICE_AMT_3' => strtoupper($request->price_amt_3),
+                
+                    $data=DB::table('DRUG_PRICE')->where('NDC',strtoupper($request->ndc))->delete(); 
+
+                    $pricing_list_obj = json_decode(json_encode($request->pricing_form, true));
+
+
+                    if(!empty($request->pricing_form)){
+
+                        $pricing_list = $pricing_list_obj[0];
+                    // $effective_date   = $limitation_list->effective_date;
+                    // $termination_date = $limitation_list->termination_date;
+                    // $limitations_list = $limitation_list->limitations_list;
+                    foreach ($pricing_list_obj as $key => $pricing_list) {
+                       
+
+
+
+                    $drug_price = DB::table('DRUG_PRICE')
+                    ->insert([
+                        'NDC' => strtoupper($request->ndc),
+                        'PRICE_SOURCE' => strtoupper($pricing_list->price_source),
+                        'PRICE_TYPE' => strtoupper($pricing_list->price_type),
+                        'PRICE_EFF_DATE_1' => strtoupper($pricing_list->price_eff_date_1),
+                        'PRICE_AMT_1' => strtoupper($pricing_list->price_amt_1),
+                        'PRICE_EFF_DATE_2' => strtoupper($pricing_list->price_eff_date_2),
+                        'PRICE_AMT_2' => strtoupper($pricing_list->price_amt_2),
+                        'PRICE_EFF_DATE_3' => strtoupper($pricing_list->price_eff_date_3),
+                        'PRICE_AMT_3' => strtoupper($pricing_list->price_amt_3),
+
+
+
                     ]);
+
+
+
+                    }
+                }
 
 
 
@@ -180,7 +230,7 @@ class DrugDatabaseController extends Controller
 
 
                 if ($updateData) {
-                    return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateData);
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
                 }
             }
         }
