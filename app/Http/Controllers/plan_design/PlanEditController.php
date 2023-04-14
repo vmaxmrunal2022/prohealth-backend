@@ -64,7 +64,7 @@ class PlanEditController extends Controller
         if ($request->add_new == "1") {
 
             if ($getData) {
-                return $this->respondWithToken($this->token(), 'Plan Id is Already Exists', $getData, false);
+                return $this->respondWithToken($this->token(), 'Plan ID is Already Exists', $getData, false);
             }
 
             $validator = Validator::make($request->all(), [
@@ -234,7 +234,6 @@ class PlanEditController extends Controller
                     'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
                     'prov_type_list_id' => $request->prov_type_list_id,
                     'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
-                    'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
                 ]);
             // if(! $addData){
             //     return "failed";
@@ -284,7 +283,7 @@ class PlanEditController extends Controller
                 ->first();
 
             if ($addData) {
-                return $this->respondWithToken($this->token(), 'Added Successfully!!!', $addData);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
             }
             // }
         } else { {
@@ -483,7 +482,7 @@ class PlanEditController extends Controller
                     ->join('PLAN_TABLE_EXTENSIONS', 'PLAN_BENEFIT_TABLE.plan_id', '=', 'PLAN_TABLE_EXTENSIONS.plan_id')
                     ->where('PLAN_BENEFIT_TABLE.plan_id', $request->plan_id)
                     ->first();
-                return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateData);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
                 // }
             }
         }

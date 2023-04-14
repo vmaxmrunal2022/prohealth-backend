@@ -53,7 +53,7 @@ class PlanValidationController extends Controller
 
       if ($getEligibilityData) {
 
-        return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getEligibilityData);
+        return $this->respondWithToken($this->token(), 'Plan Validation ID Already Exists ', $getEligibilityData);
       } else {
 
         $planValidation = DB::table('plan_validation_lists')
@@ -63,7 +63,7 @@ class PlanValidationController extends Controller
             'client_group_id' => $request->client_group_id,
             'plan_id' => $request->plan_id
           ]);
-        return $this->respondWithToken($this->token(), 'Record Added Successfully !', $planValidation);
+        return $this->respondWithToken($this->token(), 'Record Added Successfully', $planValidation);
       }
     } else if ($request->add_new == 0) {
       $planValidation = DB::table('plan_validation_lists')
@@ -78,7 +78,7 @@ class PlanValidationController extends Controller
         ]);
       // ->get();
       // dd($planValidation);
-      return $this->respondWithToken($this->token(), 'Record Updated Successfully !', $planValidation);
+      return $this->respondWithToken($this->token(), 'Record Updated Successfully', $planValidation);
     }
   }
 
