@@ -81,6 +81,16 @@ class ClientController extends Controller
                     'excl_sys_ndc_gpi_excep_flag' => $request->excl_sys_ndc_gpi_excep_flag,
                     'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
                     'phys_file_srce_id' => $request->phys_file_srce_id,
+
+                    'plan_id_1' => $request->plan_id_1,
+                    'plan_id_2' => $request->plan_id_2,
+                    'plan_id_3' => $request->plan_id_3,
+                    'coverage_eff_date_1' => $request->coverage_eff_date_1 ? date('Ymd', strtotime($request->coverage_eff_date_1)) : null,
+                    'coverage_eff_date_2' =>  $request->coverage_eff_date_2 ? date('Ymd', strtotime($request->coverage_eff_date_2)) : null,
+                    'coverage_eff_date_3' =>  $request->coverage_eff_date_3 ? date('Ymd', strtotime($request->coverage_eff_date_3)) : null,
+                    'misc_data_1' => $request->misc_data_1,
+                    'misc_data_2' => $request->misc_data_2,
+                    'misc_data_3' => $request->misc_data_3,
                 ]
             );
             $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
@@ -162,6 +172,16 @@ class ClientController extends Controller
                         'excl_sys_ndc_gpi_excep_flag' => $request->excl_sys_ndc_gpi_excep_flag,
                         'phys_file_srce_id' => $request->phys_file_srce_id,
                         'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
+
+                        'plan_id_1' => $request->plan_id_1,
+                        'plan_id_2' => $request->plan_id_2,
+                        'plan_id_3' => $request->plan_id_3,
+                        'coverage_eff_date_1' => $request->coverage_eff_date_1 ? date('Ymd', strtotime($request->coverage_eff_date_1)) : null,
+                        'coverage_eff_date_2' =>  $request->coverage_eff_date_2 ? date('Ymd', strtotime($request->coverage_eff_date_2)) : null,
+                        'coverage_eff_date_3' =>  $request->coverage_eff_date_3 ? date('Ymd', strtotime($request->coverage_eff_date_3)) : null,
+                        'misc_data_1' => $request->misc_data_1,
+                        'misc_data_2' => $request->misc_data_2,
+                        'misc_data_3' => $request->misc_data_3,
                     ]
                 );
 
