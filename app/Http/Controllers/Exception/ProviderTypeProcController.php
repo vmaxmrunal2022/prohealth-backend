@@ -76,7 +76,7 @@ class ProviderTypeProcController extends Controller
 
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'ProviderType Id already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'ProviderType ID Already Exists ', $recordcheck);
 
 
             }

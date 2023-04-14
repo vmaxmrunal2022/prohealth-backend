@@ -20,8 +20,8 @@ class ProviderController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $pharmacyExceptionData = DB::table('PHARMACY_EXCEPTIONS')
-                ->where(DB::raw('UPPER(PHARMACY_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->where('PHARMACY_LIST', 'like', '%' . $request->search. '%')
+                ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search. '%')
                 ->orderBy('PHARMACY_LIST', 'ASC')
                 ->get();
             return $this->respondWithToken($this->token(), '', $pharmacyExceptionData);
@@ -60,7 +60,7 @@ class ProviderController extends Controller
     public function addProviderData(Request $request)
     {
         $getProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
-            ->where(DB::raw('UPPER(PHARMACY_LIST)'), strtoupper($request->pharmacy_list))
+            ->where('PHARMACY_LIST', $request->pharmacy_list)
             ->first();
 
         $getProviderValidationData = DB::table('PHARMACY_VALIDATIONS')
@@ -97,7 +97,7 @@ class ProviderController extends Controller
                         ]);
 
                     if ($addProviderExceptionData) {
-                        return $this->respondWithToken($this->token(), 'Added Successfully ...!!!', $addProviderExceptionData);
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $addProviderExceptionData);
                     }
                 } else {
                     if (!$getProviderValidationData) {
@@ -110,10 +110,10 @@ class ProviderController extends Controller
                                 'USER_ID' => $request->user_name
                             ]);
                         if ($addProviderValidationData) {
-                            return $this->respondWithToken($this->token(), 'Added Successfully ...!!!', $addProviderValidationData);
+                            return $this->respondWithToken($this->token(), 'Record Added Successfully', $addProviderValidationData);
                         }
                     } else {
-                        return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
+                        return $this->respondWithToken($this->token(), 'This Pharmacy Validation ID Already Exists');
                     }
                 }
             }
@@ -143,7 +143,7 @@ class ProviderController extends Controller
                             'USER_ID' => $request->user_name
                         ]);
                     if ($addProviderValidationData) {
-                        return $this->respondWithToken($this->token(), 'Added Successfully ...!!!', $addProviderValidationData);
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $addProviderValidationData);
                     }
                 } else {
                     $updateProviderExceptionData = DB::table('PHARMACY_VALIDATIONS')
@@ -155,7 +155,7 @@ class ProviderController extends Controller
                         ]);
 
                     if ($updateProviderExceptionData) {
-                        return $this->respondWithToken($this->token(), 'Update Successfully.. !!!', $updateProviderExceptionData);
+                        return $this->respondWithToken($this->token(), 'Record Update Successfully', $updateProviderExceptionData);
                     }
                 }
             }
@@ -166,8 +166,8 @@ class ProviderController extends Controller
     public function searchDropDownProviderList($pharmacy_list = '')
     {
         $data = DB::table('PHARMACY_TABLE')
-            ->where('PHARMACY_NABP', 'LIKE', '%' . strtoupper($pharmacy_list) . '%')
-            ->orWhere('PHARMACY_NAME', 'LIKE', '%' . strtoupper($pharmacy_list) . '%')
+            ->where('PHARMACY_NABP', 'LIKE', '%' . $pharmacy_list. '%')
+            ->orWhere('PHARMACY_NAME', 'LIKE', '%' .$pharmacy_list. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $data);
