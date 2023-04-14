@@ -32,14 +32,14 @@ class CustomerController extends Controller
     //     $this->middleware('apisession');
     // }
 
-    // public  function saveIdentification(Request $request)
-    // {
-    //     // return response([], 200);
+    public  function saveIdentification(Request $request)
+    {
+        // return response([], 200);
 
 
-    //     $customerREQUEST = $request->all();
+        $customerREQUEST = $request->all();
 
-    //     // dd($customerREQUEST);
+        // dd($customerREQUEST);
 
         $customer = Customer::create([
             'CUSTOMER_ID' => $customerREQUEST['identification']['cutomerid'],
@@ -86,41 +86,41 @@ class CustomerController extends Controller
             'NUM_OF_PENDING_CONTRACTS' => $customerREQUEST['identification']['noofpendingcontracts'],
             'NUM_OF_PENDING_MEMBERS' => $customerREQUEST['identification']['noofpendinngmembers'],
 
-    //         'ELIG_DATE_EDIT_OVR_FLAG' => '',
-    //         'UCF_FEE' => $customerREQUEST['Exceptions']['ucf_claim_fee'],
-    //         'ELIG_UPD_FEE' => $customerREQUEST['Exceptions']['elig_update_fee'],
-    //         'PRIOR_AUTH_FEE' => $customerREQUEST['Exceptions']['prior_auth_fee'],
-    //         'MAIL_ORD_LETTER_FEE' => $customerREQUEST['Exceptions']['mail_srv_ltr'],
-    //         'MSG_PRIORITY_ID' => '',
-    //         'DUR_EXCEPTION_LIST' => '',
-    //         'MAX_NUM_TRANS_INTERIM_ELIG' => $customerREQUEST['Indicators']['max_no_of_transaction_allowed'],
-    //         'MAX_DAYS_INTERIM_ELIG' => $customerREQUEST['Indicators']['max_no_of_days'],
-    //         'STEP_THERAPY_ID' => '',
+            'ELIG_DATE_EDIT_OVR_FLAG' => '',
+            'UCF_FEE' => $customerREQUEST['Exceptions']['ucf_claim_fee'],
+            'ELIG_UPD_FEE' => $customerREQUEST['Exceptions']['elig_update_fee'],
+            'PRIOR_AUTH_FEE' => $customerREQUEST['Exceptions']['prior_auth_fee'],
+            'MAIL_ORD_LETTER_FEE' => $customerREQUEST['Exceptions']['mail_srv_ltr'],
+            'MSG_PRIORITY_ID' => '',
+            'DUR_EXCEPTION_LIST' => '',
+            'MAX_NUM_TRANS_INTERIM_ELIG' => $customerREQUEST['Indicators']['max_no_of_transaction_allowed'],
+            'MAX_DAYS_INTERIM_ELIG' => $customerREQUEST['Indicators']['max_no_of_days'],
+            'STEP_THERAPY_ID' => '',
 
-    //         'COVERAGE_EFF_DATE_1' => $customerREQUEST['strategy']['tier1'],
-    //         // 'COVERAGE_STRATEGY_ID_1' => $customerREQUEST['strategy'][''],
-    //         'PLAN_ID_1' => $customerREQUEST['strategy']['plan_id_1'],
-    //         'MISC_DATA_1' => $customerREQUEST['strategy']['miscellaneous_1'] ,
-    //         'COVERAGE_EFF_DATE_2' => $customerREQUEST['strategy']['tier2'],
-    //         // 'COVERAGE_STRATEGY_ID_2' => $customerREQUEST['strategy'][''],
-    //         'PLAN_ID_2' => $customerREQUEST['strategy']['plan_id_2'] ,
-    //         'MISC_DATA_2' => $customerREQUEST['strategy']['miscellaneous_2'] ,
-    //         'COVERAGE_EFF_DATE_3' => $customerREQUEST['strategy']['tier3'] ,
-    //         // 'COVERAGE_STRATEGY_ID_3' => $customerREQUEST['strategy'][''],
-    //         'PLAN_ID_3' => $customerREQUEST['strategy']['plan_id_3'] ,
-    //         'MISC_DATA_3' => $customerREQUEST['strategy']['miscellaneous_3'],
-    //         'PHARMACY_EXCEPTIONS_FLAG' => $customerREQUEST['strategy']['provider_vefification_option'],
-    //         'SUPER_RX_NETWORK_ID' => $customerREQUEST['strategy']['super_provider_network'],
-    //         'PRESCRIBER_EXCEPTIONS_FLAG' => $customerREQUEST['strategy']['Prescriber_Verification_Options_1'],
-    //         'PRESCRIBER_EXCEPTIONS_FLAG_2' => $customerREQUEST['strategy']['Prescriber_Verification_Options_2'],
-    //         // Prescriber_Grouping_id
-    //         // Indicators
-    //         // '' => $customerREQUEST['strategy']['Secondary_Coverage_indicator'],
-    //         'AUTO_TERM_LEVEL' => $customerREQUEST['eligibility']['auto_termination_level'],
-    //         'AUTO_FAM_MEMBER_TERM' => $customerREQUEST['eligibility']['auto_family_member_terminate'],
-    //         'ELIGIBILITY_EXCEPTIONS_FLAG' => $customerREQUEST['eligibility']['eligibility_options'],
-    //         'MEMBERSHIP_PROCESSING_FLAG' => $customerREQUEST['eligibility']['membership_processing_flag'],
-    //         'ELIG_VALIDATION_ID' => $customerREQUEST['eligibility']['eligibility_validation_list'],
+            'COVERAGE_EFF_DATE_1' => $customerREQUEST['strategy']['tier1'],
+            // 'COVERAGE_STRATEGY_ID_1' => $customerREQUEST['strategy'][''],
+            'PLAN_ID_1' => $customerREQUEST['strategy']['plan_id_1'],
+            'MISC_DATA_1' => $customerREQUEST['strategy']['miscellaneous_1'],
+            'COVERAGE_EFF_DATE_2' => $customerREQUEST['strategy']['tier2'],
+            // 'COVERAGE_STRATEGY_ID_2' => $customerREQUEST['strategy'][''],
+            'PLAN_ID_2' => $customerREQUEST['strategy']['plan_id_2'],
+            'MISC_DATA_2' => $customerREQUEST['strategy']['miscellaneous_2'],
+            'COVERAGE_EFF_DATE_3' => $customerREQUEST['strategy']['tier3'],
+            // 'COVERAGE_STRATEGY_ID_3' => $customerREQUEST['strategy'][''],
+            'PLAN_ID_3' => $customerREQUEST['strategy']['plan_id_3'],
+            'MISC_DATA_3' => $customerREQUEST['strategy']['miscellaneous_3'],
+            'PHARMACY_EXCEPTIONS_FLAG' => $customerREQUEST['strategy']['provider_vefification_option'],
+            'SUPER_RX_NETWORK_ID' => $customerREQUEST['strategy']['super_provider_network'],
+            'PRESCRIBER_EXCEPTIONS_FLAG' => $customerREQUEST['strategy']['Prescriber_Verification_Options_1'],
+            'PRESCRIBER_EXCEPTIONS_FLAG_2' => $customerREQUEST['strategy']['Prescriber_Verification_Options_2'],
+            // Prescriber_Grouping_id
+            // Indicators
+            // '' => $customerREQUEST['strategy']['Secondary_Coverage_indicator'],
+            'AUTO_TERM_LEVEL' => $customerREQUEST['eligibility']['auto_termination_level'],
+            'AUTO_FAM_MEMBER_TERM' => $customerREQUEST['eligibility']['auto_family_member_terminate'],
+            'ELIGIBILITY_EXCEPTIONS_FLAG' => $customerREQUEST['eligibility']['eligibility_options'],
+            'MEMBERSHIP_PROCESSING_FLAG' => $customerREQUEST['eligibility']['membership_processing_flag'],
+            'ELIG_VALIDATION_ID' => $customerREQUEST['eligibility']['eligibility_validation_list'],
 
             'SUPER_MD_NETWORK_ID' => '',
             'MD_STRATEGY_ID' => '',
@@ -165,8 +165,8 @@ class CustomerController extends Controller
 
 
 
-    //     $this->respondWithToken($this->token() ?? '', 'Successfully added', $customer);
-    // }
+        $this->respondWithToken($this->token() ?? '', 'Successfully added', $customer);
+    }
 
 
     public function add(Request $request)
@@ -487,12 +487,6 @@ class CustomerController extends Controller
 
         // dd($customer);
 
-        return $this->respondWithToken($this->token(), '', $customer);
-    }
-
-    public function All(Request $request)
-    {
-        $customer = DB::table('plan_table_extensions')->get();
         return $this->respondWithToken($this->token(), '', $customer);
     }
 
