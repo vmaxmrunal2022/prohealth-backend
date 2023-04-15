@@ -151,7 +151,7 @@ class ProviderTypeValidationController extends Controller
         'valdation_names.DESCRIPTION as description',
         'list_names.DESCRIPTION as Procedure_code_description',
         'types.DESCRIPTION as provider_type_description')
-        ->where('PROVIDER_TYPE_VALIDATIONS.proc_code_list_id',$ndcid)
+        ->where('PROVIDER_TYPE_VALIDATIONS.prov_type_list_id',$ndcid)
         ->where('PROVIDER_TYPE_VALIDATIONS.provider_type',$ndcid2)
 
 
