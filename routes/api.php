@@ -1018,8 +1018,8 @@ Route::get('/state/search/{stateid?}', [Controller::class, 'getStatesOfCountrySe
 Route::get('/states', [Controller::class, 'getStatesOfCountry'])->name('states');
 Route::get('/member', [Controller::class, 'getMember'])->name('member');
 Route::get('/provider', [Controller::class, 'getProvider']);
-Route::post('/validationlist/eligibility/submit-eligiblity-form', [Controller::class, 'addEligiblityData']);
-Route::get('/validationlist/eligibility/details/{elig_lis_id}', [Controller::class, 'getEligibilityDetails']); // DETAIL
+Route::post('/validationlist/eligibility/submit-eligiblity-form', [EligibilityValidationListController::class, 'addEligiblityData']);
+Route::get('/validationlist/eligibility/details/{elig_lis_id}', [EligibilityValidationListController::class, 'getEligibilityDetails']); // DETAIL
 
 
 
