@@ -15,10 +15,10 @@ class DrugDatabaseController extends Controller
 
         
         $getData = DB::table('DRUG_MASTER')
-            ->where('NDC', strtoupper($request->ndc))
-                // ->Where('LABEL_NAME',strtoupper($request->label_name))
-                // ->Where('GENERIC_NAME',strtoupper($request->generic_name))
-                // ->Where('PACKAGE_SIZE',strtoupper($request->package_size))
+            ->where('NDC', $request->ndc)
+                // ->Where('LABEL_NAME',$request->label_name))
+                // ->Where('GENERIC_NAME',$request->generic_name))
+                // ->Where('PACKAGE_SIZE',$request->package_size))
             ->first();
 
         if ($request->has('new')) {
@@ -34,28 +34,28 @@ class DrugDatabaseController extends Controller
 
                 $addData = DB::table('DRUG_MASTER')
                     ->insert([
-                        'NDC' => strtoupper($request->ndc),
-                        'LABEL_NAME' => strtoupper($request->label_name),
-                        'GENERIC_PRODUCT_ID' => strtoupper($request->generic_product_id),
-                        'GENERIC_NAME' => strtoupper($request->generic_name),
-                        'MANUFACTURER_NAME' => strtoupper($request->manufacturer_name),
-                        'MANUFACTURER_NAME_ABBR' => strtoupper($request->manufacturer_name_abbr),
-                        'GENERIC_CODE' => strtoupper($request->generic_code),
-                        'DEA_CLASS_CODE' => strtoupper($request->dea_class_code),
-                        'THERAPEUTIC_CLASS_CODE' => strtoupper($request->therapeutic_class_code),
-                        'THERAPEUTIC_EQUIV_CODE' => strtoupper($request->therapeutic_equiv_code),
-                        'RX_OTC_INDICATOR' => strtoupper($request->rx_otc_indicator),
-                        'GPPC_CODE' => strtoupper($request->gppc_code),
-                        'METRIC_STRENGTH' => strtoupper($request->metric_strength),
-                        'STRENGTH_UOM' => strtoupper($request->strength_vom),
-                        'DOSAGE_FORM' => strtoupper($request->dosage_form),
-                        'PACKAGE_SIZE' => strtoupper($request->package_size),
-                        'PACKAGE_UOM' => strtoupper($request->package_uom),
-                        'PACKAGE_QTY' => strtoupper($request->package_qty),
-                        'TOTAL_PACKAGE_QTY' => strtoupper($request->total_package_qty),
+                        'NDC' => $request->ndc,
+                        'LABEL_NAME' =>$request->label_name,
+                        'GENERIC_PRODUCT_ID' =>$request->generic_product_id,
+                        'GENERIC_NAME' => $request->generic_name,
+                        'MANUFACTURER_NAME' => $request->manufacturer_name,
+                        'MANUFACTURER_NAME_ABBR' => $request->manufacturer_name_abbr,
+                        'GENERIC_CODE' => $request->generic_code,
+                        'DEA_CLASS_CODE' => $request->dea_class_code,
+                        'THERAPEUTIC_CLASS_CODE' => $request->therapeutic_class_code,
+                        'THERAPEUTIC_EQUIV_CODE' =>$request->therapeutic_equiv_code,
+                        'RX_OTC_INDICATOR' => $request->rx_otc_indicator,
+                        'GPPC_CODE' =>$request->gppc_code,
+                        'METRIC_STRENGTH' => $request->metric_strength,
+                        'STRENGTH_UOM' => $request->strength_uom,
+                        'DOSAGE_FORM' => $request->dosage_form,
+                        'PACKAGE_SIZE' => $request->package_size,
+                        'PACKAGE_UOM' => $request->package_uom,
+                        'PACKAGE_QTY' => $request->package_qty,
+                        'TOTAL_PACKAGE_QTY' => $request->total_package_qty,
                         'LEGEND_CHANGE_DATE' => $request->legend_change_date,
-                        'NEXT_SMLR_SUFFIX' => strtoupper($request->next_smlr_suffix),
-                        'NEXT_LRGR_SUFFIX' => strtoupper($request->next_lrgr_suffix),
+                        'NEXT_SMLR_SUFFIX' => $request->next_smlr_suffix,
+                        'NEXT_LRGR_SUFFIX' => $request->next_lrgr_suffix,
                         'DESI_CODE' => $request->desi_code,
                         'MAINTENANCE_DRUG_CODE' => $request->maintenance_drug_code,
                         'DISPENSING_UNIT_CODE' => $request->dispensing_unit_code,
@@ -73,11 +73,11 @@ class DrugDatabaseController extends Controller
                         'DRUG_STATUS' => $request->drug_status,
                         'INT_EXT_CODE' => $request->int_ext_code,
                         'PKG_DESCRIPTION' => $request->pkg_description,
-
                         'USER_ID' => $request->user_id,
-
                         'OTC_EQUIV_IND' => $request->otc_equiv_ind,
                         'BRAND_NAME_CODE' => $request->brand_name_code,
+                        'THIRD_PARTY_REST_CODE'=>$request->third_party_rest_code,
+                        'FORM_TYPE_CODE'=>$request->form_type_code
 
 
 
@@ -103,15 +103,15 @@ class DrugDatabaseController extends Controller
 
                     $drug_price = DB::table('DRUG_PRICE')
                     ->insert([
-                        'NDC' => strtoupper($request->ndc),
-                        'PRICE_SOURCE' => strtoupper($pricing_list->price_source),
-                        'PRICE_TYPE' => strtoupper($pricing_list->price_type),
-                        'PRICE_EFF_DATE_1' => strtoupper($pricing_list->price_eff_date_1),
-                        'PRICE_AMT_1' => strtoupper($pricing_list->price_amt_1),
-                        'PRICE_EFF_DATE_2' => strtoupper($pricing_list->price_eff_date_2),
-                        'PRICE_AMT_2' => strtoupper($pricing_list->price_amt_2),
-                        'PRICE_EFF_DATE_3' => strtoupper($pricing_list->price_eff_date_3),
-                        'PRICE_AMT_3' => strtoupper($pricing_list->price_amt_3),
+                        'NDC' => $request->ndc,
+                        'PRICE_SOURCE' => $pricing_list->price_source,
+                        'PRICE_TYPE' => $pricing_list->price_type,
+                        'PRICE_EFF_DATE_1' => $pricing_list->price_eff_date_1,
+                        'PRICE_AMT_1' => $pricing_list->price_amt_1,
+                        'PRICE_EFF_DATE_2' => $pricing_list->price_eff_date_2,
+                        'PRICE_AMT_2' => $pricing_list->price_amt_2,
+                        'PRICE_EFF_DATE_3' => $pricing_list->price_eff_date_3,
+                        'PRICE_AMT_3' => $pricing_list->price_amt_3,
 
 
 
@@ -140,27 +140,27 @@ class DrugDatabaseController extends Controller
                 $updateData = DB::table('DRUG_MASTER')
                     ->where('NDC', $request->ndc)
                     ->update([
-                        'LABEL_NAME' => strtoupper($request->label_name),
-                        'GENERIC_PRODUCT_ID' => strtoupper($request->generic_product_id),
-                        'GENERIC_NAME' => strtoupper($request->generic_name),
-                        'MANUFACTURER_NAME' => strtoupper($request->manufacturer_name),
-                        'MANUFACTURER_NAME_ABBR' => strtoupper($request->manufacturer_name_abbr),
-                        'GENERIC_CODE' => strtoupper($request->generic_code),
-                        'DEA_CLASS_CODE' => strtoupper($request->dea_class_code),
-                        'THERAPEUTIC_CLASS_CODE' => strtoupper($request->therapeutic_class_code),
-                        'THERAPEUTIC_EQUIV_CODE' => strtoupper($request->therapeutic_equiv_code),
-                        'RX_OTC_INDICATOR' => strtoupper($request->rx_otc_indicator),
-                        'GPPC_CODE' => strtoupper($request->gppc_code),
-                        'METRIC_STRENGTH' => strtoupper($request->metric_strength),
-                        'STRENGTH_UOM' => strtoupper($request->strength_vom),
-                        'DOSAGE_FORM' => strtoupper($request->dosage_form),
-                        'PACKAGE_SIZE' => strtoupper($request->package_size),
-                        'PACKAGE_UOM' => strtoupper($request->package_uom),
-                        'PACKAGE_QTY' => strtoupper($request->package_qty),
-                        'TOTAL_PACKAGE_QTY' => strtoupper($request->total_package_qty),
+                        'LABEL_NAME' => $request->label_name,
+                        'GENERIC_PRODUCT_ID' => $request->generic_product_id,
+                        'GENERIC_NAME' => $request->generic_name,
+                        'MANUFACTURER_NAME' => $request->manufacturer_name,
+                        'MANUFACTURER_NAME_ABBR' => $request->manufacturer_name_abbr,
+                        'GENERIC_CODE' => $request->generic_code,
+                        'DEA_CLASS_CODE' => $request->dea_class_code,
+                        'THERAPEUTIC_CLASS_CODE' => $request->therapeutic_class_code,
+                        'THERAPEUTIC_EQUIV_CODE' => $request->therapeutic_equiv_code,
+                        'RX_OTC_INDICATOR' => $request->rx_otc_indicator,
+                        'GPPC_CODE' => $request->gppc_code,
+                        'METRIC_STRENGTH' => $request->metric_strength,
+                        'STRENGTH_UOM' => $request->strength_vom,
+                        'DOSAGE_FORM' => $request->dosage_form,
+                        'PACKAGE_SIZE' => $request->package_size,
+                        'PACKAGE_UOM' => $request->package_uom,
+                        'PACKAGE_QTY' => $request->package_qty,
+                        'TOTAL_PACKAGE_QTY' => $request->total_package_qty,
                         'LEGEND_CHANGE_DATE' => $request->legend_change_date,
-                        'NEXT_SMLR_SUFFIX' => strtoupper($request->next_smlr_suffix),
-                        'NEXT_LRGR_SUFFIX' => strtoupper($request->next_lrgr_suffix),
+                        'NEXT_SMLR_SUFFIX' => $request->next_smlr_suffix,
+                        'NEXT_LRGR_SUFFIX' => $request->next_lrgr_suffix,
                         'DESI_CODE' => $request->desi_code,
                         'MAINTENANCE_DRUG_CODE' => $request->maintenance_drug_code,
                         'DISPENSING_UNIT_CODE' => $request->dispensing_unit_code,
@@ -183,11 +183,15 @@ class DrugDatabaseController extends Controller
 
                         'OTC_EQUIV_IND' => $request->otc_equiv_ind,
                         'BRAND_NAME_CODE' => $request->brand_name_code,
+                        'THIRD_PARTY_REST_CODE'=>$request->third_party_rest_code,
+                        'FORM_TYPE_CODE'=>$request->form_type_code
+
+                        
                     ]);
 
 
                 
-                    $data=DB::table('DRUG_PRICE')->where('NDC',strtoupper($request->ndc))->delete(); 
+                    $data=DB::table('DRUG_PRICE')->where('NDC',$request->ndc)->delete(); 
 
                     $pricing_list_obj = json_decode(json_encode($request->pricing_form, true));
 
@@ -205,15 +209,15 @@ class DrugDatabaseController extends Controller
 
                     $drug_price = DB::table('DRUG_PRICE')
                     ->insert([
-                        'NDC' => strtoupper($request->ndc),
-                        'PRICE_SOURCE' => strtoupper($pricing_list->price_source),
-                        'PRICE_TYPE' => strtoupper($pricing_list->price_type),
-                        'PRICE_EFF_DATE_1' => strtoupper($pricing_list->price_eff_date_1),
-                        'PRICE_AMT_1' => strtoupper($pricing_list->price_amt_1),
-                        'PRICE_EFF_DATE_2' => strtoupper($pricing_list->price_eff_date_2),
-                        'PRICE_AMT_2' => strtoupper($pricing_list->price_amt_2),
-                        'PRICE_EFF_DATE_3' => strtoupper($pricing_list->price_eff_date_3),
-                        'PRICE_AMT_3' => strtoupper($pricing_list->price_amt_3),
+                        'NDC' => $request->ndc,
+                        'PRICE_SOURCE' => $pricing_list->price_source,
+                        'PRICE_TYPE' => $pricing_list->price_type,
+                        'PRICE_EFF_DATE_1' => $pricing_list->price_eff_date_1,
+                        'PRICE_AMT_1' => $pricing_list->price_amt_1,
+                        'PRICE_EFF_DATE_2' => $pricing_list->price_eff_date_2,
+                        'PRICE_AMT_2' => $pricing_list->price_amt_2,
+                        'PRICE_EFF_DATE_3' => $pricing_list->price_eff_date_3,
+                        'PRICE_AMT_3' => $pricing_list->price_amt_3,
 
 
 
@@ -243,10 +247,10 @@ class DrugDatabaseController extends Controller
     public function get(Request $request)
     {
         $data = DB::table('DRUG_MASTER')
-            ->where('NDC', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('LABEL_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('GENERIC_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('PACKAGE_SIZE', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('NDC', 'like', '%' . $request->search. '%')
+            ->orWhere('LABEL_NAME', 'like', '%' . $request->search. '%')
+            ->orWhere('GENERIC_NAME', 'like', '%' . $request->search. '%')
+            ->orWhere('PACKAGE_SIZE', 'like', '%' . $request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $data);
@@ -264,7 +268,7 @@ class DrugDatabaseController extends Controller
     {
 
         $getrecord = DB::table('DRUG_PRICE')
-            ->where('price_source', strtoupper($request->price_source))
+            ->where('price_source', $request->price_source)
             ->where('NDC', $request->ndc)
 
             ->first();
@@ -277,13 +281,13 @@ class DrugDatabaseController extends Controller
                 ->where('NDC', $request->ndc)
                 ->where('PRICE_SOURCE',$request->price_source)
                 ->update([
-                    'PRICE_TYPE' => strtoupper($request->price_type),
-                    'PRICE_EFF_DATE_1' => strtoupper($request->price_eff_date_1),
-                    'PRICE_AMT_1' => strtoupper($request->price_amt_1),
-                    'PRICE_EFF_DATE_2' => strtoupper($request->price_eff_date_2),
-                    'PRICE_AMT_2' => strtoupper($request->price_amt_2),
-                    'PRICE_EFF_DATE_3' => strtoupper($request->price_eff_date_3),
-                    'PRICE_AMT_3' => strtoupper($request->price_amt_3),
+                    'PRICE_TYPE' => $request->price_type,
+                    'PRICE_EFF_DATE_1' => $request->price_eff_date_1,
+                    'PRICE_AMT_1' => $request->price_amt_1,
+                    'PRICE_EFF_DATE_2' => $request->price_eff_date_2,
+                    'PRICE_AMT_2' => $request->price_amt_2,
+                    'PRICE_EFF_DATE_3' => $request->price_eff_date_3,
+                    'PRICE_AMT_3' => $request->price_amt_3,
                 ]);
 
             if ($updateUser) {
@@ -295,15 +299,15 @@ class DrugDatabaseController extends Controller
 
                 $addData = DB::table('DRUG_PRICE')
                     ->insert([
-                        'NDC' => strtoupper($request->ndc),
-                        'PRICE_SOURCE' => strtoupper($request->price_source),
-                        'PRICE_TYPE' => strtoupper($request->price_type),
-                        'PRICE_EFF_DATE_1' => strtoupper($request->price_eff_date_1),
-                        'PRICE_AMT_1' => strtoupper($request->price_amt_1),
-                        'PRICE_EFF_DATE_2' => strtoupper($request->price_eff_date_2),
-                        'PRICE_AMT_2' => strtoupper($request->price_amt_2),
-                        'PRICE_EFF_DATE_3' => strtoupper($request->price_eff_date_3),
-                        'PRICE_AMT_3' => strtoupper($request->price_amt_3),
+                        'NDC' => $request->ndc,
+                        'PRICE_SOURCE' => $request->price_source,
+                        'PRICE_TYPE' => $request->price_type,
+                        'PRICE_EFF_DATE_1' => $request->price_eff_date_1,
+                        'PRICE_AMT_1' => $request->price_amt_1,
+                        'PRICE_EFF_DATE_2' => $request->price_eff_date_2,
+                        'PRICE_AMT_2' => $request->price_amt_2,
+                        'PRICE_EFF_DATE_3' => $request->price_eff_date_3,
+                        'PRICE_AMT_3' => $request->price_amt_3,
 
 
 

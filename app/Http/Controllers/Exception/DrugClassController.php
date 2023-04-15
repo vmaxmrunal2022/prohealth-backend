@@ -8,45 +8,46 @@ use Illuminate\Support\Facades\DB;
 
 class DrugClassController extends Controller
 {
-    
+
 
     public function search_old(Request $request)
     {
         if ($request->search_mode == 'category') {
             $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
                 ->join('PLAN_DRUG_CATGY_EXCEPTIONS', 'PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', '=', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST')
-                ->where(DB::raw('UPPER(PLAN_DRUG_CATGY_EXCEPTIONS.scategory)'), 'like', '%' . $request->search. '%')
+                ->where(DB::raw('UPPER(PLAN_DRUG_CATGY_EXCEPTIONS.scategory)'), 'like', '%' . $request->search . '%')
                 ->get();
             return $this->respondWithToken($this->token(), '', $ndc);
         } else if ($request->search_mode == 'type') {
             $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
                 ->join('PLAN_DRUG_CATGY_EXCEPTIONS', 'PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', '=', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST')
-                ->where(DB::raw('UPPER(PLAN_DRUG_CATGY_EXCEPTIONS.stype)'), 'like', '%' . $request->stype. '%')
+                ->where(DB::raw('UPPER(PLAN_DRUG_CATGY_EXCEPTIONS.stype)'), 'like', '%' . $request->stype . '%')
                 ->get();
             return $this->respondWithToken($this->token(), '', $ndc);
         } else if ($request->search_mode == 'description') {
             $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
                 ->join('PLAN_DRUG_CATGY_EXCEPTIONS', 'PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', '=', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST')
-                ->where(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST)'), 'like', '%' .$request->search. '%')
-                ->orWhere(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_NAME)'), 'like', '%' .$request->search. '%')
+                ->where(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST)'), 'like', '%' . $request->search . '%')
+                ->orWhere(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_NAME)'), 'like', '%' . $request->search . '%')
                 ->get();
             return $this->respondWithToken($this->token(), '', $ndc);
         } else {
             $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
                 ->join('PLAN_DRUG_CATGY_EXCEPTIONS', 'PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', '=', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST')
-                ->where(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST)'), 'like', '%' . $request->search. '%')
-                ->orWhere(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_NAME)'), 'like', '%' .$request->search. '%')
+                ->where(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST)'), 'like', '%' . $request->search . '%')
+                ->orWhere(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_NAME)'), 'like', '%' . $request->search . '%')
                 ->get();
             return $this->respondWithToken($this->token(), '', $ndc);
         }
     }
 
-    public function drugClassDropDown(Request $request){
-        
+    public function drugClassDropDown(Request $request)
+    {
+
         $drug_classes = DB::table('FE_SYSTEM_CATEGORIES')
-                ->where('SCATEGORY','DRGCAT')
-                ->get();
-      return $this->respondWithToken($this->token(), '', $drug_classes);
+            ->where('SCATEGORY', 'DRGCAT')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $drug_classes);
 
     }
 
@@ -54,8 +55,8 @@ class DrugClassController extends Controller
     {
         $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
             ->select('DRUG_CATGY_EXCEPTION_LIST', 'DRUG_CATGY_EXCEPTION_NAME')
-            ->where('DRUG_CATGY_EXCEPTION_LIST', 'like', '%' .$request->search. '%')
-            ->orWhere('DRUG_CATGY_EXCEPTION_NAME', 'like', '%' . $request->search. '%')
+            ->where('DRUG_CATGY_EXCEPTION_LIST', 'like', '%' . $request->search . '%')
+            ->orWhere('DRUG_CATGY_EXCEPTION_NAME', 'like', '%' . $request->search . '%')
             ->get();
         return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -81,7 +82,7 @@ class DrugClassController extends Controller
     {
         $ndclist = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
             // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
-            ->where('DRUG_CATGY_EXCEPTION_LIST', 'like', '%' . $ndcid. '%')
+            ->where('DRUG_CATGY_EXCEPTION_LIST', 'like', '%' . $ndcid . '%')
             // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
             ->get();
 
@@ -93,7 +94,7 @@ class DrugClassController extends Controller
         $ndc = DB::table('TC_EXCEPTION_LISTS')
             ->select('TC_EXCEPTION_LISTS.*', 'TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST as exception_list', 'TC_EXCEPTIONS.EXCEPTION_NAME as exception_name')
             ->join('TC_EXCEPTIONS', 'TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST', '=', 'TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
-            ->where('TC_EXCEPTION_LISTS.therapy_class', 'like', '%' .$ndcid. '%')
+            ->where('TC_EXCEPTION_LISTS.therapy_class', 'like', '%' . $ndcid . '%')
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -103,15 +104,19 @@ class DrugClassController extends Controller
     {
 
         $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
-            ->select('DRUG_CATGY_EXCEPTION_NAMES.*', 'PLAN_DRUG_CATGY_EXCEPTIONS.*','FE_SYSTEM_CATEGORIES.SDESCRIPTION',
-            'MASTER1.LABEL_NAME as preferd_ndc_description',
-            'MASTER2.LABEL_NAME as conversion_ndc_description' )
+            ->select(
+                'DRUG_CATGY_EXCEPTION_NAMES.*',
+                'PLAN_DRUG_CATGY_EXCEPTIONS.*',
+                'FE_SYSTEM_CATEGORIES.SDESCRIPTION',
+                'MASTER1.LABEL_NAME as preferd_ndc_description',
+                'MASTER2.LABEL_NAME as conversion_ndc_description'
+            )
             ->leftjoin('PLAN_DRUG_CATGY_EXCEPTIONS', 'PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', '=', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST')
             ->leftjoin('DRUG_MASTER AS MASTER1', 'MASTER1.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.PREFERRED_PRODUCT_NDC')
             ->leftjoin('DRUG_MASTER AS MASTER2', 'MASTER2.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.CONVERSION_PRODUCT_NDC')
             ->leftjoin('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
 
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', 'like', '%' .$ndcid. '%')->get();
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', 'like', '%' . $ndcid . '%')->get();
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
@@ -121,34 +126,34 @@ class DrugClassController extends Controller
 
         $createddate = date('y-m-d');
 
-        
-        $exist = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
-        ->where('DRUG_CATGY_EXCEPTION_LIST',$request->drug_catgy_exception_list)->first();
 
-      
+        $exist = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+            ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)->first();
+
+
         if ($request->new) {
 
 
-            if($exist){
+            if ($exist) {
 
                 return $this->respondWithToken($this->token(), 'Drug Classification ID is Already Exists', $exist);
-    
-    
-            }
-            else{
+
+
+            } else {
 
                 $drugcatgy = DB::table('DRUG_CATGY_EXCEPTION_NAMES')->insert(
                     [
-                        'drug_catgy_exception_list' =>$request->drug_catgy_exception_list,
+                        'drug_catgy_exception_list' => $request->drug_catgy_exception_list,
                         'drug_catgy_exception_name' => $request->drug_catgy_exception_name,
                         'DATE_TIME_CREATED' => $createddate,
-                        'USER_ID' => '', // TODO add user id
+                        'USER_ID' => '',
+                        // TODO add user id
                         'DATE_TIME_MODIFIED' => '',
                         // 'USER_ID_CREATED' => '',
                         'FORM_ID' => ''
                     ]
                 );
-    
+
                 $plan = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->insert(
                     [
                         'effective_date' => date('Ymd', strtotime($request->effective_date)),
@@ -225,18 +230,19 @@ class DrugClassController extends Controller
                     ]
                 );
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $drugcatgy);
-    
+
             }
-    
-          
+
+
         } else
             $drugcatgy = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
-                ->where('drug_catgy_exception_list',$request->drug_catgy_exception_list)
+                ->where('drug_catgy_exception_list', $request->drug_catgy_exception_list)
                 ->update(
                     [
                         'drug_catgy_exception_name' => $request->drug_catgy_exception_name,
                         'DATE_TIME_CREATED' => $createddate,
-                        'USER_ID' => '', // TODO add user id
+                        'USER_ID' => '',
+                        // TODO add user id
                         'DATE_TIME_MODIFIED' => date('Ymd H:i:s'),
                         // 'USER_ID_CREATED' => '',
                         'FORM_ID' => ''
@@ -430,12 +436,8 @@ class DrugClassController extends Controller
     public function getDetailsList($id)
     {
         $data_list = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
-            ->join(
-                'PLAN_DRUG_CATGY_EXCEPTIONS',
-                DB::raw('UPPER(DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST)'),
-                '=',
-                DB::raw('UPPER(PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST)')
-            )
+            ->join('PLAN_DRUG_CATGY_EXCEPTIONS','DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST','=','PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST')
+            ->join('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
             ->where('DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST', $id)
             ->get();
         return $this->respondWithToken($this->token(), '', $data_list);

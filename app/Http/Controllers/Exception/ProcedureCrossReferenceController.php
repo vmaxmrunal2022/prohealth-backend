@@ -78,7 +78,7 @@ class ProcedureCrossReferenceController extends Controller
 
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'Procedure Cross Reference List ID is Already Existed', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Procedure Cross Reference List ID is Already Exists', $recordcheck);
 
 
             }

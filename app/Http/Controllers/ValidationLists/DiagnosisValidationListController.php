@@ -250,7 +250,7 @@ class DiagnosisValidationListController extends Controller
                 }
 
                 if ($updateData) {
-                    return $this->respondWithToken($this->token(), 'Record  Updated Successfully!!!', $updateData);
+                    return $this->respondWithToken($this->token(), 'Record  Updated Successfully', $updateData);
                 }
             }
         }
@@ -274,7 +274,7 @@ class DiagnosisValidationListController extends Controller
             if ($recordcheck) {
 
 
-                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Diagnosis List Already Exists', $recordcheck);
             } else {
 
 

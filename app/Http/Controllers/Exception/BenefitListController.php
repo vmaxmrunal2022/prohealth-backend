@@ -38,7 +38,7 @@ class BenefitListController extends Controller
 
             if($recordcheck){
 
-                return $this->respondWithToken( $this->token(), 'Benefit List Id Already Exists',$recordcheck);
+                return $this->respondWithToken( $this->token(), 'Benefit List ID Already Exists',$recordcheck);
 
 
             }else{
@@ -103,7 +103,7 @@ class BenefitListController extends Controller
 
 
 
-            return $this->respondWithToken( $this->token(), 'Record Added Succefully',$accum_benfit_stat);
+            return $this->respondWithToken( $this->token(), 'Record Added Successfully',$accum_benfit_stat);
 
 
 
@@ -169,7 +169,7 @@ class BenefitListController extends Controller
                 ]
             );
 
-            return $this->respondWithToken( $this->token(), 'Record Updated Succefully',$accum_benfit_stat);
+            return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$accum_benfit_stat);
 
         }
 

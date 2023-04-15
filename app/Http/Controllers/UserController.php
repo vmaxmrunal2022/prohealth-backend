@@ -11,7 +11,7 @@ use Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
-use App\getUserData;
+// use App\getUserData;
 use Illuminate\Support\Facades\Cache;
 
 use Illuminate\Redis\Connections\Connection;
@@ -137,7 +137,7 @@ class UserController extends Controller
             $responseMessage = "Login Successful";
             Session::put('user', auth()->user()->user_id);
             $userid = auth()->user()->user_id;
-            $a = getUserData($userid);
+            // $a = getUserData($userid);
             // app()->instance('my_global_data', $userid);
             // $usersData =
             $usersData = auth()->user()->user_id;
