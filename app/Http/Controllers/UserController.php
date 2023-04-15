@@ -11,7 +11,7 @@ use Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
-use App\getUserData;
+// use App\getUserData;
 use Illuminate\Support\Facades\Cache;
 
 use Illuminate\Redis\Connections\Connection;
