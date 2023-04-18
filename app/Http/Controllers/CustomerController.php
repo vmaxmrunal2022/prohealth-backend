@@ -171,7 +171,6 @@ class CustomerController extends Controller
 
     public function add(Request $request)
     {
-        // dd($request->all());
         if ($request->add_new) {
             $validator = Validator::make($request->all(), [
                 'customer_id' => ['required', 'max:10', Rule::unique('CUSTOMER')->where(function ($q) {
@@ -280,8 +279,8 @@ class CustomerController extends Controller
                         'phys_file_srce_id' => strtoupper($request->phys_file_srce_id),
 
                         'coverage_eff_date_1' => $request->coverage_eff_date_1 ? date('Ymd', strtotime($request->coverage_eff_date_1)) : null,
-                        'coverage_eff_date_2' =>  date('Ymd', strtotime($request->coverage_eff_date_2)),
-                        'coverage_eff_date_3' =>  date('Ymd', strtotime($request->coverage_eff_date_3)),
+                        'coverage_eff_date_2' =>  $request->coverage_eff_date_2 ? date('Ymd', strtotime($request->coverage_eff_date_2)) : null,
+                        'coverage_eff_date_3' =>  $request->coverage_eff_date_3 ? date('Ymd', strtotime($request->coverage_eff_date_3)) : null,
                         'misc_data_1' => $request->misc_data_1,
                         'misc_data_2' => $request->misc_data_2,
                         'misc_data_3' => $request->misc_data_3,
@@ -412,8 +411,8 @@ class CustomerController extends Controller
                             'phys_file_srce_id' => strtoupper($request->phys_file_srce_id),
 
                             'coverage_eff_date_1' => $request->coverage_eff_date_1 ? date('Ymd', strtotime($request->coverage_eff_date_1)) : null,
-                            'coverage_eff_date_2' =>  date('Ymd', strtotime($request->coverage_eff_date_2)),
-                            'coverage_eff_date_3' =>  date('Ymd', strtotime($request->coverage_eff_date_3)),
+                            'coverage_eff_date_2' =>  $request->coverage_eff_date_2 ? date('Ymd', strtotime($request->coverage_eff_date_2)) : null,
+                            'coverage_eff_date_3' =>  $request->coverage_eff_date_3 ? date('Ymd', strtotime($request->coverage_eff_date_3)) : null,
                             'misc_data_1' => $request->misc_data_1,
                             'misc_data_2' => $request->misc_data_2,
                             'misc_data_3' => $request->misc_data_3,
@@ -434,8 +433,8 @@ class CustomerController extends Controller
                         'record_snapshot' => $record_snapshot,
                         // 'record_snapshot' => $record_snapshot,
                     ]);
-                // return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
-                return $this->respondWithToken($this->token(), auth('web')->user(), $benefitcode);
+                return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
+                // return $this->respondWithToken($this->token(), auth('web')->user(), $benefitcode);
             }
         }
     }
