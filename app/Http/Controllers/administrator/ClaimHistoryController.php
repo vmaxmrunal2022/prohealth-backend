@@ -76,6 +76,14 @@ class ClaimHistoryController extends Controller
         return $this->respondWithToken($this->token(), '', $search_result);
     }
 
+    public function claimReferenceDetails(Request $request){
+
+        $data = DB::table('rx_transaction_detail')
+        ->where('claim_reference_number',$request->claim_reference_number)->first();
+        return $this->respondWithToken($this->token(), '', $data);
+
+    }
+
     public function getNDCDropdown(Request $request)
     {
         $ndcs = DB::table('NDC_EXCEPTION_LISTS')

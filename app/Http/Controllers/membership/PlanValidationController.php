@@ -30,9 +30,22 @@ class PlanValidationController extends Controller
   public function getClientDetails(Request $request)
   {
     $clientList = DB::table('PLAN_VALIDATION_LISTS')
-      ->where('customer_id', 'like', '%' . strtoupper($request->customer_id) . '%')
-      //   ->orWhere('client_id', 'like', '%'. strtoupper($request->client_id))                      
-      //   ->orWhere('client_group_id', 'like', '%'. strtoupper($request->client_group_id))                      
+    // ->join('CLIENT_GROUP','CLIENT_GROUP.CLIENT_GROUP_ID','=','PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID')
+    
+  //   ->join("CLIENT_GROUP",function($join){
+  //     $join->on("CLIENT_GROUP.CLIENT_GROUP_ID","=","PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID")
+  //         ->on("CLIENT_GROUP.CLIENT_GROUP_ID","=","PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID");
+  // })
+    
+    // ->join('CLIENT_GROUP','CLIENT_GROUP.CLIENT_GROUP_ID','=','PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID')
+
+    // ->leftjoin('CUSTOMER','CUSTOMER.CUSTOMER_ID','=','PLAN_VALIDATION_LISTS.CUSTOMER_ID')
+    // ->leftjoin('CLIENT','CLIENT.CLIENT_ID','=','PLAN_VALIDATION_LISTS.CLIENT_ID')
+    ->where('PLAN_VALIDATION_LISTS.plan_id',$request->customer_id)
+
+        // ->orWhere('PLAN_VALIDATION_LISTS.client_id', $request->client_id)              
+        // ->orWhere('PLAN_VALIDATION_LISTS.client_group_id', $request->client_group_id)  
+        // ->orwhere('PLAN_VALIDATION_LISTS.plan_id',$request->plan_id)                 
       ->get();
 
     return $this->respondWithToken($this->token(), '', $clientList);

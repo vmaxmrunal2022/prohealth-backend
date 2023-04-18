@@ -587,6 +587,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('memberdata/pricing-strategy', [MemberController::class, 'getPricingStrategy']);
         Route::get('memberdata/view-limitations', [MemberController::class, 'getViewLimitations']);
         Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
+        Route::get('memberdata/dropdown', [MemberController::class, 'getMembersDropDownList']);
 
         //tab table routes
         Route::get('memberdata/get-coverage-information-table', [MemberController::class, 'getCoverageInformationTable']);
@@ -1053,6 +1054,11 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('traditionalnetwork/details/{ndcid}', [TraditionalNetworkController::class, 'getDetails']);
     Route::post('traditionalnetwork/add', [TraditionalNetworkController::class, 'add']);
     Route::get('traditionalnetwork/all', [TraditionalNetworkController::class, 'all']);
+
+    Route::get('traditionalnetworks/dropdowns', [TraditionalNetworkController::class, 'TraditionalNetworkIdsDropdwon']);
+
+
+    
 
     //Flexible Network
 

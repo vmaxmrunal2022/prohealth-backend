@@ -22,7 +22,9 @@ class PriceScheduleController extends Controller
     }
     public function getAll(Request $request)
     {
-        $priceShedule = DB::table('PRICE_SCHEDULE')->get();
+        $priceShedule = DB::table('PRICE_SCHEDULE')
+        ->select('price_schedule','price_schedule_name')
+        ->get();
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }
 
@@ -622,7 +624,7 @@ class PriceScheduleController extends Controller
                 $price_schedule = DB::table('price_schedule')
                     ->where('price_schedule', $request->price_schedule)
                     ->first();
-                return $this->respondWithToken($this->token(), 'record Updated Successfully', $price_schedule);
+                return $this->respondWithToken($this->token(), 'Record  Updated Successfully', $price_schedule);
             }
         }
     }

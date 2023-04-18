@@ -259,7 +259,8 @@ class MemberController extends Controller
     public function getMembersDropDownList()
     {
 
-        $member_data_list = DB::table('MEMBER')->get();
+        $member_data_list = DB::table('MEMBER')
+        ->select('member_id')->get();
 
         // dd($member_data_list);
 
