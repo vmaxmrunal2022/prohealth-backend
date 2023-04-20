@@ -1118,7 +1118,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('copay-step-schedule/get-days-supply', [CopayStepScheduleController::class, 'getDaysSupply']);
     Route::get('copay-step-schedule/get-max-cost', [CopayStepScheduleController::class, 'getMaxCost']);
     Route::get('copay-step-schedule/check-copay-list-existing', [CopayStepScheduleController::class, 'checkCopayListExist']);
-    Route::post('copay-step-schedule/submit', [CopayStepScheduleController::class, 'submit'])->name('submit.copay-step');
+    Route::post('copay-step-schedule/submit', [CopayStepScheduleController::class, 'submit'])->name('submitstep');
 
     //MAC List
     Route::get('mac-list/get', [MacListController::class, 'get'])->name('get.macList');

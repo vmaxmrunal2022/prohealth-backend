@@ -121,7 +121,6 @@ class PriorAuthController extends Controller
                                 //Authorization Tab Starts
                                 'prior_auth_code_num' => $request->prior_auth_code_num,
                                 'prior_auth_type' => $request->prior_auth_type,
-                                'member_id' => $request->member_id,
                                 'person_code' => $request->person_code,
                                 'patient_pin_number' => $request->patient_pin_number,
                                 'effective_date' => $request->effective_date,

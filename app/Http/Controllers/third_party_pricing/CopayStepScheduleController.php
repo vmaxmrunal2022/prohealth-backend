@@ -44,109 +44,83 @@ class CopayStepScheduleController extends Controller
     public function submit(Request $request)
     {
         $validate = $request->validate([
-            'copay_list' => ['required', 'unique:copay_list'],
+            'copay_list' => ['required'],
         ]);
-        $copayStepSchedule = DB::table('COPAY_MATRIX')->where('copay_list',  $request->copay_list)->first();
+        $recordcheck = DB::table('COPAY_LIST')->where('copay_list', $request->copay_list)->first();
         if ($validate) {
-            if ($request->add_new == 1) {
 
-                if ($copayStepSchedule->count() > 0) {
-                    return $this->respondWithToken($this->token(), 'Record Alredy Exists',  $copayStepSchedule, true, 200, 1);
-                }
-                if ($request->cost_max) {
-                    $days_supply = "0";
-                    $cost_max = $request->cost_max;
-                    $step_schedule_indicator = "m";
+            if ($request->add_new == '1') {
+
+                if ($recordcheck) {
+
+                    return $this->respondWithToken($this->token(), 'Record Alredy Exists',  $recordcheck, true, 200, 1);
+
+                }else{
+
 
                     $addCopaylist1 =  DB::table('COPAY_LIST')
-                    ->insert([
-                    'COPAY_LIST' => $request->copay_list,
-                    'COPAY_DESC' => $request->copay_desc,
-                    'DATE_TIME_CREATED' => '',
-                    'USER_ID' => $cost_max,
-                    'DATE_TIME_MODIFIED' => ''
-                      ]);
+                        ->insert([
+                        'COPAY_LIST' => $request->copay_list,
+                        'COPAY_DESC' => $request->copay_desc,
+                        'DATE_TIME_CREATED' => '',
+                        'DATE_TIME_MODIFIED' => ''
+                          ]);
 
+                      
+                    if(!empty($request->cost_max_form)) {
 
-                      $matrix_list_obj = json_decode(json_encode($request->cost_max_form, true));
-                      // $effective_date   = $limitation_list->effective_date;
-                      // $termination_date = $limitation_list->termination_date;
-                      // $limitations_list = $limitation_list->limitations_list;
-                      if(!empty($request->cost_max_form)){
-  
-                          $matrix_list = $matrix_list_obj[0];
-  
-  
-                          foreach ($matrix_list_obj as $key => $matrix_list) {
-  
-                          $addCopaymatrix1 =  DB::table('COPAY_MATRIX')
-                          ->insert([
-                          'copay_amount' => $request->copay_amount,
-                          'copay_list' => $request->copay_list,
-                          'copay_percentage' => $request->copay_percentage,
-                          'days_supply' => $days_supply,
-                          'cost_max' => $cost_max,
-                          'step_schedule_indicator' => $step_schedule_indicator
-                            ]);
-                             
+                        $days_supply = "0";
+                        $step_schedule_indicator = "m";
+    
+                        
+    
+    
+                          $matrix_list_obj = json_decode(json_encode($request->cost_max_form, true));
+                          // $effective_date   = $limitation_list->effective_date;
+                          // $termination_date = $limitation_list->termination_date;
+                          // $limitations_list = $limitation_list->limitations_list;
+                          if(!empty($request->cost_max_form)){
+      
+                              $matrix_list = $matrix_list_obj[0];
+      
+                              foreach ($matrix_list_obj as $key => $matrix_list) {
+      
+                              $addCopaymatrix1 =  DB::table('COPAY_MATRIX')
+                              ->insert([
+                                'copay_list' => $request->copay_list,
+                                'cost_max' => $matrix_list->cost_max,
+                                // 'copay_amount' => $matrix_list->copay_amount,
+                                // 'copay_percentage' => $matrix_list->copay_percentage,
+                            //   'days_supply' => $days_supply,
+                            //   'step_schedule_indicator' => $step_schedule_indicator
+                                ]);
+                                 
+                              }
+
+            
+      
                           }
 
-                          return $this->respondWithToken($this->token(), 'Record Added Successfully', $addCopaymatrix1);
+                         
+                          
 
-  
-                      }
+                    } 
 
-                } else {
-                    $days_supply =  $request->days_supply;
-                    $cost_max = "0";
-                    $step_schedule_indicator = "d";
+                  
 
-
-
-                    $addCopaylist2 =  DB::table('COPAY_LIST')
-                    ->insert([
-                    'COPAY_LIST' => $request->copay_list,
-                    'COPAY_DESC' => $request->copay_desc,
-                    'DATE_TIME_CREATED' => '',
-                    'USER_ID' => $cost_max,
-                    'DATE_TIME_MODIFIED' => ''
-                      ]);
-
-
-
-                    
-                    $matrix_list_obj = json_decode(json_encode($request->days_supply_form, true));
-                    // $effective_date   = $limitation_list->effective_date;
-                    // $termination_date = $limitation_list->termination_date;
-                    // $limitations_list = $limitation_list->limitations_list;
-                    if(!empty($request->days_supply_form)){
-
-                        $matrix_list = $matrix_list_obj[0];
-
-
-                        foreach ($matrix_list_obj as $key => $matrix_list) {
-
-                        $addCopaymatrix2 =  DB::table('COPAY_MATRIX')
-                        ->insert([
-                        'copay_amount' => $request->copay_amount,
-                        'copay_list' => $request->copay_list,
-                        'copay_percentage' => $request->copay_percentage,
-                        'days_supply' => $days_supply,
-                        'cost_max' => $cost_max,
-                        'step_schedule_indicator' => $step_schedule_indicator
-                          ]);
-                           
-                        }
-
+                    if ($addCopaylist1) {
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $addCopaylist1);
                     }
 
-        
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $addCopaymatrix2);
+
+
                 }
 
               
+
+              
             } else if ($request->add_new == 0) {
-                if ($copayStepSchedule->count() < 1) {
+                if ($recordcheck) {
                     return $this->respondWithToken($this->token(), 'Record Not Found',  [], false, 404, 0);
                 }
                 if ($request->cost_max) {
@@ -187,40 +161,7 @@ class CopayStepScheduleController extends Controller
                     }
                    
                 }
-                //  else {
-                //     $days_supply =  $request->days_supply;
-                //     $cost_max = "0";
-                //     $step_schedule_indicator = "d";
-
-                //     $data=DB::table('COPAY_MATRIX')->where('copay_list',$request->copay_list)->delete(); 
-                //     $matrix_list_obj = json_decode(json_encode($request->days_supply_form, true));
-                //     // $effective_date   = $limitation_list->effective_date;
-                //     // $termination_date = $limitation_list->termination_date;
-                //     // $limitations_list = $limitation_list->limitations_list;
-                //     if(!empty($request->days_supply_form)){
-
-                //         $matrix_list = $matrix_list_obj[0];
-
-
-                //         foreach ($matrix_list_obj as $key => $matrix_list) {
-
-                //         $addCopaymatrix2 =  DB::table('COPAY_MATRIX')
-                //         ->insert([
-                //         'copay_amount' => $request->copay_amount,
-                //         'copay_list' => $request->copay_list,
-                //         'copay_percentage' => $request->copay_percentage,
-                //         'days_supply' => $days_supply,
-                //         'cost_max' => $cost_max,
-                //         'step_schedule_indicator' => $step_schedule_indicator
-                //           ]);
-                           
-                //         }
-                //         return $this->respondWithToken($this->token(), 'Record Updated Successfully !!!', $addCopaymatrix2);
-
-
-                //     }
-
-                // }
+                
                
             }
         }
