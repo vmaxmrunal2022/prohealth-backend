@@ -113,10 +113,7 @@ use Nette\Schema\Context;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-
 Route::group(['middleware' => 'apisession'], function ($router) {
-
-
 
     Route::group(['prefix' => 'users'], function ($router) {
         Route::post('/register', [UserController::class, 'register'])->name('register.user');
@@ -125,9 +122,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
     });
 
-
     Route::group(['prefix' => 'codes'], function ($router) {
-
         // BENEFITS
         Route::get('/benefits', [BenifitController::class, 'get'])->name('benefit.get'); // SEARCH
         Route::post('/benefits/submit', [BenifitController::class, 'add'])->name('benefit.submit');  // add
@@ -245,7 +240,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/provider/getAll', [ProviderDataProviderController::class, 'getAll'])->name('exception.provider.getAll');
 
         //exception Price Schedule list
-        Route::get('price-schedule/getAll', [PriceScheduleController::class, 'getAll']);
 
         //exception speciality list
         Route::get('/speciality/getAll', [SpecialityController::class, 'getAll'])->name('exception.speciality.getAll');
@@ -388,9 +382,16 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         //exception diagnosis list
         Route::get('/diagnosis/all', [DiagnosisController::class, 'all'])->name('exception.diagnosis.get'); 
 
+        Route::get('Procedure-cross-reference/search', [ProcedureCrossReferenceController::class, 'search'])->name('cross-reference.search'); 
 
+        Route::get('Procedure-cross-reference/list/{id}', [ProcedureCrossReferenceController::class, 'List'])->name('cross-reference.list'); 
+        Route::get('procedure-cross-reference/details/{id}/{id2}/{id3}/{id4}', [ProcedureCrossReferenceController::class, 'getDetails'])->name('cross-reference.details'); 
+
+
+        Route::post('procedure-cross-reference/add', [ProcedureCrossReferenceController::class, 'add'])->name('cross-reference.add'); 
+
+        
     });
-
 
     Route::group(['prefix' => 'prescriberdata'], function ($router) {
 
@@ -404,9 +405,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
 
     });
-
-
-
 
     Route::post('customer/add', [CustomerController::class, 'add']);
     Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
@@ -472,6 +470,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('superprovider/add', [SuperProviderNetworkController::class, 'add']);
         Route::get('supernetwork/dropdown', [SuperProviderNetworkController::class, 'dropDown']);
 
+        Route::get('supernetwork/getDetails/{ndcid}', [SuperProviderNetworkController::class, 'getDetails']);
 
 
         //TRADITIONAL NETWORK
@@ -588,6 +587,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('memberdata/pricing-strategy', [MemberController::class, 'getPricingStrategy']);
         Route::get('memberdata/view-limitations', [MemberController::class, 'getViewLimitations']);
         Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
+        Route::get('memberdata/dropdown', [MemberController::class, 'getMembersDropDownList']);
 
         //tab table routes
         Route::get('memberdata/get-coverage-information-table', [MemberController::class, 'getCoverageInformationTable']);
@@ -634,9 +634,11 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //Search Audit Trail
         Route::get('search-audit-trial/get-tables', [AuditTrailController::class, 'getTables'])->name('getAllTables');
+        Route::post('search-audit-trial/get-user-records', [AuditTrailController::class, 'getUserAllRecord']);
         Route::get('search-audit-trial/get-user_ids', [AuditTrailController::class, 'getUserIds'])->name('getUserIds');
         Route::get('search-audit-trial/get-record-actions', [AuditTrailController::class, 'getRecordAction'])->name('getRecordAction');
         Route::post('search-audit-trial/search-user-log', [AuditTrailController::class, 'searchUserLog'])->name('searchUserLog');
+        Route::post('check-query', [AuditTrailController::class, 'check_query']);
         Route::post('search-audit-trial/get-old-user-log', [AuditTrailController::class, 'getOldUserLog']);
 
         //System parameters
@@ -765,6 +767,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/drugcalss/details/{ndcid}', [DrugClassController::class, 'getNDCItemDetails'])->name('drugclass.details.get'); // DETAILS
     Route::post('/drugcalss/add', [DrugClassController::class, 'add']); // add
     Route::get('/drugcategories', [DrugClassController::class, 'DrugCategoryList']); // SEARCH
+    Route::get('/drugclass/dropdown', [DrugClassController::class, 'drugClassDropDown']); // SEARCH
 
     // GPI
 
@@ -1016,8 +1019,8 @@ Route::get('/state/search/{stateid?}', [Controller::class, 'getStatesOfCountrySe
 Route::get('/states', [Controller::class, 'getStatesOfCountry'])->name('states');
 Route::get('/member', [Controller::class, 'getMember'])->name('member');
 Route::get('/provider', [Controller::class, 'getProvider']);
-Route::post('/validationlist/eligibility/submit-eligiblity-form', [Controller::class, 'addEligiblityData']);
-Route::get('/validationlist/eligibility/details/{elig_lis_id}', [Controller::class, 'getEligibilityDetails']); // DETAIL
+Route::post('/validationlist/eligibility/submit-eligiblity-form', [EligibilityValidationListController::class, 'addEligiblityData']);
+Route::get('/validationlist/eligibility/details/{elig_lis_id}', [EligibilityValidationListController::class, 'getEligibilityDetails']); // DETAIL
 
 
 
@@ -1051,6 +1054,11 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('traditionalnetwork/details/{ndcid}', [TraditionalNetworkController::class, 'getDetails']);
     Route::post('traditionalnetwork/add', [TraditionalNetworkController::class, 'add']);
     Route::get('traditionalnetwork/all', [TraditionalNetworkController::class, 'all']);
+
+    Route::get('traditionalnetworks/dropdowns', [TraditionalNetworkController::class, 'TraditionalNetworkIdsDropdwon']);
+
+
+    
 
     //Flexible Network
 
@@ -1093,6 +1101,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('price-schedule/get-brand-type', [PriceScheduleController::class, 'getBrandType']);
     Route::get('price-schedule/get-brand-source', [PriceScheduleController::class, 'getBrandSource']);
     Route::post('price-schedule/submit', [PriceScheduleController::class, 'submitPriceSchedule']);
+    Route::get('price-schedule/get-all', [PriceScheduleController::class, 'getAll']);
 
     //Copay Schedule
     Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
@@ -1109,7 +1118,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('copay-step-schedule/get-days-supply', [CopayStepScheduleController::class, 'getDaysSupply']);
     Route::get('copay-step-schedule/get-max-cost', [CopayStepScheduleController::class, 'getMaxCost']);
     Route::get('copay-step-schedule/check-copay-list-existing', [CopayStepScheduleController::class, 'checkCopayListExist']);
-    Route::post('copay-step-schedule/submit', [CopayStepScheduleController::class, 'submit'])->name('submit.copay-step');
+    Route::post('copay-step-schedule/submit', [CopayStepScheduleController::class, 'submit'])->name('submitstep');
 
     //MAC List
     Route::get('mac-list/get', [MacListController::class, 'get'])->name('get.macList');
@@ -1195,7 +1204,8 @@ Route::group(['prefix' => 'plan-design/'], function () {
     Route::get('memberdata/accumulated-benifit-strategy', [MemberController::class, 'getAccumulatedBenifitStrategy']);
     Route::get('memberdata/pricing-strategy', [MemberController::class, 'getPricingStrategy']);
     Route::get('memberdata/view-limitations', [MemberController::class, 'getViewLimitations']);
-    Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
+    // Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
+    Route::post('memberdata/submit', [MemberController::class, 'submitMemberForm']);
 
     //tab table routes
     Route::get('memberdata/get-coverage-information-table', [MemberController::class, 'getCoverageInformationTable']);
