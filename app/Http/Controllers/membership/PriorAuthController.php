@@ -11,12 +11,12 @@ class PriorAuthController extends Controller
     public function get(Request $request)
     {
         $priorAuthList = DB::table('PRIOR_AUTHORIZATIONS')
-                         ->where('member_id', 'like', '%'. strtoupper($request->search) .'%')
-                         ->orWhere('person_code', 'like', '%'. strtoupper($request->search) .'%')
-                         ->orWhere('customer_id', 'like', '%'. strtoupper($request->search) .'%')
-                         ->orWhere('client_id', 'like', '%'. strtoupper($request->search) .'%')
-                         ->orWhere('client_group_id', 'like', '%'. strtoupper($request->search) .'%')
-                         ->orWhere('prior_auth_code_num', 'like', '%'. strtoupper($request->search) .'%')
+                         ->where('member_id', 'like', '%'.$request->search.'%')
+                         ->orWhere('person_code', 'like', '%'.$request->search.'%')
+                         ->orWhere('customer_id', 'like', '%'.$request->search.'%')
+                         ->orWhere('client_id', 'like', '%'.$request->search.'%')
+                         ->orWhere('client_group_id', 'like', '%'.$request->search.'%')
+                         ->orWhere('prior_auth_code_num', 'like', '%'.$request->search.'%')
 
                          ->get();
 
@@ -29,9 +29,9 @@ class PriorAuthController extends Controller
 
 
         $getEligibilityData = DB::table('PRIOR_AUTHORIZATIONS')
-        ->where('customer_id',strtoupper($request->customer_id))
-        ->where('client_id',strtoupper($request->client_id))
-        ->where('client_group_id', strtoupper($request->client_group_id))
+        ->where('customer_id',$request->customer_id)
+        ->where('client_id',$request->client_id)
+        ->where('client_group_id', $request->client_group_id)
         ->where('plan_id', $request->plan_id)
         ->first();
         
@@ -50,7 +50,7 @@ class PriorAuthController extends Controller
                 $addPriorAuth = DB::table('PRIOR_AUTHORIZATIONS')
                             ->insert([
                                 //Authorization Tab Starts
-                                'customer_id' => strtoupper($request->customer_id),
+                                'customer_id' => $request->customer_id,
                                 'client_id' => $request->client_id,
                                 'client_group_id' => $request->client_group_id,
                                 'prior_auth_code_num' => $request->prior_auth_code_num,
@@ -113,10 +113,11 @@ class PriorAuthController extends Controller
             return $this->respondWithToken($this->token(),'Record Added Successfully !', $addPriorAuth);
         }else if($request->add_new==0){
             $update = DB::table('PRIOR_AUTHORIZATIONS')
-                            ->where('member_id',strtoupper($request->member_id))
-                            ->where('customer_id', strtoupper($request->customer_id))
-                            ->where('client_id', strtoupper($request->client_id))
-                            ->where('client_group_id', strtoupper($request->client_group_id))
+                            ->where('prior_auth_code_num',$request->prior_auth_code_num)
+                            // ->where('member_id',$request->member_id)
+                            // ->where('customer_id',$request->customer_id)
+                            // ->where('client_id', $request->client_id)
+                            // ->where('client_group_id',$request->client_group_id)
                             ->update([
                                 //Authorization Tab Starts
                                 'prior_auth_code_num' => $request->prior_auth_code_num,

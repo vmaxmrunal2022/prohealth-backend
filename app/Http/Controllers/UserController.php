@@ -65,7 +65,7 @@ class UserController extends Controller
         $hash = crypt($password, $blowfishPrefix);
         $hashToThirdParty = substr($hash, -32);
         $hashFromThirdParty = $hashToThirdParty;
-        // dd($hashFromThirdParty);
+        // dd($blowfishPrefix);
         // $pw = $request->USER_PASSWORD;
         $hashed = Hash::make($hashFromThirdParty);
         $check_password = Hash::check($hashFromThirdParty, $hashed);

@@ -508,6 +508,9 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::get('chains/search', [ChainController::class, 'search']);
 
+        Route::get('chains/dropdowns', [ChainController::class, 'dropdowns']);
+
+
         Route::get('chain/get/{ndcid}', [ChainController::class, 'getList']);
         Route::post('chain/add', [ChainController::class, 'add']);
     });
