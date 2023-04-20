@@ -130,7 +130,7 @@ class UserDefinationController extends Controller
         return $this->respondWithToken($this->token(), '', $validate);
     }
 
-    public function submitFormData(Request $request)
+    public function submitFormData_old(Request $request)
     {
         $prefix = '$2y$';
         $cost = '10';
@@ -304,6 +304,162 @@ class UserDefinationController extends Controller
         // }
     }
 
+    public function submitFormData(Request $request)
+    {
+        // dd($request->E);
+        $prefix = '$2y$';
+        $cost = '10';
+        $salt = '$thisisahardcodedsalt$';
+        $blowfishPrefix = $prefix . $cost . $salt;
+        $password = $request->user_password;
+        $hash = crypt($password, $blowfishPrefix);
+        $hashToThirdParty = substr($hash, -32);
+        $hashFromThirdParty = $hashToThirdParty;
+
+        if ($request->new) {
+            $validator = Validator::make($request->all(), [
+                'user_id' => ['required', Rule::unique('fe_users')->where(function ($q) {
+                    $q->whereNotNull('user_id');
+                })],
+                'user_password' => ['required'],
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else  if ($request->has('new')) {
+                //$addUser = DB::table('FE_USERS')->insert([
+                $addUser = UserDefinition::insert([
+                    'user_id' => $request->user_id,
+                    'application' => 'PBM',
+                    'SQL_SERVER_USER_ID' => 'phi',
+                    'SQL_SERVER_USER_PASSWORD' => 'comet',
+                    //'user_password' => $request->user_password,
+                    'user_password' => $hashFromThirdParty,
+                    'user_first_name' => $request->user_first_name,
+                    'user_last_name' => $request->user_last_name,
+                    'group_id' => $request->group_id,
+                    'user_id_created' => $request->session()->get('user'),
+                    'privs' => $request->default_system_user,
+                    'restrict_security_flag' => $request->restrict_security_flag
+                ]);
+
+                //TODO
+                // 1.Table name
+                // 2. record action
+                // 3. record snapshot log
+                $addUserLog = DB::table('FE_RECORD_LOG')->insert([
+                    'user_id' => $request->user_id,
+                    'application' => 'PBM',
+                    'date_created' => date('Ymd'),
+                    'time_created' => date('HiA'),
+                    // 'SQL_SERVER_USER_ID' => 'phi',
+                    // 'SQL_SERVER_USER_PASSWORD' => 'comet',
+                    // 'user_password' => $request->user_password,
+                    // 'user_first_name' => $request->user_first_name,
+                    // 'user_last_name' => $request->user_last_name,
+                    // 'group_id' => $request->group_id,
+                ]);
+
+                if ($addUser) {
+                    return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addUser);
+                }
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                'user_id' => ['required'],
+                'user_password' => ['required'],
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else
+
+                $user_data = DB::table('fe_users')
+                    ->where('user_id', $request->user_id)
+                    ->first();
+            $user_profile = str_split($user_data->user_profile);
+            //E->Ready Only
+            $e = [];
+            foreach ($request->E as $key => $val) {
+                if ($val == 'true') {
+                    $arr = $key;
+                    array_push($e, $arr);
+                }
+            }
+            for ($i = 0; $i < count($e); $i++) {
+                $user_profile[$e[$i]] = 'E';
+            }
+
+            //D->Ready/Write/Audit
+            $d = [];
+            foreach ($request->D as $key => $val) {
+                if ($val == 'true') {
+                    $arr = $key;
+                    array_push($d, $arr);
+                }
+            }
+            for ($i = 0; $i < count($d); $i++) {
+                $user_profile[$d[$i]] = 'D';
+            }
+
+            //C->Ready/Write
+            $c = [];
+            foreach ($request->C as $key => $val) {
+                if ($val == 'true') {
+                    $arr = $key;
+                    array_push($c, $arr);
+                }
+            }
+            for ($i = 0; $i < count($c); $i++) {
+                $user_profile[$c[$i]] = 'C';
+            }
+
+            
+            $updated_user_profile = implode('', $user_profile);
+
+            // $user_profile[$position] = 'D';
+            // $updated_user_profile = implode('', $user_profile);
+            // dd($request->E);
+
+
+            // dd($updated_user_profile);
+
+
+            //dont touch following code
+            $updateUser = DB::table('FE_USERS')
+                ->where('user_id', $request->user_id)
+                ->update([
+                    'user_password' => $request->user_password,
+                    'user_first_name' => $request->user_first_name,
+                    'user_last_name' => $request->user_last_name,
+                    'group_id' => $request->group_id,
+                    'user_id_created' => $request->session()->get('user'),
+                    'privs' => $request->default_system_user,
+                    'restrict_security_flag' => $request->restrict_security_flag,
+                    'user_profile' => $updated_user_profile,
+                ]);
+            // dd($updateUser);
+            //TODO
+            // 1.Table name
+            // 2. record action
+            // 3. record snapshot log
+            $updateUserLog = DB::table('FE_RECORD_LOG')->insert([
+                'user_id' => $request->user_id,
+                'application' => 'PBM',
+                'date_created' => date('Ymd'),
+                'time_created' => date('HiA'),
+                // 'SQL_SERVER_USER_ID' => 'phi',
+                // 'SQL_SERVER_USER_PASSWORD' => 'comet',
+                // 'user_password' => $request->user_password,
+                // 'user_first_name' => $request->user_first_name,
+                // 'user_last_name' => $request->user_last_name,
+                // 'group_id' => $request->group_id
+            ]);
+
+            if ($updateUser) {
+                return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateUser);
+            }
+        }
+    }
+
     public function getCustomers(Request $request)
     {
         if ($request->user_id == 'undefined') {
@@ -427,5 +583,39 @@ class UserDefinationController extends Controller
         $group_ids = DB::table('fe_user_groups')
             ->get();
         return $this->respondWithToken($this->token(), '', $group_ids);
+    }
+
+    public function getAccessData(Request $request)
+    {
+
+        $user_data = DB::table('fe_users')->where('user_id', $request->user_id)->first();
+        $user_profile = str_split($user_data->user_profile);
+        $position = $request->search;
+        // $user_profile[$position] = 'D';
+        $updated_user_profile = implode('', $user_profile);
+
+        // $update = DB::table('fe_users')->where('user_id', $request->user_id)
+        //     ->update([
+        //         'user_profile' => $updated_user_profile,
+        //     ]);
+        // dd($user_profile);
+        return $this->respondWithToken($this->token(), '', $user_profile[$position]);
+    }
+
+    public function getAllAccess(Request $request)
+    {
+
+        $user_data = DB::table('fe_users')->where('user_id', $request->user_id)->first();
+        $user_profile = str_split($user_data->user_profile);
+        $position = $request->search;
+        // $user_profile[$position] = 'D';
+        $updated_user_profile = implode('', $user_profile);
+
+        // $update = DB::table('fe_users')->where('user_id', $request->user_id)
+        //     ->update([
+        //         'user_profile' => $updated_user_profile,
+        //     ]);
+        // dd($user_profile);
+        return $this->respondWithToken($this->token(), '', $user_profile);
     }
 }
