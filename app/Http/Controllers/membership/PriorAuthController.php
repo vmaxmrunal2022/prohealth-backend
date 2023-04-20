@@ -34,6 +34,12 @@ class PriorAuthController extends Controller
         ->where('client_group_id', $request->client_group_id)
         ->where('plan_id', $request->plan_id)
         ->first();
+
+
+              $count = 12 +1;
+              $today = date("Ymd");
+              $today .= str_pad($count,4,"0",STR_PAD_LEFT );
+              echo $today;
         
         
         if($request->add_new==1)
