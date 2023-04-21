@@ -604,7 +604,9 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //Prior Authorization
         Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
+        Route::get('prior-authorization/authcode_auto_generate', [PriorAuthController::class, 'priorAuthCodeGenerate']);
 
+        
         //Plan Validation
         Route::get('plan-validation/get', [PlanValidationController::class, 'get']);
         Route::get('plan-validation/get-client-details', [PlanValidationController::class, 'getClientDetails']);
@@ -1122,6 +1124,11 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('copay-step-schedule/get-max-cost', [CopayStepScheduleController::class, 'getMaxCost']);
     Route::get('copay-step-schedule/check-copay-list-existing', [CopayStepScheduleController::class, 'checkCopayListExist']);
     Route::post('copay-step-schedule/submit', [CopayStepScheduleController::class, 'submit'])->name('submitstep');
+    Route::get('copay-step-schedule/getmaxcosts/{id}', [CopayStepScheduleController::class, 'getmaxList'])->name('getmaxlists');
+    
+
+    Route::get('copay-step-schedule/getcopaylistdata', [CopayStepScheduleController::class, 'getList']);
+
 
     //MAC List
     Route::get('mac-list/get', [MacListController::class, 'get'])->name('get.macList');

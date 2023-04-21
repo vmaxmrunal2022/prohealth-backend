@@ -24,6 +24,22 @@ class PriorAuthController extends Controller
         return $this->respondWithToken($this->token(), '', $priorAuthList);
     }
 
+    public function priorAuthCodeGenerate(Request $request){
+
+        $today_date=date("Ymd");
+        
+        $today_count=DB::table('PRIOR_AUTHORIZATIONS')
+        ->where('PRIOR_AUTH_CODE_NUM','like', '%'. $today_date. '%')->get()->count();
+
+        $count_increment = $today_count +1;
+        $prior_auth_code = date("Ymd");
+        $prior_auth_code .= str_pad($count_increment,4,"0",STR_PAD_LEFT );
+
+        return $this->respondWithToken($this->token(), 'Auto Generate Prior Auth Code', $prior_auth_code);
+
+
+    }
+
     public function submitPriorAuthorization(Request $request)
     {   
 
@@ -36,10 +52,24 @@ class PriorAuthController extends Controller
         ->first();
 
 
-              $count = 12 +1;
-              $today = date("Ymd");
-              $today .= str_pad($count,4,"0",STR_PAD_LEFT );
-              echo $today;
+
+        // $today_date=date("Ymd");
+        
+        // $today_count=DB::table('PRIOR_AUTHORIZATIONS')
+        // ->where('PRIOR_AUTH_CODE_NUM','like', '%'. $today_date. '%')->get()->count();
+
+        // $count_increment = $today_count +1;
+        // $prior_auth_code = date("Ymd");
+        // $prior_auth_code .= str_pad($count_increment,4,"0",STR_PAD_LEFT );
+
+        // dd($today);
+
+        // echo $today;
+      
+
+
+
+              
         
         
         if($request->add_new==1)
@@ -115,18 +145,27 @@ class PriorAuthController extends Controller
 
             }
 
+            $inserted_record = DB::table('PRIOR_AUTHORIZATIONS')
+        ->where('customer_id',$request->customer_id)
+        ->where('client_id',$request->client_id)
+        ->where('client_group_id', $request->client_group_id)
+        ->where('plan_id', $request->plan_id)
+        ->first();
+
             
-            return $this->respondWithToken($this->token(),'Record Added Successfully !', $addPriorAuth);
+            return $this->respondWithToken('success','Record Added Successfully',$inserted_record,$this->token(),200);
+
         }else if($request->add_new==0){
+            
             $update = DB::table('PRIOR_AUTHORIZATIONS')
                             ->where('prior_auth_code_num',$request->prior_auth_code_num)
-                            // ->where('member_id',$request->member_id)
-                            // ->where('customer_id',$request->customer_id)
-                            // ->where('client_id', $request->client_id)
-                            // ->where('client_group_id',$request->client_group_id)
+                            ->where('member_id',$request->member_id)
+                            ->where('customer_id',$request->customer_id)
+                            ->where('client_id', $request->client_id)
+                            ->where('client_group_id',$request->client_group_id)
                             ->update([
                                 //Authorization Tab Starts
-                                'prior_auth_code_num' => $request->prior_auth_code_num,
+                                // 'prior_auth_code_num' => $prior_auth_code,
                                 'prior_auth_type' => $request->prior_auth_type,
                                 'person_code' => $request->person_code,
                                 'patient_pin_number' => $request->patient_pin_number,
