@@ -491,7 +491,10 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('flexiblenetwork/details/{ndcid}', [FlexibleNetworkController::class, 'getDetails']);
 
         Route::post('flexiblenetwork/add', [FlexibleNetworkController::class, 'add']);
+        Route::get('flexiblenetwork/dropdown', [FlexibleNetworkController::class, 'flexibledropdown']);
 
+
+        
         //Rule Id 
 
         Route::get('ruleid/search', [FlexibleNetworkController::class, 'RuleIdsearch']);
