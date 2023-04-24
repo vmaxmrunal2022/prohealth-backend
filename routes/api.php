@@ -1196,6 +1196,8 @@ Route::group(['prefix' => 'administrator/'], function () {
     Route::get('user-defination/get-client-groups', [UserDefinationController::class, 'getClientGroups']);
     Route::get('user-defination/get-access-detail', [UserDefinationController::class, 'getAccessData']);
     Route::get('user-defination/get-all-access', [UserDefinationController::class, 'getAllAccess']);
+    Route::get('user-defination/get-group-all-access', [UserDefinationController::class, 'getGroupAllAccess']);
+    Route::get('user-defination/get-group-access-details', [UserDefinationController::class, 'getGroupAccessDetails']);
 
     //Search Audit Trail
     Route::get('search-audit-trial/get-tables', [AuditTrailController::class, 'getTables'])->name('getAllTables');

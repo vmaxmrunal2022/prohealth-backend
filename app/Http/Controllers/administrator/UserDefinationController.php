@@ -306,7 +306,7 @@ class UserDefinationController extends Controller
 
     public function submitFormData(Request $request)
     {
-        // dd($request->E);
+        // dd($request->all());
         $prefix = '$2y$';
         $cost = '10';
         $salt = '$thisisahardcodedsalt$';
@@ -327,6 +327,55 @@ class UserDefinationController extends Controller
                 return response($validator->errors(), 400);
             } else  if ($request->has('new')) {
                 //$addUser = DB::table('FE_USERS')->insert([
+                //E->Ready Only
+                $e = [];
+                foreach ($request->E as $key => $val) {
+                    if ($val == 'true') {
+                        $arr = $key;
+                        array_push($e, $arr);
+                    }
+                }
+                for ($i = 0; $i < count($e); $i++) {
+                    $user_profile[$e[$i]] = 'E';
+                }
+
+
+                //C->Ready/Write
+                $c = [];
+                foreach ($request->C as $key => $val) {
+                    if ($val == 'true') {
+                        $arr = $key;
+                        array_push($c, $arr);
+                    }
+                }
+                for ($i = 0; $i < count($c); $i++) {
+                    $user_profile[$c[$i]] = 'C';
+                }
+
+                //D->Ready/Write/Audit
+                $d = [];
+                foreach ($request->D as $key => $val) {
+                    if ($val == 'true') {
+                        $arr = $key;
+                        array_push($d, $arr);
+                    }
+                }
+                for ($i = 0; $i < count($d); $i++) {
+                    $user_profile[$d[$i]] = 'D';
+                }
+
+                //A->None
+                $a = [];
+                foreach ($request->A as $key => $val) {
+                    if ($val == 'true') {
+                        $arr = $key;
+                        array_push($a, $arr);
+                    }
+                }
+                for ($i = 0; $i < count($a); $i++) {
+                    $user_profile[$a[$i]] = 'A';
+                }
+                $updated_user_profile = implode('', $user_profile);
                 $addUser = UserDefinition::insert([
                     'user_id' => $request->user_id,
                     'application' => 'PBM',
@@ -339,25 +388,10 @@ class UserDefinationController extends Controller
                     'group_id' => $request->group_id,
                     'user_id_created' => $request->session()->get('user'),
                     'privs' => $request->default_system_user,
-                    'restrict_security_flag' => $request->restrict_security_flag
+                    'restrict_security_flag' => $request->restrict_security_flag,
+                    'user_profile' => $updated_user_profile,
                 ]);
 
-                //TODO
-                // 1.Table name
-                // 2. record action
-                // 3. record snapshot log
-                $addUserLog = DB::table('FE_RECORD_LOG')->insert([
-                    'user_id' => $request->user_id,
-                    'application' => 'PBM',
-                    'date_created' => date('Ymd'),
-                    'time_created' => date('HiA'),
-                    // 'SQL_SERVER_USER_ID' => 'phi',
-                    // 'SQL_SERVER_USER_PASSWORD' => 'comet',
-                    // 'user_password' => $request->user_password,
-                    // 'user_first_name' => $request->user_first_name,
-                    // 'user_last_name' => $request->user_last_name,
-                    // 'group_id' => $request->group_id,
-                ]);
 
                 if ($addUser) {
                     return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addUser);
@@ -376,6 +410,7 @@ class UserDefinationController extends Controller
                     ->where('user_id', $request->user_id)
                     ->first();
             $user_profile = str_split($user_data->user_profile);
+
             //E->Ready Only
             $e = [];
             foreach ($request->E as $key => $val) {
@@ -386,6 +421,19 @@ class UserDefinationController extends Controller
             }
             for ($i = 0; $i < count($e); $i++) {
                 $user_profile[$e[$i]] = 'E';
+            }
+
+
+            //C->Ready/Write
+            $c = [];
+            foreach ($request->C as $key => $val) {
+                if ($val == 'true') {
+                    $arr = $key;
+                    array_push($c, $arr);
+                }
+            }
+            for ($i = 0; $i < count($c); $i++) {
+                $user_profile[$c[$i]] = 'C';
             }
 
             //D->Ready/Write/Audit
@@ -400,30 +448,20 @@ class UserDefinationController extends Controller
                 $user_profile[$d[$i]] = 'D';
             }
 
-            //C->Ready/Write
-            $c = [];
-            foreach ($request->C as $key => $val) {
+            //A->None
+            $a = [];
+            foreach ($request->A as $key => $val) {
                 if ($val == 'true') {
                     $arr = $key;
-                    array_push($c, $arr);
+                    array_push($a, $arr);
                 }
             }
-            for ($i = 0; $i < count($c); $i++) {
-                $user_profile[$c[$i]] = 'C';
+            for ($i = 0; $i < count($a); $i++) {
+                $user_profile[$a[$i]] = 'A';
             }
-
-            
             $updated_user_profile = implode('', $user_profile);
 
-            // $user_profile[$position] = 'D';
-            // $updated_user_profile = implode('', $user_profile);
-            // dd($request->E);
 
-
-            // dd($updated_user_profile);
-
-
-            //dont touch following code
             $updateUser = DB::table('FE_USERS')
                 ->where('user_id', $request->user_id)
                 ->update([
@@ -436,23 +474,7 @@ class UserDefinationController extends Controller
                     'restrict_security_flag' => $request->restrict_security_flag,
                     'user_profile' => $updated_user_profile,
                 ]);
-            // dd($updateUser);
-            //TODO
-            // 1.Table name
-            // 2. record action
-            // 3. record snapshot log
-            $updateUserLog = DB::table('FE_RECORD_LOG')->insert([
-                'user_id' => $request->user_id,
-                'application' => 'PBM',
-                'date_created' => date('Ymd'),
-                'time_created' => date('HiA'),
-                // 'SQL_SERVER_USER_ID' => 'phi',
-                // 'SQL_SERVER_USER_PASSWORD' => 'comet',
-                // 'user_password' => $request->user_password,
-                // 'user_first_name' => $request->user_first_name,
-                // 'user_last_name' => $request->user_last_name,
-                // 'group_id' => $request->group_id
-            ]);
+
 
             if ($updateUser) {
                 return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateUser);
@@ -541,21 +563,22 @@ class UserDefinationController extends Controller
 
     public function submitGroup(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'group_id' => ['required', Rule::unique('FE_USER_GROUPS')->where(function ($q) {
-                $q->whereNotNull('group_id');
-            })],
-            'customer_id' => ['required'],
-            'status' => ['required'],
-            'exclude_flag' => ['required']
-        ]);
-        if ($validator->fails()) {
-            return response($validator->errors(), 400);
-        } else if ($request->add_new_group) {
-            $validate = DB::table('FE_USER_GROUPS')
-                ->where(DB::raw('UPPER(GROUP_ID)'), strtoupper($request->group_id))
-                ->get()
-                ->count();
+        if ($request->add_new_group) {
+            $validator = Validator::make($request->all(), [
+                'group_id' => ['required', Rule::unique('FE_USER_GROUPS')->where(function ($q) {
+                    $q->whereNotNull('group_id');
+                })],
+                'customer_id' => ['required'],
+                'status' => ['required'],
+                'exclude_flag' => ['required']
+            ]);
+            if ($validator->fails()) {
+                return response($validator->errors(), 400);
+            } else
+                $validate = DB::table('FE_USER_GROUPS')
+                    ->where(DB::raw('UPPER(GROUP_ID)'), strtoupper($request->group_id))
+                    ->get()
+                    ->count();
             if ($validate <= "0") {
                 $add_fe_group = DB::table('FE_USER_GROUPS')
                     ->insert([
@@ -568,11 +591,64 @@ class UserDefinationController extends Controller
                 return $this->respondWithToken($this->token(), 'Something went wrong!');
             }
         } else {
+            $user_data = DB::table('FE_USER_GROUPS')
+                ->where('group_id', $request->group_id)
+                ->first();
+            $user_profile = str_split($user_data->user_profile);
+
+            $e = [];
+            foreach ($request->E as $key => $val) {
+                if ($val == 'true') {
+                    $arr = $key;
+                    array_push($e, $arr);
+                }
+            }
+            for ($i = 0; $i < count($e); $i++) {
+                $user_profile[$e[$i]] = 'E';
+            }
+
+
+            //C->Ready/Write
+            $c = [];
+            foreach ($request->C as $key => $val) {
+                if ($val == 'true') {
+                    $arr = $key;
+                    array_push($c, $arr);
+                }
+            }
+            for ($i = 0; $i < count($c); $i++) {
+                $user_profile[$c[$i]] = 'C';
+            }
+
+            //D->Ready/Write/Audit
+            $d = [];
+            foreach ($request->D as $key => $val) {
+                if ($val == 'true') {
+                    $arr = $key;
+                    array_push($d, $arr);
+                }
+            }
+            for ($i = 0; $i < count($d); $i++) {
+                $user_profile[$d[$i]] = 'D';
+            }
+
+            //A->None
+            $a = [];
+            foreach ($request->A as $key => $val) {
+                if ($val == 'true') {
+                    $arr = $key;
+                    array_push($a, $arr);
+                }
+            }
+            for ($i = 0; $i < count($a); $i++) {
+                $user_profile[$a[$i]] = 'A';
+            }
+            $updated_user_profile = implode('', $user_profile);
             $update_fe_group = DB::table('FE_USER_GROUPS')
                 ->where(DB::raw('UPPER(group_id)'), strtoupper($request->group_id))
                 ->update([
                     'group_name' => $request->group_name,
-                    'user_profile' => $request->user_profile
+                    'user_profile' => $updated_user_profile
                 ]);
             return $this->respondWithToken($this->token(), 'Updated Successfully!', $update_fe_group);
         }
@@ -587,7 +663,6 @@ class UserDefinationController extends Controller
 
     public function getAccessData(Request $request)
     {
-
         $user_data = DB::table('fe_users')->where('user_id', $request->user_id)->first();
         $user_profile = str_split($user_data->user_profile);
         $position = $request->search;
@@ -604,7 +679,6 @@ class UserDefinationController extends Controller
 
     public function getAllAccess(Request $request)
     {
-
         $user_data = DB::table('fe_users')->where('user_id', $request->user_id)->first();
         $user_profile = str_split($user_data->user_profile);
         $position = $request->search;
@@ -617,5 +691,37 @@ class UserDefinationController extends Controller
         //     ]);
         // dd($user_profile);
         return $this->respondWithToken($this->token(), '', $user_profile);
+    }
+
+    public function getGroupAllAccess(Request $request)
+    {
+        $user_data = DB::table('fe_user_groups')->where('group_id', $request->group_id)->first();
+        $user_profile = str_split($user_data->user_profile);
+        $position = $request->search;
+        // $user_profile[$position] = 'D';
+        $updated_user_profile = implode('', $user_profile);
+
+        // $update = DB::table('fe_users')->where('user_id', $request->user_id)
+        //     ->update([
+        //         'user_profile' => $updated_user_profile,
+        //     ]);
+        // dd($user_profile);
+        return $this->respondWithToken($this->token(), '', $user_profile);
+    }
+
+    public function getGroupAccessDetails(Request $request)
+    {
+        $user_data = DB::table('fe_user_groups')->where('group_id', $request->group_id)->first();
+        $user_profile = str_split($user_data->user_profile);
+        $position = $request->access_code;
+        // $user_profile[$position] = 'D';
+        $updated_user_profile = implode('', $user_profile);
+
+        // $update = DB::table('fe_users')->where('user_id', $request->user_id)
+        //     ->update([
+        //         'user_profile' => $updated_user_profile,
+        //     ]);
+        // dd($user_profile);
+        return $this->respondWithToken($this->token(), '', $user_profile[$position]);
     }
 }
