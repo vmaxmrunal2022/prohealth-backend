@@ -11,73 +11,73 @@ class ProviderDataProviderController extends Controller
 {
 
 
-    public function add1(Request $request)
-    {
+    // public function add1(Request $request)
+    // {
 
 
-        // $benefitcode = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', 'like', $request->pharmacy_nabp)->first();
+    //     // $benefitcode = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', 'like', $request->pharmacy_nabp)->first();
 
-        // dd($benefitcode);
-
-
-
-        // $createddate = date( 'y-m-d' );
+    //     // dd($benefitcode);
 
 
 
-        $createddate = DB::table('PHARMACY_TABLE')
-            ->where('pharmacy_nabp', $request->pharmacy_nabp)
-            ->update(
-                [
-                    'pharmacy_nabp' => $request->pharmacy_nabp,
-                    'pharmacy_name' => $request->pharmacy_name,
-                    // 'address_1'=>$request->address_1,
-                    // 'provider_first_name'=>$request->provider_first_name,
-                    // 'provider_last_name'=>$request->provider_last_name,
-                    // 'pharmacy_class'=>$request->pharmacy_class,
-                    // 'address_2'=>$request->address_2,
-
-                    // 'city'=>$request->city,
-                    // 'state'=>$request->state,
-                    // 'zip_code'=>$request->zip_code,
-                    // 'zip_plus_2'=>$request->zip_plus_2,
-                    // 'phone'=>$request->phone, 
-                    // 'fax'=>$request->fax,
-                    // 'mailing_address_1'=>$request->mailing_address_1,
-                    // 'mailing_address_2'=>$request->mailing_address_2,
-                    // 'mailing_city'=>$request->mailing_city,
-                    // 'mailing_state'=>$request->mailing_state,
-                    // 'mailing_zip_code'=>$request->mailing_zip_code,
-                    // 'mailing_zip_plus_2'=>$request->mailing_zip_plus_2,
-                    // 'edi_address'=>$request->edi_address,
-                    // 'pharmacy_class'=>$request->pharmacy_class,
-                    // 'aba_rtn'=>$request->aba_rtn,
-                    // 'store_number'=>$request->store_number,
-                    // 'head_office_ind'=>$request->head_office_ind,
-                    // 'pharmacy_chain'=>$request->pharmacy_chain,
-                    // 'mail_order'=>$request->mail_order,
-                    // 'region'=>$request->region,
-                    // 'district'=>$request->district,
-                    // 'market'=>$request->market,
-
-                    // 'price_zone'=>$request->price_zone,
-                    // 'scd_age_threshold'=>$request->scd_age_threshold,
-                    // 'market'=>$request->market,
-                    // 'market'=>$request->market,
+    //     // $createddate = date( 'y-m-d' );
 
 
-                ]
-            );
 
-        // // dd($request->pharmacy_nabp);
+    //     $createddate = DB::table('PHARMACY_TABLE')
+    //         ->where('pharmacy_nabp', $request->pharmacy_nabp)
+    //         ->update(
+    //             [
+    //                 'pharmacy_nabp' => $request->pharmacy_nabp,
+    //                 'pharmacy_name' => $request->pharmacy_name,
+    //                 // 'address_1'=>$request->address_1,
+    //                 // 'provider_first_name'=>$request->provider_first_name,
+    //                 // 'provider_last_name'=>$request->provider_last_name,
+    //                 // 'pharmacy_class'=>$request->pharmacy_class,
+    //                 // 'address_2'=>$request->address_2,
 
-        // $benefitcode = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', 'like', $request->pharmacy_nabp)->first();
+    //                 // 'city'=>$request->city,
+    //                 // 'state'=>$request->state,
+    //                 // 'zip_code'=>$request->zip_code,
+    //                 // 'zip_plus_2'=>$request->zip_plus_2,
+    //                 // 'phone'=>$request->phone, 
+    //                 // 'fax'=>$request->fax,
+    //                 // 'mailing_address_1'=>$request->mailing_address_1,
+    //                 // 'mailing_address_2'=>$request->mailing_address_2,
+    //                 // 'mailing_city'=>$request->mailing_city,
+    //                 // 'mailing_state'=>$request->mailing_state,
+    //                 // 'mailing_zip_code'=>$request->mailing_zip_code,
+    //                 // 'mailing_zip_plus_2'=>$request->mailing_zip_plus_2,
+    //                 // 'edi_address'=>$request->edi_address,
+    //                 // 'pharmacy_class'=>$request->pharmacy_class,
+    //                 // 'aba_rtn'=>$request->aba_rtn,
+    //                 // 'store_number'=>$request->store_number,
+    //                 // 'head_office_ind'=>$request->head_office_ind,
+    //                 // 'pharmacy_chain'=>$request->pharmacy_chain,
+    //                 // 'mail_order'=>$request->mail_order,
+    //                 // 'region'=>$request->region,
+    //                 // 'district'=>$request->district,
+    //                 // 'market'=>$request->market,
 
-        $benefitcode = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', 'like', '%' . $request->pharmacy_nabp . '%')->first();
+    //                 // 'price_zone'=>$request->price_zone,
+    //                 // 'scd_age_threshold'=>$request->scd_age_threshold,
+    //                 // 'market'=>$request->market,
+    //                 // 'market'=>$request->market,
 
 
-        return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
-    }
+    //             ]
+    //         );
+
+    //     // // dd($request->pharmacy_nabp);
+
+    //     // $benefitcode = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', 'like', $request->pharmacy_nabp)->first();
+
+    //     $benefitcode = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', 'like', '%' . $request->pharmacy_nabp . '%')->first();
+
+
+    //     return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
+    // }
 
 
 
@@ -85,8 +85,11 @@ class ProviderDataProviderController extends Controller
     public function add(Request $request)
     {
         $getEligibilityData = DB::table('PHARMACY_TABLE')
-            ->where('pharmacy_nabp', strtoupper($request->pharmacy_nabp))
+            ->where('pharmacy_nabp',$request->pharmacy_nabp)
             ->first();
+
+            $createddate = date('y-m-d');
+
 
         // dd($request->all());
 
@@ -97,7 +100,7 @@ class ProviderDataProviderController extends Controller
 
                 $addData = DB::table('PHARMACY_TABLE')
                     ->insert([
-                        'PHARMACY_NABP' => strtoupper($request->pharmacy_nabp),
+                        'PHARMACY_NABP' => $request->pharmacy_nabp,
                         'PHARMACY_NAME' => ($request->pharmacy_name),
                         'ADDRESS_1' => $request->address_1,
                         'ADDRESS_2' => $request->address_2,
@@ -168,6 +171,73 @@ class ProviderDataProviderController extends Controller
 
 
                     ]);
+
+
+                    $traditional_list_obj = json_decode(json_encode($request->traditional_form, true));
+
+                    if (!empty($request->traditional_form)) {
+                        $traditional_list = $traditional_list_obj[0];
+        
+                        foreach ($traditional_list_obj as $key => $traditional_list) {
+        
+        
+                        $rx_networks = DB::table('RX_NETWORKS')->insert(
+                            [
+                                'NETWORK_ID' => $request->network_id,
+                                'PHARMACY_NABP' => $traditional_list->pharmacy_nabp,
+                                'PRICE_SCHEDULE_OVRD' => $traditional_list->price_schedule_ovrd,
+                                'PARTICIPATION_OVRD' => $traditional_list->participation_ovrd,
+                                'DATE_TIME_CREATED' => $createddate,
+                                'DATE_TIME_MODIFIED' => $createddate,
+                                'EFFECTIVE_DATE' => $traditional_list->effective_date,
+                                'TERMINATION_DATE' => $traditional_list->termination_date,
+            
+                            ]
+                        );
+                            
+        
+        
+                        }
+                    }
+
+
+                    $flexible_network_list = json_decode(json_encode($request->flexible_form, true));
+
+                        if (!empty($request->flexible_form)) {
+                            $flexible_list = $flexible_network_list[0];
+            
+                            foreach ($flexible_network_list as $key => $flexible_list) {
+            
+                                $Network_rules = DB::table('RX_NETWORK_RULES')->insert(
+                                    [
+                                        'RX_NETWORK_RULE_ID' => $request->rx_network_rule_id,
+                                        'RX_NETWORK_RULE_ID_NUMBER' => $flexible_list->rx_network_rule_id_number,
+                                        'PHARMACY_CHAIN' => $flexible_list->pharmacy_chain,
+                                        'STATE' => $flexible_list->state,
+                                        'COUNTY' => $flexible_list->county,
+                                        'ZIP_CODE' => $flexible_list->zip_code,
+                                        'AREA_CODE' => $flexible_list->area_code,
+                                        'EXCHANGE_CODE'=>$flexible_list->exchange_code,
+                                        'PRICE_SCHEDULE_OVRD' => $flexible_list->price_schedule_ovrd,
+                                        'EXCLUDE_RULE' => $flexible_list->exclude_rule,
+                                        'DATE_TIME_CREATED'=>$createddate,
+                                        'DATE_TIME_MODIFIED'=>$createddate,
+                                        'PHARMACY_STATUS' => $flexible_list->pharmacy_status,
+                                        'EFFECTIVE_DATE' => $flexible_list->effective_date,
+                                        'TERMINATION_DATE' =>$flexible_list->termination_date,
+                                    ]
+                                );
+                           
+            
+            
+                            }
+                        }
+
+
+
+
+
+
             }
 
             if ($addData) {
@@ -175,7 +245,7 @@ class ProviderDataProviderController extends Controller
             }
         } else if ($request->updateForm == 'update') {
             $updateData = DB::table('PHARMACY_TABLE')
-                ->where('pharmacy_nabp', strtoupper($request->pharmacy_nabp))
+                ->where('pharmacy_nabp',$request->pharmacy_nabp)
                 ->update([
                     'PHARMACY_NAME' => ($request->pharmacy_name),
                     'ADDRESS_1' => $request->address_1,
@@ -246,7 +316,78 @@ class ProviderDataProviderController extends Controller
                     'MAILING_COUNTRY_CODE' => $request->mailing_country_code,
 
                 ]);
-            return $this->respondWithToken($this->token(), 'Updated Successfully...!!!', $updateData);
+
+                $data = DB::table('RX_NETWORKS')->where('NETWORK_ID', $request->network_id)->delete();
+
+
+                $traditional_list_obj = json_decode(json_encode($request->traditional_form, true));
+    
+                if (!empty($request->traditional_form)) {
+                    $traditional_list = $traditional_list_obj[0];
+    
+                    foreach ($traditional_list_obj as $key => $traditional_list) {
+    
+                        $update_rx_networks = DB::table('RX_NETWORKS')->insert(
+                            [
+                                'NETWORK_ID' => $request->network_id,
+                                'PHARMACY_NABP' => $traditional_list->pharmacy_nabp,
+                                'PRICE_SCHEDULE_OVRD' => $traditional_list->price_schedule_ovrd,
+                                'PARTICIPATION_OVRD' => $traditional_list->participation_ovrd,
+                                'DATE_TIME_CREATED' => $createddate,
+                                'DATE_TIME_MODIFIED' => $createddate,
+                                'EFFECTIVE_DATE' => $traditional_list->effective_date,
+                                'TERMINATION_DATE' => $traditional_list->termination_date,
+            
+                            ]
+                        );
+    
+    
+                    }
+    
+                   
+    
+                }
+
+                $data = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID', $request->rx_network_rule_id)->delete();
+
+                $flixible_list_obj = json_decode(json_encode($request->flexible_form, true));
+    
+                if (!empty($request->flexible_form)) {
+                    $flixible_list = $flixible_list_obj[0];
+    
+                    foreach ($flixible_list_obj as $key => $flixible_list) {
+    
+                      
+                        $Network_rules = DB::table('RX_NETWORK_RULES')->insert(
+                            [
+                                'RX_NETWORK_RULE_ID' => $request->rx_network_rule_id,
+                                'RX_NETWORK_RULE_ID_NUMBER' => $flixible_list->rx_network_rule_id_number,
+                                'PHARMACY_CHAIN' => $flixible_list->pharmacy_chain,
+                                'STATE' => $flixible_list->state,
+                                'COUNTY' => $flixible_list->county,
+                                'ZIP_CODE' => $flixible_list->zip_code,
+                                'AREA_CODE' => $flixible_list->area_code,
+                                'EXCHANGE_CODE'=>$flixible_list->exchange_code,
+                                'PRICE_SCHEDULE_OVRD' => $flixible_list->price_schedule_ovrd,
+                                'EXCLUDE_RULE' => $flixible_list->exclude_rule,
+                                'DATE_TIME_CREATED'=>$createddate,
+                                'DATE_TIME_MODIFIED'=>$createddate,
+                                'PHARMACY_STATUS' => $flixible_list->pharmacy_status,
+                                'EFFECTIVE_DATE' => $flixible_list->effective_date,
+                                'TERMINATION_DATE' =>$flixible_list->termination_date,
+                            ]
+                        );
+    
+                    }
+    
+                   
+    
+                }
+
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
+
+    
+
         }
     }
 
@@ -254,7 +395,7 @@ class ProviderDataProviderController extends Controller
     {
         $ndc = DB::table('RX_NETWORK_NAMES')
             ->select('NETWORK_ID', 'NETWORK_NAME')
-            ->where('NETWORK_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('NETWORK_ID', 'like', '%' .$request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -265,7 +406,7 @@ class ProviderDataProviderController extends Controller
     {
         $ndc = DB::table('RX_NETWORK_RULE_NAMES')
             ->select('RX_NETWORK_RULE_ID', 'RX_NETWORK_RULE_NAME')
-            ->where('RX_NETWORK_RULE_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('RX_NETWORK_RULE_ID', 'like', '%' . $request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -275,8 +416,8 @@ class ProviderDataProviderController extends Controller
     {
         $ndc = DB::table('PHARMACY_TABLE')
 
-            ->where('PHARMACY_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('PHARMACY_NABP', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('PHARMACY_NAME', 'like', '%' .$request->search. '%')
+            ->orWhere('PHARMACY_NABP', 'like', '%' .$request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -319,7 +460,7 @@ class ProviderDataProviderController extends Controller
             if (!$getEligibilityData) {
                 $addData = DB::table('RX_NETWORKS')
                     ->insert([
-                        'NETWORK_ID' => strtoupper($request->network_id),
+                        'NETWORK_ID' => $request->network_id,
                         'PHARMACY_NABP' => ($request->pharmacy_nabp),
                         'PRICE_SCHEDULE_OVRD' => $request->price_schedule_ovrd,
                         'PARTICIPATION_OVRD' => $request->participation_ovrd,
@@ -358,8 +499,8 @@ class ProviderDataProviderController extends Controller
             if (!$getEligibilityData) {
                 $addData = DB::table('RX_NETWORK_RULES')
                     ->insert([
-                        'RX_NETWORK_RULE_ID' => strtoupper($request->rx_network_rule_id),
-                        'PHARMACY_CHAIN' => ($request->pharmacy_chain),
+                        'RX_NETWORK_RULE_ID' =>$request->rx_network_rule_id,
+                        'PHARMACY_CHAIN' =>$request->pharmacy_chain,
                         'EFFECTIVE_DATE' => $request->effective_date,
                         'TERMINATION_DATE' => $request->termination_date,
 
@@ -384,17 +525,14 @@ class ProviderDataProviderController extends Controller
 
     public function getProviderNetworks(Request $request)
     {
-        // $validator = Validator::make($request->all(), [
-        //     'search' => ['required'],
-        // ]);
-        // if ($validator->fails()) {
-        //     return $this->respondWithToken($this->token(), $validator->errors(), $this->errors(), "false");
-        // } else {
-            $provider_networks = DB::table('RX_NETWORK_NAMES')
-                // ->where(DB::raw('UPPER(NETWORK_ID)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->get();
-
-            return $this->respondWithToken($this->token(), '', $provider_networks);
+       
+           $traditional_network_data=DB::table('RX_NETWORKS')->where('NETWORK_ID',$request->id)->get();
+           $flexible_network_data=DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID',$request->id)->get();
+           $merged = [
+                    'traditional_network_data' => $traditional_network_data,
+                    'flexible_network_data' => $flexible_network_data
+                  ];
+           return $this->respondWithToken($this->token(), '', $merged);
         }
-    // }
+ 
 }

@@ -126,7 +126,7 @@ class TraditionalNetworkController extends Controller
                 ->where('network_id', $request->network_id)
                 ->update(
                     [
-                        'NETWORK_NAME' => $request->network_name,
+                    'NETWORK_NAME' => $request->network_name,
                     'DATE_TIME_CREATED' => $createddate,
                     'DEFAULT_PRICE_SCHEDULE_OVRD' => $request->default_price_schedule_ovrd,
                     'DEFAULT_BILLING_TYPE' => $request->default_billing_type,
