@@ -73,23 +73,39 @@ class TraditionalNetworkController extends Controller
     
                     ]
                 );
+
+                $traditional_list_obj = json_decode(json_encode($request->traditional_form, true));
+
+                if (!empty($request->traditional_form)) {
+                    $traditional_list = $traditional_list_obj[0];
     
-                $rx_networks = DB::table('RX_NETWORKS')->insert(
-                    [
-                        'NETWORK_ID' => $request->network_id,
-                        'PHARMACY_NABP' => $request->pharmacy_nabp,
-                        'PRICE_SCHEDULE_OVRD' => $request->price_schedule_ovrd,
-                        'PARTICIPATION_OVRD' => $request->participation_ovrd,
-                        'DATE_TIME_CREATED' => $createddate,
-                        'DATE_TIME_MODIFIED' => $createddate,
-                        'EFFECTIVE_DATE' => $request->effective_date,
-                        'TERMINATION_DATE' => $request->termination_date,
+                    foreach ($traditional_list_obj as $key => $traditional_list) {
     
-                    ]
-                );
     
-                if ($rx_networks) {
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $rx_networks);
+                    $rx_networks = DB::table('RX_NETWORKS')->insert(
+                        [
+                            'NETWORK_ID' => $request->network_id,
+                            'PHARMACY_NABP' => $traditional_list->pharmacy_nabp,
+                            'PRICE_SCHEDULE_OVRD' => $traditional_list->price_schedule_ovrd,
+                            'PARTICIPATION_OVRD' => $traditional_list->participation_ovrd,
+                            'DATE_TIME_CREATED' => $createddate,
+                            'DATE_TIME_MODIFIED' => $createddate,
+                            'EFFECTIVE_DATE' => $traditional_list->effective_date,
+                            'TERMINATION_DATE' => $traditional_list->termination_date,
+        
+                        ]
+                    );
+                        
+    
+    
+                    }
+                }
+    
+    
+               
+    
+                if ($rx_networknames) {
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $rx_networknames);
                 }
 
             }
@@ -99,19 +115,7 @@ class TraditionalNetworkController extends Controller
 
 
 
-            // $traditional_list_obj = json_decode(json_encode($request->traditional_form, true));
-
-            // if (!empty($request->traditional_form)) {
-            //     $traditional_list = $traditional_list_obj[0];
-
-            //     foreach ($traditional_list_obj as $key => $traditional_list) {
-
-                    
-
-
-            //     }
-            // }
-
+          
 
            
 
@@ -160,45 +164,41 @@ class TraditionalNetworkController extends Controller
                 );
 
 
+            $data = DB::table('RX_NETWORKS')->where('NETWORK_ID', $request->network_id)->delete();
 
-                $update_rx_networks = DB::table('RX_NETWORKS')
-                ->where('network_id', $request->network_id)
-                ->update(
-                    [
-                        'NETWORK_ID' => $request->network_id,
-                        'PHARMACY_NABP' => $request->pharmacy_nabp,
-                        'PRICE_SCHEDULE_OVRD' => $request->price_schedule_ovrd,
-                        'PARTICIPATION_OVRD' => $request->participation_ovrd,
-                        'DATE_TIME_CREATED' => $createddate,
-                        'DATE_TIME_MODIFIED' => $createddate,
-                        'EFFECTIVE_DATE' => $request->effective_date,
-                        'TERMINATION_DATE' => $request->termination_date,
 
-                    ]
-                );
+            $traditional_list_obj = json_decode(json_encode($request->traditional_form, true));
 
-                if ($update_rx_networks) {
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_rx_networks);
+            if (!empty($request->traditional_form)) {
+                $traditional_list = $traditional_list_obj[0];
+
+                foreach ($traditional_list_obj as $key => $traditional_list) {
+
+                    $update_rx_networks = DB::table('RX_NETWORKS')->insert(
+                        [
+                            'NETWORK_ID' => $request->network_id,
+                            'PHARMACY_NABP' => $traditional_list->pharmacy_nabp,
+                            'PRICE_SCHEDULE_OVRD' => $traditional_list->price_schedule_ovrd,
+                            'PARTICIPATION_OVRD' => $traditional_list->participation_ovrd,
+                            'DATE_TIME_CREATED' => $createddate,
+                            'DATE_TIME_MODIFIED' => $createddate,
+                            'EFFECTIVE_DATE' => $traditional_list->effective_date,
+                            'TERMINATION_DATE' => $traditional_list->termination_date,
+        
+                        ]
+                    );
+
+
                 }
-
-            // $data = DB::table('RX_NETWORKS')->where('NETWORK_ID', $request->network_id)->delete();
-
-
-            // $traditional_list_obj = json_decode(json_encode($request->traditional_form, true));
-
-            // if (!empty($request->traditional_form)) {
-            //     $traditional_list = $traditional_list_obj[0];
-
-            //     foreach ($traditional_list_obj as $key => $traditional_list) {
-
-                    
-
-
-            //     }
 
                
 
-            // }
+            }
+
+
+            if ($update_rx_networks) {
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_rx_networks);
+            }
 
 
             
