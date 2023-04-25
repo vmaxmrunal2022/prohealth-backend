@@ -461,6 +461,9 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/provider/add', [ProviderDataProviderController::class, 'add'])->name('ndsc.details.get'); // DETAIL
         Route::get('/get-provider-networks', [ProviderDataProviderController::class, 'getProviderNetworks']);
 
+        Route::get('/get-combine-networks', [ProviderDataProviderController::class, 'getCombileNetworks']);
+
+
         //SUPER PROVIDER NETWORK
         // Route::post('customer/add', [CustomerController::class, 'saveIdentification']);
         // Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);

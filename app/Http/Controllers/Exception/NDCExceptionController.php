@@ -545,20 +545,20 @@ class NDCExceptionController extends Controller
         if ($request->add_new == 1) {
 
             $validator = Validator::make($request->all(), [
-                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                //     $q->whereNotNull('NDC_EXCEPTION_LIST');
-                // })],
-                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                //     $q->whereNotNull('NDC');
-                // })],
+                'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                    $q->whereNotNull('NDC_EXCEPTION_LIST');
+                })],
+                'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                    $q->whereNotNull('NDC');
+                })],
 
-                // 'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                //     $q->whereNotNull('effective_date');
-                // })],
+                'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                    $q->whereNotNull('effective_date');
+                })],
 
-                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
-                //     $q->whereNotNull('ndc_exception_list');
-                // })],
+                'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
+                    $q->whereNotNull('ndc_exception_list');
+                })],
 
                 "exception_name" => ['max:36'],
                 "NEW_DRUG_STATUS"=>['max:2'],
@@ -746,21 +746,10 @@ class NDCExceptionController extends Controller
         } else if ($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
-                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                //     $q->whereNotNull('NDC_EXCEPTION_LIST');
-                // })],
-                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                //     $q->whereNotNull('NDC');
-                // })],
 
-                // 'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                //     $q->whereNotNull('effective_date');
-                // })],
-
-                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
-                //     $q->whereNotNull('ndc_exception_list');
-                // })],
-
+                'ndc_exception_list' => ['required', 'max:10'],
+                'ndc' => ['required', 'max:11'],
+                'effective_date' => ['required', 'max:10'],        
                 "exception_name" => ['max:36'],
                 "NEW_DRUG_STATUS"=>['max:2'],
                 "PROCESS_RULE"=>['max:1'],
@@ -843,9 +832,9 @@ class NDCExceptionController extends Controller
 
             else{
 
-                if ($validation->count() < 1) {
-                    return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
-                }
+                // if ($validation->count() < 1) {
+                //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
+                // }
     
                 $update_names = DB::table('NDC_EXCEPTIONS')
                 ->where('ndc_exception_list', $request->ndc_exception_list )

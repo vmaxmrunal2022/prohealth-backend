@@ -526,13 +526,22 @@ class ProviderDataProviderController extends Controller
     public function getProviderNetworks(Request $request)
     {
        
-           $traditional_network_data=DB::table('RX_NETWORKS')->where('NETWORK_ID',$request->id)->get();
-           $flexible_network_data=DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID',$request->id)->get();
-           $merged = [
-                    'traditional_network_data' => $traditional_network_data,
-                    'flexible_network_data' => $flexible_network_data
-                  ];
-           return $this->respondWithToken($this->token(), '', $merged);
+           $traditional_network_data=DB::table('RX_NETWORKS')->get();
+           
+           return $this->respondWithToken($this->token(), '', $traditional_network_data);
         }
+
+
+        public function getCombileNetworks(Request $request)
+        {
+           
+               $traditional_network_data=DB::table('RX_NETWORKS')->where('NETWORK_ID',$request->id)->get();
+               $flexible_network_data=DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID',$request->id)->get();
+               $merged = [
+                        'traditional_network_data' => $traditional_network_data,
+                        'flexible_network_data' => $flexible_network_data
+                      ];
+               return $this->respondWithToken($this->token(), '', $merged);
+            }
  
 }
