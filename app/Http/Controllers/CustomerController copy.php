@@ -4,33 +4,17 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Customer;
-use App\Models\User;
-// use Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
-//use Illuminate\Support\Facades\Session;
-use Symfony\Component\HttpFoundation\Session\Session as SessionSession;
-use Session;
-use App\getUserData;
-use App\getUserData1;
-use Illuminate\Support\Facades\Cache;
 
 class CustomerController extends Controller
 {
     public $customerIdPrefix = 'CN';
     public $customerIdMaxDigits = 4;
-    // public $user_id;
-    // protected $user;
-
-    // public function __construct()
-    // {
-    //     $this->user = new User;
-    //     $this->middleware('apisession');
-    // }
 
     public  function saveIdentification(Request $request)
     {
@@ -61,7 +45,7 @@ class CustomerController extends Controller
             'COMM_CHARGE_PAID' => '',
             'COMM_CHARGE_REJECT' => '',
             'DATE_TIME_CREATED' => '',
-            'USER_ID' => Cache::get('userId'),
+            'USER_ID' => '',
             'DATE_TIME_MODIFIED' => '',
             'FORM_ID' => '',
             'PROCESSING_CYCLE' => '',
@@ -126,7 +110,7 @@ class CustomerController extends Controller
             'MD_STRATEGY_ID' => '',
             'PHYSICIAN_TEMPLATE_ID' => '',
             'ACCUM_BENE_FAM_SUM_IND' => '',
-            'USER_ID_CREATED' => $request->session()->get('user'),
+            'USER_ID_CREATED' => '',
             'DRUG_COV_STRATEGY_ID_1' => '',
             'PREF_MAINT_DRUG_STRATEGY_ID_1' => '',
             'PRICING_STRATEGY_ID_1' => '',
@@ -171,35 +155,8 @@ class CustomerController extends Controller
 
     public function add(Request $request)
     {
-        // return getUserData1();
-        // $userId = config('user_id');
-        // return $userId;
-        //return Session::get('username');
-
-        // $myData = app('my_global_data');
-        // return $myData;
-        $user_id = Cache::get('userId');
-        // return $user_id;
-
-
-
-        //$session_data = Session::get('login_id');
-        //$user_id = $session_data;
-
-        // if (Auth::guard('api')->check()) {
-        //     // Get the authenticated user's ID
-        //     //$userId = Auth::id();
-        //     // Use the user ID to retrieve user data from the database or perform other operations
-        //     return "yes";
-        // } else {
-        //     return "no";
-        // }
-        $user = DB::table('FE_USERS')->where('user_id', $request->session()->get('user'))->first();
-
-        // return $this->respondWithToken($this->token(), Session::get('user'), $user);
-
-        $user_id = $request->session()->get('user');
-        // dd($user);
+        // dd($request->session()->get('user'));
+        // dd(Auth::user());
         $createddate = date('y-m-d');
         if ($request->add_new) {
             $validator = Validator::make($request->all(), [
@@ -243,9 +200,8 @@ class CustomerController extends Controller
                         'cap_amount' => $request->cap_amount,
                         'comm_charge_paid' => $request->comm_charge_paid,
                         'comm_charge_reject' => $request->comm_charge_reject,
-                        'date_time_created' => date('Ymd'),
-                        'date_time_modified' => date('Ymd'),
-                        'user_id' => Cache::get('userId'),
+                        'date_time_created' => $request->date_time_created,
+                        'user_id' => $request->user_id,
                         'processing_cycle' => $request->processing_cycle,
                         'auto_term_days' => $request->auto_term_days,
                         'admin_fee' => $request->admin_fee,
@@ -310,20 +266,22 @@ class CustomerController extends Controller
                     ]
                 );
                 $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
+                $record_snapshot = implode('|', (array) $benefitcode);
 
                 //Audit 
-                // $record_snapshot = implode('|', (array) $benefitcode);
-                $record_snapshot = json_encode($benefitcode);
                 $save_audit = DB::table('FE_RECORD_LOG')
                     ->insert([
-                        'user_id' => Cache::get('userId'),
+                        'user_id' => $benefitcode->user_id,
                         'date_created' => date('Ymd'),
-                        'time_created' => date('gisA'),
+                        'time_created' => date('H:i:s'),
                         'table_name' => 'CUSTOMER',
                         'record_action' => 'IN',
                         'application' => 'ProPBM',
                         'record_snapshot' => $record_snapshot,
                     ]);
+
+
+                dd($save_audit);
 
                 return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
             }
@@ -369,8 +327,8 @@ class CustomerController extends Controller
                             'cap_amount' => $request->cap_amount,
                             'comm_charge_paid' => $request->comm_charge_paid,
                             'comm_charge_reject' => $request->comm_charge_reject,
-                            'date_time_modified' => date('Ymd'),
-                            'user_id' => Cache::get('userId'),
+                            'date_time_created' => $request->date_time_created,
+                            'user_id' => $request->user_id,
                             'processing_cycle' => $request->processing_cycle,
                             'auto_term_days' => $request->auto_term_days,
                             'admin_fee' => $request->admin_fee,
@@ -434,23 +392,11 @@ class CustomerController extends Controller
                             'phys_file_srce_id' => strtoupper($request->phys_file_srce_id),
                         ]
                     );
+
+
+
                 $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
-                //Audit 
-                // $record_snapshot = implode('|', (array) $benefitcode);
-                $record_snapshot = json_encode($benefitcode);
-                $save_audit = DB::table('FE_RECORD_LOG')
-                    ->insert([
-                        'user_id' => Cache::get('userId'),
-                        'date_created' => date('Ymd'),
-                        'time_created' => date('gisA'),
-                        'table_name' => 'CUSTOMER',
-                        'record_action' => 'UP',
-                        'application' => 'ProPBM',
-                        'record_snapshot' => $record_snapshot,
-                        // 'record_snapshot' => $record_snapshot,
-                    ]);
-                // return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
-                return $this->respondWithToken($this->token(), auth('web')->user(), $benefitcode);
+                return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
             }
         }
     }

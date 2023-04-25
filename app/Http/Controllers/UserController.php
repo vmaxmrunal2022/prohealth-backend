@@ -4,21 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Auth;
+// use Auth;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
+use Illuminate\Support\Facades\Facade;
 use Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
+// use App\getUserData;
+use Illuminate\Support\Facades\Cache;
+
+use Illuminate\Redis\Connections\Connection;
+
 
 class UserController extends Controller
 {
     protected $user;
+    protected $redis;
     public function __construct()
     {
         $this->middleware("auth:api", ["except" => ["login", "register"]]);
         $this->user = new User;
     }
+
     public function register(Request $request)
     {
         $validator = FacadesValidator::make($request->all(), [
@@ -46,6 +54,9 @@ class UserController extends Controller
     }
     public function login(Request $request)
     {
+
+        //return Session::get('user');
+        // return FacadesAuth::user();
         $prefix = '$2y$';
         $cost = '10';
         $salt = '$thisisahardcodedsalt$';
@@ -54,9 +65,7 @@ class UserController extends Controller
         $hash = crypt($password, $blowfishPrefix);
         $hashToThirdParty = substr($hash, -32);
         $hashFromThirdParty = $hashToThirdParty;
-        // dd($hashFromThirdParty);
-
-
+        // dd($blowfishPrefix);
         // $pw = $request->USER_PASSWORD;
         $hashed = Hash::make($hashFromThirdParty);
         $check_password = Hash::check($hashFromThirdParty, $hashed);
@@ -66,8 +75,7 @@ class UserController extends Controller
             $user_password = null;
         }
         // print_r($hashFromThirdParty);
-
-        $validator = Validator::make($request->all(), [
+        $validator = FacadesValidator::make($request->all(), [
             'USER_ID' => 'required|string',
             'USER_PASSWORD' => 'required',
         ]);
@@ -77,6 +85,8 @@ class UserController extends Controller
                 'message' => $validator->messages()->toArray()
             ], 500);
         }
+
+
         $credentials = $request->only(["USER_ID", "USER_PASSWORD"]);
         // $user = User::where('USER_ID', $credentials['USER_ID'])->first();
 
@@ -86,7 +96,7 @@ class UserController extends Controller
             // ->where('USER_PASSWORD', $request->USER_PASSWORD)
             ->where('USER_PASSWORD', $user_password)
             ->first();
-
+        //return $user;
         // dd($user);
         // exit();
         // return response()->json([
@@ -106,9 +116,12 @@ class UserController extends Controller
         // }
 
         if ($user) {
-            Auth::login($user);
-            //    print_r(Auth::login($user));
-            if (!Auth::check()) {
+            FacadesAuth::login($user);
+
+            // FacadesAuth::loginUsingId($user->id);
+            // print_r(Auth::login($user));
+            if (!FacadesAuth::check()) {
+
                 $responseMessage = "Invalid username or password";
                 return response()->json([
                     "success" => false,
@@ -117,10 +130,26 @@ class UserController extends Controller
                 ], 422);
             }
 
-            $accessToken = auth()->user()->createToken('authToken')->accessToken;
+            //$accessToken = auth()->user()->createToken('authToken')->accessToken;
+            $accessToken = '';
+            $user1 = FacadesAuth::user();
+            //return $user1;
             $responseMessage = "Login Successful";
             Session::put('user', auth()->user()->user_id);
-            // dd($request->session()->get('user'));
+            $userid = auth()->user()->user_id;
+            // $a = getUserData($userid);
+            // app()->instance('my_global_data', $userid);
+            // $usersData =
+            $usersData = auth()->user()->user_id;
+            Cache::put('userId', $usersData, 86400);
+            // return Cache::get('users.active');
+
+            // Session::put('login_id', auth()->user()->user_id);
+            // define('USER_ID', auth()->user()->user_id);
+            //config(['user_id' => auth()->user()->user_id]);
+
+            // return auth()->user()->user_id;
+
             return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
         } else {
             $responseMessage = "Sorry, this user does not exist";
@@ -143,7 +172,9 @@ class UserController extends Controller
     }
     public function logout()
     {
-        $user = Auth::guard("api")->user()->token();
+        $user = FacadesAuth::guard("api")->user()->token();
+        Cache::flush();
+
         $user->revoke();
         $responseMessage = "successfully logged out";
         return response()->json([

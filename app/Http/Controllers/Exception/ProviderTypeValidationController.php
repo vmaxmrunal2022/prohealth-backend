@@ -18,7 +18,7 @@ class ProviderTypeValidationController extends Controller
 
         
         $recordcheck = DB::table('PROVIDER_TYPE_VALIDATIONS')
-        ->where('prov_type_list_id', strtoupper($request->prov_type_list_id))
+        ->where('prov_type_list_id', $request->prov_type_list_id)
         ->first();
         
 
@@ -34,7 +34,7 @@ class ProviderTypeValidationController extends Controller
 
                 $accum_benfit_stat_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')->insert(
                     [
-                        'prov_type_list_id' => strtoupper( $request->prov_type_list_id ),
+                        'prov_type_list_id' => $request->prov_type_list_id,
                         'description'=>$request->description,
                         'DATE_TIME_CREATED'=>$createddate,
                         
@@ -102,7 +102,7 @@ class ProviderTypeValidationController extends Controller
     {
 
         $data = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
-            ->where('PROV_TYPE_PROC_ASSOC_ID', 'LIKE', '%' . strtoupper($request->search) . '%')
+            ->where('PROV_TYPE_PROC_ASSOC_ID', 'LIKE', '%' . $request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), 'data fetched  successfully', $data);
@@ -113,7 +113,7 @@ class ProviderTypeValidationController extends Controller
         $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
             // $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATIONS')
             // ->where('effective_date', 'like', '%'.$request->search.'%')
-            ->Where(DB::raw('UPPER(prov_type_list_id)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->Where('prov_type_list_id', 'like', '%' . $request->search . '%')
             // ->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
         // dd($request->all());
@@ -151,7 +151,7 @@ class ProviderTypeValidationController extends Controller
         'valdation_names.DESCRIPTION as description',
         'list_names.DESCRIPTION as Procedure_code_description',
         'types.DESCRIPTION as provider_type_description')
-        ->where('PROVIDER_TYPE_VALIDATIONS.proc_code_list_id',$ndcid)
+        ->where('PROVIDER_TYPE_VALIDATIONS.prov_type_list_id',$ndcid)
         ->where('PROVIDER_TYPE_VALIDATIONS.provider_type',$ndcid2)
 
 

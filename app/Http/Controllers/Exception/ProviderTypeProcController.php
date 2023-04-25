@@ -12,10 +12,10 @@ class ProviderTypeProcController extends Controller
     {
         $data = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
                 ->select('PROV_TYPE_PROC_ASSOC_ID', 'DESCRIPTION')
-                ->where('PROV_TYPE_PROC_ASSOC_ID', 'like', '%' . strtoupper($request->search) . '%')
                 ->where('PROV_TYPE_PROC_ASSOC_ID', 'like', '%' . $request->search. '%')
 
-                ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
+
+                ->orWhere('DESCRIPTION', 'like', '%' . $request->search . '%')
                 ->get();
 
     return $this->respondWithToken($this->token(), '', $data);
@@ -25,7 +25,7 @@ class ProviderTypeProcController extends Controller
 
         $data = DB::table('PROV_TYPE_PROC_ASSOC')
         ->join('PROV_TYPE_PROC_ASSOC_NAMES','PROV_TYPE_PROC_ASSOC_NAMES.PROV_TYPE_PROC_ASSOC_ID','=','PROV_TYPE_PROC_ASSOC.PROV_TYPE_PROC_ASSOC_ID')
-        ->where('PROV_TYPE_PROC_ASSOC.prov_type_proc_assoc_id', 'like', '%' . strtoupper($id) . '%')
+        ->where('PROV_TYPE_PROC_ASSOC.prov_type_proc_assoc_id', 'like', '%' . $id. '%')
         ->get();
         return $this->respondWithToken($this->token(), '', $data);
 
@@ -68,7 +68,7 @@ class ProviderTypeProcController extends Controller
         $createddate = date( 'y-m-d' );
 
         $recordcheck = DB::table('PROV_TYPE_PROC_ASSOC')
-        ->where('prov_type_proc_assoc_id', strtoupper($request->prov_type_proc_assoc_id))
+        ->where('prov_type_proc_assoc_id', $request->prov_type_proc_assoc_id)
         ->first();
 
 
@@ -76,7 +76,7 @@ class ProviderTypeProcController extends Controller
 
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'ProviderType Id already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'ProviderType ID Already Exists ', $recordcheck);
 
 
             }
@@ -85,7 +85,7 @@ class ProviderTypeProcController extends Controller
 
                 $insert1 = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')->insert(
                     [
-                        'PROV_TYPE_PROC_ASSOC_ID' => strtoupper($request->prov_type_proc_assoc_id),
+                        'PROV_TYPE_PROC_ASSOC_ID' => $request->prov_type_proc_assoc_id,
                         'DESCRIPTION'=>$request->description,
                         'DATE_TIME_CREATED'=>$createddate,
                         'USER_ID_CREATED'=>'',
@@ -101,7 +101,7 @@ class ProviderTypeProcController extends Controller
                 
                 $insert = DB::table('PROV_TYPE_PROC_ASSOC')->insert(
                     [
-                        'PROV_TYPE_PROC_ASSOC_ID' => strtoupper($request->prov_type_proc_assoc_id),
+                        'PROV_TYPE_PROC_ASSOC_ID' => $request->prov_type_proc_assoc_id,
                         'PROVIDER_TYPE'=>$request->provider_type,
                         'SERVICE_MODIFIER'=>$request->service_modifier,
                         'UCR'=>$request->ucr,
@@ -148,7 +148,7 @@ class ProviderTypeProcController extends Controller
 
 
             $update1 = DB::table('PROV_TYPE_PROC_ASSOC_NAMES' )
-            ->where('PROV_TYPE_PROC_ASSOC_ID', strtoupper($request->prov_type_proc_assoc_id ))
+            ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id )
             ->update(
                 [
                     'DESCRIPTION'=>$request->description,
@@ -164,7 +164,7 @@ class ProviderTypeProcController extends Controller
            
 
             $update = DB::table('PROV_TYPE_PROC_ASSOC' )
-            ->where('PROV_TYPE_PROC_ASSOC_ID', strtoupper($request->prov_type_proc_assoc_id ))
+            ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id )
             ->update(
                 [
                     'PROVIDER_TYPE'=>$request->provider_type,

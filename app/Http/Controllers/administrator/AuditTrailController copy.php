@@ -28,13 +28,6 @@ class AuditTrailController extends Controller
     public function getUserAllRecord(Request $request)
     {
         /***************************** */
-        $user_record = DB::table('FE_RECORD_LOG')
-            ->where('user_id', $request->user_id)
-            ->where('table_name', $request->table_name)
-            ->orderBy('date_created', 'desc')
-            ->where('date_created', date('Ymd', strtotime($request->date_created)))
-            ->get();
-
         $results = DB::table('PHIDBA.FE_RECORD_LOG')
             ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 30) . "%'")
             ->where('table_name', $request->table_name)
@@ -45,33 +38,16 @@ class AuditTrailController extends Controller
             ->orderBy('TIME_CREATED', 'DESC')
             ->take(2000)
             ->get();
-
-        $table_name = $request->table_name;
-        $customer_id = isset(json_decode($request->record_snapshot)->customer_id) ? json_decode($request->record_snapshot)->customer_id : null;
-        $client_id = isset(json_decode($request->record_snapshot)->client_id)  ? json_decode($request->record_snapshot)->client_id : null;
-        $client_group_id = isset(json_decode($request->record_snapshot)->client_group_id)  ? json_decode($request->record_snapshot)->client_group_id : null;
-        $record = DB::table($request->table_name)
-            ->when($customer_id, function ($query) use ($customer_id) {
-                return $query->where('customer_id', 'like', '%' . $customer_id . '%');
-            })
-            ->when($client_id, function ($query) use ($client_id) {
-                return $query->where('client_id', 'like', '%' . $client_id . '%');
-            })
-            ->when($client_group_id, function ($query) use ($client_group_id) {
-                return $query->where('client_group_id', 'like', '%' . $client_group_id . '%');
-            })
-            ->get();
+        // dd(count($results));
 
         $old_column_arr = [];
         $old_value_arr = [];
-        foreach (count($results) > 1 ? json_decode($results[1]->record_snapshot) :
-            json_decode($results[0]->record_snapshot)  as $key => $val) {
+        foreach (json_decode($results[1]->record_snapshot) as $key => $val) {
             $arr2 = $key;
             $value = $val;
             array_push($old_column_arr, $arr2);
-            // array_push($old_value_arr, $value);
+            array_push($old_value_arr, $value);
         }
-        $old_value_arr = count($results) > 1 ? json_decode($results[1]->record_snapshot) : null;
 
         $new_column_arr = [];
         $new_value_arr = [];
@@ -84,23 +60,42 @@ class AuditTrailController extends Controller
 
 
         /***************************** */
+        $explode = explode('-', $request->record_snapshot);
 
+        $record = DB::table('FE_RECORD_LOG')
+            ->where('user_id', $request->user_id)
+            ->where('table_name', $request->table_name)
+            ->orderBy('date_created', 'desc')
+            // ->where('date_created', $request->date_created)
+            ->get();
 
+        //working code DONT TOUCH HERE
         $get_column = DB::table($request->table_name)->get();
         $column_arr = [];
         foreach ($get_column[0] as $key => $val) {
             $arr2 = $key;
             array_push($column_arr, $arr2);
         }
+        // dd($column_arr);
 
-        $current_record = [];
-        foreach ($record[0] as $key => $val) {
-            $ar = $val;
-            array_push($current_record, $ar);
-        }
 
-        // $data = ['user_record' => $user_record[0], 'record_snapshot' => $current_record, 'old_record' => $old_value_arr, 'columns' => $old_column_arr];
-        $data = ['user_record' => $user_record[0], 'record_snapshot' => $record[0], 'old_record' => $old_value_arr, 'columns' => $old_column_arr];
+
+
+
+
+        $new_snapshot = explode('|', $record[0]->record_snapshot);
+
+        // $old_snapshot = explode('|', $record[1]->record_snapshot);
+        // $new_snapshot = explode('|', $old_record[0]->record_snapshot);
+
+
+        // $old_snapshot = explode('|', $old_record[1]->record_snapshot);
+
+
+
+        // dd(similar_text($record[1]->record_snapshot, $record[0]->record_snapshot, $percent));
+        //$data = ['user_record' => $user_record, 'record_snapshot' => $record_snapshot, 'old_record' => $old_snap, 'columns' => $col_array];
+        $data = ['user_record' => $record[0], 'record_snapshot' => $new_value_arr, 'old_record' => $old_value_arr, 'columns' => $old_column_arr];
         return $this->respondWithToken($this->token(), '', $data);
     }
 

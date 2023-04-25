@@ -64,7 +64,11 @@ class PlanEditController extends Controller
         if ($request->add_new == "1") {
 
             if ($getData) {
+<<<<<<< HEAD
                 return $this->respondWithToken($this->token(), 'Plan Id is Already Exists', $getData, false);
+=======
+                return $this->respondWithToken($this->token(), 'Plan ID is Already Exists', $getData, false);
+>>>>>>> d598b3a8b36f783c7698d872ad45f84ca0592df4
             }
 
             $validator = Validator::make($request->all(), [
@@ -234,7 +238,10 @@ class PlanEditController extends Controller
                     'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
                     'prov_type_list_id' => $request->prov_type_list_id,
                     'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
+<<<<<<< HEAD
                     'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
+=======
+>>>>>>> d598b3a8b36f783c7698d872ad45f84ca0592df4
                 ]);
             // if(! $addData){
             //     return "failed";
@@ -284,7 +291,11 @@ class PlanEditController extends Controller
                 ->first();
 
             if ($addData) {
+<<<<<<< HEAD
                 return $this->respondWithToken($this->token(), 'Added Successfully!!!', $addData);
+=======
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
+>>>>>>> d598b3a8b36f783c7698d872ad45f84ca0592df4
             }
             // }
         } else { {
@@ -483,7 +494,11 @@ class PlanEditController extends Controller
                     ->join('PLAN_TABLE_EXTENSIONS', 'PLAN_BENEFIT_TABLE.plan_id', '=', 'PLAN_TABLE_EXTENSIONS.plan_id')
                     ->where('PLAN_BENEFIT_TABLE.plan_id', $request->plan_id)
                     ->first();
+<<<<<<< HEAD
                 return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateData);
+=======
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
+>>>>>>> d598b3a8b36f783c7698d872ad45f84ca0592df4
                 // }
             }
         }

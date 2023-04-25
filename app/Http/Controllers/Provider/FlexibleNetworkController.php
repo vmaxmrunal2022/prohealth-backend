@@ -22,7 +22,7 @@ class FlexibleNetworkController extends Controller
 
 
                 if($recordCheck){
-                    return $this->respondWithToken($this->token(), 'Record Already  exists', $recordCheck);
+                    return $this->respondWithToken($this->token(), 'Record Already Exists', $recordCheck);
                 
 
                 }
@@ -35,10 +35,10 @@ class FlexibleNetworkController extends Controller
                     if ($validator->fails()) {
                         return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), 'false');
                     } else {
-                        $accum_benfit_stat_names = DB::table('RX_NETWORK_RULE_NAMES')->insert(
+                        $network_rule_names = DB::table('RX_NETWORK_RULE_NAMES')->insert(
                             [
-                                'rx_network_rule_id' => strtoupper($request->rx_network_rule_id),
-                                'rx_network_rule_name' => strtoupper($request->rx_network_rule_name),
+                                'rx_network_rule_id' =>$request->rx_network_rule_id,
+                                'rx_network_rule_name' => $request->rx_network_rule_name,
                                 'gpi_exception_list_ovrd' => $request->gpi_exception_list_ovrd,
                                 'ndc_exception_list_ovrd' => $request->ndc_exception_list_ovrd,
                                 'default_comm_charge_paid' => $request->default_comm_charge_paid,
@@ -57,28 +57,43 @@ class FlexibleNetworkController extends Controller
                         );
     
     
-                        $accum_benfit_stat = DB::table('RX_NETWORK_RULES')->insert(
-                            [
-                                'rx_network_rule_id' => strtoupper($request->rx_network_rule_id),
-                                'rx_network_rule_id_number' => $request->rx_network_rule_id_number,
-                                'pharmacy_chain' => $request->pharmacy_chain,
-                                'state' => $request->state,
-                                'county' => $request->county,
-                                'zip_code' => $request->zip_code,
-                                'area_code' => $request->area_code,
-                                'price_schedule_ovrd' => $request->price_schedule_ovrd,
-                                'exclude_rule' => $request->exclude_rule,
-                                'effective_date' => date('Ymd', strtotime($request->effective_date)),
-                                'termination_date' => date('Ymd', strtotime($request->termination_date)),
-                                'exchange_code' => $request->exchange_code,
-                                'pharmacy_status' => $request->pharmacy_status,
-                            ]
-                        );
-                        $benefitcode = DB::table('RX_NETWORK_RULES')
-                            ->where(DB::raw('UPPER(rx_network_rule_id)'), strtoupper($request->rx_network_rule_id))
-                            ->first();
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $benefitcode);
+                       
+                        $flexible_network_list = json_decode(json_encode($request->flexible_form, true));
 
+                        if (!empty($request->flexible_form)) {
+                            $flexible_list = $flexible_network_list[0];
+            
+                            foreach ($flexible_network_list as $key => $flexible_list) {
+            
+                                $Network_rules = DB::table('RX_NETWORK_RULES')->insert(
+                                    [
+                                        'RX_NETWORK_RULE_ID' => $request->rx_network_rule_id,
+                                        'RX_NETWORK_RULE_ID_NUMBER' => $flexible_list->rx_network_rule_id_number,
+                                        'PHARMACY_CHAIN' => $flexible_list->pharmacy_chain,
+                                        'STATE' => $flexible_list->state,
+                                        'COUNTY' => $flexible_list->county,
+                                        'ZIP_CODE' => $flexible_list->zip_code,
+                                        'AREA_CODE' => $flexible_list->area_code,
+                                        'EXCHANGE_CODE'=>$flexible_list->exchange_code,
+                                        'PRICE_SCHEDULE_OVRD' => $flexible_list->price_schedule_ovrd,
+                                        'EXCLUDE_RULE' => $flexible_list->exclude_rule,
+                                        'DATE_TIME_CREATED'=>$createddate,
+                                        'DATE_TIME_MODIFIED'=>$createddate,
+                                        'PHARMACY_STATUS' => $flexible_list->pharmacy_status,
+                                        'EFFECTIVE_DATE' => $flexible_list->effective_date,
+                                        'TERMINATION_DATE' =>$flexible_list->termination_date,
+                                    ]
+                                );
+                           
+            
+            
+                            }
+                        }
+            
+            
+                        if ($Network_rules) {
+                            return $this->respondWithToken($this->token(), 'Record Added Successfully', $Network_rules);
+                        }
                 
               
                 }
@@ -91,11 +106,11 @@ class FlexibleNetworkController extends Controller
                     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), 'false');
                 } else if($request->add_new == 0) {
 
-                    $benefitcode = DB::table('RX_NETWORK_RULE_NAMES')
-                        ->where(DB::raw('UPPER(rx_network_rule_id)'), strtoupper($request->rx_network_rule_id))
+                    $network_rule_names = DB::table('RX_NETWORK_RULE_NAMES')
+                        ->where('rx_network_rule_id',$request->rx_network_rule_id)
                         ->update(
                             [
-                                'rx_network_rule_name' => strtoupper($request->rx_network_rule_name),
+                                'rx_network_rule_name' =>$request->rx_network_rule_name,
                                 'gpi_exception_list_ovrd' => $request->gpi_exception_list_ovrd,
                                 'ndc_exception_list_ovrd' => $request->ndc_exception_list_ovrd,
                                 'default_comm_charge_paid' => $request->default_comm_charge_paid,
@@ -113,25 +128,50 @@ class FlexibleNetworkController extends Controller
                             ]
                         );
 
-                    $accum_benfit_stat = DB::table('RX_NETWORK_RULES')
-                        ->where(DB::raw('UPPER(rx_network_rule_id)'), strtoupper($request->rx_network_rule_id))
-                        ->update(
-                            [
-                                'rx_network_rule_id' => strtoupper($request->rx_network_rule_id),
-                                'rx_network_rule_id_number' => $request->rx_network_rule_id_number,
-                                'pharmacy_chain' => $request->pharmacy_chain,
-                                'state' => $request->state,
-                                'county' => $request->county,
-                                'zip_code' => $request->zip_code,
-                                'area_code' => $request->area_code,
-                                'price_schedule_ovrd' => $request->price_schedule_ovrd,
-                                'exclude_rule' => $request->exclude_rule,
-                                'exchange_code' => $request->exchange_code,
-                                'pharmacy_status' => $request->pharmacy_status,
-                            ]
-                        );
+
+         $data = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID', $request->rx_network_rule_id)->delete();
+
+            $flixible_list_obj = json_decode(json_encode($request->flexible_form, true));
+
+            if (!empty($request->flexible_form)) {
+                $flixible_list = $flixible_list_obj[0];
+
+                foreach ($flixible_list_obj as $key => $flixible_list) {
+
                   
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $accum_benfit_stat);
+                    $Network_rules = DB::table('RX_NETWORK_RULES')->insert(
+                        [
+                            'RX_NETWORK_RULE_ID' => $request->rx_network_rule_id,
+                            'RX_NETWORK_RULE_ID_NUMBER' => $flixible_list->rx_network_rule_id_number,
+                            'PHARMACY_CHAIN' => $flixible_list->pharmacy_chain,
+                            'STATE' => $flixible_list->state,
+                            'COUNTY' => $flixible_list->county,
+                            'ZIP_CODE' => $flixible_list->zip_code,
+                            'AREA_CODE' => $flixible_list->area_code,
+                            'EXCHANGE_CODE'=>$flixible_list->exchange_code,
+                            'PRICE_SCHEDULE_OVRD' => $flixible_list->price_schedule_ovrd,
+                            'EXCLUDE_RULE' => $flixible_list->exclude_rule,
+                            'DATE_TIME_CREATED'=>$createddate,
+                            'DATE_TIME_MODIFIED'=>$createddate,
+                            'PHARMACY_STATUS' => $flixible_list->pharmacy_status,
+                            'EFFECTIVE_DATE' => $flixible_list->effective_date,
+                            'TERMINATION_DATE' =>$flixible_list->termination_date,
+                        ]
+                    );
+
+                }
+
+               
+
+            }
+
+
+            if ($Network_rules) {
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $Network_rules);
+            }
+
+                   
+                  
                 }
             }
         }
@@ -170,8 +210,8 @@ class FlexibleNetworkController extends Controller
 
     {
         $ndc = DB::table('RX_NETWORK_RULE_NAMES')
-            ->where('RX_NETWORK_RULE_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('RX_NETWORK_RULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('RX_NETWORK_RULE_ID', 'like', '%' .$request->search. '%')
+            ->orWhere('RX_NETWORK_RULE_NAME', 'like', '%' . $request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -179,11 +219,22 @@ class FlexibleNetworkController extends Controller
 
 
 
+    public function flexibledropdown(Request $request)
+
+    {
+        $ndc = DB::table('RX_NETWORK_RULE_NAMES') ->get();
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+
+
+
     public function RuleIdsearch(Request $request)
 
     {
         $ndc = DB::table('RX_NETWORK_RULES')
-            ->where('RX_NETWORK_RULE_ID_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('RX_NETWORK_RULE_ID_NUMBER', 'like', '%' . $request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

@@ -30,9 +30,22 @@ class PlanValidationController extends Controller
   public function getClientDetails(Request $request)
   {
     $clientList = DB::table('PLAN_VALIDATION_LISTS')
-      ->where('customer_id', 'like', '%' . strtoupper($request->customer_id) . '%')
-      //   ->orWhere('client_id', 'like', '%'. strtoupper($request->client_id))                      
-      //   ->orWhere('client_group_id', 'like', '%'. strtoupper($request->client_group_id))                      
+    // ->join('CLIENT_GROUP','CLIENT_GROUP.CLIENT_GROUP_ID','=','PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID')
+    
+  //   ->join("CLIENT_GROUP",function($join){
+  //     $join->on("CLIENT_GROUP.CLIENT_GROUP_ID","=","PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID")
+  //         ->on("CLIENT_GROUP.CLIENT_GROUP_ID","=","PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID");
+  // })
+    
+    // ->join('CLIENT_GROUP','CLIENT_GROUP.CLIENT_GROUP_ID','=','PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID')
+
+    // ->leftjoin('CUSTOMER','CUSTOMER.CUSTOMER_ID','=','PLAN_VALIDATION_LISTS.CUSTOMER_ID')
+    // ->leftjoin('CLIENT','CLIENT.CLIENT_ID','=','PLAN_VALIDATION_LISTS.CLIENT_ID')
+    ->where('PLAN_VALIDATION_LISTS.plan_id',$request->customer_id)
+
+        // ->orWhere('PLAN_VALIDATION_LISTS.client_id', $request->client_id)              
+        // ->orWhere('PLAN_VALIDATION_LISTS.client_group_id', $request->client_group_id)  
+        // ->orwhere('PLAN_VALIDATION_LISTS.plan_id',$request->plan_id)                 
       ->get();
 
     return $this->respondWithToken($this->token(), '', $clientList);
@@ -42,7 +55,7 @@ class PlanValidationController extends Controller
   {
 
     $getEligibilityData = DB::table('plan_validation_lists')
-      ->where('customer_id', strtoupper($request->customer_id))
+      // ->where('customer_id', strtoupper($request->customer_id))
       ->where('client_id', strtoupper($request->client_id))
       ->where('client_group_id', strtoupper($request->client_group_id))
       ->where('plan_id', $request->plan_id)
@@ -53,7 +66,7 @@ class PlanValidationController extends Controller
 
       if ($getEligibilityData) {
 
-        return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getEligibilityData);
+        return $this->respondWithToken($this->token(), 'Plan Validation ID Already Exists ', $getEligibilityData);
       } else {
 
         $planValidation = DB::table('plan_validation_lists')
@@ -63,7 +76,7 @@ class PlanValidationController extends Controller
             'client_group_id' => $request->client_group_id,
             'plan_id' => $request->plan_id
           ]);
-        return $this->respondWithToken($this->token(), 'Record Added Successfully !', $planValidation);
+        return $this->respondWithToken($this->token(), 'Record Added Successfully', $planValidation);
       }
     } else if ($request->add_new == 0) {
       $planValidation = DB::table('plan_validation_lists')
@@ -78,7 +91,7 @@ class PlanValidationController extends Controller
         ]);
       // ->get();
       // dd($planValidation);
-      return $this->respondWithToken($this->token(), 'Record Updated Successfully !', $planValidation);
+      return $this->respondWithToken($this->token(), 'Record Updated Successfully', $planValidation);
     }
   }
 

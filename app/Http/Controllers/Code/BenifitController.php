@@ -74,7 +74,7 @@ class BenifitController extends Controller
                 );
                 $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', '%' . $request->benefit_code . '%')->first();
             }
-            return $this->respondWithToken($this->token(), 'Record added Successfully ', $benefitcode);
+            return $this->respondWithToken($this->token(), 'Record Added Successfully ', $benefitcode);
 
             // } else if ($request->has('new')) {
         } else {
@@ -109,7 +109,7 @@ class BenifitController extends Controller
     public function delete(Request $request)
     {
         return  DB::table('benefit_codes')->where('benefit_code', $request->id)->delete()
-            ? $this->respondWithToken($this->token(), 'Successfully deleted')
+            ? $this->respondWithToken($this->token(), 'Record Deleted Successfully')
             : $this->respondWithToken($this->token(), 'Could find data');
     }
 

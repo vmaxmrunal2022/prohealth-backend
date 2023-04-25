@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+
 
 class NDCExceptionController extends Controller
 {
@@ -253,13 +256,27 @@ class NDCExceptionController extends Controller
 
     public function search(Request $request)
     {
-        $ndc = DB::table('NDC_EXCEPTIONS')
-                ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
-                ->where('NDC_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
-                ->get();
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+        $validator = Validator::make($request->all(), [
+            "search" => ['required']
+        ]);
+
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        } else{
+
+            $ndc = DB::table('NDC_EXCEPTIONS')
+            ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
+            ->where('NDC_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
+
+            return $this->respondWithToken($this->token(), '', $ndc);
+
+        }
+
+
+       
     }
 
     public function getNDCList($ndcid)
