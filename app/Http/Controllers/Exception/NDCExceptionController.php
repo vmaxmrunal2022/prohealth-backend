@@ -548,9 +548,9 @@ class NDCExceptionController extends Controller
                 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
                     $q->whereNotNull('NDC_EXCEPTION_LIST');
                 })],
-                'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                    $q->whereNotNull('NDC');
-                })],
+                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('NDC');
+                // })],
 
                 'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
                     $q->whereNotNull('effective_date');

@@ -49,22 +49,42 @@ class CopayStepScheduleController extends Controller
 
         if ($request->search == 'days_supply') {
 
+           
+            $copay_list_data=DB::table('COPAY_LIST')
+            ->where('COPAY_LIST', $request->copay_list_id)
+            ->get();
+
+
             $copayStepData = DB::table('COPAY_MATRIX')
                 ->join('COPAY_LIST', 'COPAY_LIST.COPAY_LIST', '=', 'COPAY_MATRIX.COPAY_LIST')
                 ->where('COPAY_MATRIX.COPAY_LIST', $request->copay_list_id)
                 ->where('COPAY_MATRIX.COST_MAX', '=', 0)
                 ->get();
 
-            return $this->respondWithToken($this->token(), '', $copayStepData);
+                $merged = [
+                    'copay_list_data' => $copay_list_data,
+                    'days_supply_data' => $copayStepData
+                  ];
+
+            return $this->respondWithToken($this->token(), '', $merged);
 
 
         } else if ($request->search == 'cost_max') {
+
+            $copay_list_data=DB::table('COPAY_LIST')
+            ->where('COPAY_LIST', $request->copay_list_id)
+            ->get();
 
             $copayStepData = DB::table('COPAY_MATRIX')
                 ->join('COPAY_LIST', 'COPAY_LIST.COPAY_LIST', '=', 'COPAY_MATRIX.COPAY_LIST')
                 ->where('COPAY_MATRIX.COPAY_LIST', $request->copay_list_id)
                 ->where('COPAY_MATRIX.DAYS_SUPPLY', '=', 0)
                 ->get();
+
+                $merged = [
+                    'copay_list_data' => $copay_list_data,
+                    'max_cost_data' => $copayStepData
+                  ];
             return $this->respondWithToken($this->token(), '', $copayStepData);
 
 
