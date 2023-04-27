@@ -304,6 +304,7 @@ class BenefitDerivationController extends Controller
                                 'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
                                 'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
                                 'COVERAGE_START_DAYS' => $request->coverage_start_days,
+                                'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
                                 'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
 
                             ]
@@ -390,7 +391,7 @@ class BenefitDerivationController extends Controller
     {
         $ndc = DB::table('BENEFIT_DERIVATION_NAMES')
             ->select('BENEFIT_DERIVATION_ID', 'DESCRIPTION')
-            ->where('BENEFIT_DERIVATION_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('BENEFIT_DERIVATION_ID', 'like', '%' . $request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -400,13 +401,13 @@ class BenefitDerivationController extends Controller
     {
         $ndclist = DB::table('BENEFIT_DERIVATION')
             ->join('BENEFIT_DERIVATION_NAMES', 'BENEFIT_DERIVATION_NAMES.BENEFIT_DERIVATION_ID', '=', 'BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID')
-            ->join('PROC_CODE_LIST_NAMES', 'PROC_CODE_LIST_NAMES.PROC_CODE_LIST_ID', '=', 'BENEFIT_DERIVATION.PROC_CODE_LIST_ID')
-            ->select(
-                'BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID',
-                'BENEFIT_DERIVATION.SERVICE_TYPE',
-                'BENEFIT_DERIVATION_NAMES.DESCRIPTION',
-                'BENEFIT_DERIVATION.*'
-            )
+            // ->join('PROC_CODE_LIST_NAMES', 'PROC_CODE_LIST_NAMES.PROC_CODE_LIST_ID', '=', 'BENEFIT_DERIVATION.PROC_CODE_LIST_ID')
+            // ->select(
+            //     'BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID',
+            //     'BENEFIT_DERIVATION.SERVICE_TYPE',
+            //     'BENEFIT_DERIVATION_NAMES.DESCRIPTION',
+            //     'BENEFIT_DERIVATION.*'
+            // )
 
             ->where('BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID', $ndcid)
 

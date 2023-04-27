@@ -478,9 +478,9 @@ class ProcedureController extends Controller
         $ndclist = DB::table('PROCEDURE_EXCEPTION_LISTS')
                 // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
                 ->join('PROCEDURE_EXCEPTION_NAMES','PROCEDURE_EXCEPTION_NAMES.PROCEDURE_EXCEPTION_LIST','=','PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST')
-                ->where('PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
+                ->where('PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST', 'like',$ndcid)
                 // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
-                ->first();
+                ->get();
 
         return $this->respondWithToken($this->token(), '', $ndclist);
     }

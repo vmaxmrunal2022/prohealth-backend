@@ -511,9 +511,8 @@ class BenefitListController extends Controller
 
     public function search(Request $request)
     {
-        $ndc = DB::table('BENEFIT_LIST')
-        ->join('BENEFIT_LIST_NAMES','BENEFIT_LIST_NAMES.BENEFIT_LIST_ID','=','BENEFIT_LIST.BENEFIT_LIST_ID')
-        ->where('BENEFIT_LIST.BENEFIT_LIST_ID', 'like', '%' . strtoupper($request->search) . '%')
+        $ndc = DB::table('BENEFIT_LIST_NAMES')
+        ->where('BENEFIT_LIST_ID', 'like', '%' .$request->search. '%')
                 ->get();
 
     return $this->respondWithToken($this->token(), '', $ndc);
