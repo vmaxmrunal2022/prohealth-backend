@@ -937,9 +937,8 @@ class DrugClassController extends Controller
     {
         $data_list = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
             ->join('PLAN_DRUG_CATGY_EXCEPTIONS','DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST','=','PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST')
-            ->join('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
+            // ->join('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
             ->where('DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST', $id)
-            ->where('')
             ->get();
         return $this->respondWithToken($this->token(), '', $data_list);
     }
