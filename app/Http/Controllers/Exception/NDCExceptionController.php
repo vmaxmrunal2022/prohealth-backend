@@ -938,6 +938,17 @@ class NDCExceptionController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
 
                 } else {
+  
+
+                    $add_names = DB::table('NDC_EXCEPTIONS')
+                    ->where('ndc_exception_list',$request->ndc_exception_list)
+                    ->update(
+                        [
+                            'exception_name'=>$request->exception_name,
+                            
+                        ]
+                    );
+
                     $update = DB::table('NDC_EXCEPTION_LISTS' )
                     ->where('ndc',$request->ndc)
                     ->where('ndc_exception_list',$request->ndc_exception_list)
