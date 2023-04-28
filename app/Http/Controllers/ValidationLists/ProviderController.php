@@ -57,7 +57,7 @@ class ProviderController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function addProviderData(Request $request)
+    public function addProviderDatacopy(Request $request)
     {
         $getProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
             ->where('PHARMACY_LIST', $request->pharmacy_list)
@@ -159,6 +159,169 @@ class ProviderController extends Controller
                     }
                 }
             }
+        }
+    }
+
+    public function addProviderData(Request $request)
+    {
+        $createddate = date( 'y-m-d' );
+
+        $validation = DB::table('PHARMACY_EXCEPTIONS')
+        ->where('pharmacy_list',$request->pharmacy_list)
+        ->get();
+
+        if ($request->add_new == 1) {
+
+            $validator = Validator::make($request->all(), [
+                'pharmacy_list' => ['required', 'max:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
+                    $q->whereNotNull('pharmacy_list');
+                })],
+                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('NDC');
+                // })],
+
+                // 'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('effective_date');
+                // })],
+
+                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
+                //     $q->whereNotNull('ndc_exception_list');
+                // })],
+
+                "EXCEPTION_NAME" => ['max:36'],
+                "PHARMACY_NABP"=>['max:10'],
+                "PHARMACY_STATUS"=>['max:10'],
+                "DATE_TIME_CREATED"=>['max:10'],
+                "DATE_TIME_MODIFIED"=>['max:10']
+                
+
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
+            else{
+                if ($validation->count() > 0) {
+                    return $this->respondWithToken($this->token(), 'Procedure Exception Already Exists', $validation, true, 200, 1);
+                }
+                $add_names = DB::table('PHARMACY_EXCEPTIONS')->insert(
+                    [
+                        'PHARMACY_LIST' => $request->pharmacy_list,
+                        'EXCEPTION_NAME'=>$request->exception_name,
+                        
+                    ]
+                );
+    
+                $add = DB::table('PHARMACY_VALIDATIONS')
+                ->insert(
+                    [
+                        'PHARMACY_LIST'=>$request->pharmacy_list,
+                        'PHARMACY_NABP'=>$request->pharmacy_nabp,
+                        'PHARMACY_STATUS'=>$request->pharmacy_status,
+                        'DATE_TIME_CREATED'=>$createddate,
+
+                        
+                        
+                    ]);
+                   
+    
+                $add = DB::table('PHARMACY_VALIDATIONS')->where('pharmacy_list', 'like', '%' . $request->pharmacy_list . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
+            }
+
+
+           
+        } else if ($request->add_new == 0) {
+
+            $validator = Validator::make($request->all(), [
+
+                "EXCEPTION_NAME" => ['max:36'],
+                "PHARMACY_NABP"=>['max:10'],
+                "PHARMACY_STATUS"=>['max:10'],
+                "DATE_TIME_CREATED"=>['max:10'],
+                "DATE_TIME_MODIFIED"=>['max:10']
+                
+                
+                
+
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
+            else{
+
+                // if ($validation->count() < 1) {
+                //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
+                // }
+    
+                $update_names = DB::table('PHARMACY_EXCEPTIONS')
+                ->where('pharmacy_list', $request->pharmacy_list )
+                ->first();
+                    
+    
+                $checkGPI = DB::table('PHARMACY_VALIDATIONS')
+                ->where('pharmacy_list', $request->pharmacy_list )
+                ->where('pharmacy_nabp',$request->pharmacy_nabp)
+               
+                ->get()
+                ->count();
+                    // dd($checkGPI);
+                // if result >=1 then update NDC_EXCEPTION_LISTS table record
+                //if result 0 then add NDC_EXCEPTION_LISTS record
+
+    
+                if ($checkGPI <= "0") {
+                    $update = DB::table('PHARMACY_VALIDATIONS')
+                    ->insert(
+                        [
+                            'PHARMACY_LIST'=>$request->pharmacy_list,
+                            'PHARMACY_NABP'=>$request->pharmacy_nabp,
+                            'PHARMACY_STATUS'=>$request->pharmacy_status,
+                            'DATE_TIME_CREATED'=>$createddate,
+    
+                            
+                            
+                        ]);
+
+                $update = DB::table('PHARMACY_VALIDATIONS')->where('pharmacy_list', 'like', '%' . $request->pharmacy_list . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+                } else {
+  
+
+                    $add_names = DB::table('PHARMACY_EXCEPTIONS')
+                    ->where('pharmacy_list',$request->pharmacy_list)
+                    ->update(
+                        [
+                            'EXCEPTION_NAME'=>$request->exception_name,
+                            
+                        ]
+                    );
+
+                    $update = DB::table('PHARMACY_VALIDATIONS' )
+                    ->where('pharmacy_list', $request->pharmacy_list )
+                    ->where('pharmacy_nabp',$request->pharmacy_nabp)
+                   
+                    ->update(
+                        [
+                            'PHARMACY_STATUS'=>$request->pharmacy_status,
+                            
+        
+                        ]
+                    );
+                    $update = DB::table('PHARMACY_VALIDATIONS')->where('pharmacy_list', 'like', '%' . $request->pharmacy_list . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                }
+    
+               
+
+            }
+
+           
         }
     }
 

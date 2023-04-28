@@ -316,6 +316,7 @@ class DiagnosisValidationListController extends Controller
         $getData = DB::table('DIAGNOSIS_VALIDATIONS')
             ->join('DIAGNOSIS_EXCEPTIONS', 'DIAGNOSIS_EXCEPTIONS.DIAGNOSIS_LIST', '=', 'DIAGNOSIS_VALIDATIONS.DIAGNOSIS_LIST')
             ->where('DIAGNOSIS_VALIDATIONS.DIAGNOSIS_LIST', $diagnosis_list)
+            ->orderBy('DIAGNOSIS_VALIDATIONS.PRIORITY')
             ->get();
         return $this->respondWithToken($this->token(), '', $getData);
     }

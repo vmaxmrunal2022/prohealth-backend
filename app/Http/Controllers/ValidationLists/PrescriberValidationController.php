@@ -56,7 +56,7 @@ class PrescriberValidationController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function addPrescriberData(Request $request)
+    public function addPrescriberDatacopy(Request $request)
     {
         $getProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
             ->where('PHYSICIAN_LIST', $request->physician_list)
@@ -141,6 +141,160 @@ class PrescriberValidationController extends Controller
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $addProviderValidationData);
                 }
             }
+        }
+    }
+
+    public function addPrescriberData(Request $request)
+    {
+        $createddate = date( 'y-m-d' );
+
+        $validation = DB::table('PHYSICIAN_EXCEPTIONS')
+        ->where('physician_list',$request->physician_list)
+        ->get();
+
+        if ($request->add_new == 1) {
+
+            $validator = Validator::make($request->all(), [
+                'physician_list' => ['required', 'max:10', Rule::unique('PHYSICIAN_EXCEPTIONS')->where(function ($q) {
+                    $q->whereNotNull('physician_list');
+                })],
+                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('NDC');
+                // })],
+
+                // 'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('effective_date');
+                // })],
+
+                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('PHYSICIAN_EXCEPTIONS')->where(function ($q) {
+                //     $q->whereNotNull('ndc_exception_list');
+                // })],
+
+                "EXCEPTION_NAME" => ['max:36'],
+                "PHARMACY_NABP"=>['max:10'],
+                "PHARMACY_STATUS"=>['max:10'],
+                "DATE_TIME_CREATED"=>['max:10'],
+                "DATE_TIME_MODIFIED"=>['max:10']
+                
+            
+
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
+            else{
+                if ($validation->count() > 0) {
+                    return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
+                }
+                $add_names = DB::table('PHYSICIAN_EXCEPTIONS')->insert(
+                    [
+                        'PHYSICIAN_LIST' => $request->physician_list,
+                        'EXCEPTION_NAME'=>$request->exception_name,
+                        
+                    ]
+                );
+    
+                $add = DB::table('PHYSICIAN_VALIDATIONS')
+                    ->insert([
+    
+                        
+                            'PHYSICIAN_LIST' =>$request->physician_list,
+                            'PHYSICIAN_ID'=>$request->physician_id,
+                            'PHYSICIAN_STATUS'=>$request->physician_status,
+                            'DATE_TIME_CREATED'=>$createddate,
+                            
+                        
+                        
+                    ]);
+    
+                $add = DB::table('PHYSICIAN_VALIDATIONS')->where('physician_list', 'like', '%' . $request->physician_list . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
+            }
+
+
+           
+        } else if ($request->add_new == 0) {
+
+            $validator = Validator::make($request->all(), [
+
+               
+
+
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
+            else{
+
+                // if ($validation->count() < 1) {
+                //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
+                // }
+    
+                $update_names = DB::table('PHYSICIAN_EXCEPTIONS')
+                ->where('physician_list', $request->physician_list )
+                ->first();
+                    
+    
+                $checkGPI = DB::table('PHYSICIAN_VALIDATIONS')
+                    ->where('physician_list', $request->physician_list)
+                    ->where('physician_id',$request->physician_id)
+                    ->get()
+                    ->count();
+                    // dd($checkGPI);
+                // if result >=1 then update NDC_EXCEPTION_LISTS table record
+                //if result 0 then add NDC_EXCEPTION_LISTS record
+
+    
+                if ($checkGPI <= "0") {
+                    $update = DB::table('PHYSICIAN_VALIDATIONS')
+                    ->insert([
+                        'PHYSICIAN_LIST' =>$request->physician_list,
+                        'PHYSICIAN_ID'=>$request->physician_id,
+                        'PHYSICIAN_STATUS'=>$request->physician_status,
+                        'DATE_TIME_CREATED'=>$createddate,
+                    
+                ]);
+
+                   
+
+                $update = DB::table('PHYSICIAN_VALIDATIONS')->where('physician_list', 'like', '%' . $request->physician_list . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+                } else {
+  
+
+                    $add_names = DB::table('PHYSICIAN_EXCEPTIONS')
+                    ->where('physician_list',$request->physician_list)
+                    ->update(
+                        [
+                            'exception_name'=>$request->exception_name,
+                            
+                        ]
+                    );
+
+                    $update = DB::table('PHYSICIAN_VALIDATIONS' )
+                    ->where('physician_list', $request->physician_list)
+                    ->where('physician_id',$request->physician_id)       
+                    ->update(
+                        [
+                            'PHYSICIAN_STATUS'=>$request->pharmacy_status,
+        
+                        ]
+                    );
+                    $update = DB::table('PHYSICIAN_VALIDATIONS')->where('physician_list', 'like', '%' . $request->physician_list . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                }
+    
+               
+
+            }
+
+           
         }
     }
 
