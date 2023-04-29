@@ -243,9 +243,6 @@ class ProviderController extends Controller
                 "DATE_TIME_CREATED"=>['max:10'],
                 "DATE_TIME_MODIFIED"=>['max:10']
                 
-                
-                
-
             ]);
 
             if ($validator->fails()) {
@@ -283,8 +280,6 @@ class ProviderController extends Controller
                             'PHARMACY_STATUS'=>$request->pharmacy_status,
                             'DATE_TIME_CREATED'=>$createddate,
     
-                            
-                            
                         ]);
 
                 $update = DB::table('PHARMACY_VALIDATIONS')->where('pharmacy_list', 'like', '%' . $request->pharmacy_list . '%')->first();

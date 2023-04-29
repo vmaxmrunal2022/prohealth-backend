@@ -49,6 +49,7 @@ class PriorAuthController extends Controller
         ->where('client_id',$request->client_id)
         ->where('client_group_id', $request->client_group_id)
         ->where('plan_id', $request->plan_id)
+        ->where('prior_auth_code_num',$request->prior_auth_code_num)
         ->first();
 
 
@@ -156,13 +157,14 @@ class PriorAuthController extends Controller
             return $this->respondWithToken('success','Record Added Successfully',$inserted_record,$this->token(),200);
 
         }else if($request->add_new==0){
+            // dd($request->prior_auth_code_num);
             
             $update = DB::table('PRIOR_AUTHORIZATIONS')
                             ->where('prior_auth_code_num',$request->prior_auth_code_num)
-                            ->where('member_id',$request->member_id)
-                            ->where('customer_id',$request->customer_id)
-                            ->where('client_id', $request->client_id)
-                            ->where('client_group_id',$request->client_group_id)
+                            // ->where('member_id',$request->member_id)
+                            // ->where('customer_id',$request->customer_id)
+                            // ->where('client_id', $request->client_id)
+                            // ->where('client_group_id',$request->client_group_id)
                             ->update([
                                 //Authorization Tab Starts
                                 // 'prior_auth_code_num' => $prior_auth_code,
@@ -218,7 +220,12 @@ class PriorAuthController extends Controller
                                 'service_type' => $request->service_type,
                                  //Pricing/ Misc tab ends                            
                             ]);
-            return $this->respondWithToken($this->token(),'Record Updated Successfully!', $update);
+
+                            $inserted_record = DB::table('PRIOR_AUTHORIZATIONS')
+                            ->where('prior_auth_code_num',$request->prior_auth_code_num)
+                           
+                            ->first();
+            return $this->respondWithToken($this->token(),'Record Updated Successfully!', $inserted_record);
         }
     }
 }
