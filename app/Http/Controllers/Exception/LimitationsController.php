@@ -12,8 +12,8 @@ class LimitationsController extends Controller
     {
         $ndc = DB::table('LIMITATIONS_LIST')
                 ->select('LIMITATIONS_LIST', 'LIMITATIONS_LIST_NAME','EFFECTIVE_DATE')
-                ->where('LIMITATIONS_LIST', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('LIMITATIONS_LIST_NAME', 'like', '%' . strtoupper($request->search) . '%')
+                ->where('LIMITATIONS_LIST', 'like', '%' . $request->search . '%')
+                ->orWhere('LIMITATIONS_LIST_NAME', 'like', '%' . $request->search. '%')
                 ->get();
 
          return $this->respondWithToken($this->token(), '', $ndc);
@@ -35,7 +35,7 @@ class LimitationsController extends Controller
         $createddate = date( 'y-m-d' );
 
         $recordcheck = DB::table('LIMITATIONS_LIST')
-        ->where('limitations_list', strtoupper($request->limitations_list))
+        ->where('limitations_list', $request->limitations_list)
         ->first();
 
 
@@ -127,7 +127,7 @@ class LimitationsController extends Controller
            
 
             $update = DB::table('LIMITATIONS_LIST' )
-            ->where('limitations_list', strtoupper($request->limitations_list ))
+            ->where('limitations_list', $request->limitations_list )
             ->update(
                 [
                     'LIMITATIONS_LIST_NAME'=>$request->limitations_list_name,

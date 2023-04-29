@@ -5,8 +5,9 @@ namespace App\Http\Controllers\Exception;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use DB;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 class ProcedureCrossReferenceController extends Controller
 {
     public function ProcedureCodes(Request $request){
@@ -65,7 +66,7 @@ class ProcedureCrossReferenceController extends Controller
 
     }
 
-    public function add( Request $request ) {
+    public function addcopy( Request $request ) {
 
         $createddate = date( 'y-m-d' );
 
@@ -85,14 +86,14 @@ class ProcedureCrossReferenceController extends Controller
 
             else{
 
-                $insert1 = DB::table('ENTITY_NAMES')->insert(
+                $insert1 = DB::table('ENTITY_NAMES')
+                ->insert(
                     [
                         'ENTITY_TYPE' => 'PROCEDURE_XREF',
                         'ENTITY_USER_ID'=>$request->procedure_xref_id,
                         'ENTITY_USER_NAME'=>$request->entity_user_name,
                         'DATE_TIME_CREATED'=>$createddate,
                         'USER_ID_CREATED'=>'',
-                        'USER_ID'=>'',
                         'DATE_TIME_MODIFIED'=>$createddate,
                         
                      
@@ -102,7 +103,9 @@ class ProcedureCrossReferenceController extends Controller
 
                 
                 
-                $insert = DB::table('PROCEDURE_XREF')->insert(
+                $insert = DB::table('PROCEDURE_XREF')
+                
+                ->insert(
                     [
                         'PROCEDURE_XREF_ID' => $request->procedure_xref_id,
                         'SUB_PROCEDURE_CODE'=>$request->sub_procedure_code,
@@ -137,7 +140,6 @@ class ProcedureCrossReferenceController extends Controller
                         'ENTITY_USER_NAME'=>$request->entity_user_name,
                         'DATE_TIME_CREATED'=>$createddate,
                         'USER_ID_CREATED'=>'',
-                        'USER_ID'=>'',
                         'DATE_TIME_MODIFIED'=>$createddate,
                     
                 ]
@@ -171,4 +173,190 @@ class ProcedureCrossReferenceController extends Controller
 
 
     }
+
+    public function add(Request $request)
+    {
+        $createddate = date( 'y-m-d' );
+
+        $validation = DB::table('ENTITY_NAMES')
+        ->where('ENTITY_USER_ID',$request->entity_user_id)
+        ->get();
+
+        if ($request->add_new == 1) {
+
+            $validator = Validator::make($request->all(), [
+                'entity_user_id' => ['required', 'max:10', Rule::unique('ENTITY_NAMES')->where(function ($q) {
+                    $q->whereNotNull('entity_user_id');
+                })],
+                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('NDC');
+                // })],
+
+                // 'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('effective_date');
+                // })],
+
+                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('ENTITY_NAMES')->where(function ($q) {
+                //     $q->whereNotNull('ndc_exception_list');
+                // })],
+
+                "entity_user_name" => ['max:36'],
+                "date_time_created"=>['max:10']
+
+
+
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
+            else{
+                if ($validation->count() > 0) {
+                    return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
+                }
+                $add_names = DB::table('ENTITY_NAMES')
+                ->insert(
+                    [
+                        'ENTITY_TYPE' => 'PROCEDURE_XREF',
+                        'ENTITY_USER_ID'=>$request->entity_user_id,
+                        'ENTITY_USER_NAME'=>$request->entity_user_name,
+                        'DATE_TIME_CREATED'=>$createddate,
+                        'USER_ID_CREATED'=>'',
+                        'DATE_TIME_MODIFIED'=>$createddate,
+                        
+                     
+                    ]
+                );
+    
+                $add = DB::table('PROCEDURE_XREF')
+                ->insert(
+                    [
+                        'PROCEDURE_XREF_ID' => $request->entity_user_id,
+                        'SUB_PROCEDURE_CODE'=>$request->sub_procedure_code,
+                        'HIST_PROCEDURE_CODE'=>$request->hist_procedure_code,
+                        'EFFECTIVE_DATE'=>$request->effective_date,
+                        'TERMINATION_DATE'=>$request->termination_date,
+                        'TOOTH_OPT'=>$request->tooth_opt,
+                        'SURFACE_OPT'=>$request->surface_opt,
+                        'QUADRANT_OPT'=>$request->quadrant_opt,
+                        'NEW_DRUG_STATUS'=>$request->new_drug_status,
+                        'MESSAGE'=>$request->message,
+                        'MESSAGE_STOP_DATE'=>$request->message_stop_date,
+                        
+                    ]
+                );
+
+                   
+                $add = DB::table('PROCEDURE_XREF')->where('PROCEDURE_XREF_ID', 'like', '%' . $request->entity_user_id . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
+            }
+
+
+           
+        } else if ($request->add_new == 0) {
+
+            $validator = Validator::make($request->all(), [
+
+               
+                "entity_user_name" => ['max:36'],
+                "date_time_created"=>['max:10']
+
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
+            else{
+
+                // if ($validation->count() < 1) {
+                //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
+                // }
+    
+                $update_names = DB::table('ENTITY_NAMES')
+                ->where('entity_user_id', $request->entity_user_id )
+                ->first();
+                    
+    
+                $checkGPI = DB::table('PROCEDURE_XREF')
+                    ->where('PROCEDURE_XREF_ID', $request->entity_user_id)
+                    ->where('SUB_PROCEDURE_CODE',$request->sub_procedure_code)
+                    ->where('HIST_PROCEDURE_CODE',$request->hist_procedure_code)
+                    ->where('EFFECTIVE_DATE',$request->effective_date)
+                    ->get()
+                    ->count();
+                    // dd($checkGPI);
+                // if result >=1 then update NDC_EXCEPTION_LISTS table record
+                //if result 0 then add NDC_EXCEPTION_LISTS record
+
+    
+                if ($checkGPI <= "0") {
+                    $update = DB::table('PROCEDURE_XREF')
+                    ->insert(
+                        [
+                            'PROCEDURE_XREF_ID' => $request->entity_user_id,
+                            'SUB_PROCEDURE_CODE'=>$request->sub_procedure_code,
+                            'HIST_PROCEDURE_CODE'=>$request->hist_procedure_code,
+                            'EFFECTIVE_DATE'=>$request->effective_date,
+                            'TERMINATION_DATE'=>$request->termination_date,
+                            'TOOTH_OPT'=>$request->tooth_opt,
+                            'SURFACE_OPT'=>$request->surface_opt,
+                            'QUADRANT_OPT'=>$request->quadrant_opt,
+                            'NEW_DRUG_STATUS'=>$request->new_drug_status,
+                            'MESSAGE'=>$request->message,
+                            'MESSAGE_STOP_DATE'=>$request->message_stop_date,
+                            
+                        ]
+                    
+                    );
+                  
+                $update = DB::table('PROCEDURE_XREF')->where('PROCEDURE_XREF_ID', 'like', '%' . $request->entity_user_id . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+                } else {
+  
+
+                    $add_names = DB::table('ENTITY_NAMES')
+                    ->where('entity_user_id',$request->entity_user_id)
+                    ->update(
+                        [
+                            'entity_user_name'=>$request->entity_user_name,
+                            
+                        ]
+                    );
+
+                    $update = DB::table('PROCEDURE_XREF' )
+                    ->where('PROCEDURE_XREF_ID', $request->entity_user_id)
+                    ->where('SUB_PROCEDURE_CODE',$request->sub_procedure_code)
+                    ->where('HIST_PROCEDURE_CODE',$request->hist_procedure_code)
+                    ->where('EFFECTIVE_DATE',$request->effective_date)
+                    ->update(
+                        [
+                               
+                                'TERMINATION_DATE'=>$request->termination_date,
+                                'TOOTH_OPT'=>$request->tooth_opt,
+                                'SURFACE_OPT'=>$request->surface_opt,
+                                'QUADRANT_OPT'=>$request->quadrant_opt,
+                                'NEW_DRUG_STATUS'=>$request->new_drug_status,
+                                'MESSAGE'=>$request->message,
+                                'MESSAGE_STOP_DATE'=>$request->message_stop_date,
+                            
+                        ]
+                    );  
+                    
+                    $update = DB::table('PROCEDURE_XREF')->where('PROCEDURE_XREF_ID', 'like', '%' . $request->entity_user_id . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                }
+    
+               
+
+            }
+
+           
+        }
+    }
+
+
 }
