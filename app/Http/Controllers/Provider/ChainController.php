@@ -27,6 +27,15 @@ class ChainController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
+
+    public function dropdowns(){
+
+        $ndc =DB::table('PHARMACY_CHAIN')
+        ->select('PHARMACY_CHAIN','PHARMACY_CHAIN_NAME')
+        ->get();
+        return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
     
 
     public function add(Request $request)

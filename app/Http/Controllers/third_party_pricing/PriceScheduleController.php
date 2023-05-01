@@ -11,23 +11,23 @@ use Illuminate\Validation\Rule;
 
 class PriceScheduleController extends Controller
 {
-    public function getAll(Request $request)
-    {
-        $priceShedule = DB::table('PRICE_SCHEDULE')->get();
-        return $this->respondWithToken($this->token(), '', $priceShedule);
-    }
-
     public function get(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')
-            ->where('PRICE_SCHEDULE', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('PRICE_SCHEDULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('COPAY_SCHEDULE', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('PRICE_SCHEDULE',  $request->search)
+            ->orWhere('PRICE_SCHEDULE_NAME',$request->search)
+            ->orWhere('COPAY_SCHEDULE', $request->search)
             ->get();
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }
-   
-    
+    public function getAll(Request $request)
+    {
+        $priceShedule = DB::table('PRICE_SCHEDULE')
+        ->select('price_schedule','price_schedule_name')
+        ->get();
+        return $this->respondWithToken($this->token(), '', $priceShedule);
+    }
+
 
     public function getPriceScheduleDetails(Request $erquest)
     {
@@ -117,9 +117,16 @@ class PriceScheduleController extends Controller
 
     public function getBrandType(Request $request)
     {
-        if ($request->has('new')) {
-            $length = 10;
-            echo substr(str_shuffle('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 1, $length);
+        $brand_type = [
+            'CALC' => 'Predefined Calculator (see type)',
+            'FDB' => 'First Data Bank',
+            'MDS' => 'MediSpan',
+            'NATL' => 'National',
+            'PLAN' => 'Set by the Plan',
+            'TRX' => 'Inbound from the Provider',
+            'USR' => 'User Defined',
+            'U&C' => 'Usual & Customer Retail Charge',
+        ];
 
         $new_array = [];
         $r = Helper::searchElement('~' . $request->search . '~', $brand_type);
@@ -235,7 +242,7 @@ class PriceScheduleController extends Controller
                 'gen4_stdpkg' => ['required', 'max:1'],
                 'gen5_stdpkg' => ['required', 'max:1'],
                 'gen6_stdpkg' => ['required', 'max:1'],
-                'tax_flag' => ['required', 'max:1'],
+                // 'tax_flag' => ['required', 'max:1'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -245,7 +252,7 @@ class PriceScheduleController extends Controller
                         'PRICE_SCHEDULE' => $request->price_schedule,
                         'PRICE_SCHEDULE_NAME' => $request->price_schedule_name,
                         'COPAY_SCHEDULE' => $request->copay_schedule,
-                        'tax_flag' => $request->tax_flag,
+                        'tax_flag' => (!isset($request->tax_flag)) ? '1' : $request->tax_flag,
                         'BNG1_STDPKG' => $request->bng1_stdpkg,
                         'BNG1_SOURCE' => $request->bng1_source,
                         'BNG1_TYPE' => $request->bng1_type,
@@ -375,12 +382,52 @@ class PriceScheduleController extends Controller
                         'GEN6_MARKUP_AMOUNT' => $request->gen6_markup_amount,
                         'GEN6_FEE_PERCENT' => $request->gen6_fee_percent,
                         'GEN6_FEE_AMOUNT' => $request->gen6_fee_amount,
+
+                        'BGA1_FEE_FACTOR'   => $request->bga1_fee_factor,
+                        'BGA1_FEE_MATRIX'   => $request->bga1_fee_matrix,
+                        'BGA2_FEE_FACTOR'   => $request->bga2_fee_factor,
+                        'BGA2_FEE_MATRIX'   => $request->bga2_fee_matrix,
+                        'BGA3_FEE_FACTOR'   => $request->bga3_fee_factor,
+                        'BGA3_FEE_MATRIX'   => $request->bga3_fee_matrix,
+                        'BGA4_FEE_FACTOR'   => $request->bga4_fee_factor,
+                        'BGA4_FEE_MATRIX'   => $request->bga4_fee_matrix,
+                        'BGA5_FEE_FACTOR'   => $request->bga5_fee_factor,
+                        'BGA5_FEE_MATRIX'   => $request->bga5_fee_matrix,
+                        'BGA6_FEE_FACTOR'   => $request->bga6_fee_factor,
+                        'BGA6_FEE_MATRIX'   => $request->bga6_fee_matrix,
+                        'BGA_COMPARISON'    => $request->bga_comparison,
+                        'BNG1_FEE_FACTOR'   => $request->bng1_fee_factor,
+                        'BNG1_FEE_MATRIX'   => $request->bng1_fee_matrix,
+                        'BNG2_FEE_FACTOR'   => $request->bng2_fee_factor,
+                        'BNG2_FEE_MATRIX'   => $request->bng2_fee_matrix,
+                        'BNG3_FEE_FACTOR'   => $request->bng3_fee_factor,
+                        'BNG3_FEE_MATRIX'   => $request->bng3_fee_matrix,
+                        'BNG4_FEE_FACTOR'   => $request->bng4_fee_factor,
+                        'BNG4_FEE_MATRIX'   => $request->bng4_fee_matrix,
+                        'BNG5_FEE_FACTOR'   => $request->bng5_fee_factor,
+                        'BNG5_FEE_MATRIX'   => $request->bng5_fee_matrix,
+                        'BNG6_FEE_FACTOR'   => $request->bng6_fee_factor,
+                        'BNG6_FEE_MATRIX'   => $request->bng6_fee_matrix,
+                        'BNG_COMPARISON'    => $request->bng_comparison,
+                        'GEN1_FEE_FACTOR'   => $request->gen1_fee_factor,
+                        'GEN1_FEE_MATRIX'   => $request->gen1_fee_matrix,
+                        'GEN2_FEE_FACTOR'   => $request->gen2_fee_factor,
+                        'GEN2_FEE_MATRIX'   => $request->gen2_fee_matrix,
+                        'GEN3_FEE_FACTOR'   => $request->gen3_fee_factor,
+                        'GEN3_FEE_MATRIX'   => $request->gen3_fee_matrix,
+                        'GEN4_FEE_FACTOR'   => $request->gen4_fee_factor,
+                        'GEN4_FEE_MATRIX'   => $request->gen4_fee_matrix,
+                        'GEN5_FEE_FACTOR'   => $request->gen5_fee_factor,
+                        'GEN5_FEE_MATRIX'   => $request->gen5_fee_matrix,
+                        'GEN6_FEE_FACTOR'   => $request->gen6_fee_factor,
+                        'GEN6_FEE_MATRIX'   => $request->gen6_fee_matrix,
+                        'GEN_COMPARISON'    => $request->gen_comparison,
                     ]);
 
                 $price_schedule = DB::table('price_schedule')
                     ->where('price_schedule', $request->price_schedule)
                     ->first();
-                return $this->respondWithToken($this->token(), 'Added successfully!', $add_price_schedule);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_price_schedule);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -392,7 +439,7 @@ class PriceScheduleController extends Controller
                 'bng4_stdpkg' => ['required', 'max:1'],
                 'bng5_stdpkg' => ['required', 'max:1'],
                 'bng6_stdpkg' => ['required', 'max:1'],
-                'tax_flag' => ['required', 'max:1'],
+                // 'tax_flag' => ['required', 'max:1'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -402,7 +449,7 @@ class PriceScheduleController extends Controller
                     ->update([
                         'PRICE_SCHEDULE_NAME' => $request->price_schedule_name,
                         'COPAY_SCHEDULE' => $request->copay_schedule,
-                        'tax_flag' => $request->tax_flag,
+                        'tax_flag' => (!isset($request->tax_flag)) ? '1' : $request->tax_flag,
                         'BNG1_STDPKG' => $request->bng1_stdpkg,
                         'BNG1_SOURCE' => $request->bng1_source,
                         'BNG1_TYPE' => $request->bng1_type,
@@ -445,6 +492,7 @@ class PriceScheduleController extends Controller
                         'BNG6_MARKUP_AMOUNT' => $request->bng6_markup_amount,
                         'BNG6_FEE_PERCENT' => $request->bng6_fee_percent,
                         'BNG6_FEE_AMOUNT' => $request->bng6_fee_amount,
+
 
                         'BGA1_STDPKG' => $request->bga1_stdpkg,
                         'BGA1_SOURCE' => $request->bga1_source,
@@ -531,12 +579,52 @@ class PriceScheduleController extends Controller
                         'GEN6_MARKUP_AMOUNT' => $request->gen6_markup_amount,
                         'GEN6_FEE_PERCENT' => $request->gen6_fee_percent,
                         'GEN6_FEE_AMOUNT' => $request->gen6_fee_amount,
+
+                        'BGA1_FEE_FACTOR'   => $request->bga1_fee_factor,
+                        'BGA1_FEE_MATRIX'   => $request->bga1_fee_matrix,
+                        'BGA2_FEE_FACTOR'   => $request->bga2_fee_factor,
+                        'BGA2_FEE_MATRIX'   => $request->bga2_fee_matrix,
+                        'BGA3_FEE_FACTOR'   => $request->bga3_fee_factor,
+                        'BGA3_FEE_MATRIX'   => $request->bga3_fee_matrix,
+                        'BGA4_FEE_FACTOR'   => $request->bga4_fee_factor,
+                        'BGA4_FEE_MATRIX'   => $request->bga4_fee_matrix,
+                        'BGA5_FEE_FACTOR'   => $request->bga5_fee_factor,
+                        'BGA5_FEE_MATRIX'   => $request->bga5_fee_matrix,
+                        'BGA6_FEE_FACTOR'   => $request->bga6_fee_factor,
+                        'BGA6_FEE_MATRIX'   => $request->bga6_fee_matrix,
+                        'BGA_COMPARISON'    => $request->bga_comparison,
+                        'BNG1_FEE_FACTOR'   => $request->bng1_fee_factor,
+                        'BNG1_FEE_MATRIX'   => $request->bng1_fee_matrix,
+                        'BNG2_FEE_FACTOR'   => $request->bng2_fee_factor,
+                        'BNG2_FEE_MATRIX'   => $request->bng2_fee_matrix,
+                        'BNG3_FEE_FACTOR'   => $request->bng3_fee_factor,
+                        'BNG3_FEE_MATRIX'   => $request->bng3_fee_matrix,
+                        'BNG4_FEE_FACTOR'   => $request->bng4_fee_factor,
+                        'BNG4_FEE_MATRIX'   => $request->bng4_fee_matrix,
+                        'BNG5_FEE_FACTOR'   => $request->bng5_fee_factor,
+                        'BNG5_FEE_MATRIX'   => $request->bng5_fee_matrix,
+                        'BNG6_FEE_FACTOR'   => $request->bng6_fee_factor,
+                        'BNG6_FEE_MATRIX'   => $request->bng6_fee_matrix,
+                        'BNG_COMPARISON'    => $request->bng_comparison,
+                        'GEN1_FEE_FACTOR'   => $request->gen1_fee_factor,
+                        'GEN1_FEE_MATRIX'   => $request->gen1_fee_matrix,
+                        'GEN2_FEE_FACTOR'   => $request->gen2_fee_factor,
+                        'GEN2_FEE_MATRIX'   => $request->gen2_fee_matrix,
+                        'GEN3_FEE_FACTOR'   => $request->gen3_fee_factor,
+                        'GEN3_FEE_MATRIX'   => $request->gen3_fee_matrix,
+                        'GEN4_FEE_FACTOR'   => $request->gen4_fee_factor,
+                        'GEN4_FEE_MATRIX'   => $request->gen4_fee_matrix,
+                        'GEN5_FEE_FACTOR'   => $request->gen5_fee_factor,
+                        'GEN5_FEE_MATRIX'   => $request->gen5_fee_matrix,
+                        'GEN6_FEE_FACTOR'   => $request->gen6_fee_factor,
+                        'GEN6_FEE_MATRIX'   => $request->gen6_fee_matrix,
+                        'GEN_COMPARISON'    => $request->gen_comparison,
                     ]);
 
                 $price_schedule = DB::table('price_schedule')
                     ->where('price_schedule', $request->price_schedule)
                     ->first();
-                return $this->respondWithToken($this->token(), 'Updated successfully!', $price_schedule);
+                return $this->respondWithToken($this->token(), 'Record  Updated Successfully', $price_schedule);
             }
         }
     }

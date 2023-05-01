@@ -4,14 +4,17 @@ namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class SuperBenefitControler extends Controller
 {      
 
 
 
-    public function add( Request $request ) {
+    public function addcopy( Request $request ) {
         $createddate = date( 'y-m-d' );
 
         $effective_date = date('Ymd', strtotime($request->effective_date));
@@ -26,7 +29,7 @@ class SuperBenefitControler extends Controller
         if ( $request->has( 'new' ) ) {
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'Super Benefit List Id  Already Exists', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Super Benefit List ID  Already Exists', $recordcheck);
 
             }
 
@@ -99,6 +102,175 @@ class SuperBenefitControler extends Controller
         }
 
 
+    }
+
+    public function add(Request $request)
+    {
+        $createddate = date( 'y-m-d' );
+
+        $validation = DB::table('SUPER_BENEFIT_LIST_NAMES')
+        ->where('super_benefit_list_id',$request->super_benefit_list_id)
+        ->get();
+
+        if ($request->add_new == 1) {
+
+            $validator = Validator::make($request->all(), [
+                'super_benefit_list_id' => ['required', 'max:10', Rule::unique('SUPER_BENEFIT_LIST_NAMES')->where(function ($q) {
+                    $q->whereNotNull('super_benefit_list_id');
+                })],
+                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('NDC');
+                // })],
+
+                // 'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('effective_date');
+                // })],
+
+                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
+                //     $q->whereNotNull('ndc_exception_list');
+                // })],
+
+                "BENEFIT_LIST_ID" => ['max:36'],
+                "EFFECTIVE_DATE"=>['max:10'],
+                "TERMINATION_DATE"=>['max:10'],
+                "ACCUM_BENEFIT_STRATEGY_ID"=>['max:10'],
+                "DESCRIPTION"=>['max:10']
+                
+
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
+            else{
+                if ($validation->count() > 0) {
+                    return $this->respondWithToken($this->token(), 'Procedure Exception Already Exists', $validation, true, 200, 1);
+                }
+                $add_names = DB::table('SUPER_BENEFIT_LIST_NAMES')->insert(
+                    [
+                        'SUPER_BENEFIT_LIST_ID' => $request->super_benefit_list_id,
+                        'DESCRIPTION'=>$request->description,
+                        
+                    ]
+                );
+    
+                $add = DB::table('SUPER_BENEFIT_LISTS')
+                ->insert(
+                    [
+                        'SUPER_BENEFIT_LIST_ID'=>$request->super_benefit_list_id,
+                        'BENEFIT_LIST_ID'=>$request->benefit_list_id,
+                        'EFFECTIVE_DATE'=>$request->effective_date,
+                        'TERMINATION_DATE'=>$request->termination_date,
+                        'ACCUM_BENEFIT_STRATEGY_ID'=>$request->accum_benefit_strategy_id,
+                        'DATE_TIME_CREATED'=>$createddate,
+                        
+                        
+                    ]);
+                   
+    
+                $add = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
+            }
+
+
+           
+        } else if ($request->add_new == 0) {
+
+            $validator = Validator::make($request->all(), [
+
+                "BENEFIT_LIST_ID" => ['max:36'],
+                "EFFECTIVE_DATE"=>['max:10'],
+                "TERMINATION_DATE"=>['max:10'],
+                "ACCUM_BENEFIT_STRATEGY_ID"=>['max:10'],
+                "DESCRIPTION"=>['max:10']
+                
+                
+
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
+            else{
+
+                // if ($validation->count() < 1) {
+                //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
+                // }
+    
+                $update_names = DB::table('SUPER_BENEFIT_LIST_NAMES')
+                ->where('super_benefit_list_id', $request->super_benefit_list_id )
+                ->first();
+                    
+    
+                $checkGPI = DB::table('SUPER_BENEFIT_LISTS')
+                ->where('super_benefit_list_id', $request->super_benefit_list_id )
+                ->where('benefit_list_id',$request->benefit_list_id)
+                ->where('effective_date',$request->effective_date)
+                ->where('termination_date',$request->termination_date)
+                ->get()
+                ->count();
+                    // dd($checkGPI);
+                // if result >=1 then update NDC_EXCEPTION_LISTS table record
+                //if result 0 then add NDC_EXCEPTION_LISTS record
+
+    
+                if ($checkGPI <= "0") {
+                    $update = DB::table('SUPER_BENEFIT_LISTS')
+                    ->insert(
+                        [
+                            'SUPER_BENEFIT_LIST_ID'=>$request->super_benefit_list_id,
+                            'BENEFIT_LIST_ID'=>$request->benefit_list_id,
+                            'EFFECTIVE_DATE'=>$request->effective_date,
+                            'TERMINATION_DATE'=>$request->termination_date,
+                            'ACCUM_BENEFIT_STRATEGY_ID'=>$request->accum_benefit_strategy_id,
+                            'DATE_TIME_CREATED'=>$createddate,
+                            
+                            
+                        ]);
+                       
+
+                $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+                } else {
+  
+
+                    $add_names = DB::table('SUPER_BENEFIT_LIST_NAMES')
+                    ->where('super_benefit_list_id',$request->super_benefit_list_id)
+                    ->update(
+                        [
+                            'description'=>$request->description,
+                            
+                        ]
+                    );
+
+                    $update = DB::table('SUPER_BENEFIT_LISTS' )
+                    ->where('super_benefit_list_id', $request->super_benefit_list_id )
+                    ->where('benefit_list_id',$request->benefit_list_id)
+                    ->where('effective_date',$request->effective_date)
+                    ->where('termination_date',$request->termination_date)
+
+                    ->update(
+                        [
+                            'TERMINATION_DATE'=>$request->termination_date,
+                            'ACCUM_BENEFIT_STRATEGY_ID'=>$request->accum_benefit_strategy_id
+                            
+        
+                        ]
+                    );
+                    $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                }
+    
+               
+
+            }
+
+           
+        }
     }
 
 

@@ -545,20 +545,20 @@ class NDCExceptionController extends Controller
         if ($request->add_new == 1) {
 
             $validator = Validator::make($request->all(), [
-                'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                    $q->whereNotNull('NDC_EXCEPTION_LIST');
-                })],
+                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('NDC_EXCEPTION_LIST');
+                // })],
                 // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
                 //     $q->whereNotNull('NDC');
                 // })],
 
-                'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                    $q->whereNotNull('effective_date');
-                })],
+                // 'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('effective_date');
+                // })],
 
-                'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
-                    $q->whereNotNull('ndc_exception_list');
-                })],
+                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
+                //     $q->whereNotNull('ndc_exception_list');
+                // })],
 
                 "exception_name" => ['max:36'],
                 "NEW_DRUG_STATUS"=>['max:2'],
@@ -746,10 +746,21 @@ class NDCExceptionController extends Controller
         } else if ($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
+                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('NDC_EXCEPTION_LIST');
+                // })],
+                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('NDC');
+                // })],
 
-                'ndc_exception_list' => ['required', 'max:10'],
-                'ndc' => ['required', 'max:11'],
-                'effective_date' => ['required', 'max:10'],        
+                // 'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('effective_date');
+                // })],
+
+                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
+                //     $q->whereNotNull('ndc_exception_list');
+                // })],
+
                 "exception_name" => ['max:36'],
                 "NEW_DRUG_STATUS"=>['max:2'],
                 "PROCESS_RULE"=>['max:1'],
@@ -832,24 +843,23 @@ class NDCExceptionController extends Controller
 
             else{
 
-                // if ($validation->count() < 1) {
-                //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
-                // }
+                if ($validation->count() < 1) {
+                    return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
+                }
     
                 $update_names = DB::table('NDC_EXCEPTIONS')
                 ->where('ndc_exception_list', $request->ndc_exception_list )
-                ->first();
+                    ->update(
+                        [
+                            'exception_name'=>$request->exception_name,
+                        ]);
                     
     
                 $checkGPI = DB::table('NDC_EXCEPTION_LISTS')
                     ->where('ndc', $request->ndc)
-                    ->where('ndc_exception_list',$request->ndc_exception_list)
                     ->get()
                     ->count();
-                    // dd($checkGPI);
-                // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                //if result 0 then add NDC_EXCEPTION_LISTS record
-
+    
     
                 if ($checkGPI <= "0") {
                     $update = DB::table('NDC_EXCEPTION_LISTS')
@@ -933,26 +943,12 @@ class NDCExceptionController extends Controller
                     
                     
                 ]);
-
-                $update = DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-
                 } else {
-  
-
-                    $add_names = DB::table('NDC_EXCEPTIONS')
-                    ->where('ndc_exception_list',$request->ndc_exception_list)
-                    ->update(
-                        [
-                            'exception_name'=>$request->exception_name,
-                            
-                        ]
-                    );
-
                     $update = DB::table('NDC_EXCEPTION_LISTS' )
                     ->where('ndc',$request->ndc)
                     ->where('ndc_exception_list',$request->ndc_exception_list)
-                    ->where('effective_date',$request->effective_date)        
+                    ->where('effective_date',$request->effective_date)
+        
                     ->update(
                         [
                             'NEW_DRUG_STATUS'=>$request->new_drug_status,
@@ -1032,11 +1028,10 @@ class NDCExceptionController extends Controller
         
                         ]
                     );
-                    $update = DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                 }
     
-               
+                $update = DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
 
             }
 

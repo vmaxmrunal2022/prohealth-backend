@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
-
 class PrcedureCodeListController extends Controller
  {
 
-    public function add( Request $request ) {
+    public function addcopy( Request $request ) {
         $createddate = date( 'y-m-d' );
 
         $effective_date = date('Ymd', strtotime($request->effective_date));
@@ -93,6 +94,168 @@ class PrcedureCodeListController extends Controller
         }
 
         return $this->respondWithToken( $this->token(), 'Record Updated Successfully', $benefitcode );
+    }
+
+
+    public function add(Request $request)
+    {
+        $createddate = date( 'y-m-d' );
+
+        $validation = DB::table('PROC_CODE_LIST_NAMES')
+        ->where('proc_code_list_id',$request->proc_code_list_id)
+        ->get();
+
+        if ($request->add_new == 1) {
+
+            $validator = Validator::make($request->all(), [
+                'proc_code_list_id' => ['required', 'max:10', Rule::unique('PROC_CODE_LIST_NAMES')->where(function ($q) {
+                    $q->whereNotNull('proc_code_list_id');
+                })],
+                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('NDC');
+                // })],
+
+                // 'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+                //     $q->whereNotNull('effective_date');
+                // })],
+
+                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
+                //     $q->whereNotNull('ndc_exception_list');
+                // })],
+
+                "description" => ['max:36'],
+                "procedure_code"=>['max:10'],
+                "effective_date"=>['max:10'],
+                'termination_date'=>['max:10'],
+                
+
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
+            else{
+                if ($validation->count() > 0) {
+                    return $this->respondWithToken($this->token(), 'Procedure Exception Already Exists', $validation, true, 200, 1);
+                }
+                $add_names = DB::table('PROC_CODE_LIST_NAMES')->insert(
+                    [
+                        'proc_code_list_id' => $request->proc_code_list_id,
+                        'description'=>$request->description,
+                        
+                    ]
+                );
+    
+                $add = DB::table('PROC_CODE_LISTS')
+                ->insert(
+                    [
+                        'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
+                        'PROCEDURE_CODE'=>$request->procedure_code,
+                        'EFFECTIVE_DATE'=>$request->effective_date,
+                        'TERMINATION_DATE'=>$request->termination_date,
+                        'DATE_TIME_CREATED'=>$createddate,
+                        
+                        
+                    ]);
+                   
+    
+                $add = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
+            }
+
+
+           
+        } else if ($request->add_new == 0) {
+
+            $validator = Validator::make($request->all(), [
+
+                "description" => ['max:36'],
+                "procedure_code"=>['max:10'],
+                "effective_date"=>['max:10'],
+                'termination_date'=>['max:10'],
+                
+                
+
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
+            else{
+
+                // if ($validation->count() < 1) {
+                //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
+                // }
+    
+                $update_names = DB::table('PROC_CODE_LIST_NAMES')
+                ->where('proc_code_list_id', $request->proc_code_list_id )
+                ->first();
+                    
+    
+                $checkGPI = DB::table('PROC_CODE_LISTS')
+                ->where('proc_code_list_id', $request->proc_code_list_id )
+                ->where('procedure_code',$request->procedure_code)
+                ->where('effective_date',$request->effective_date)
+                ->get()
+                ->count();
+                    // dd($checkGPI);
+                // if result >=1 then update NDC_EXCEPTION_LISTS table record
+                //if result 0 then add NDC_EXCEPTION_LISTS record
+
+    
+                if ($checkGPI <= "0") {
+                    $update = DB::table('PROC_CODE_LISTS')
+                    ->insert(
+                        [
+                            'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
+                            'PROCEDURE_CODE'=>$request->procedure_code,
+                            'EFFECTIVE_DATE'=>$request->effective_date,
+                            'TERMINATION_DATE'=>$request->termination_date,
+                            'DATE_TIME_CREATED'=>$createddate,
+                            
+                            
+                        ]);
+                    
+
+                $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+                } else {
+  
+
+                    $add_names = DB::table('PROC_CODE_LIST_NAMES')
+                    ->where('proc_code_list_id',$request->proc_code_list_id)
+                    ->update(
+                        [
+                            'description'=>$request->description,
+                            
+                        ]
+                    );
+
+                    $update = DB::table('PROC_CODE_LISTS' )
+                    ->where('proc_code_list_id', $request->proc_code_list_id )
+                    ->where('procedure_code',$request->procedure_code)
+                    ->where('effective_date',$request->effective_date)
+                    ->update(
+                        [
+                            'TERMINATION_DATE'=>$request->termination_date,
+                            
+        
+                        ]
+                    );
+                    $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                }
+    
+               
+
+            }
+
+           
+        }
     }
 
     public function get( Request $request )

@@ -12,13 +12,13 @@ use Illuminate\Validation\Rule;
 class ProviderTypeValidationController extends Controller
 {
 
-    public function add( Request $request ) {
+    public function addcopy( Request $request ) {
         $createddate = date( 'y-m-d' );
         if ( $request->has( 'new' ) ) {
 
         
         $recordcheck = DB::table('PROVIDER_TYPE_VALIDATIONS')
-        ->where('prov_type_list_id', strtoupper($request->prov_type_list_id))
+        ->where('prov_type_list_id', $request->prov_type_list_id)
         ->first();
         
 
@@ -34,7 +34,7 @@ class ProviderTypeValidationController extends Controller
 
                 $accum_benfit_stat_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')->insert(
                     [
-                        'prov_type_list_id' => strtoupper( $request->prov_type_list_id ),
+                        'prov_type_list_id' => $request->prov_type_list_id,
                         'description'=>$request->description,
                         'DATE_TIME_CREATED'=>$createddate,
                         
@@ -43,7 +43,8 @@ class ProviderTypeValidationController extends Controller
                 );
     
     
-                $add = DB::table('PROVIDER_TYPE_VALIDATIONS')->insert(
+                $add = DB::table('PROVIDER_TYPE_VALIDATIONS')
+                ->insert(
                     [
                         'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
                         'PROV_TYPE_LIST_ID'=>$request->prov_type_list_id,
@@ -97,12 +98,183 @@ class ProviderTypeValidationController extends Controller
 
 }
 
+public function add(Request $request)
+{
+    $createddate = date( 'y-m-d' );
+
+    $validation = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
+    ->where('prov_type_list_id',$request->prov_type_list_id)
+    ->get();
+
+    if ($request->add_new == 1) {
+
+        $validator = Validator::make($request->all(), [
+            'prov_type_list_id' => ['required', 'max:10', Rule::unique('PROVIDER_TYPE_VALIDATION_NAMES')->where(function ($q) {
+                $q->whereNotNull('prov_type_list_id');
+            })],
+            // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+            //     $q->whereNotNull('NDC');
+            // })],
+
+            // 'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
+            //     $q->whereNotNull('effective_date');
+            // })],
+
+            'prov_type_list_id' => ['required', 'max:10', Rule::unique('PROVIDER_TYPE_VALIDATIONS')->where(function ($q) {
+                $q->whereNotNull('prov_type_list_id');
+            })],
+
+            "description" => ['max:36'],
+            "provider_type"=>['required','max:2'],
+            "effective_date"=>['max:10'],
+            'termination_date'=>['max:15','min:5'],
+            'proc_code_list'=>['max:10'],
+        
+        ]);
+
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        }
+
+        else{
+            if ($validation->count() > 0) {
+                return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
+            }
+            $add_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')->insert(
+                [
+                    'prov_type_list_id' => $request->prov_type_list_id,
+                    'description'=>$request->description,
+                    
+                ]
+            );
+
+            $add = DB::table('PROVIDER_TYPE_VALIDATIONS')
+                ->insert([
+
+                    'PROV_TYPE_LIST_ID'=>$request->prov_type_list_id,
+
+                    'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
+                    'PROVIDER_TYPE'=>$request->provider_type,
+                    'EFFECTIVE_DATE'=>$request->effective_date,
+                    'TERMINATION_DATE'=>$request->termination_date,
+                    'DATE_TIME_CREATED'=>$createddate,
+                    
+                    
+                ]);
+
+            $add = DB::table('PROVIDER_TYPE_VALIDATIONS')->where('prov_type_list_id', 'like', '%' . $request->prov_type_list_id . '%')->first();
+            return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
+        }
+
+
+       
+    } else if ($request->add_new == 0) {
+
+        $validator = Validator::make($request->all(), [
+
+            'prov_type_list_id' => ['required', 'max:10'],
+
+            "description" => ['max:36'],
+            "provider_type"=>['required','max:2'],
+            "effective_date"=>['max:10'],
+            'termination_date'=>['max:15','min:5'],
+            'proc_code_list'=>['max:10'],
+
+
+
+        ]);
+
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        }
+
+        else{
+
+            // if ($validation->count() < 1) {
+            //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
+            // }
+
+            $update_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
+            ->where('prov_type_list_id', $request->prov_type_list_id )
+            ->first();
+                
+
+            $checkGPI = DB::table('PROVIDER_TYPE_VALIDATIONS')
+
+            
+                ->where('prov_type_list_id',$request->prov_type_list_id)
+                ->where('proc_code_list_id', $request->proc_code_list_id)
+                ->where('provider_type',$request->provider_type)
+                ->where('effective_date',$request->effective_date)
+                ->get()
+                ->count();
+                // dd($checkGPI);
+            // if result >=1 then update NDC_EXCEPTION_LISTS table record
+            //if result 0 then add NDC_EXCEPTION_LISTS record
+
+
+            if ($checkGPI <= "0") {
+                $update = DB::table('PROVIDER_TYPE_VALIDATIONS')
+                ->insert([
+
+                    
+                    'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
+                    'PROV_TYPE_LIST_ID'=>$request->prov_type_list_id,
+                    'PROVIDER_TYPE'=>$request->provider_type,
+                    'EFFECTIVE_DATE'=>$request->effective_date,
+                    'TERMINATION_DATE'=>$request->termination_date,
+                    'DATE_TIME_CREATED'=>$createddate,
+                    
+                    
+                ]);
+                
+            $update = DB::table('PROVIDER_TYPE_VALIDATIONS')->where('prov_type_list_id', 'like', '%' . $request->prov_type_list_id . '%')->first();
+            return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+            } else {
+
+
+                $add_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
+                ->where('prov_type_list_id',$request->prov_type_list_id)
+                ->update(
+                    [
+                        'description'=>$request->description,
+                        
+                    ]
+                );
+
+                $update = DB::table('PROVIDER_TYPE_VALIDATIONS' )
+                ->where('prov_type_list_id',$request->prov_type_list_id)
+                ->where('proc_code_list_id', $request->proc_code_list_id)
+                ->where('provider_type',$request->provider_type)
+                ->where('effective_date',$request->effective_date)
+                ->update(
+                    [
+                    'TERMINATION_DATE'=>$request->termination_date,
+                    'DATE_TIME_CREATED'=>$createddate,
+    
+                    ]
+                );
+                $update = DB::table('PROVIDER_TYPE_VALIDATIONS')->where('prov_type_list_id', 'like', '%' . $request->prov_type_list_id . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+            }
+
+           
+
+        }
+
+       
+    }
+}
+
+
 
     public function getAllNames(Request $request)
     {
 
         $data = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
-            ->where('PROV_TYPE_PROC_ASSOC_ID', 'LIKE', '%' . strtoupper($request->search) . '%')
+            ->where('PROV_TYPE_PROC_ASSOC_ID', 'LIKE', '%' . $request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), 'data fetched  successfully', $data);
@@ -113,7 +285,7 @@ class ProviderTypeValidationController extends Controller
         $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
             // $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATIONS')
             // ->where('effective_date', 'like', '%'.$request->search.'%')
-            ->Where(DB::raw('UPPER(prov_type_list_id)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->Where('prov_type_list_id', 'like', '%' . $request->search . '%')
             // ->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
         // dd($request->all());
@@ -151,7 +323,7 @@ class ProviderTypeValidationController extends Controller
         'valdation_names.DESCRIPTION as description',
         'list_names.DESCRIPTION as Procedure_code_description',
         'types.DESCRIPTION as provider_type_description')
-        ->where('PROVIDER_TYPE_VALIDATIONS.proc_code_list_id',$ndcid)
+        ->where('PROVIDER_TYPE_VALIDATIONS.prov_type_list_id',$ndcid)
         ->where('PROVIDER_TYPE_VALIDATIONS.provider_type',$ndcid2)
 
 

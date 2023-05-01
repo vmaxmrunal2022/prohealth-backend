@@ -21,7 +21,7 @@ class CopayStrategyController extends Controller
 
             $accum_benfit_stat_names = DB::table('COPAY_STRATEGY_NAMES')->insert(
                 [
-                    'copay_strategy_id' => strtoupper($request->copay_strategy_id),
+                    'copay_strategy_id' => $request->copay_strategy_id,
                     'copay_strategy_name' => $request->copay_strategy_name,
 
                 ]
@@ -30,7 +30,7 @@ class CopayStrategyController extends Controller
 
             $accum_benfit_stat = DB::table('COPAY_STRATEGY')->insert(
                 [
-                    'copay_strategy_id' => strtoupper($request->copay_strategy_id),
+                    'copay_strategy_id' => $request->copay_strategy_id,
                     'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
                     'formulary_variation_ind' => $request->formulary_variation_ind,
                     'network_part_variation_ind' => $request->network_part_variation_ind,
@@ -41,6 +41,7 @@ class CopayStrategyController extends Controller
                     'form_id' => '',
                     'user_id_created' => '',
                     'effective_date' => $request->effective_date,
+                    'copay_schedule'=>$request->copay_schedule
 
                 ]
             );
@@ -50,7 +51,7 @@ class CopayStrategyController extends Controller
                 ->where('copay_strategy_id', $request->copay_strategy_id)
                 ->update(
                     [
-                        'copay_strategy_id' => strtoupper($request->copay_strategy_id),
+                        'copay_strategy_id' =>$request->copay_strategy_id,
                         'copay_strategy_name' => $request->copay_strategy_name,
 
 
@@ -61,7 +62,6 @@ class CopayStrategyController extends Controller
                 ->where('copay_strategy_id', $request->copay_strategy_id)
                 ->update(
                     [
-                        'copay_strategy_id' => strtoupper($request->copay_strategy_id),
                         'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
                         'formulary_variation_ind' => $request->formulary_variation_ind,
                         'network_part_variation_ind' => $request->network_part_variation_ind,
@@ -72,6 +72,8 @@ class CopayStrategyController extends Controller
                         'form_id' => '',
                         'user_id_created' => '',
                         'effective_date' => $request->effective_date,
+                        'copay_schedule'=>$request->copay_schedule
+
 
 
 
@@ -96,8 +98,8 @@ class CopayStrategyController extends Controller
             $ndc = DB::table('COPAY_STRATEGY')
                 ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
                 ->select('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name')
-                ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME', 'like', '%' . strtoupper($request->search) . '%')
+                ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' .$request->search. '%')
+                ->orWhere('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME', 'like', '%' .$request->search. '%')
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $ndc);
@@ -109,7 +111,7 @@ class CopayStrategyController extends Controller
         $ndclist = DB::table('COPAY_STRATEGY')
         ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
             // ->select( 'DIAGNOSIS_LIST', 'DIAGNOSIS_ID', 'PRIORITY' )
-            ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' . strtoupper($ndcid) . '%')
+            ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' .$ndcid . '%')
             // ->orWhere( 'EXCEPTION_NAME', 'like', '%' . strtoupper( $ndcid ) . '%' )
             ->get();
 

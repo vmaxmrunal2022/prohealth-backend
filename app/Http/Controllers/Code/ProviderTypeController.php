@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Code;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Nette\Utils\Json;
+use Symfony\Component\HttpFoundation\Response;
 
 use function PHPSTORM_META\elementType;
 
@@ -32,22 +36,6 @@ class ProviderTypeController extends Controller
 
     public function add(Request $request)
     {
-
-        // $procedurecode = DB::table('PROVIDER_TYPES')->updateOrInsert(
-        //     [
-        //         'PROVIDER_TYPE' => strtoupper($request->provider_type),
-        //     ],
-        //     [
-        //         'PROVIDER_TYPE' => strtoupper($request->provider_type),
-        //         'DESCRIPTION' => strtoupper($request->description),
-        //         'DATE_TIME_CREATED' => date('y-m-d'),
-        //         'USER_ID_CREATED' => '',
-        //         'USER_ID' => '',
-        //         'DATE_TIME_MODIFIED' => '',
-        //         'FORM_ID' => '',
-        //         // 'COMPLETE_CODE_IND' => ''
-        //     ]
-        // );
         if ($request->new) {
             $validator = Validator::make($request->all(), [
                 "provider_type" => ['required', 'max:2', Rule::unique('PROVIDER_TYPES')->where(function ($q) {
@@ -72,7 +60,34 @@ class ProviderTypeController extends Controller
                         // 'COMPLETE_CODE_IND' => ''
                     ]
                 );
-            return  $this->respondWithToken($this->token(), 'Updated successfully!', $procedurecode);
+                return  $this->respondWithToken($this->token(), 'Record Added Successfully!', $procedurecode);
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                "provider_type" => ['required', 'max:2'],
+                "description" => ['max:35']
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            } else {
+                $procedurecode = DB::table('PROVIDER_TYPES')
+                    ->where(DB::raw('UPPER(PROVIDER_TYPE)'), strtoupper($request->provider_type))
+                    ->update(
+                        [
+                            // 'PROVIDER_TYPE' => strtoupper($request->provider_type),
+                            'DESCRIPTION' => strtoupper($request->description),
+                            'DATE_TIME_CREATED' => date('y-m-d'),
+                            'USER_ID_CREATED' => '',
+                            'USER_ID' => '',
+                            'DATE_TIME_MODIFIED' => '',
+                            'FORM_ID' => '',
+                            // 'COMPLETE_CODE_IND' => ''
+                        ]
+                    );
+                // dd($procedurecode);
+                return  $this->respondWithToken($this->token(), 'Record Updated Successfully', $procedurecode);
+            }
         }
 
         // $procedurecode = DB::table('PROVIDER_TYPES')->where('PROVIDER_TYPE', $request->provider_type)->first();

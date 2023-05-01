@@ -21,8 +21,8 @@ class CouseOfLossController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('CAUSE_OF_LOSS_CODES')
-                ->where(DB::raw('UPPER(CAUSE_OF_LOSS_CODE)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->where(DB::raw('UPPER(CAUSE_OF_LOSS_CODE)'), 'like', '%' .$request->search. '%')
+                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' .$request->search. '%')
                 ->get();
 
             return  $this->respondWithToken($this->token(), '', $procedurecodes);
@@ -44,7 +44,7 @@ class CouseOfLossController extends Controller
             } else {
                 $procedurecode = DB::table('CAUSE_OF_LOSS_CODES')->insert(
                     [
-                        'CAUSE_OF_LOSS_CODE' => strtoupper($request->cause_of_loss_code),
+                        'CAUSE_OF_LOSS_CODE' => $request->cause_of_loss_code,
                         'DESCRIPTION' => $request->description,
                         'DATE_TIME_CREATED' => date('y-m-d'),
                         'USER_ID_CREATED' => $request->user_id_created,
@@ -69,7 +69,7 @@ class CouseOfLossController extends Controller
             } else {
                 $procedurecode = DB::table('CAUSE_OF_LOSS_CODES')
                     // ->where('CAUSE_OF_LOSS_CODES', 'like', strtoupper($request->benefit_code))
-                    ->where(DB::raw('UPPER(CAUSE_OF_LOSS_CODE)'), strtoupper($request->cause_of_loss_code))
+                    ->where(DB::raw('UPPER(CAUSE_OF_LOSS_CODE)'),$request->cause_of_loss_code)
                     ->update(
                         [
                             // 'CAUSE_OF_LOSS_CODE' => strtoupper($request->cause_of_loss_code),
@@ -79,8 +79,8 @@ class CouseOfLossController extends Controller
                             'USER_ID' => '',
                             'DATE_TIME_MODIFIED' => '',
                             'FORM_ID' => '',
-                            'COMPLETE_CODE_IND' => ''
-                        ]
+                            'COMPLETE_CODE_IND' => $request->complete_code_ind
+                            ]
                     );
                 // $procedurecode = DB::table('CAUSE_OF_LOSS_CODES')->where('CAUSE_OF_LOSS_CODE', $request->cause_of_loss_code)->first();
                 return   $this->respondWithToken($this->token(), 'Record Updated successfully', $procedurecode);
@@ -98,7 +98,7 @@ class CouseOfLossController extends Controller
     public function checkCauseOfLossExisted(Request $request)
     {
         $check_cause_exist = DB::table('CAUSE_OF_LOSS_CODES')
-            ->where(DB::raw('upper(CAUSE_OF_LOSS_CODE)'), strtoupper($request->search))
+            ->where(DB::raw('upper(CAUSE_OF_LOSS_CODE)'),$request->search)
             ->get()
             ->count();
 
