@@ -743,7 +743,10 @@ class UserDefinationController extends Controller
 
     public function getGroupAllAccess(Request $request)
     {
-        $user_data = DB::table('fe_user_groups')->where('group_id', $request->group_id)->first();
+        //$user_data = DB::table('fe_user_groups')->where(DB::raw('UPPER(group_id)'), strtoupper($request->group_id))->first();
+        $str = str_replace(' ', '+', $request->group_id);
+        $user_data = DB::table('fe_user_groups')->where(DB::raw('UPPER(group_id)'), 'like', '%' . strtoupper($str) . '%')->first();
+        // return $str;
         $user_profile = str_split($user_data->user_profile);
         $position = $request->search;
         // $user_profile[$position] = 'D';

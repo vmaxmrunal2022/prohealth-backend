@@ -191,7 +191,7 @@ class CustomerController extends Controller
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
                 // dd($fieldsWithErrorMessagesArray);
-                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, 'false');
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
             } else {
                 $accum_benfit_stat_names = DB::table('CUSTOMER')->insert(
                     [
@@ -322,11 +322,11 @@ class CustomerController extends Controller
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
                 // dd($fieldsWithErrorMessagesArray);
-                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, 'false');
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
             } else {
 
                 $accum_benfit_stat = DB::table('CUSTOMER')
-                    ->where('CUSTOMER_ID', $request->customer_id)
+                    ->where(DB::raw('UPPER(CUSTOMER_ID)'), strtoupper($request->customer_id))
                     ->update(
                         [
                             'customer_name' => strtoupper($request->customer_name),
@@ -521,7 +521,7 @@ class CustomerController extends Controller
     {
         $customer = DB::table('customer')
             // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
-            ->where('CUSTOMER_ID', 'like', '%' . strtoupper($customerid) . '%')
+            ->where(DB::raw('UPPER(CUSTOMER_ID)'), 'like', '%' . strtoupper($customerid) . '%')
             ->first();
 
 
