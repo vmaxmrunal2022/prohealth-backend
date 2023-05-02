@@ -215,6 +215,7 @@ class ProviderTypeProcController extends Controller
 
     public function add(Request $request)
     {
+       
         $createddate = date('y-m-d');
 
         $validation = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
@@ -248,12 +249,14 @@ class ProviderTypeProcController extends Controller
                 //     })
                 // ],
 
-                "description" => ['max:36'],
-                "provider_type" => ['max:2'],
-                "service_modifier" => ['max:2'],
+                "description" => ['required','max:36'],
+                "provider_type" => ['required','max:2'],
+                "service_modifier" => ['required','max:2'],
                 'ucr' => ['max:10'],
-                'effective_date' => ['max:10'],
-                'termination_date' => ['max:10'],
+                'effective_date' => ['required','max:10'],
+                'termination_date' => ['required','max:10'],
+                'prov_type_proc_assoc_id'=> ['required','max:36'],
+                'proc_code_list_id'=> ['required']
                
             ]);
 

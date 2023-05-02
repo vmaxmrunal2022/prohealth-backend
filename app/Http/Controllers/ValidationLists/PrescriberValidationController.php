@@ -58,6 +58,7 @@ class PrescriberValidationController extends Controller
 
     public function addPrescriberDatacopy(Request $request)
     {
+        
         $getProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
             ->where('PHYSICIAN_LIST', $request->physician_list)
             ->first();
@@ -146,6 +147,8 @@ class PrescriberValidationController extends Controller
 
     public function addPrescriberData(Request $request)
     {
+
+
         $createddate = date( 'y-m-d' );
 
         $validation = DB::table('PHYSICIAN_EXCEPTIONS')
@@ -170,9 +173,10 @@ class PrescriberValidationController extends Controller
                 //     $q->whereNotNull('ndc_exception_list');
                 // })],
 
-                "EXCEPTION_NAME" => ['max:36'],
-                "PHARMACY_NABP"=>['max:10'],
-                "PHARMACY_STATUS"=>['max:10'],
+                "exception_name" => ['required','max:36'],
+                "physician_id" => ['required','max:10'],
+                // "PHARMACY_NABP"=>['max:10'],
+                "physician_status"=>['max:10'],
                 "DATE_TIME_CREATED"=>['max:10'],
                 "DATE_TIME_MODIFIED"=>['max:10']
                 

@@ -68,13 +68,7 @@ class ProcedureCrossReferenceController extends Controller
 
     public function addcopy( Request $request ) {
 
-        $validator = Validator::make($request->all(), [
-
-            "procedure_xref_id" => ['required','max:36'],
-            "entity_user_name" => ['required','max:36'],
-            'effective_date'=>['required'],
-            'termination_date'=>['required'],  
-            ]);
+       
 
         $createddate = date( 'y-m-d' );
 
@@ -184,6 +178,9 @@ class ProcedureCrossReferenceController extends Controller
 
     public function add(Request $request)
     {
+
+        
+
         $createddate = date( 'y-m-d' );
 
         $validation = DB::table('ENTITY_NAMES')
@@ -209,10 +206,11 @@ class ProcedureCrossReferenceController extends Controller
                 // })],
 
                 "entity_user_name" => ['max:36'],
-                "date_time_created"=>['max:10']
-
-
-
+                "date_time_created"=>['max:10'],
+                "procedure_xref_id" => ['required','max:36'],
+                'effective_date'=>['required'],
+                'termination_date'=>['required'],  
+               
             ]);
 
             if ($validator->fails()) {
@@ -233,7 +231,6 @@ class ProcedureCrossReferenceController extends Controller
                         'USER_ID_CREATED'=>'',
                         'DATE_TIME_MODIFIED'=>$createddate,
                         
-                     
                     ]
                 );
     
