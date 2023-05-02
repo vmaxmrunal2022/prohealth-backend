@@ -171,36 +171,6 @@ class CustomerController extends Controller
 
     public function add(Request $request)
     {
-        // return getUserData1();
-        // $userId = config('user_id');
-        // return $userId;
-        //return Session::get('username');
-
-        // $myData = app('my_global_data');
-        // return $myData;
-        $user_id = Cache::get('userId');
-        // return $user_id;
-
-
-
-        //$session_data = Session::get('login_id');
-        //$user_id = $session_data;
-
-        // if (Auth::guard('api')->check()) {
-        //     // Get the authenticated user's ID
-        //     //$userId = Auth::id();
-        //     // Use the user ID to retrieve user data from the database or perform other operations
-        //     return "yes";
-        // } else {
-        //     return "no";
-        // }
-        $user = DB::table('FE_USERS')->where('user_id', $request->session()->get('user'))->first();
-
-        // return $this->respondWithToken($this->token(), Session::get('user'), $user);
-
-        $user_id = $request->session()->get('user');
-        // dd($user);
-        $createddate = date('y-m-d');
         if ($request->add_new) {
             $validator = Validator::make($request->all(), [
                 'customer_id' => ['required', 'max:10', Rule::unique('CUSTOMER')->where(function ($q) {
@@ -221,7 +191,7 @@ class CustomerController extends Controller
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
                 // dd($fieldsWithErrorMessagesArray);
-                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, 'false');
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
             } else {
                 $accum_benfit_stat_names = DB::table('CUSTOMER')->insert(
                     [
@@ -307,6 +277,13 @@ class CustomerController extends Controller
                         'elig_validation_id' => $request->elig_validation_id,
                         'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
                         'phys_file_srce_id' => strtoupper($request->phys_file_srce_id),
+
+                        'coverage_eff_date_1' => $request->coverage_eff_date_1 ? date('Ymd', strtotime($request->coverage_eff_date_1)) : null,
+                        'coverage_eff_date_2' =>  $request->coverage_eff_date_2 ? date('Ymd', strtotime($request->coverage_eff_date_2)) : null,
+                        'coverage_eff_date_3' =>  $request->coverage_eff_date_3 ? date('Ymd', strtotime($request->coverage_eff_date_3)) : null,
+                        'misc_data_1' => $request->misc_data_1,
+                        'misc_data_2' => $request->misc_data_2,
+                        'misc_data_3' => $request->misc_data_3,
                     ]
                 );
                 $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
@@ -345,11 +322,11 @@ class CustomerController extends Controller
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
                 // dd($fieldsWithErrorMessagesArray);
-                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, 'false');
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
             } else {
 
                 $accum_benfit_stat = DB::table('CUSTOMER')
-                    ->where('CUSTOMER_ID', $request->customer_id)
+                    ->where(DB::raw('UPPER(CUSTOMER_ID)'), strtoupper($request->customer_id))
                     ->update(
                         [
                             'customer_name' => strtoupper($request->customer_name),
@@ -432,6 +409,13 @@ class CustomerController extends Controller
                             'elig_validation_id' => $request->elig_validation_id,
                             'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
                             'phys_file_srce_id' => strtoupper($request->phys_file_srce_id),
+
+                            'coverage_eff_date_1' => $request->coverage_eff_date_1 ? date('Ymd', strtotime($request->coverage_eff_date_1)) : null,
+                            'coverage_eff_date_2' =>  $request->coverage_eff_date_2 ? date('Ymd', strtotime($request->coverage_eff_date_2)) : null,
+                            'coverage_eff_date_3' =>  $request->coverage_eff_date_3 ? date('Ymd', strtotime($request->coverage_eff_date_3)) : null,
+                            'misc_data_1' => $request->misc_data_1,
+                            'misc_data_2' => $request->misc_data_2,
+                            'misc_data_3' => $request->misc_data_3,
                         ]
                     );
                 $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
@@ -449,8 +433,8 @@ class CustomerController extends Controller
                         'record_snapshot' => $record_snapshot,
                         // 'record_snapshot' => $record_snapshot,
                     ]);
-                // return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
-                return $this->respondWithToken($this->token(), auth('web')->user(), $benefitcode);
+                return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
+                // return $this->respondWithToken($this->token(), auth('web')->user(), $benefitcode);
             }
         }
     }
@@ -537,7 +521,7 @@ class CustomerController extends Controller
     {
         $customer = DB::table('customer')
             // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
-            ->where('CUSTOMER_ID', 'like', '%' . strtoupper($customerid) . '%')
+            ->where(DB::raw('UPPER(CUSTOMER_ID)'), 'like', '%' . strtoupper($customerid) . '%')
             ->first();
 
 
