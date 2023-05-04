@@ -53,7 +53,7 @@ class ProviderController extends Controller
         $data = DB::table('PHARMACY_VALIDATIONS')
             // ->select('a.PHARMACY_LIST', 'a.PHARMACY_NABP', 'a.PHARMACY_STATUS', 'c.PHARMACY_NAME', 'b.EXCEPTION_NAME')
             ->join('PHARMACY_EXCEPTIONS', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST', '=', 'PHARMACY_VALIDATIONS.PHARMACY_LIST')
-            ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'PHARMACY_VALIDATIONS.PHARMACY_NABP')
+            // ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'PHARMACY_VALIDATIONS.PHARMACY_NABP')
             ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $pharmacy_list)
             ->where('PHARMACY_VALIDATIONS.PHARMACY_NABP', $pharmacy_nabp)
             ->first();

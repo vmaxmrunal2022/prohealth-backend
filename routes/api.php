@@ -200,6 +200,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::get('/ndc/list', [NDCExceptionController::class, 'ndcList'])->name('ndsc.search'); // SEARCH
 
+        Route::post('/ndc/delete', [NDCExceptionController::class, 'ndcdelete'])->name('ndsc.search'); // add
+
 
         //REASON-CODE-EXCEPTION
         Route::get('/ndc/ndc-drop-down', [NDCExceptionController::class, 'getNdcDropDown']); // drop down

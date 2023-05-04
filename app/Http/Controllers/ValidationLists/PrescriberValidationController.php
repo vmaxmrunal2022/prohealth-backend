@@ -224,8 +224,6 @@ class PrescriberValidationController extends Controller
 
             $validator = Validator::make($request->all(), [
 
-               
-
 
             ]);
 

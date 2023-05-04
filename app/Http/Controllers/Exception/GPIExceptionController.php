@@ -556,9 +556,10 @@ class GPIExceptionController extends Controller
                     'DRUG_MASTER1.LABEL_NAME as preferd_ndc_description',
                     'DRUG_MASTER2.LABEL_NAME as conversion_ndc_description',
                     'DRUG_MASTER3.LABEL_NAME as gpi_exception_description',
+                    'GPI_EXCEPTIONS.EXCEPTION_NAME'
                     )
 
-                    // ->leftjoin('GPI_EXCEPTIONS', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
+                    ->leftjoin('GPI_EXCEPTIONS', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
                     ->leftjoin('DRUG_MASTER as DRUG_MASTER1', 'DRUG_MASTER1.NDC', '=', 'GPI_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
                     ->leftjoin('DRUG_MASTER as DRUG_MASTER2', 'DRUG_MASTER2.NDC', '=', 'GPI_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
                     ->leftjoin('DRUG_MASTER as DRUG_MASTER3', 'DRUG_MASTER3.GENERIC_PRODUCT_ID', '=', 'GPI_EXCEPTION_LISTS.GENERIC_PRODUCT_ID')

@@ -545,9 +545,9 @@ class NDCExceptionController extends Controller
         if ($request->add_new == 1) {
 
             $validator = Validator::make($request->all(), [
-                'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                    $q->whereNotNull('NDC_EXCEPTION_LIST');
-                })],
+                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
+                //     $q->whereNotNull('NDC_EXCEPTIONS');
+                // })],
                 // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
                 //     $q->whereNotNull('NDC');
                 // })],
@@ -556,9 +556,9 @@ class NDCExceptionController extends Controller
                     $q->whereNotNull('effective_date');
                 })],
 
-                'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
-                    $q->whereNotNull('ndc_exception_list');
-                })],
+                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
+                //     $q->whereNotNull('ndc_exception_list');
+                // })],
 
                 "exception_name" => ['max:36'],
                 "NEW_DRUG_STATUS"=>['max:2'],
@@ -1090,6 +1090,52 @@ class NDCExceptionController extends Controller
 
     }
 
+    public function ndcdelete(Request $request){
+
+        if(isset($request->ndc_exception_list) && ($request->ndc )){
+
+            $all_exceptions_lists=  DB::table('NDC_EXCEPTION_LISTS')
+            ->where('ndc_exception_list',$request->ndc_exception_list)
+            ->delete();
+            if($all_exceptions_lists){
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+
+
+            }else{
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+
+            }
+
+        }
+
+        else if(isset($request->ndc_exception_list)){
+
+        
+            $exception_delete=  DB::table('NDC_EXCEPTIONS')
+            ->where('ndc_exception_list',$request->ndc_exception_list)
+            ->delete();
+
+            if($exception_delete){
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+
+
+            }else{
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+
+
+            }
+
+    
+
+
+        }
+
+
+     
+
+
+    }
+
 
     public function ndcList(Request $request)
     {
@@ -1119,7 +1165,15 @@ class NDCExceptionController extends Controller
             ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search. '%')
             ->get();
 
-            return $this->respondWithToken($this->token(), '', $ndc);
+            if($ndc->count()<1){
+                return $this->respondWithToken($this->token(), 'No Data Found', $ndc);
+
+            }else{
+                return $this->respondWithToken($this->token(), 'Data Fetched Successfully',$ndc);
+
+
+            }
+
 
         }
 
@@ -1153,12 +1207,11 @@ class NDCExceptionController extends Controller
     {
 
 
-       
-      
- 
+    
             $ifset = DB::table('NDC_EXCEPTION_LISTS')
         
                     ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list',
+                    'NDC_EXCEPTIONS.EXCEPTION_NAME',
                     'DRUG_MASTER.LABEL_NAME as ndc_exception_description',
                     'DRUG_MASTER1.LABEL_NAME as preferd_ndc_description',
                     'DRUG_MASTER2.LABEL_NAME as conversion_ndc_description',
@@ -1167,6 +1220,7 @@ class NDCExceptionController extends Controller
                     ->leftjoin('DRUG_MASTER as DRUG_MASTER1', 'DRUG_MASTER1.NDC', '=', 'NDC_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
                     ->leftjoin('DRUG_MASTER as DRUG_MASTER2', 'DRUG_MASTER2.NDC', '=', 'NDC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
                     ->leftjoin('DRUG_MASTER', 'DRUG_MASTER.NDC', '=', 'NDC_EXCEPTION_LISTS.NDC')
+                    ->leftjoin('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
 
 
                     ->where('NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST',$ndcid)

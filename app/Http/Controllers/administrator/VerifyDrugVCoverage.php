@@ -56,7 +56,7 @@ class VerifyDrugVCoverage extends Controller
             // 'group_id' => ['required', Rule::unique('FE_USER_GROUPS')->where(function ($q) {
             //     $q->whereNotNull('group_id');
             // })],
-            'ndc' => ['required'],
+            'ndc' => ['required','max:10'],
             'date_of_service' => ['required'],
             'member_id' => ['required']
         ]);
