@@ -41,7 +41,7 @@ class ReasonsController extends Controller
                 "reason_code" => ['required', 'max:10', Rule::unique('REASON_CODES')->where(function ($q) {
                     $q->whereNotNull('reason_code');
                 })],
-                "description" => ['max:35']
+                "reason_description" => ['max:36'],
             ]);
 
             if ($validator->fails()) {
@@ -65,7 +65,7 @@ class ReasonsController extends Controller
         } else {
             $validator = Validator::make($request->all(), [
                 "reason_code" => ['required', 'max:10'],
-                "description" => ['max:35']
+                "reason_description" => ['max:36'],
             ]);
 
             if ($validator->fails()) {

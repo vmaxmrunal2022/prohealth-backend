@@ -169,10 +169,9 @@ class SpecialityController extends Controller
                 //     $q->whereNotNull('ndc_exception_list');
                 // })],
 
-                "exception_name" => ['max:36'],
-                
-
-
+                "exception_name" => ['required','max:35'],
+                "specialty_id" => ['required','max:6'],
+                "specialty_status" => ['max:1']
 
             ]);
 
@@ -215,9 +214,9 @@ class SpecialityController extends Controller
         } else if ($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
-
-                'specialty_list' => ['required', 'max:10'],    
-                "exception_name" => ['max:36'],
+                "specialty_list" => ['required', 'max:10'],
+                "exception_name" => ['max:35'],
+                "specialty_status" => ['max:1']
                
 
 
