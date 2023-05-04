@@ -115,7 +115,7 @@ class RvaListController extends Controller
         $createddate = date( 'y-m-d' );
 
         $validation = DB::table('RVA_NAMES')
-        ->where('rva_list_id',$request->procedure_ucr_id)
+        ->where('rva_list_id',$request->rva_list_id)
         ->get();
 
         if ($request->add_new == 1) {
