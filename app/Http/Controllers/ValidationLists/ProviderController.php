@@ -48,14 +48,17 @@ class ProviderController extends Controller
     }
 
 
-    public function getProviderDetails($pharmacy_list, $pharmacy_nabp)
+    public function getProviderDetails($pharmacy_list, $pharmacy_nabp, $status)
     {
+
+
         $data = DB::table('PHARMACY_VALIDATIONS')
-            // ->select('a.PHARMACY_LIST', 'a.PHARMACY_NABP', 'a.PHARMACY_STATUS', 'c.PHARMACY_NAME', 'b.EXCEPTION_NAME')
+            ->select('PHARMACY_VALIDATIONS.*', 'PHARMACY_TABLE.PHARMACY_NAME')
             ->join('PHARMACY_EXCEPTIONS', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST', '=', 'PHARMACY_VALIDATIONS.PHARMACY_LIST')
-            // ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'PHARMACY_VALIDATIONS.PHARMACY_NABP')
+            ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'PHARMACY_VALIDATIONS.PHARMACY_NABP')
             ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $pharmacy_list)
             ->where('PHARMACY_VALIDATIONS.PHARMACY_NABP', $pharmacy_nabp)
+            ->where('PHARMACY_VALIDATIONS.pharmacy_status', $status)
             ->first();
 
         return $this->respondWithToken($this->token(), '', $data);
@@ -262,27 +265,59 @@ class ProviderController extends Controller
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
 
-               
+
 
                 $checknames = DB::table('PHARMACY_EXCEPTIONS')
                     ->where('pharmacy_list', $request->pharmacy_list)
                     ->get();
 
-                $checkexists = DB::table('PHARMACY_VALIDATIONS')
+
+                $effective_date_check = DB::table('PHARMACY_VALIDATIONS')
                     ->where('pharmacy_list', $request->pharmacy_list)
                     ->where('pharmacy_nabp', $request->pharmacy_nabp)
-                    ->get();
+                    ->where('pharmacy_status', $request->pharmacy_status)
+                    ->get()
 
-                if (count($checkexists) >= 1) {
-                    $checknames1 = DB::table('PHARMACY_EXCEPTIONS')
+                    ->count();
+
+
+                $insert_check = DB::table('PHARMACY_VALIDATIONS')
                     ->where('pharmacy_list', $request->pharmacy_list)
-                    ->update([
-                        'exception_name'=>$request->exception_name,
-                    ]);
+                    ->pluck('pharmacy_nabp')->toArray();
 
-                    return $this->respondWithToken($this->token(), 'Record Already Existed!', $validation, false, 200, 0);
+
+                // dd($effective_date_check);
+
+
+                if ($effective_date_check) {
+                    $add_names = DB::table('PHARMACY_EXCEPTIONS')
+                        ->where('pharmacy_list', $request->pharmacy_list)
+                        ->update([
+                            'exception_name' => $request->exception_name,
+                        ]);
+
+
+
+                    $update = DB::table('PHARMACY_VALIDATIONS')
+                        ->where('pharmacy_list', $request->pharmacy_list)
+                        ->where('pharmacy_nabp', $request->pharmacy_nabp)
+                        ->where('pharmacy_status', $request->pharmacy_status)
+                        ->update(
+                            [
+                                'pharmacy_status' => $request->pharmacy_status,
+
+
+                            ]
+                        );
+                    $update = DB::table('PHARMACY_VALIDATIONS')->where('pharmacy_list', 'like', '%' . $request->pharmacy_list . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+
+                } else if (in_array($request->pharmacy_nabp, $insert_check)) {
+                    return $this->respondWithToken($this->token(), 'Record Alredy Exists');
+
                 } else {
-                    $checkexists = DB::table('PHARMACY_VALIDATIONS')
+
+                    $updated = DB::table('PHARMACY_VALIDATIONS')
                         ->insert(
                             [
                                 'PHARMACY_LIST' => $request->pharmacy_list,
@@ -293,33 +328,19 @@ class ProviderController extends Controller
                             ]
                         );
 
-
-                        $checknames = DB::table('PHARMACY_EXCEPTIONS')
-                    ->where('pharmacy_list', $request->pharmacy_list)
-                    ->update([
-                        'exception_name'=>$request->exception_name,
-                    ]);
-
-
-                    $add = DB::table('PHARMACY_VALIDATIONS')
-                        ->where('pharmacy_list', $request->pharmacy_list)
-                        ->where('pharmacy_nabp', $request->pharmacy_nabp)
-
-                        ->first();
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
-
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $updated);
                 }
-
-
-
-
-
 
 
             }
 
 
+
+
+
+
         }
+
     }
 
 

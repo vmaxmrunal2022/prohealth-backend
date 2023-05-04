@@ -227,70 +227,141 @@ class SpecialityController extends Controller
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             }
 
-            else{
+            // else{
 
-                // if ($validation->count() < 1) {
-                //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
-                // }
+            //     // if ($validation->count() < 1) {
+            //     //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
+            //     // }
     
-                $update_names = DB::table('SPECIALTY_EXCEPTIONS')
-                ->where('specialty_list', $request->specialty_list )
-                ->first();
+            //     $update_names = DB::table('SPECIALTY_EXCEPTIONS')
+            //     ->where('specialty_list', $request->specialty_list )
+            //     ->first();
                     
     
-                $checkGPI = DB::table('SPECIALTY_VALIDATIONS')
-                    ->where('specialty_list', $request->specialty_list)
-                    ->where('specialty_id',$request->specialty_id)
-                    ->get()
-                    ->count();
-                    // dd($checkGPI);
-                // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                //if result 0 then add NDC_EXCEPTION_LISTS record
+            //     $checkGPI = DB::table('SPECIALTY_VALIDATIONS')
+            //         ->where('specialty_list', $request->specialty_list)
+            //         ->where('specialty_id',$request->specialty_id)
+            //         ->get()
+            //         ->count();
+            //         // dd($checkGPI);
+            //     // if result >=1 then update NDC_EXCEPTION_LISTS table record
+            //     //if result 0 then add NDC_EXCEPTION_LISTS record
 
     
-                if ($checkGPI <= "0") {
-                    $update = DB::table('SPECIALTY_VALIDATIONS')
-                    ->insert([
+            //     if ($checkGPI <= "0") {
+            //         $update = DB::table('SPECIALTY_VALIDATIONS')
+            //         ->insert([
     
-                        'SPECIALTY_LIST' =>$request->specialty_list,
-                        'SPECIALTY_ID'=>$request->specialty_id,
-                        'SPECIALTY_STATUS'=>$request->specialty_status,
-                        'DATE_TIME_CREATED'=>$createddate,
-                        'DATE_TIME_MODIFIED'=>$createddate,
+            //             'SPECIALTY_LIST' =>$request->specialty_list,
+            //             'SPECIALTY_ID'=>$request->specialty_id,
+            //             'SPECIALTY_STATUS'=>$request->specialty_status,
+            //             'DATE_TIME_CREATED'=>$createddate,
+            //             'DATE_TIME_MODIFIED'=>$createddate,
                     
                     
-                ]);
+            //     ]);
 
-                $update = DB::table('SPECIALTY_VALIDATIONS')->where('specialty_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+            //     $update = DB::table('SPECIALTY_VALIDATIONS')->where('specialty_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
+            //     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
 
-                } else {
+            //     } else {
   
 
-                    $add_names = DB::table('SPECIALTY_EXCEPTIONS')
-                    ->where('specialty_list',$request->specialty_list)
-                    ->update(
-                        [
-                            'exception_name'=>$request->exception_name,
+            //         $add_names = DB::table('SPECIALTY_EXCEPTIONS')
+            //         ->where('specialty_list',$request->specialty_list)
+            //         ->update(
+            //             [
+            //                 'exception_name'=>$request->exception_name,
                             
-                        ]
-                    );
+            //             ]
+            //         );
 
-                    $update = DB::table('SPECIALTY_VALIDATIONS' )
-                    ->where('specialty_list',$request->specialty_list)
-                    ->where('specialty_id',$request->specialty_id)
-                    ->update(
-                        [
-                            'specialty_status'=>$request->specialty_status,
+            //         $update = DB::table('SPECIALTY_VALIDATIONS' )
+            //         ->where('specialty_list',$request->specialty_list)
+            //         ->where('specialty_id',$request->specialty_id)
+            //         ->update(
+            //             [
+            //                 'specialty_status'=>$request->specialty_status,
                             
         
-                        ]
-                    );
-                    $update = DB::table('SPECIALTY_VALIDATIONS')->where('specialty_list', 'like', '%' . $request->specialty_list . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-                }
+            //             ]
+            //         );
+            //         $update = DB::table('SPECIALTY_VALIDATIONS')->where('specialty_list', 'like', '%' . $request->specialty_list . '%')->first();
+            //         return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+            //     }
     
                
+
+            // }
+
+            else {
+
+
+
+                $checknames = DB::table('SPECIALTY_EXCEPTIONS')
+                    ->where('speciality_list', $request->speciality_list)
+                    ->get();
+
+
+                $effective_date_check = DB::table('SPECIALTY_VALIDATIONS')
+                    ->where('speciality_list', $request->speciality_list)
+                    ->where('speciality_id', $request->speciality_id)
+                    ->where('speciality_status', $request->speciality_status)
+                    ->get()
+
+                    ->count();
+
+
+                $insert_check = DB::table('SPECIALTY_VALIDATIONS')
+                    ->where('speciality_list', $request->speciality_list)
+                    ->pluck('speciality_id')->toArray();
+
+
+                // dd($effective_date_check);
+
+
+                if ($effective_date_check) {
+                    $add_names = DB::table('SPECIALTY_EXCEPTIONS')
+                        ->where('speciality_list', $request->speciality_list)
+                        ->update([
+                            'exception_name' => $request->exception_name,
+                        ]);
+
+
+
+                    $update = DB::table('SPECIALTY_VALIDATIONS')
+                        ->where('speciality_list', $request->speciality_list)
+                        ->where('speciality_id', $request->speciality_id)
+                        ->where('speciality_status', $request->speciality_status)
+                        ->update(
+                            [
+                                'speciality_status' => $request->speciality_status,
+
+
+                            ]
+                        );
+                    $update = DB::table('SPECIALTY_VALIDATIONS')->where('speciality_list', 'like', '%' . $request->speciality_list . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+
+                } else if (in_array($request->speciality_nabp, $insert_check)) {
+                    return $this->respondWithToken($this->token(), 'Record Alredy Exists');
+
+                } else {
+
+                    $updated = DB::table('SPECIALTY_VALIDATIONS')
+                        ->insert(
+                            [
+                                'speciality_list' => $request->speciality_list,
+                                'speciality_id' => $request->speciality_id,
+                                'speciality_status' => $request->speciality_status,
+                                'DATE_TIME_CREATED' => $createddate,
+
+                            ]
+                        );
+
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $updated);
+                }
+
 
             }
 
