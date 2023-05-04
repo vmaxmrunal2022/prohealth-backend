@@ -218,6 +218,7 @@ class CustomerController extends Controller
                 'phone'=> ['max:13'],
                 'fax'=> ['max:10'],
                 'contact'=> ['max:25'],
+                'edi_address'=> ['max:25'],
                 'policy_anniv_month'=> ['max:2'],
                 'policy_anniv_day'=> ['max:2'],
                 'census_date'=> ['max:10'],
