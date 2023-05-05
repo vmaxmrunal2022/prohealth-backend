@@ -84,6 +84,7 @@ class ProviderDataProviderController extends Controller
 
     public function add(Request $request)
     {
+        
         $getEligibilityData = DB::table('PHARMACY_TABLE')
             ->where('pharmacy_nabp',$request->pharmacy_nabp)
             ->first();

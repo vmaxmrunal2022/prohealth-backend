@@ -5,6 +5,7 @@ namespace App\Http\Controllers\AccumlatedBenifits;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class GpiExclusionController extends Controller
 {
@@ -17,7 +18,15 @@ class GpiExclusionController extends Controller
 
     public function add(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            "gpi_exclusion_list" => ['required', 'max:10'],
+            "exclusion_name" => ['required','max:35'],
+            "generic_product_id" => ['required'],
+        ]);
 
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        }
 
         $recordcheck = DB::table('GPI_EXCLUSION_LISTS')
         ->where('GPI_EXCLUSION_LIST', strtoupper($request->gpi_exclusion_list))
@@ -27,6 +36,8 @@ class GpiExclusionController extends Controller
         $recordcheck = DB::table('GPI_EXCLUSION_LISTS')
         ->where('GPI_EXCLUSION_LIST', strtoupper($request->gpi_exclusion_list))
         ->first();
+
+       
 
 
         if ($request->has('new')) {

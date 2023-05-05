@@ -143,9 +143,10 @@ class PlanEditController extends Controller
                 'procedure_xref_id' => ['max:10'],
             ]);
 
-            // if ($validator->fails()) {
-            //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
-            // } else {
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+            } 
+            // else {
 
             $plan_benifit = new PlanBenefitTable;
             // $plan_benifit->PLAN_ID = strtoupper($request->plan_id);
