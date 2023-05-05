@@ -238,48 +238,61 @@ class PrescriberValidationController extends Controller
                 ->first();
                     
     
-                $checkexists = DB::table('PHYSICIAN_VALIDATIONS')
-                    ->where('physician_list', $request->physician_list)
-                    ->where('physician_id',$request->physician_id)
-                    ->get();
+              
                     // dd($checkGPI);
                 // if result >=1 then update NDC_EXCEPTION_LISTS table record
                 //if result 0 then add NDC_EXCEPTION_LISTS record
 
+
+                $insert_check = DB::table('PHYSICIAN_VALIDATIONS')
+                    ->where('physician_list', $request->physician_list)
+                    ->pluck('physician_id')->toArray();
+
+
+                    if (in_array($request->pharmacy_nabp, $insert_check)) {
+                       
+                        $update_names = DB::table('PHYSICIAN_EXCEPTIONS')
+                        ->where('physician_list', $request->physician_list )
+                        ->update([
+        
+                            'exception_name'=>$request->exception_name,
+        
+                        ]);
+
+                        $checkexists = DB::table('PHYSICIAN_VALIDATIONS')
+                        ->where('physician_list', $request->physician_list )
+                        ->where('physician_id', $request->physician_id )
+
+                        ->update(
+                            [
+                                
+                                'PHYSICIAN_STATUS' => $request->physician_status,
+    
+                            ]
+                        );
+                        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $checkexists);
+
+                   
+                    } else {
+
+                        
+    
+                        $checkexists = DB::table('PHYSICIAN_VALIDATIONS')
+                        ->insert(
+                            [
+                                'physician_list' => $request->physician_list,
+                                'physician_id' => $request->physician_id,
+                                'PHYSICIAN_STATUS' => $request->physician_status,
+                                'DATE_TIME_CREATED' => $createddate,
+    
+                            ]
+                        );
+    
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $checkexists);
+                    }
     
               
 
-            if (count($checkexists) >= 1) {
-                $update_names = DB::table('PHYSICIAN_EXCEPTIONS')
-                ->where('physician_list', $request->physician_list )
-                ->update([
-
-                    'exception_name'=>$request->exception_name,
-
-                ]);
-                return $this->respondWithToken($this->token(), 'Record Already Existed!', $validation, false, 404, 0);
-            } else {
-
-                $checkexists = DB::table('PHYSICIAN_VALIDATIONS')
-                    ->insert(
-                        [
-                            'physician_list' => $request->physician_list,
-                            'physician_id' => $request->physician_id,
-                            'PHYSICIAN_STATUS' => $request->physician_status,
-                            'DATE_TIME_CREATED' => $createddate,
-
-                        ]
-                    );
-
-
-                $add = DB::table('PHYSICIAN_VALIDATIONS')
-                    ->where('physician_list', $request->physician_list)
-                    ->where('physician_id', $request->physician_id)
-
-                    ->first();
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
-
-            }
     
                
 

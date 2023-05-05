@@ -289,32 +289,28 @@ class ProviderController extends Controller
                 // dd($effective_date_check);
 
 
-                if ($effective_date_check) {
+                if (in_array($request->pharmacy_nabp, $insert_check)) {
                     $add_names = DB::table('PHARMACY_EXCEPTIONS')
-                        ->where('pharmacy_list', $request->pharmacy_list)
-                        ->update([
-                            'exception_name' => $request->exception_name,
-                        ]);
+                    ->where('pharmacy_list', $request->pharmacy_list)
+                    ->update([
+                        'exception_name' => $request->exception_name,
+                    ]);
 
 
 
-                    $update = DB::table('PHARMACY_VALIDATIONS')
-                        ->where('pharmacy_list', $request->pharmacy_list)
-                        ->where('pharmacy_nabp', $request->pharmacy_nabp)
-                        ->where('pharmacy_status', $request->pharmacy_status)
-                        ->update(
-                            [
-                                'pharmacy_status' => $request->pharmacy_status,
+                $update = DB::table('PHARMACY_VALIDATIONS')
+                    ->where('pharmacy_list', $request->pharmacy_list)
+                    ->where('pharmacy_nabp', $request->pharmacy_nabp)
+                    ->where('pharmacy_status', $request->pharmacy_status)
+                    ->update(
+                        [
+                            'pharmacy_status' => $request->pharmacy_status,
 
 
-                            ]
-                        );
-                    $update = DB::table('PHARMACY_VALIDATIONS')->where('pharmacy_list', 'like', '%' . $request->pharmacy_list . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-
-                } else if (in_array($request->pharmacy_nabp, $insert_check)) {
-                    return $this->respondWithToken($this->token(), 'Record Alredy Exists');
-
+                        ]
+                    );
+                $update = DB::table('PHARMACY_VALIDATIONS')->where('pharmacy_list', 'like', '%' . $request->pharmacy_list . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                 } else {
 
                     $updated = DB::table('PHARMACY_VALIDATIONS')
