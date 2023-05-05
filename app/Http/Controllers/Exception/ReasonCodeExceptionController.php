@@ -141,14 +141,12 @@ class ReasonCodeExceptionController extends Controller
                 //         $q->whereNotNull('ndc_exception_list');
                 //     })
                 // ],
-
-                "REASON_CODE_NAME" => ['max:36'],
-                "REJECT_CODE" => ['max:2'],
-                "REASON_CODE" => ['max:1'],
-                'EFFECTIVE_DATE' => ['max:10'],
-                'TERMINATION_DATE' => ['max:10'],
-                'DATE_TIME_CREATED' => ['max:10'],
-               
+                // "reason_code_list_id" => ['required','max:36'],
+                "reason_code_name"=>['required','max:36'],
+                "reject_code"=>['required','max:2'],
+                'reason_code'=>['required','max:1'],
+                'effective_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10'],
             ]);
 
             if ($validator->fails()) {
@@ -189,13 +187,12 @@ class ReasonCodeExceptionController extends Controller
 
             $validator = Validator::make($request->all(), [
 
-                "reason_code_name" => ['max:36'],
-                "reject_code" => ['max:2'],
-                "reason_code" => ['max:10'],
-                'effective_date' => ['max:10'],
-                'termination_date' => ['max:10'],
-                'DATE_TIME_CREATED' => ['max:10'],
-
+                "reason_code_list_id" => ['required','max:36'],
+                "reason_code_name"=>['required','max:36'],
+                "reject_code"=>['required','max:2'],
+                'reason_code'=>['required','max:1'],
+                'effective_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10'],
             ]);
 
             if ($validator->fails()) {

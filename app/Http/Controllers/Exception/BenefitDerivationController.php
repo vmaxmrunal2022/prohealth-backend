@@ -95,6 +95,10 @@ class BenefitDerivationController extends Controller
 
     public function add(Request $request)
     {
+
+        
+        
+
         $createddate = date('y-m-d');
 
         $validation = DB::table('BENEFIT_DERIVATION_NAMES')
@@ -106,7 +110,7 @@ class BenefitDerivationController extends Controller
             $validator = Validator::make($request->all(), [
                 'benefit_derivation_id' => [
                     'required',
-                    'max:10', Rule::unique('BENEFIT_DERIVATION_NAMES')->where(function ($q) {
+                    'max:10', Rule::unique(['BENEFIT_DERIVATION_NAMES','BENEFIT_DERIVATION'])->where(function ($q) {
                         $q->whereNotNull('benefit_derivation_id');
                     })
                 ],
@@ -118,40 +122,21 @@ class BenefitDerivationController extends Controller
                 //     $q->whereNotNull('effective_date');
                 // })],
 
-                'benefit_derivation_id' => [
-                    'required',
-                    'max:10', Rule::unique('BENEFIT_DERIVATION')->where(function ($q) {
-                        $q->whereNotNull('benefit_derivation_id');
-                    })
-                ],
+                // 'benefit_derivation_id' => [
+                //     'required',
+                //     'max:10', Rule::unique('BENEFIT_DERIVATION')->where(function ($q) {
+                //         $q->whereNotNull('benefit_derivation_id');
+                //     })
+                // ],
 
-                "description" => ['max:36'],
-                "SERVICE_TYPE" => ['max:10'],
-                "SERVICE_MODIFIER" => ['max:10'],
-                'BENEFIT_CODE' => ['max:15', 'min:5'],
-                'EFFECTIVE_DATE' => ['max:10'],
-                'TERMINATION_DATE' => ['max:10'],
-                'PRICING_STRATEGY_ID' => ['max:10'],
-                'ACCUM_BENE_STRATEGY_ID' => ['max:10'],
-                'COPAY_STRATEGY_ID' => ['max:10'],
-                'MESSAGE' => ['max:40'],
-                'MESSAGE_STOP_DATE' => ['max:10'],
-                'MIN_AGE' => ['max:11'],
-                'MAX_AGE' => ['max:10'],
-                'MIN_PRICE' => ['max:10'],
-                'MAX_PRICE' => ['max:10'],
-                'MIN_PRICE_OPT' => ['max:1'],
-                'MAX_PRICE_OPT' => ['max:1'],
-                'VALID_RELATION_CODE' => ['max:1'],
-                'SEX_RESTRICTION' => ['max:6'],
-                'MODULE_EXIT' => ['max:1'],
-                'REJECT_ONLY_MSG_FLAG' => ['max:1'],
-                'MAX_QTY_OVER_TIME' => ['max:6'],
-                'MAX_RX_QTY_OPT' => ['max:1'],
-                'COVERAGE_START_DAYS' => ['max:6'],
-                'UCR' => ['max:10'],
-                'PROC_CODE_LIST_ID' => ['max:10'],
-                'RX_QTY_OPT_MULTIPLIER' => ['max:10']
+                // "benefit_derivation_id" => ['required','max:36'],
+                "description"=>['required','max:2'],
+                "service_type"=>['required','max:1'],
+                'service_modifier'=>['required'],
+                'proc_code_list_id'=>['required','max:10'],
+                'benefit_code'=>['max:10'],
+                'effective_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10'],
 
 
             ]);
@@ -217,33 +202,14 @@ class BenefitDerivationController extends Controller
 
             $validator = Validator::make($request->all(), [
 
-                "description" => ['max:36'],
-                "SERVICE_TYPE" => ['max:10'],
-                "SERVICE_MODIFIER" => ['max:10'],
-                'BENEFIT_CODE' => ['max:15', 'min:5'],
-                'EFFECTIVE_DATE' => ['max:10'],
-                'TERMINATION_DATE' => ['max:10'],
-                'PRICING_STRATEGY_ID' => ['max:10'],
-                'ACCUM_BENE_STRATEGY_ID' => ['max:10'],
-                'COPAY_STRATEGY_ID' => ['max:10'],
-                'MESSAGE' => ['max:40'],
-                'MESSAGE_STOP_DATE' => ['max:10'],
-                'MIN_AGE' => ['max:11'],
-                'MAX_AGE' => ['max:10'],
-                'MIN_PRICE' => ['max:10'],
-                'MAX_PRICE' => ['max:10'],
-                'MIN_PRICE_OPT' => ['max:1'],
-                'MAX_PRICE_OPT' => ['max:1'],
-                'VALID_RELATION_CODE' => ['max:1'],
-                'SEX_RESTRICTION' => ['max:6'],
-                'MODULE_EXIT' => ['max:1'],
-                'REJECT_ONLY_MSG_FLAG' => ['max:1'],
-                'MAX_QTY_OVER_TIME' => ['max:6'],
-                'MAX_RX_QTY_OPT' => ['max:1'],
-                'COVERAGE_START_DAYS' => ['max:6'],
-                'UCR' => ['max:10'],
-                'PROC_CODE_LIST_ID' => ['max:10'],
-                'RX_QTY_OPT_MULTIPLIER' => ['max:10']
+                "benefit_derivation_id" => ['required','max:36'],
+                "description"=>['required','max:2'],
+                "service_type"=>['required','max:1'],
+                'service_modifier'=>['required'],
+                'proc_code_list_id'=>['required','max:10'],
+                'benefit_code'=>['max:10'],
+                'effective_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10'],
 
 
             ]);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ClientController extends Controller
 {
@@ -13,6 +14,57 @@ class ClientController extends Controller
 
     public function add(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'customer_id' => ['required', 'max:10'],
+            'client_id' => ['required','max:15'],
+            'effective_date' => ['required','max:10'],
+            'termination_date' => ['required','max:10', 'after:effective_date'],
+            'client_name' => ['max:35'],
+            'address_1' => ['max:20'],
+            'address_2' => ['max:20'],
+            'city' => ['max:18'],
+            'zip_code' => ['max:10'],
+            'phone'=> ['max:13'],
+            'fax'=> ['max:10'],
+            'contact'=> ['max:25'],
+            'policy_anniv_month'=> ['max:2'],
+            'policy_anniv_day'=> ['max:2'],
+            'census_date'=> ['max:10'],
+            'num_of_active_members'=> ['max:7'],
+            'num_of_active_contracts'=> ['max:7'],
+            'num_of_termed_contracts'=> ['max:7'],
+            'num_of_pending_contracts'=> ['max:7'],
+            'num_of_pending_members'=> ['max:7'],
+            'num_of_termed_members'=> ['max:7'],
+            'pharmacy_exceptions_flag'=> ['max:1'],
+            'prescriber_exceptions_flag'=> ['max:1'],
+            'prescriber_exceptions_flag_2'=> ['max:1'],
+            'phys_file_srce_id'=> ['max:10'],
+            'auto_fam_member_term'=> ['max:1'],
+            'elig_type'=> ['max:1'],
+            'membership_processing_flag'=> ['max:1'],
+            'eligibility_exceptions_flag'=> ['max:1'],
+            'member_change_log_opt'=> ['max:1'],
+            'other_cov_proc_flag'=> ['max:1'],
+            'accum_bene_fam_sum_ind'=> ['max:1'],
+            'max_num_trans_interim_elig'=> ['max:3'],
+            'max_days_interim_elig'=> ['max:3'],
+            'days_for_reversals'=> ['max:6'],
+            'admin_fee'=> ['numeric'],
+            'admin_percent'=> ['numeric'],
+            'dmr_fee'=>['numeric'],
+            'ucf_fee'=> ['numeric'],
+            'elig_upd_fee'=>['numeric'],
+            'prior_auth_fee'=>['numeric'],
+            'date_written_to_first_fill'=> ['max:6'],
+            'date_filled_to_sub_online'=> ['max:6'],
+            'date_filled_to_sub_dmr'=> ['max:6'],
+            'date_sub_to_filled_future'=> ['max:6'],
+            'reqd_u_and_c_flag'=> ['max:1'],
+        ]);
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        }
 
         $createddate = date('y-m-d');
         if ($request->add_new) {

@@ -5,12 +5,25 @@ namespace App\Http\Controllers\AccumlatedBenifits;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use DB;
+use Illuminate\Support\Facades\Validator;
 
 class NdcExlusionController extends Controller
 {
 
 
     public function add( Request $request ) {
+     
+        $validator = Validator::make($request->all(), [
+            "ndc_exclusion_list" => ['required','max:10'],
+            "exclusion_name"=>['required','max:35'],
+            "ndc" => ['required'],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        }
+
+
 
         $createddate = date('y-m-d' );
 

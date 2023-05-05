@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use DB;
 
@@ -32,6 +33,18 @@ class LimitationsController extends Controller
 
     public function add( Request $request ) {
 
+        $validator = Validator::make($request->all(), [
+            "limitations_list" => ['required','max:36'],
+            "limitations_list_name" => ['required','max:36'],
+            'effective_date'=>['required'],
+            'termination_date'=>['required'],  
+            
+        ]);
+
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        }
+
         $createddate = date( 'y-m-d' );
 
         $recordcheck = DB::table('LIMITATIONS_LIST')
@@ -44,7 +57,6 @@ class LimitationsController extends Controller
 
             if($recordcheck){
                 return $this->respondWithToken($this->token(), 'Limitation List ID Already Exists', $recordcheck);
-
 
             }
 

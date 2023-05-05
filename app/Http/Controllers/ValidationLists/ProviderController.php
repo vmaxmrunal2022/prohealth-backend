@@ -201,12 +201,12 @@ class ProviderController extends Controller
                 //     $q->whereNotNull('ndc_exception_list');
                 // })],
 
-                "EXCEPTION_NAME" => ['max:36'],
-                "PHARMACY_NABP" => ['max:10'],
-                "PHARMACY_STATUS" => ['max:10'],
-                "DATE_TIME_CREATED" => ['max:10'],
-                "DATE_TIME_MODIFIED" => ['max:10']
-
+                "exception_name" => ['required','max:36'],
+                "pharmacy_nabp"=>['required','max:10'],
+                "pharmacy_status"=>['max:10'],
+                "DATE_TIME_CREATED"=>['max:10'],
+                "DATE_TIME_MODIFIED"=>['max:10']
+                
 
             ]);
 

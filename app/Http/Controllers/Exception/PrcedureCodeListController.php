@@ -123,10 +123,10 @@ class PrcedureCodeListController extends Controller
                 //     $q->whereNotNull('ndc_exception_list');
                 // })],
 
-                "description" => ['max:36'],
-                "procedure_code"=>['max:10'],
-                "effective_date"=>['max:10'],
-                'termination_date'=>['max:10'],
+                "description"=>['required','max:36'],
+                "effective_date"=>['required','max:10'],
+                'termination_date'=>['required','max:10'],
+                'procedure_code'=>['required','max:10'],
                 
 
             ]);
@@ -170,11 +170,11 @@ class PrcedureCodeListController extends Controller
         } else if ($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
-
-                "description" => ['max:36'],
-                "procedure_code"=>['max:10'],
-                "effective_date"=>['max:10'],
-                'termination_date'=>['max:10'],
+                "proc_code_list_id" => ['required','max:36'],
+                "description"=>['required','max:36'],
+                "effective_date"=>['required','max:10'],
+                'termination_date'=>['required','max:10'],
+                'procedure_code'=>['required','max:10'],
                 
                 
 

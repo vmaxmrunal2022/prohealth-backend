@@ -5,6 +5,7 @@ namespace App\Http\Controllers\AccumLatedBenifits;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class MajorMedicalController extends Controller
 {
@@ -14,6 +15,18 @@ class MajorMedicalController extends Controller
     public function add(Request $request)
     {
 
+        $validator = Validator::make($request->all(), [
+            "customer_id" => ['required'],
+            "client_id"=>['required'],
+            "client_group_id" => ['required'],
+            'mm_claim_max'=>['max:16'],
+            'mm_life_maximum'=>['max:16'],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        }
+        
 
         if ($request->has('new')) {
 

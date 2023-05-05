@@ -53,6 +53,16 @@ class PlanValidationController extends Controller
 
   public function addPlanValidation(Request $request)
   {
+    $validator = Validator::make($request->all(), [
+      "customer_id" => ['required'],
+      "client_id"=>['required'],
+      "client_group_id" => ['required'],
+      "plan_id" => ['required'],
+      
+    ]);
+    if ($validator->fails()) {
+        return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+    }
 
     $getEligibilityData = DB::table('plan_validation_lists')
       // ->where('customer_id', strtoupper($request->customer_id))

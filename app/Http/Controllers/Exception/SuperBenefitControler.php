@@ -130,12 +130,12 @@ class SuperBenefitControler extends Controller
                 //     $q->whereNotNull('ndc_exception_list');
                 // })],
 
-                "BENEFIT_LIST_ID" => ['max:36'],
-                "EFFECTIVE_DATE"=>['max:10'],
-                "TERMINATION_DATE"=>['max:10'],
-                "ACCUM_BENEFIT_STRATEGY_ID"=>['max:10'],
-                "DESCRIPTION"=>['max:10']
-                
+               
+                "description"=>['required','max:10'],
+                "benefit_list_id"=>['required','max:36'],
+                'accum_benefit_strategy_id'=>['max:10'],
+                'effective_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10'],
 
             ]);
 
@@ -179,13 +179,12 @@ class SuperBenefitControler extends Controller
         } else if ($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
-
-                "BENEFIT_LIST_ID" => ['max:36'],
-                "EFFECTIVE_DATE"=>['max:10'],
-                "TERMINATION_DATE"=>['max:10'],
-                "ACCUM_BENEFIT_STRATEGY_ID"=>['max:10'],
-                "DESCRIPTION"=>['max:10']
-                
+                "super_benefit_list_id" => ['required','max:36'],
+                "description"=>['required','max:10'],
+                "benefit_list_id"=>['required','max:36'],
+                'accum_benefit_strategy_id'=>['max:10'],
+                'effective_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10'],
                 
 
             ]);
