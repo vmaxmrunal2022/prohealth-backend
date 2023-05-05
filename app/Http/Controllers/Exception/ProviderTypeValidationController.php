@@ -304,7 +304,7 @@ public function add(Request $request)
 
 
 
-    public function getNDCItemDetails($ndcid, $ndcid2)
+    public function getNDCItemDetails($ndcid, $ndcid2,$ncdid3,$ncdid4)
     {
         $ndc = DB::table('PROVIDER_TYPE_VALIDATIONS')
         ->join('PROVIDER_TYPE_VALIDATION_NAMES as valdation_names', 'valdation_names.PROV_TYPE_LIST_ID', '=', 'PROVIDER_TYPE_VALIDATIONS.PROV_TYPE_LIST_ID')
@@ -325,6 +325,15 @@ public function add(Request $request)
         'types.DESCRIPTION as provider_type_description')
         ->where('PROVIDER_TYPE_VALIDATIONS.prov_type_list_id',$ndcid)
         ->where('PROVIDER_TYPE_VALIDATIONS.provider_type',$ndcid2)
+        ->where('PROVIDER_TYPE_VALIDATIONS.proc_code_list_id',$ncdid3)
+
+        ->where('PROVIDER_TYPE_VALIDATIONS.effective_date',$ncdid4)
+
+
+
+
+
+
 
 
             // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
