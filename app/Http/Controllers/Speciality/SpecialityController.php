@@ -299,61 +299,52 @@ class SpecialityController extends Controller
 
 
                 $checknames = DB::table('SPECIALTY_EXCEPTIONS')
-                    ->where('speciality_list', $request->speciality_list)
+                    ->where('SPECIALTY_LIST', $request->speciality_list)
                     ->get();
 
 
-                $effective_date_check = DB::table('SPECIALTY_VALIDATIONS')
-                    ->where('speciality_list', $request->speciality_list)
-                    ->where('speciality_id', $request->speciality_id)
-                    ->where('speciality_status', $request->speciality_status)
-                    ->get()
-
-                    ->count();
-
+             
 
                 $insert_check = DB::table('SPECIALTY_VALIDATIONS')
-                    ->where('speciality_list', $request->speciality_list)
-                    ->pluck('speciality_id')->toArray();
+                    ->where('specialty_list', $request->specialty_list)
+                    ->pluck('specialty_id')->toArray();
 
 
                 // dd($effective_date_check);
 
 
-                if ($effective_date_check) {
+                 if (in_array($request->specialty_id, $insert_check)) {
                     $add_names = DB::table('SPECIALTY_EXCEPTIONS')
-                        ->where('speciality_list', $request->speciality_list)
-                        ->update([
-                            'exception_name' => $request->exception_name,
-                        ]);
+                    ->where('specialty_list', $request->specialty_list)
+                    ->update([
+                        'exception_name' => $request->exception_name,
+                    ]);
 
 
 
-                    $update = DB::table('SPECIALTY_VALIDATIONS')
-                        ->where('speciality_list', $request->speciality_list)
-                        ->where('speciality_id', $request->speciality_id)
-                        ->where('speciality_status', $request->speciality_status)
-                        ->update(
-                            [
-                                'speciality_status' => $request->speciality_status,
+                $update = DB::table('SPECIALTY_VALIDATIONS')
+                    ->where('specialty_list', $request->specialty_list)
+                    ->where('specialty_id', $request->specialty_id)
+                    // ->where('specialty_status', $request->specialty_status)
+
+                    ->update(
+                        [
+                            'specialty_status' => $request->specialty_status,
 
 
-                            ]
-                        );
-                    $update = DB::table('SPECIALTY_VALIDATIONS')->where('speciality_list', 'like', '%' . $request->speciality_list . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-
-                } else if (in_array($request->speciality_nabp, $insert_check)) {
-                    return $this->respondWithToken($this->token(), 'Record Alredy Exists');
+                        ]
+                    );
+                $update = DB::table('SPECIALTY_VALIDATIONS')->where('specialty_list', 'like',$request->specialty_list)->first();
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
 
                 } else {
 
                     $updated = DB::table('SPECIALTY_VALIDATIONS')
                         ->insert(
                             [
-                                'speciality_list' => $request->speciality_list,
-                                'speciality_id' => $request->speciality_id,
-                                'speciality_status' => $request->speciality_status,
+                                'specialty_list' => $request->specialty_list,
+                                'specialty_id' => $request->specialty_id,
+                                'specialty_status' => $request->specialty_status,
                                 'DATE_TIME_CREATED' => $createddate,
 
                             ]

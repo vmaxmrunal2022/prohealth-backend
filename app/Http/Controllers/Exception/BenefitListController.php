@@ -511,7 +511,7 @@ class BenefitListController extends Controller
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
-    public function getBLItemDetails($ndcid)
+    public function getBLItemDetails($ndcid,$ndcid2)
     {
         $ndc = DB::table('BENEFIT_LIST')
         ->select('BENEFIT_LIST.*',
@@ -529,6 +529,7 @@ class BenefitListController extends Controller
 
 
         ->where('BENEFIT_LIST.BENEFIT_LIST_ID',$ndcid)
+        ->where('BENEFIT_LIST.BENEFIT_CODE',$ndcid2)
 
         // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
         ->first();

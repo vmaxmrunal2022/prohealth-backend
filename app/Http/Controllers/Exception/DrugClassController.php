@@ -102,7 +102,7 @@ class DrugClassController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function getNDCItemDetails($ndcid)
+    public function getNDCItemDetails($ndcid,$ndcid2)
     {
 
         $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
@@ -118,7 +118,9 @@ class DrugClassController extends Controller
             ->leftjoin('DRUG_MASTER AS MASTER2', 'MASTER2.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.CONVERSION_PRODUCT_NDC')
             ->leftjoin('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
 
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', 'like', '%' . $ndcid . '%')->get();
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST',$ndcid)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST',$ndcid2)->get();
+
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
