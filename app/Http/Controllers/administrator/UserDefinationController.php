@@ -324,10 +324,18 @@ class UserDefinationController extends Controller
                 'user_password' => ['required'],
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
             } else {
                 //$addUser = DB::table('FE_USERS')->insert([
                 //E->Ready Only
+                $check_group = DB::table('fe_user_groups')
+                    ->where('group_id', $request->group_id)
+                    ->get()
+                    ->count();
+                if ($check_group == 0) {
+                    return $this->respondWithToken($this->token(), "Please select valid group", "Please select valid group", false);
+                }
                 $coun = "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDADDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDAAAAAAAAADDDDDDDDDDDDDDDDDDDDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
                 $A = [];
                 $key1 = [];
@@ -411,9 +419,16 @@ class UserDefinationController extends Controller
                 'user_password' => ['required'],
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
             } else {
-
+                $check_group = DB::table('fe_user_groups')
+                ->where('group_id', $request->group_id)
+                    ->get()
+                    ->count();
+                if ($check_group == 0) {
+                    return $this->respondWithToken($this->token(), "Please select valid group", "Please select valid group", false);
+                }
                 $user_data = DB::table('fe_users')
                     ->where('user_id', $request->user_id)
                     ->first();
@@ -581,7 +596,8 @@ class UserDefinationController extends Controller
                 })],
             ]);
             if ($validator->fails()) {
-                return response($validator->errors(), 400);
+                $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
             } else {
                 $coun = "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDADDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDAAAAAAAAADDDDDDDDDDDDDDDDDDDDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
                 $A = [];
@@ -691,14 +707,22 @@ class UserDefinationController extends Controller
             for ($i = 0; $i < count($a); $i++) {
                 $user_profile[$a[$i]] = 'A';
             }
-            $updated_user_profile = implode('', $user_profile);
-            $update_fe_group = DB::table('FE_USER_GROUPS')
-                ->where(DB::raw('UPPER(group_id)'), strtoupper($request->group_id))
-                ->update([
-                    'group_name' => $request->group_name,
-                    'user_profile' => $updated_user_profile
-                ]);
-            return $this->respondWithToken($this->token(), 'Updated Successfully!', $update_fe_group);
+            $validator = Validator::make($request->all(), [
+                'group_id' => ['required'],
+            ]);
+            if ($validator->fails()) {
+                $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
+            } else {
+                $updated_user_profile = implode('', $user_profile);
+                $update_fe_group = DB::table('FE_USER_GROUPS')
+                    ->where(DB::raw('UPPER(group_id)'), strtoupper($request->group_id))
+                    ->update([
+                        'group_name' => $request->group_name,
+                        'user_profile' => $updated_user_profile
+                    ]);
+                return $this->respondWithToken($this->token(), 'Updated Successfully!', $update_fe_group);
+            }
         }
     }
 

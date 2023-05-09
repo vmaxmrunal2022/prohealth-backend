@@ -4,6 +4,7 @@ namespace App\Http\Controllers\validationLists;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -57,7 +58,7 @@ class ProviderController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function addProviderData(Request $request)
+    public function addProviderData_old(Request $request)
     {
         $getProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
             ->where(DB::raw('UPPER(PHARMACY_LIST)'), strtoupper($request->pharmacy_list))
@@ -67,7 +68,7 @@ class ProviderController extends Controller
             ->where('PHARMACY_LIST', $request->pharmacy_list)
             ->where('PHARMACY_NABP', $request->pharmacy_nabp)
             ->first();
-        if ($request->has('new')) {
+        if ($request->add_new) {
             $validator = Validator::make($request->all(), [
                 "pharmacy_list" => ['required', 'max:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
                     $q->whereNotNull('pharmacy_list');
@@ -110,7 +111,7 @@ class ProviderController extends Controller
                                 'USER_ID' => $request->user_name
                             ]);
                         if ($addProviderValidationData) {
-                            return $this->respondWithToken($this->token(), 'Added Successfully ...!!!', $addProviderValidationData);
+                            return $this->respondWithToken($this->token(), 'Added Successfully!!!', $addProviderValidationData);
                         }
                     } else {
                         return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
@@ -159,6 +160,136 @@ class ProviderController extends Controller
                     }
                 }
             }
+        }
+    }
+
+
+    public function addProviderData(Request $request)
+    {
+        if ($request->add_new) {
+            $validator = Validator::make($request->all(), [
+                // "pharmacy_list" => ['required', 'max:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
+                //     $q->whereNotNull('pharmacy_list');
+                // })],
+                "exception_name" => ['max:35'],
+                "pharmacy_nabp" => ['required'],
+            ]);
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            } else {
+                if ($request->pharmacy_list && $request->pharmacy_nabp) {
+                    $count = DB::table('PHARMACY_EXCEPTIONS')
+                        ->where(DB::raw('UPPER(PHARMACY_LIST)'), strtoupper($request->pharmacy_list))
+                        ->get()
+                        ->count();
+                    // dd($count);
+                    //if exception is not existing
+                    if ($count <= 0) {
+                        $addException = DB::table('PHARMACY_EXCEPTIONS')
+                            ->insert([
+                                'pharmacy_list' => $request->pharmacy_list,
+                                'exception_name' => $request->exception_name,
+                                'date_time_created' => date('d-M-y'),
+                                'user_id' => Cache::get('userId'),
+                                'date_time_modified' => date('d-M-y'),
+                                'form_id' => ''
+                            ]);
+                        $addProviderValidationData = DB::table('PHARMACY_VALIDATIONS')
+                            ->insert([
+                                'PHARMACY_LIST' => $request->pharmacy_list,
+                                'PHARMACY_NABP' => $request->pharmacy_nabp,
+                                'PHARMACY_STATUS' => $request->pharmacy_status,
+                                'DATE_TIME_CREATED' => date('d-M-y'),
+                                'USER_ID' => Cache::get('userId'),
+                                'date_time_modified' => date('d-M-Y'),
+                                'form_id' => ''
+                            ]);
+
+                        $reecord = DB::table('PHARMACY_EXCEPTIONS')
+                            ->join('PHARMACY_VALIDATIONS', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST', '=', 'PHARMACY_VALIDATIONS.PHARMACY_LIST')
+                            ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $request->pharmacy_list)
+                            ->where('PHARMACY_VALIDATIONS.PHARMACY_NABP', $request->pharmacy_nabp)
+                            ->first();
+                        return $this->respondWithToken(
+                            $this->token(),
+                            $reecord,
+                            'Added successfully!!!',
+                        );
+                    } else {
+                        $updateProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
+                            ->where('PHARMACY_LIST', $request->pharmacy_list)
+                            ->update([
+                                'exception_name' => $request->exception_name,
+                                'user_id' => Cache::get('userId'),
+                                'date_time_modified' => date('d-M-y'),
+                                'form_id' => ''
+                            ]);
+
+                        $countValidation = DB::table('PHARMACY_VALIDATIONS')
+                            ->where(DB::raw('UPPER(PHARMACY_LIST)'), strtoupper($request->pharmacy_list))
+                            ->where(DB::raw('UPPER(PHARMACY_NABP)'), strtoupper($request->pharmacy_nabp))
+                            // ->where('pharmacy_status', $request->pharmacy_status)
+                            ->get()
+                            ->count();
+
+                        //if exception exist but validation not exist
+                        if ($countValidation >= 1) {
+                            return $this->respondWithToken(
+                                $this->token(),
+                                [['Record already existed!!!']],
+                                [['Record already existed!!!']],
+                                false
+                            );
+                        } else {
+                            $addProviderValidationData = DB::table('PHARMACY_VALIDATIONS')
+                                ->insert([
+                                    'PHARMACY_LIST' => $request->pharmacy_list,
+                                    'PHARMACY_NABP' => $request->pharmacy_nabp,
+                                    'PHARMACY_STATUS' => $request->pharmacy_status,
+                                    'DATE_TIME_CREATED' => date('d-M-y'),
+                                    'USER_ID' => Cache::get('userId'),
+                                    'date_time_modified' => date('d-M-y'),
+                                    'form_id' => ''
+                                ]);
+                            $reecord = DB::table('PHARMACY_EXCEPTIONS')
+                                ->join('PHARMACY_VALIDATIONS', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST', '=', 'PHARMACY_VALIDATIONS.PHARMACY_LIST')
+                                ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $request->pharmacy_list)
+                                ->where('PHARMACY_VALIDATIONS.PHARMACY_NABP', $request->pharmacy_nabp)
+                                ->first();
+                            return $this->respondWithToken(
+                                $this->token(),
+                                $reecord,
+                                'Added successfully!!!',
+                            );
+                        }
+                    }
+                }
+            }
+        } else {
+            $updateProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
+                ->where('PHARMACY_LIST', $request->pharmacy_list)
+                ->update([
+                    'exception_name' => $request->exception_name,
+                    'user_id' => Cache::get('userId'),
+                    'date_time_modified' => date('d-M-y'),
+                    'form_id' => ''
+                ]);
+
+            $countValidation = DB::table('PHARMACY_VALIDATIONS')
+                ->where(DB::raw('UPPER(PHARMACY_LIST)'), strtoupper($request->pharmacy_list))
+                ->where(DB::raw('UPPER(PHARMACY_NABP)'), strtoupper($request->pharmacy_nabp))
+                // ->where('pharmacy_status', $request->pharmacy_status)
+                ->update([
+                    'pharmacy_status' => $request->pharmacy_status,
+                    'date_time_modified' => date('d-M-y'),
+                    'form_id' => ''
+                ]);
+
+            return $this->respondWithToken(
+                $this->token(),
+                'Updated successfully!!!',
+                'Updated successfully!!!',
+            );
         }
     }
 

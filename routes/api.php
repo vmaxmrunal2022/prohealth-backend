@@ -148,7 +148,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/diagnosis', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
         Route::post('/diagnosis/submit', [DiagnosisController::class, 'add'])->name('diagnosis.submit'); // add
         Route::post('/diagnosis/delete', [DiagnosisController::class, 'delete'])->name('diagnosis.delete'); // DELETE
-        // Route::get('/diagnosis/all', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
+        Route::get('/diagnosis/all', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
         Route::get('/check-diagnosis-exist', [DiagnosisController::class, 'checkDiagnosisCodeExist']);
 
 
@@ -246,7 +246,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
 
         //DIAGNOSIS VALIDATION LIST
-        Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search'])->name('diagnosisvalidation.search'); // SEARCH
+        Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search']); // SEARCH
         Route::get('/diagnosisvalidation/get/{diagnosis_list}', [DiagnosisValidationListController::class, 'getPriorityDiagnosis'])->name('diagnosisvalidation.list.get'); // LIST ITEMS
         Route::get('diagnosisvalidation/diagnosis-code-list/{disgnosis_code?}', [DiagnosisValidationListController::class, 'getDiagnosisCodeList']); //diagnosis code drop down with search
         Route::get('diagnosisvalidation/limitation-code-list/{limitation_code?}', [DiagnosisValidationListController::class, 'getLimitationsCode']); //limitationid drop down

@@ -324,7 +324,7 @@ class CustomerController extends Controller
                 // dd($fieldsWithErrorMessagesArray);
                 return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
             } else {
-
+                // return $request->all();
                 $accum_benfit_stat = DB::table('CUSTOMER')
                     ->where(DB::raw('UPPER(CUSTOMER_ID)'), strtoupper($request->customer_id))
                     ->update(

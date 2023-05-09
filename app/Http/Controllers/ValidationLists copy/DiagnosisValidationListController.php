@@ -10,10 +10,10 @@ use Illuminate\Validation\Rule;
 
 class DiagnosisValidationListController extends Controller
 {
-    public function search(Request $request)
+    public function search1(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "search" => ['required']
+            // "search" => ['required']
         ]);
         if ($validator->fails()) {
             return response($validator->errors());

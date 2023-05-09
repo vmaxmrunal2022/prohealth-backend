@@ -21,7 +21,7 @@ class DiagnosisController extends Controller
     public function get(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'search' => ['required']
+            // 'search' => ['required']
         ]);
         if ($validator->fails()) {
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");

@@ -15,12 +15,26 @@ class ClientController extends Controller
 
     public function add(Request $request)
     {
+        $customer_data = DB::table('CUSTOMER')
+            ->where(DB::raw('UPPER(CUSTOMER_ID)'), strtoupper($request->customer_id))
+            ->first();
+        $errorMsg = ["Client effective date must be greater than customer effective date"];
+        if ((date('Y-m-d', strtotime($request->effective_date))) < (date('Y-m-d', strtotime($customer_data->effective_date)))) {
+            return $this->respondWithToken(
+                $this->token(),
+                [$errorMsg],
+                '',
+                false
+            );
+        }
+
         $createddate = date('y-m-d');
         if ($request->add_new) {
             $validator = Validator::make($request->all(), [
                 'client_id' => ['required', 'max:10', Rule::unique('CLIENT')->where(function ($q) {
                     $q->whereNotNull('client_id');
                 })],
+                'customer_id' => ['required'],
                 'client_name' => ['max:25'],
                 'address_1' => ['max:25'],
                 'address_2' => ['max:25'],
@@ -135,6 +149,7 @@ class ClientController extends Controller
         } else {
             $validator = Validator::make($request->all(), [
                 'client_id' => ['required', 'max:10'],
+                'customer_id' => ['required'],
                 'client_name' => ['max:25'],
                 'address_1' => ['max:25'],
                 'address_2' => ['max:25'],

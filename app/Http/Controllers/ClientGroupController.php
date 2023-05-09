@@ -16,6 +16,19 @@ class ClientGroupController extends Controller
 
     public function add(Request $request)
     {
+        $client_Data = DB::table('Client')
+            ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
+            ->first();
+        $errorMsg = ["Client group effective date must be greater than client effective date"];
+        if ((date('Y-m-d', strtotime($request->group_effective_date))) < (date('Y-m-d', strtotime($client_Data->effective_date)))) {
+            return $this->respondWithToken(
+                $this->token(),
+                [$errorMsg],
+                '',
+                false
+            );
+        }
+
         $createddate = date('y-m-d');
         if ($request->add_new) {
             $validator = Validator::make($request->all(), [
