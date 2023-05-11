@@ -532,27 +532,40 @@ class ProcedureController extends Controller
     }
     public function delete_procedure_code(Request $request)
     {
-        if (isset($request->procedure_exception_list) && ($request->accum_bene_strategy_id)) {
-            $all_exceptions_lists =  DB::table('PROCEDURE_EXCEPTION_LISTS')
-                ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
-                ->delete();
+       return $request->all();
+        if (isset($request->procedure_exception_list) && ($request->proc_code_list_id)) {
 
+            $all_exceptions_lists =  DB::table('PROCEDURE_EXCEPTION_LISTS')->where('PROCEDURE_EXCEPTION_LIST', strtoupper($request->procedure_exception_list))->delete();
+            
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+               return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            
             } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
+            
+             return $this->respondWithToken($this->token(), 'Record Not Found');
+            
             }
-        } else if (isset($request->exception_name)) {
-
-            $exception_delete =  DB::table('PROCEDURE_EXCEPTION_NAMES')
-                ->where('EXCEPTION_NAME', $request->exception_name)
+            
+            } else if (isset($request->procedure_exception_list)) {
+                $exception_delete =  DB::table('PROCEDURE_EXCEPTION_NAMES')
+                
+                ->where('EXCEPTION_NAME', strtoupper($request->procedure_exception_list))
+                
                 ->delete();
-
+            
+            
+            
+            
             if ($exception_delete) {
+            
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            
             } else {
+            
                 return $this->respondWithToken($this->token(), 'Record Not Found');
+            
+             }
+            
             }
         }
-    }
 }

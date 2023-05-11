@@ -350,8 +350,10 @@ class PrcedureCodeListController extends Controller
            return $this->respondWithToken( $this->token(), '', $providerCodeList );
        }
 
+
        public function produrecodelistdelete(Request $request)
     {
+        // return $request->all();
         if (isset($request->proc_code_list_id) && ($request->procedure_code)) {
             $all_exceptions_lists =  DB::table('PROC_CODE_LISTS')
                 ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
@@ -375,6 +377,10 @@ class PrcedureCodeListController extends Controller
             }
         }
     }
+    // dd($request->all());
+
+
+
 
     
 }
