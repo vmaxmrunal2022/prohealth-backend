@@ -416,4 +416,29 @@ class BenefitDerivationController extends Controller
 
 
     }
+    public function benefitderivationdelete(Request $request)
+    {
+        if (isset($request->benefit_derivation_id) && ($request->service_type)) {
+            $all_exceptions_lists =  DB::table('BENEFIT_DERIVATION')
+                ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->benefit_derivation_id)) {
+
+            $exception_delete =  DB::table('BENEFIT_DERIVATION_NAMES')
+                ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
 }

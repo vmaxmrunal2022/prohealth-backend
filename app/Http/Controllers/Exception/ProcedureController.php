@@ -530,4 +530,29 @@ class ProcedureController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
+    public function delete_procedure_code(Request $request)
+    {
+        if (isset($request->procedure_exception_list) && ($request->accum_bene_strategy_id)) {
+            $all_exceptions_lists =  DB::table('PROCEDURE_EXCEPTION_LISTS')
+                ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
+                ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->exception_name)) {
+
+            $exception_delete =  DB::table('PROCEDURE_EXCEPTION_NAMES')
+                ->where('EXCEPTION_NAME', $request->exception_name)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
 }

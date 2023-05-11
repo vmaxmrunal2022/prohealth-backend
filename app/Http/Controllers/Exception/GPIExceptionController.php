@@ -537,4 +537,29 @@ class GPIExceptionController extends Controller
         $data = DB::table('GPI_EXCEPTIONS')->get();
         return $this->respondWithToken($this->token(), '', $data);
     }
-}
+    public function gpi_delete(Request $request)
+    {
+    if (isset($request->gpi_exception_list) && ($request->generic_product_id)) {
+
+    $exception_delete = DB::table('GPI_EXCEPTION_LISTS')
+
+    ->where('GENERIC_PRODUCT_ID', $request->generic_product_id)
+
+    ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
+
+    ->delete();
+
+    if ($exception_delete) {
+
+    return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+
+    } else {
+
+    return $this->respondWithToken($this->token(), 'Record Not Found');
+
+    }
+
+    }
+
+    }
+    }

@@ -905,4 +905,29 @@ class DrugClassController extends Controller
             ->get();
         return $this->respondWithToken($this->token(), '', $data_list);
     }
+    public function drugclassDelete(Request $request)
+    {
+        if (isset($request->drug_catgy_exception_list) && ($request->drug_catgy_exception_name)) {
+            $all_exceptions_lists =  DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+                ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
+                ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->plan_id)) {
+
+            $exception_delete =  DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
+                ->where('PLAN_ID', $request->plan_id)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
 }

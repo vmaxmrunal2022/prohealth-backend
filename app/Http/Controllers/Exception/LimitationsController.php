@@ -207,4 +207,17 @@ class LimitationsController extends Controller
 
 
     }
+    public function limitation_delete(Request $request)
+    {
+
+        $all_exceptions_lists =  DB::table('LIMITATIONS_LIST')
+            ->where('LIMITATIONS_LIST', $request->limitations_list)
+            ->delete();
+
+        if ($all_exceptions_lists) {
+            return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
+        }
+    }
 }
