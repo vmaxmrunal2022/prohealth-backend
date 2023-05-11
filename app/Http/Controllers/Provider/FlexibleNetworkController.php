@@ -21,11 +21,11 @@ class FlexibleNetworkController extends Controller
 
 
 
-                if($recordCheck){
-                    return $this->respondWithToken($this->token(), 'Record Already Exists', $recordCheck);
+                // if($recordCheck){
+                //     return $this->respondWithToken($this->token(), 'Record Already Exists', $recordCheck);
                 
 
-                }
+                // }
                     $validator = Validator::make($request->all(), [
                         "rx_network_rule_id" => ['required', 'max:10', Rule::unique('RX_NETWORK_RULES')->where(function ($q) {
                             $q->whereNotNull('rx_network_rule_id');
@@ -60,8 +60,11 @@ class FlexibleNetworkController extends Controller
                        
                         $flexible_network_list = json_decode(json_encode($request->flexible_form, true));
 
+                        // dd($flexible_network_list);
+
                         if (!empty($request->flexible_form)) {
                             $flexible_list = $flexible_network_list[0];
+
             
                             foreach ($flexible_network_list as $key => $flexible_list) {
             
@@ -245,7 +248,7 @@ class FlexibleNetworkController extends Controller
     public function getList($ndcid)
     {
         $ndc = DB::table('RX_NETWORK_RULES')
-            ->Where('RX_NETWORK_RULE_ID', 'like', '%' . $ndcid . '%')
+            ->Where('RX_NETWORK_RULE_ID',$ndcid)
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

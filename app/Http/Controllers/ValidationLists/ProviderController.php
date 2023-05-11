@@ -301,7 +301,6 @@ class ProviderController extends Controller
                 $update = DB::table('PHARMACY_VALIDATIONS')
                     ->where('pharmacy_list', $request->pharmacy_list)
                     ->where('pharmacy_nabp', $request->pharmacy_nabp)
-                    ->where('pharmacy_status', $request->pharmacy_status)
                     ->update(
                         [
                             'pharmacy_status' => $request->pharmacy_status,

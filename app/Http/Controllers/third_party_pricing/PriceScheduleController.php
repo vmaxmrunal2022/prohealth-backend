@@ -15,8 +15,10 @@ class PriceScheduleController extends Controller
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')
             ->where('PRICE_SCHEDULE',  $request->search)
-            ->orWhere('PRICE_SCHEDULE_NAME',$request->search)
             ->orWhere('COPAY_SCHEDULE', $request->search)
+            ->orWhere('PRICE_SCHEDULE_NAME',$request->search)
+            ->orWhere('PRICE_SCHEDULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
+
             ->get();
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }

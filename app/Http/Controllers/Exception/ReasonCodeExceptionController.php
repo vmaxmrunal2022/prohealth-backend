@@ -143,8 +143,8 @@ class ReasonCodeExceptionController extends Controller
                 // ],
                 // "reason_code_list_id" => ['required','max:36'],
                 "reason_code_name"=>['required','max:36'],
-                "reject_code"=>['required','max:2'],
-                'reason_code'=>['required','max:1'],
+                "reject_code"=>['required','max:11'],
+                'reason_code'=>['required','max:10'],
                 'effective_date'=>['required','max:10'],
                 'termination_date'=>['required','max:10'],
             ]);
@@ -283,15 +283,34 @@ class ReasonCodeExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function getNDCItemDetails($ndcid)
+    public function getNDCItemDetails($list_id,$reject_code,$reason_code,$efff)
     {
         $ndc = DB::table('REASON_CODE_LISTS')
             // ->select('NDC_EXCEPTION_LISTS.*', 'REASON_CODE_LIST_NAMES.NDC_EXCEPTION_LIST as exception_list', 'REASON_CODE_LIST_NAMES.EXCEPTION_NAME as exception_name')
             ->join('REASON_CODE_LIST_NAMES', 'REASON_CODE_LISTS.REASON_CODE_LIST_ID', '=', 'REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID')
-            ->where('REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID', 'like', '%' . strtoupper($ndcid) . '%')
+            ->where('REASON_CODE_LISTS.REASON_CODE_LIST_ID', $list_id)
+            ->where('REASON_CODE_LISTS.REJECT_CODE', $reject_code)
+            ->where('REASON_CODE_LISTS.REASON_CODE', $reason_code)
+            ->where('REASON_CODE_LISTS.EFFECTIVE_DATE', $efff)
+
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
+
+
+    public function getList($id){
+
+        $ndc = DB::table('REASON_CODE_LISTS')
+        // ->select('NDC_EXCEPTION_LISTS.*', 'REASON_CODE_LIST_NAMES.NDC_EXCEPTION_LIST as exception_list', 'REASON_CODE_LIST_NAMES.EXCEPTION_NAME as exception_name')
+            ->where('REASON_CODE_LIST_ID',$id)->first();
+
+            return $this->respondWithToken($this->token(), '', $ndc);
+
+
+
+    }
 }
+
+

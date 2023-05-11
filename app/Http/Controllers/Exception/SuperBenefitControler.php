@@ -273,13 +273,15 @@ class SuperBenefitControler extends Controller
     }
 
 
-    public function getNDCItemDetails($id)
+    public function getNDCItemDetails($listid,$beneid,$effe)
     {
       
          $benefitLists = DB::table('SUPER_BENEFIT_LISTS')
          ->join('SUPER_BENEFIT_LIST_NAMES', 'SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID', '=', 'SUPER_BENEFIT_LIST_NAMES.SUPER_BENEFIT_LIST_ID')
-         ->where('SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID',$id)
-         ->get();
+         ->where('SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID',$listid) 
+         ->where('SUPER_BENEFIT_LISTS.BENEFIT_LIST_ID',$beneid)
+         ->where('SUPER_BENEFIT_LISTS.EFFECTIVE_DATE',$effe)
+         ->first();
 
         return $this->respondWithToken($this->token(), '', $benefitLists);
 
