@@ -97,7 +97,6 @@ class ProcedureCrossReferenceController extends Controller
                         'DATE_TIME_CREATED'=>$createddate,
                         'USER_ID_CREATED'=>'',
                         'DATE_TIME_MODIFIED'=>$createddate,
-                        
                      
                     ]
                 );
