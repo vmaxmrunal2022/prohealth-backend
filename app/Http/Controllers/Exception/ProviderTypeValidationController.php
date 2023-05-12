@@ -342,5 +342,32 @@ public function add(Request $request)
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function provider_type_validation_delete(Request $request)
+    {
+
+        if (isset($request->prov_type_list_id) && ($request->proc_code_list_id)) {
+            $all_exceptions_lists =  DB::table('PROVIDER_TYPE_VALIDATIONS')
+                ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
+                ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->prov_type_list_id)) {
+
+            $exception_delete =  DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
+                ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
+
 
 }

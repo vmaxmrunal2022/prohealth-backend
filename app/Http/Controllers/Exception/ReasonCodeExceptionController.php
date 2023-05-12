@@ -298,7 +298,17 @@ class ReasonCodeExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
-<<<<<<< HEAD
+
+    public function getList($id){
+
+        $ndc = DB::table('REASON_CODE_LISTS')
+        // ->select('NDC_EXCEPTION_LISTS.*', 'REASON_CODE_LIST_NAMES.NDC_EXCEPTION_LIST as exception_list', 'REASON_CODE_LIST_NAMES.EXCEPTION_NAME as exception_name')
+            ->where('REASON_CODE_LIST_ID',$id)->first();
+
+            return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
+
     public function delete(Request $request)
     {
         if (isset($request->reason_code_list_id) && ($request->reason_code)) {
@@ -325,21 +335,3 @@ class ReasonCodeExceptionController extends Controller
         }
     }
 }
-=======
-
-
-    public function getList($id){
-
-        $ndc = DB::table('REASON_CODE_LISTS')
-        // ->select('NDC_EXCEPTION_LISTS.*', 'REASON_CODE_LIST_NAMES.NDC_EXCEPTION_LIST as exception_list', 'REASON_CODE_LIST_NAMES.EXCEPTION_NAME as exception_name')
-            ->where('REASON_CODE_LIST_ID',$id)->first();
-
-            return $this->respondWithToken($this->token(), '', $ndc);
-
-
-
-    }
-}
-
-
->>>>>>> f7d78699f258da2fe0d5100376affc709e62ccc2

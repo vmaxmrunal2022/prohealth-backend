@@ -392,7 +392,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('Procedure-cross-reference/list/{id}', [ProcedureCrossReferenceController::class, 'List'])->name('cross-reference.list'); 
         Route::get('procedure-cross-reference/details/{id}/{id2}/{id3}/{id4}', [ProcedureCrossReferenceController::class, 'getDetails'])->name('cross-reference.details'); 
         Route::post('procedure-cross-reference/add', [ProcedureCrossReferenceController::class, 'add'])->name('cross-reference.add'); 
-
+        Route::post('procedure-cross-reference/delete', [ProcedureCrossReferenceController::class, 'delete'])->name('cross-reference.delete');
 
 
         
@@ -531,7 +531,10 @@ Route::group(['middleware' => 'apisession'], function ($router) {
     Route::get('/provider-type-validation', [ProviderTypeValidationController::class, 'test']);
     Route::get('/provider-type-validation/get', [ProviderTypeValidationController::class, 'get'])->name('provider-type-validation-get');
     Route::get('/provider-type-validation/getFormData', [ProviderTypeValidationController::class, 'getFormData'])->name('provider-type-validation-getFormData');
-
+    Route::post('/providertype/validation/delete', [ProviderTypeValidationController::class, 'provider_type_validation_delete'])->name('provider_type_validation_delete');
+    
+    
+    
 
     //Drug Information
     Route::group(['prefix' => "drug-information/"], function () {
@@ -800,10 +803,6 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/gpi/gpi-drop-down', [GPIExceptionController::class, 'getGpiDropDown']);
     Route::get('/gpi/list', [GPIExceptionController::class, 'GpiList'])->name('gpi.search'); // SEARCH
     Route::post('/gpi/delete', [GPIExceptionController::class, 'gpi_delete'])->name('gpi_delete');
-<<<<<<< HEAD
-=======
-
->>>>>>> f7d78699f258da2fe0d5100376affc709e62ccc2
 
 
 
@@ -873,13 +872,9 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/super-benefit-list/get', [SuperBenefitControler::class, 'get']);
     Route::get('/super-benefit-list/get-super-benefit-code', [SuperBenefitControler::class, 'getBenefitCode']);
     Route::post('/super-benefit-list/add', [SuperBenefitControler::class, 'add']);
-
-<<<<<<< HEAD
-    Route::get('/super-benefit-list/get/{id}', [SuperBenefitControler::class, 'getNDCItemDetails']);
     Route::post('/super-benefit-list/delete', [SuperBenefitControler::class, 'super_benefit_list_delete'])->name('super_benefit_list_delete');
-=======
+
     Route::get('/super-benefit-list/get/{listid}/{benefitcode}/{effe}', [SuperBenefitControler::class, 'getNDCItemDetails']);
->>>>>>> f7d78699f258da2fe0d5100376affc709e62ccc2
 });
 
 

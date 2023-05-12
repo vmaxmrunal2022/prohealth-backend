@@ -418,7 +418,7 @@ class BenefitDerivationController extends Controller
     }
     public function benefitderivationdelete(Request $request)
     {
-        if (isset($request->benefit_derivation_id) && ($request->service_type)) {
+        if (isset($request->benefit_derivation_id) && ($request->proc_code_list_id)) {
             $all_exceptions_lists =  DB::table('BENEFIT_DERIVATION')
                 ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
                 ->delete();

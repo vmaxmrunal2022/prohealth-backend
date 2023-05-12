@@ -943,7 +943,7 @@ class DrugClassController extends Controller
     }
     public function drugclassDelete(Request $request)
     {
-        if (isset($request->drug_catgy_exception_list) && ($request->drug_catgy_exception_name)) {
+        if (isset($request->drug_catgy_exception_list) && ($request->scategory)) {
             $all_exceptions_lists =  DB::table('DRUG_CATGY_EXCEPTION_NAMES')
                 ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
                 ->delete();
