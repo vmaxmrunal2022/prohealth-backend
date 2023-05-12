@@ -34,7 +34,7 @@ class CustomerController extends Controller
 
     public  function saveIdentification(Request $request)
     {
-        // return response([], 200);
+
 
 
         $customerREQUEST = $request->all();
@@ -165,12 +165,13 @@ class CustomerController extends Controller
 
 
 
-        $this->respondWithToken($this->token() ?? '', 'Successfully added', $customer);
+        $this->respondWithToken($this->token() ?? '', 'Record Added Successfully', $customer);
     }
 
 
     public function add(Request $request)
     {
+        // return $request->rva_list_id;
         if ($request->add_new) {
             $validator = Validator::make($request->all(), [
                 'customer_id' => ['required', 'max:10', Rule::unique('CUSTOMER')->where(function ($q) {
@@ -302,7 +303,7 @@ class CustomerController extends Controller
                         'record_snapshot' => $record_snapshot,
                     ]);
 
-                return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
+                return $this->respondWithToken($this->token(), 'RecordAdded Successfully', $benefitcode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -315,9 +316,6 @@ class CustomerController extends Controller
                 'zip_code' => ['max:10'],
                 'effective_date' => ['max:10'],
                 'termination_date' => ['max:10', 'after:effective_date'],
-                // 'comm_charge_paid' => ['numeric'],
-                // 'comm_charge_reject' => ['numeric'],
-
             ]);
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
@@ -353,7 +351,7 @@ class CustomerController extends Controller
                             'admin_fee' => $request->admin_fee,
                             'dmr_fee' => $request->dmr_fee,
                             'auto_term_level' => $request->auto_term_level,
-                            'census_date' => date('Ymd', strtotime($request->census_date)),
+                            // 'census_date' => date('Ymd', strtotime($request->census_date)),
                             'ucf_fee' => $request->ucf_fee,
                             'prior_auth_fee' => $request->prior_auth_fee,
                             'mail_ord_letter_fee' => $request->mail_ord_letter_fee,
@@ -433,7 +431,7 @@ class CustomerController extends Controller
                         'record_snapshot' => $record_snapshot,
                         // 'record_snapshot' => $record_snapshot,
                     ]);
-                return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
                 // return $this->respondWithToken($this->token(), auth('web')->user(), $benefitcode);
             }
         }
@@ -455,8 +453,8 @@ class CustomerController extends Controller
     {
         $customer = DB::table('customer')
             ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
-            ->where('CUSTOMER_ID', 'like', '%' . strtoupper($request->customerid) . '%')
-            ->orWhere('CUSTOMER_NAME', 'like', '%' . strtoupper($request->customerid) . '%')
+            ->where(DB::raw('UPPER(CUSTOMER_ID)'), 'like', '%' . strtoupper($request->customerid) . '%')
+            ->orWhere(DB::raw('UPPER(CUSTOMER_NAME)'), 'like', '%' . strtoupper($request->customerid) . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $customer);
@@ -527,5 +525,14 @@ class CustomerController extends Controller
 
 
         return $this->respondWithToken($this->token(), '', $customer);
+    }
+
+    public function deleteCutomer(Request $request)
+    {
+        // dd($request->all());
+        $delete_customer = DB::table('customer')
+            ->where('customer_id', $request->customer_id)
+            ->delete();
+        return $this->respondWithToken($this->token(), "deleted", "deleted");
     }
 }

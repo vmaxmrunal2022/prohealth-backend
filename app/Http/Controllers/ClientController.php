@@ -54,6 +54,8 @@ class ClientController extends Controller
             } else {
                 $accum_benfit_stat_names = DB::table('CLIENT')->insert(
                     [
+                        'country' => $request->country,
+                        'country_code' => $request->country_code,
                         'client_name' => $request->client_name,
                         'customer_id' => $request->customer_id,
                         'client_id' => $request->client_id,

@@ -349,6 +349,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
     Route::post('customer/add', [CustomerController::class, 'add']);
     Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
     Route::get('customer/get', [CustomerController::class, 'searchCutomer']);
+    Route::post('customer/delete', [CustomerController::class, 'deleteCutomer']);
 
     Route::get('plan/get/{planid}', [CustomerController::class, 'getPlanId']);
 
