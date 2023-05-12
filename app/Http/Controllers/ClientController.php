@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
 {
@@ -14,151 +15,50 @@ class ClientController extends Controller
 
     public function add(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'customer_id' => ['required', 'max:10'],
-            'client_id' => ['required','max:15'],
-            'effective_date' => ['required','max:10'],
-            'termination_date' => ['required','max:10', 'after:effective_date'],
-            'client_name' => ['max:35'],
-            'address_1' => ['max:20'],
-            'address_2' => ['max:20'],
-            'city' => ['max:18'],
-            'zip_code' => ['max:10'],
-            'phone'=> ['max:13'],
-            'fax'=> ['max:10'],
-            'contact'=> ['max:25'],
-            'policy_anniv_month'=> ['max:2'],
-            'policy_anniv_day'=> ['max:2'],
-            'census_date'=> ['max:10'],
-            'num_of_active_members'=> ['max:7'],
-            'num_of_active_contracts'=> ['max:7'],
-            'num_of_termed_contracts'=> ['max:7'],
-            'num_of_pending_contracts'=> ['max:7'],
-            'num_of_pending_members'=> ['max:7'],
-            'num_of_termed_members'=> ['max:7'],
-            'pharmacy_exceptions_flag'=> ['max:1'],
-            'prescriber_exceptions_flag'=> ['max:1'],
-            'prescriber_exceptions_flag_2'=> ['max:1'],
-            'phys_file_srce_id'=> ['max:10'],
-            'auto_fam_member_term'=> ['max:1'],
-            'elig_type'=> ['max:1'],
-            'membership_processing_flag'=> ['max:1'],
-            'eligibility_exceptions_flag'=> ['max:1'],
-            'member_change_log_opt'=> ['max:1'],
-            'other_cov_proc_flag'=> ['max:1'],
-            'accum_bene_fam_sum_ind'=> ['max:1'],
-            'max_num_trans_interim_elig'=> ['max:3'],
-            'max_days_interim_elig'=> ['max:3'],
-            'days_for_reversals'=> ['max:6'],
-            'admin_fee'=> ['numeric'],
-            'admin_percent'=> ['numeric'],
-            'dmr_fee'=>['numeric'],
-            'ucf_fee'=> ['numeric'],
-            'elig_upd_fee'=>['numeric'],
-            'prior_auth_fee'=>['numeric'],
-            'date_written_to_first_fill'=> ['max:6'],
-            'date_filled_to_sub_online'=> ['max:6'],
-            'date_filled_to_sub_dmr'=> ['max:6'],
-            'date_sub_to_filled_future'=> ['max:6'],
-            'reqd_u_and_c_flag'=> ['max:1'],
-        ]);
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        $customer_data = DB::table('CUSTOMER')
+            ->where(DB::raw('UPPER(CUSTOMER_ID)'), strtoupper($request->customer_id))
+            ->first();
+        $errorMsg = ["Client effective date must be greater than customer effective date"];
+        if ((date('Y-m-d', strtotime($request->effective_date))) < (date('Y-m-d', strtotime($customer_data->effective_date)))) {
+            return $this->respondWithToken(
+                $this->token(),
+                [$errorMsg],
+                '',
+                false
+            );
         }
 
         $createddate = date('y-m-d');
         if ($request->add_new) {
-            $accum_benfit_stat_names = DB::table('CLIENT')->insert(
-                [
-                    'client_name' => $request->client_name,
-                    'customer_id' => $request->customer_id,
-                    'client_id' => $request->client_id,
-                    'address_1' => $request->address_1,
-                    'address_2' => $request->address_2,
-                    'city' => $request->city,
-                    'state' => $request->state,
-                    'zip_code' => $request->zip_code,
-                    'zip_plus_2' => $request->zip_plus_2,
-                    'phone' => $request->phone,
-                    'fax' => $request->fax,
-                    'contact' => $request->contact,
-                    'effective_date' => date('Ymd', strtotime($request->effective_date)),
-                    'termination_date' => date('Ymd', strtotime($request->termination_date)),
-                    'date_time_created' => date('Ymd H:i:s'),
-                    'user_id' => '1',
-                    'date_time_modified' => date('Ymd H:i:s'),
-                    'form_id' => '1',
-                    'auto_term_level' => $request->auto_term_level,
-                    'census_date' => date('Ymd', strtotime($request->census_date)),
-                    'policy_anniv_day' => $request->policy_anniv_day,
-                    'auto_term_level' => $request->auto_term_level,
-                    'census_date' => date('Ymd', strtotime($request->census_date)),
-                    'policy_anniv_month' => $request->policy_anniv_month,
-                    'policy_anniv_day' => $request->policy_anniv_day,
-                    'num_of_active_contracts' => $request->num_of_active_contracts,
-                    'num_of_active_members' => $request->num_of_active_members,
-                    'num_of_termed_contracts' => $request->num_of_termed_contracts,
-                    'num_of_termed_members' => $request->num_of_termed_members,
-                    'num_of_pending_contracts' => $request->num_of_pending_contracts,
-                    'num_of_pending_members' => $request->num_of_pending_members,
-                    'pharmacy_exceptions_flag' => $request->pharmacy_exceptions_flag,
-                    'prescriber_exceptions_flag' => $request->prescriber_exceptions_flag,
-                    'prescriber_exceptions_flag_2' => $request->prescriber_exceptions_flag_2,
-                    // 'Prescriber_Grouping_id' => $request->Prescriber_Grouping_id,
-                    'super_rx_network_id' => $request->super_rx_network_id,
-                    'auto_term_level' => $request->auto_term_level,
-                    'auto_fam_member_term' => $request->auto_fam_member_term,
-                    'elig_type' => $request->elig_type,
-                    'membership_processing_flag' => $request->membership_processing_flag,
-                    'overlap_coverage_tie_breaker' => $request->overlap_coverage_tie_breaker,
-                    'elig_date_edit_ovr_flag' => $request->elig_date_edit_ovr_flag,
-                    // 'rule_id' => $request->rule_id,
-                    'auth_xfer_ind' => $request->auth_xfer_ind,
-                    'member_change_log_opt' => $request->member_change_log_opt,
-                    'rva_list_id' => $request->rva_list_id,
-                    'elig_validation_id' => $request->elig_validation_id,
-                    'smbpp' => $request->smbpp,
-                    'other_cov_proc_flag' => $request->other_cov_proc_flag,
-                    'accum_bene_fam_sum_ind' => $request->accum_bene_fam_sum_ind,
-                    'max_num_trans_interim_elig' => $request->max_num_trans_interim_elig,
-                    'max_days_interim_elig' => $request->max_days_interim_elig,
-                    'date_written_to_first_fill' => $request->date_written_to_first_fill,
-                    'date_filled_to_sub_online' => $request->date_filled_to_sub_online,
-                    'date_filled_to_sub_dmr' => $request->date_filled_to_sub_dmr,
-                    'date_sub_to_filled_future' => $request->date_sub_to_filled_future,
-                    'days_for_reversals' => $request->days_for_reversals,
-                    'non_profit_tax_exempt_flag' => $request->non_profit_tax_exempt_flag,
-                    'reqd_u_and_c_flag' => $request->reqd_u_and_c_flag,
-                    'excl_plan_ndc_gpi_excep_flag' => $request->excl_plan_ndc_gpi_excep_flag,
-                    'excl_sys_ndc_gpi_excep_flag' => $request->excl_sys_ndc_gpi_excep_flag,
-                    'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
-                    'phys_file_srce_id' => $request->phys_file_srce_id,
-                ]
-            );
-            $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
-                ->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
-            $record_snapshot = json_encode($benefitcode);
-            // $record_snapshot = json_encode($benefitcode);
-            $save_audit = DB::table('FE_RECORD_LOG')
-                ->insert([
-                    'user_id' => Cache::get('userId'),
-                    'date_created' => date('Ymd'),
-                    'time_created' => date('gisA'),
-                    'table_name' => 'CLIENT',
-                    'record_action' => 'IN',
-                    'application' => 'ProPBM',
-                    // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
-                    'record_snapshot' => $record_snapshot,
-                ]);
-            return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
-        } else {
-            $accum_benfit_stat = DB::table('CLIENT')
-                ->where('CLIENT_ID', $request->client_id)
-                ->update(
+            $validator = Validator::make($request->all(), [
+                'client_id' => ['required', 'max:10', Rule::unique('CLIENT')->where(function ($q) {
+                    $q->whereNotNull('client_id');
+                })],
+                'customer_id' => ['required'],
+                'client_name' => ['max:25'],
+                'address_1' => ['max:25'],
+                'address_2' => ['max:25'],
+                'city' => ['max:18'],
+                'state' => ['max:2'],
+                'zip_code' => ['max:10'],
+                'effective_date' => ['max:10'],
+                'termination_date' => ['max:10', 'after:effective_date'],
+                // 'comm_charge_paid' => ['numeric'],
+                // 'comm_charge_reject' => ['numeric'],
+
+            ]);
+            if ($validator->fails()) {
+                $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
+                // dd($fieldsWithErrorMessagesArray);
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
+            } else {
+                $accum_benfit_stat_names = DB::table('CLIENT')->insert(
                     [
-                        'client_name' => $request->client_name,
                         'country' => $request->country,
                         'country_code' => $request->country_code,
+                        'client_name' => $request->client_name,
+                        'customer_id' => $request->customer_id,
+                        'client_id' => $request->client_id,
                         'address_1' => $request->address_1,
                         'address_2' => $request->address_2,
                         'city' => $request->city,
@@ -170,8 +70,13 @@ class ClientController extends Controller
                         'contact' => $request->contact,
                         'effective_date' => date('Ymd', strtotime($request->effective_date)),
                         'termination_date' => date('Ymd', strtotime($request->termination_date)),
+                        'date_time_created' => date('Ymd H:i:s'),
                         'user_id' => '1',
-
+                        'date_time_modified' => date('Ymd H:i:s'),
+                        'form_id' => '1',
+                        'auto_term_level' => $request->auto_term_level,
+                        'census_date' => date('Ymd', strtotime($request->census_date)),
+                        'policy_anniv_day' => $request->policy_anniv_day,
                         'auto_term_level' => $request->auto_term_level,
                         'census_date' => date('Ymd', strtotime($request->census_date)),
                         'policy_anniv_month' => $request->policy_anniv_month,
@@ -212,31 +117,154 @@ class ClientController extends Controller
                         'reqd_u_and_c_flag' => $request->reqd_u_and_c_flag,
                         'excl_plan_ndc_gpi_excep_flag' => $request->excl_plan_ndc_gpi_excep_flag,
                         'excl_sys_ndc_gpi_excep_flag' => $request->excl_sys_ndc_gpi_excep_flag,
-                        'phys_file_srce_id' => $request->phys_file_srce_id,
                         'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
+                        'phys_file_srce_id' => $request->phys_file_srce_id,
+
+                        'plan_id_1' => $request->plan_id_1,
+                        'plan_id_2' => $request->plan_id_2,
+                        'plan_id_3' => $request->plan_id_3,
+                        'coverage_eff_date_1' => $request->coverage_eff_date_1 ? date('Ymd', strtotime($request->coverage_eff_date_1)) : null,
+                        'coverage_eff_date_2' =>  $request->coverage_eff_date_2 ? date('Ymd', strtotime($request->coverage_eff_date_2)) : null,
+                        'coverage_eff_date_3' =>  $request->coverage_eff_date_3 ? date('Ymd', strtotime($request->coverage_eff_date_3)) : null,
+                        'misc_data_1' => $request->misc_data_1,
+                        'misc_data_2' => $request->misc_data_2,
+                        'misc_data_3' => $request->misc_data_3,
                     ]
                 );
+                $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
+                    ->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
+                $record_snapshot = json_encode($benefitcode);
+                // $record_snapshot = json_encode($benefitcode);
+                $save_audit = DB::table('FE_RECORD_LOG')
+                    ->insert([
+                        'user_id' => Cache::get('userId'),
+                        'date_created' => date('Ymd'),
+                        'time_created' => date('gisA'),
+                        'table_name' => 'CLIENT',
+                        'record_action' => 'IN',
+                        'application' => 'ProPBM',
+                        // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
+                        'record_snapshot' => $record_snapshot,
+                    ]);
+                return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
+            }
+        } else {
+            $validator = Validator::make($request->all(), [
+                'client_id' => ['required', 'max:10'],
+                'customer_id' => ['required'],
+                'client_name' => ['max:25'],
+                'address_1' => ['max:25'],
+                'address_2' => ['max:25'],
+                'city' => ['max:18'],
+                'state' => ['max:2'],
+                'zip_code' => ['max:10'],
+                'effective_date' => ['max:10'],
+                'termination_date' => ['max:10', 'after:effective_date'],
+                // 'comm_charge_paid' => ['numeric'],
+                // 'comm_charge_reject' => ['numeric'],
+
+            ]);
+            if ($validator->fails()) {
+                $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
+                // dd($fieldsWithErrorMessagesArray);
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
+            } else {
+                $accum_benfit_stat = DB::table('CLIENT')
+                    ->where('CLIENT_ID', $request->client_id)
+                    ->update(
+                        [
+                            'client_name' => $request->client_name,
+                            'country' => $request->country,
+                            'country_code' => $request->country_code,
+                            'address_1' => $request->address_1,
+                            'address_2' => $request->address_2,
+                            'city' => $request->city,
+                            'state' => $request->state,
+                            'zip_code' => $request->zip_code,
+                            'zip_plus_2' => $request->zip_plus_2,
+                            'phone' => $request->phone,
+                            'fax' => $request->fax,
+                            'contact' => $request->contact,
+                            'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                            'termination_date' => date('Ymd', strtotime($request->termination_date)),
+                            'user_id' => '1',
+
+                            'auto_term_level' => $request->auto_term_level,
+                            'census_date' => date('Ymd', strtotime($request->census_date)),
+                            'policy_anniv_month' => $request->policy_anniv_month,
+                            'policy_anniv_day' => $request->policy_anniv_day,
+                            'num_of_active_contracts' => $request->num_of_active_contracts,
+                            'num_of_active_members' => $request->num_of_active_members,
+                            'num_of_termed_contracts' => $request->num_of_termed_contracts,
+                            'num_of_termed_members' => $request->num_of_termed_members,
+                            'num_of_pending_contracts' => $request->num_of_pending_contracts,
+                            'num_of_pending_members' => $request->num_of_pending_members,
+                            'pharmacy_exceptions_flag' => $request->pharmacy_exceptions_flag,
+                            'prescriber_exceptions_flag' => $request->prescriber_exceptions_flag,
+                            'prescriber_exceptions_flag_2' => $request->prescriber_exceptions_flag_2,
+                            // 'Prescriber_Grouping_id' => $request->Prescriber_Grouping_id,
+                            'super_rx_network_id' => $request->super_rx_network_id,
+                            'auto_term_level' => $request->auto_term_level,
+                            'auto_fam_member_term' => $request->auto_fam_member_term,
+                            'elig_type' => $request->elig_type,
+                            'membership_processing_flag' => $request->membership_processing_flag,
+                            'overlap_coverage_tie_breaker' => $request->overlap_coverage_tie_breaker,
+                            'elig_date_edit_ovr_flag' => $request->elig_date_edit_ovr_flag,
+                            // 'rule_id' => $request->rule_id,
+                            'auth_xfer_ind' => $request->auth_xfer_ind,
+                            'member_change_log_opt' => $request->member_change_log_opt,
+                            'rva_list_id' => $request->rva_list_id,
+                            'elig_validation_id' => $request->elig_validation_id,
+                            'smbpp' => $request->smbpp,
+                            'other_cov_proc_flag' => $request->other_cov_proc_flag,
+                            'accum_bene_fam_sum_ind' => $request->accum_bene_fam_sum_ind,
+                            'max_num_trans_interim_elig' => $request->max_num_trans_interim_elig,
+                            'max_days_interim_elig' => $request->max_days_interim_elig,
+                            'date_written_to_first_fill' => $request->date_written_to_first_fill,
+                            'date_filled_to_sub_online' => $request->date_filled_to_sub_online,
+                            'date_filled_to_sub_dmr' => $request->date_filled_to_sub_dmr,
+                            'date_sub_to_filled_future' => $request->date_sub_to_filled_future,
+                            'days_for_reversals' => $request->days_for_reversals,
+                            'non_profit_tax_exempt_flag' => $request->non_profit_tax_exempt_flag,
+                            'reqd_u_and_c_flag' => $request->reqd_u_and_c_flag,
+                            'excl_plan_ndc_gpi_excep_flag' => $request->excl_plan_ndc_gpi_excep_flag,
+                            'excl_sys_ndc_gpi_excep_flag' => $request->excl_sys_ndc_gpi_excep_flag,
+                            'phys_file_srce_id' => $request->phys_file_srce_id,
+                            'eligibility_exceptions_flag' => $request->eligibility_exceptions_flag,
+
+                            'plan_id_1' => $request->plan_id_1,
+                            'plan_id_2' => $request->plan_id_2,
+                            'plan_id_3' => $request->plan_id_3,
+                            'coverage_eff_date_1' => $request->coverage_eff_date_1 ? date('Ymd', strtotime($request->coverage_eff_date_1)) : null,
+                            'coverage_eff_date_2' =>  $request->coverage_eff_date_2 ? date('Ymd', strtotime($request->coverage_eff_date_2)) : null,
+                            'coverage_eff_date_3' =>  $request->coverage_eff_date_3 ? date('Ymd', strtotime($request->coverage_eff_date_3)) : null,
+                            'misc_data_1' => $request->misc_data_1,
+                            'misc_data_2' => $request->misc_data_2,
+                            'misc_data_3' => $request->misc_data_3,
+                        ]
+                    );
 
 
-            $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
-                ->where('customer_id', 'like', '%' . $request->customer_id . '%')
-                ->first();
-            // $record_snapshot = implode('|', (array) $benefitcode);
-            $record_snapshot = json_encode($benefitcode);
-            // $record_snapshot = json_encode($benefitcode);
-            $save_audit = DB::table('FE_RECORD_LOG')
-                ->insert([
-                    'user_id' => Cache::get('userId'),
-                    'date_created' => date('Ymd'),
-                    'time_created' => date('gisA'),
-                    'table_name' => 'CLIENT',
-                    'record_action' => 'UP',
-                    'application' => 'ProPBM',
-                    // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
-                    'record_snapshot' => $record_snapshot,
-                ]);
+                $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
+                    ->where('customer_id', 'like', '%' . $request->customer_id . '%')
+                    ->first();
+                // $record_snapshot = implode('|', (array) $benefitcode);
+                $record_snapshot = json_encode($benefitcode);
+                // $record_snapshot = json_encode($benefitcode);
+                $save_audit = DB::table('FE_RECORD_LOG')
+                    ->insert([
+                        'user_id' => Cache::get('userId'),
+                        'date_created' => date('Ymd'),
+                        'time_created' => date('gisA'),
+                        'table_name' => 'CLIENT',
+                        'record_action' => 'UP',
+                        'application' => 'ProPBM',
+                        // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
+                        'record_snapshot' => $record_snapshot,
+                    ]);
 
-            return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
+                return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
+            }
         }
     }
 

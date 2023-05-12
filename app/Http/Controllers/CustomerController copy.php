@@ -481,9 +481,10 @@ class CustomerController extends Controller
 
     public function GetCustomer($customerid)
     {
+        dd($customerid);
         $customer = DB::table('customer')
             // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
-            ->where('CUSTOMER_ID', 'like', '%' . strtoupper($customerid) . '%')
+            ->where(DB::raw('UPPER(CUSTOMER_ID)'), 'like', '%' . strtoupper($customerid) . '%')
             ->first();
 
 

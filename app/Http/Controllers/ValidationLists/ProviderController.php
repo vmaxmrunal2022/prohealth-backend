@@ -4,6 +4,7 @@ namespace App\Http\Controllers\validationLists;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -74,7 +75,7 @@ class ProviderController extends Controller
             ->where('PHARMACY_LIST', $request->pharmacy_list)
             ->where('PHARMACY_NABP', $request->pharmacy_nabp)
             ->first();
-        if ($request->has('new')) {
+        if ($request->add_new) {
             $validator = Validator::make($request->all(), [
                 "pharmacy_list" => [
                     'required',
@@ -120,7 +121,7 @@ class ProviderController extends Controller
                                 'USER_ID' => $request->user_name
                             ]);
                         if ($addProviderValidationData) {
-                            return $this->respondWithToken($this->token(), 'Record Added Successfully', $addProviderValidationData);
+                            return $this->respondWithToken($this->token(), 'Added Successfully!!!', $addProviderValidationData);
                         }
                     } else {
                         return $this->respondWithToken($this->token(), 'This Pharmacy Validation ID Already Exists');
@@ -337,6 +338,10 @@ class ProviderController extends Controller
         }
 
     }
+
+
+   
+
 
 
     public function searchDropDownProviderList($pharmacy_list = '')

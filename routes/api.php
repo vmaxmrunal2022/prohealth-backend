@@ -160,7 +160,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/diagnosis', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
         Route::post('/diagnosis/submit', [DiagnosisController::class, 'add'])->name('diagnosis.submit'); // add
         Route::post('/diagnosis/delete', [DiagnosisController::class, 'delete'])->name('diagnosis.delete'); // DELETE
-        // Route::get('/diagnosis/all', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
+        Route::get('/diagnosis/all', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
         Route::get('/check-diagnosis-exist', [DiagnosisController::class, 'checkDiagnosisCodeExist']);
         Route::get('/diagnosis/all', [DiagnosisController::class, 'all'])->name('diagnosis.get'); // SEARCH
 
@@ -279,7 +279,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
 
         //DIAGNOSIS VALIDATION LIST
-        Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search'])->name('diagnosisvalidation.search'); // SEARCH
+        Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search']); // SEARCH
         Route::get('/diagnosisvalidation/get/{diagnosis_list}', [DiagnosisValidationListController::class, 'getPriorityDiagnosis'])->name('diagnosisvalidation.list.get'); // LIST ITEMS
         Route::get('diagnosisvalidation/diagnosis-code-list/{disgnosis_code?}', [DiagnosisValidationListController::class, 'getDiagnosisCodeList']); //diagnosis code drop down with search
         Route::get('diagnosisvalidation/limitation-code-list/{limitation_code?}', [DiagnosisValidationListController::class, 'getLimitationsCode']); //limitationid drop down
@@ -408,6 +408,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
     Route::post('customer/add', [CustomerController::class, 'add']);
     Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
     Route::get('customer/get', [CustomerController::class, 'searchCutomer']);
+    Route::post('customer/delete', [CustomerController::class, 'deleteCutomer']);
 
     Route::get('plan/get/{planid}', [CustomerController::class, 'getPlanId']);
 
@@ -1275,6 +1276,10 @@ Route::group(['prefix' => 'administrator/'], function () {
     Route::get('user-defination/get-customers-list', [UserDefinationController::class, 'getCustomersList']);
     Route::get('user-defination/get-clients', [UserDefinationController::class, 'getClients']);
     Route::get('user-defination/get-client-groups', [UserDefinationController::class, 'getClientGroups']);
+    Route::get('user-defination/get-access-detail', [UserDefinationController::class, 'getAccessData']);
+    Route::get('user-defination/get-all-access', [UserDefinationController::class, 'getAllAccess']);
+    Route::get('user-defination/get-group-all-access', [UserDefinationController::class, 'getGroupAllAccess']);
+    Route::get('user-defination/get-group-access-details', [UserDefinationController::class, 'getGroupAccessDetails']);
 
     //Search Audit Trail
     Route::get('search-audit-trial/get-tables', [AuditTrailController::class, 'getTables'])->name('getAllTables');
