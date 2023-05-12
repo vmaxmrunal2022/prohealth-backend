@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PrescriberData;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
 class PrescriberController extends Controller
@@ -41,7 +42,25 @@ class PrescriberController extends Controller
     {
 
        
-
+        $validator = Validator::make($request->all(), [
+            "physician_id" => ['required', 'max:10'],
+            "phys_file_srce_id" => ['required','max:35'],
+            "physician_first_name" => ['max:35'],
+            "physician_last_name" => ['max:20'],
+            "physician_specialty" => ['max:6'],
+            "physician_title" => ['max:10'],
+            "license_number" => ['max:12'],
+            "physician_dea" => ['max:10'],
+            "spin_number" => ['max:10'],
+            "medical_group" => ['max:10'],
+            "address_1" => ['max:50'],
+            "city" => ['max:20'],
+            "zip_code" => ['max:9'],
+            "phone" => ['max:13'],
+        ]);
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        }
 
 
         $check = DB::table('PHYSICIAN_TABLE')

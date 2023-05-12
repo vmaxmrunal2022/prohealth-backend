@@ -5,6 +5,7 @@ namespace App\Http\Controllers\membership;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class PriorAuthController extends Controller
 {
@@ -75,6 +76,69 @@ class PriorAuthController extends Controller
         
         if($request->add_new==1)
         {  
+
+            $validator = Validator::make($request->all(), [
+                'member_id' => ['required', 'max:18', Rule::unique('PLAN_BENEFIT_TABLE')->where(function ($q) {
+                    $q->whereNotNull('plan_id');
+                })],
+                'person_code' => ['max:3'],
+                'customer_id' => ['required','max:10'],
+                'client_id' => ['required','max:15'],
+                'client_group_id' => ['max:15'],
+                'ndc' => ['max:11'],
+                'generic_product_id' => ['max:14'],
+                'prior_auth_type' => ['max:1'],
+                'prior_auth_code_num' => ['max:12'],
+                'prescriber_id' => ['max:10'],
+                'prescriber_status_override' => ['max:1'],
+                'pharmacy_nabp' => ['max:12'],
+                'pharmacy_status_override' => ['max:1'],
+                'effective_date' => ['min:0','max:10'],
+                'termination_date' => ['min:0','max:10','after:effective_date'],
+                'max_quantity' => ['min:0','max:6'],
+                'max_days' => ['min:0','max:6'],
+                'max_daily_dose' => ['min:0','max:6'],
+                'patient_pin_number' => ['max:22'],
+                'user_id' => ['max:10'],
+                'form_id' => ['max:10'],
+                'prior_auth_note' => ['max:6'],
+                'prior_auth_basis_type' => ['min:0','max:6'],
+                'elig_error_cat_ovr' => ['max:1'],
+                'phy_error_cat_ovr' => ['max:1'],
+                'pharm_error_cat_ovr' => ['max:1'],
+                'drug_error_cat_ovr' => ['max:1'],
+                'qty_error_cat_ovr' => ['max:1'],
+                'days_supply_error_cat_ovr' => ['max:1'],
+                'refill_error_cat_ovr' => ['max:1'],
+                'generic_indicator' => ['max:1'],
+                'accum_bene_error_cat_ovr' => ['max:1'],
+                'all_oth_error_cat_ovr' => ['max:1'],
+                'price_sched_ovr' => ['max:10'],
+                'copay_sched_ovr' => ['max:10'],
+                'brand_copay_amt' => ['min:2','max:12'],
+                'generic_copay_amt' => ['min:2','max:12'],
+                'patient_paid_diff_flag' => ['max:1'],
+                'birth_date' => ['min:0','max:8'],
+                'relationship' => ['max:1'],
+                'plan_id' => ['max:15'],
+                'max_dollar_amt' => ['min:2','max:12'],
+                'accum_bene_exclude_flag' => ['max:1'],
+                'max_num_fills' => ['min:0','max:2'],
+                'num_fills_used' => ['min:0','max:2'],
+                'oltp_date_used' => ['min:0','max:8'],
+                'copay_sched_ovr_mail' => ['max:10'],
+                'brand_copay_amt_mail' => ['min:2','max:12'],
+                'generic_copay_amt_mail' => ['min:2','max:12'],
+                'user_id_created' => ['max:10'],
+                'benefit_code' => ['max:10'],
+                'procedure_code' => ['max:10'],
+                'service_type' => ['max:2'],
+                'provider_type' => ['max:2'],
+                'diagnosis_id' => ['max:8'],
+            ]);
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+            } 
 
             if($getEligibilityData){
 
@@ -157,6 +221,68 @@ class PriorAuthController extends Controller
             return $this->respondWithToken('success','Record Added Successfully',$inserted_record,$this->token(),200);
 
         }else if($request->add_new==0){
+
+
+            $validator = Validator::make($request->all(), [
+                'member_id' => ['required', 'max:18'],
+                'person_code' => ['max:3'],
+                'customer_id' => ['required','max:10'],
+                'client_id' => ['required','max:15'],
+                'client_group_id' => ['max:15'],
+                'ndc' => ['max:11'],
+                'generic_product_id' => ['max:14'],
+                'prior_auth_type' => ['max:1'],
+                'prior_auth_code_num' => ['max:12'],
+                'prescriber_id' => ['max:10'],
+                'prescriber_status_override' => ['max:1'],
+                'pharmacy_nabp' => ['max:12'],
+                'pharmacy_status_override' => ['max:1'],
+                'effective_date' => ['min:0','max:10'],
+                'termination_date' => ['min:0','max:10','after:effective_date'],
+                'max_quantity' => ['min:0','max:6'],
+                'max_days' => ['min:0','max:6'],
+                'max_daily_dose' => ['min:0','max:6'],
+                'patient_pin_number' => ['max:22'],
+                'user_id' => ['max:10'],
+                'form_id' => ['max:10'],
+                'prior_auth_note' => ['max:6'],
+                'prior_auth_basis_type' => ['min:0','max:6'],
+                'elig_error_cat_ovr' => ['max:1'],
+                'phy_error_cat_ovr' => ['max:1'],
+                'pharm_error_cat_ovr' => ['max:1'],
+                'drug_error_cat_ovr' => ['max:1'],
+                'qty_error_cat_ovr' => ['max:1'],
+                'days_supply_error_cat_ovr' => ['max:1'],
+                'refill_error_cat_ovr' => ['max:1'],
+                'generic_indicator' => ['max:1'],
+                'accum_bene_error_cat_ovr' => ['max:1'],
+                'all_oth_error_cat_ovr' => ['max:1'],
+                'price_sched_ovr' => ['max:10'],
+                'copay_sched_ovr' => ['max:10'],
+                'brand_copay_amt' => ['min:2','max:12'],
+                'generic_copay_amt' => ['min:2','max:12'],
+                'patient_paid_diff_flag' => ['max:1'],
+                'birth_date' => ['min:0','max:8'],
+                'relationship' => ['max:1'],
+                'plan_id' => ['max:15'],
+                'max_dollar_amt' => ['min:2','max:12'],
+                'accum_bene_exclude_flag' => ['max:1'],
+                'max_num_fills' => ['min:0','max:2'],
+                'num_fills_used' => ['min:0','max:2'],
+                'oltp_date_used' => ['min:0','max:8'],
+                'copay_sched_ovr_mail' => ['max:10'],
+                'brand_copay_amt_mail' => ['min:2','max:12'],
+                'generic_copay_amt_mail' => ['min:2','max:12'],
+                'user_id_created' => ['max:10'],
+                'benefit_code' => ['max:10'],
+                'procedure_code' => ['max:10'],
+                'service_type' => ['max:2'],
+                'provider_type' => ['max:2'],
+                'diagnosis_id' => ['max:8'],
+            ]);
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+            } 
             // dd($request->prior_auth_code_num);
             
             $update = DB::table('PRIOR_AUTHORIZATIONS')

@@ -299,7 +299,6 @@ class ReasonCodeExceptionController extends Controller
 
     }
 
-
     public function getList($id){
 
         $ndc = DB::table('REASON_CODE_LISTS')
@@ -308,9 +307,31 @@ class ReasonCodeExceptionController extends Controller
 
             return $this->respondWithToken($this->token(), '', $ndc);
 
+    }
 
+    public function delete(Request $request)
+    {
+        if (isset($request->reason_code_list_id) && ($request->reason_code)) {
+            $all_exceptions_lists =  DB::table('REASON_CODE_LISTS')
+                ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
+                ->delete();
 
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->reason_code_list_id)) {
+
+            $exception_delete =  DB::table('REASON_CODE_LIST_NAMES')
+                ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
     }
 }
-
-

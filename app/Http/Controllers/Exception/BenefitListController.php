@@ -537,4 +537,29 @@ class BenefitListController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
+    public function benefit_list_delete(Request $request)
+    {
+        if (isset($request->benefit_list_id) && ($request->benefit_code)) {
+            $all_exceptions_lists =  DB::table('BENEFIT_LIST')
+                ->where('BENEFIT_LIST_ID', $request->benefit_list_id)
+                ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->benefit_list_id)) {
+
+            $exception_delete =  DB::table('BENEFIT_LIST_NAMES')
+                ->where('BENEFIT_LIST_ID', $request->benefit_list_id)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
 }

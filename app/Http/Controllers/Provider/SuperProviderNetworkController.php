@@ -23,20 +23,25 @@ class SuperProviderNetworkController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            "super_rx_network_id" => ['required','max:10'],
-            "super_rx_network_id_name"=>['required','max:36'],
+
+            "super_rx_network_id" => ['required', 'max:10'],
+            "super_rx_network_id_name" => ['required','max:35'],
+            "min_rx_qty" => ['max:6'],
+            "max_rx_qty" => ['max:6'],
             "rx_network_id" => ['required'],
-            'comm_charge_paid'=>['max:10'],
-            'comm_charge_reject'=>['max:10'],
-            'starter_dose_maint_bypass_days'=>['max:3'],
-            'starter_dose_bypass_days'=>['max:3'],
-            'starter_dose_days'=>['max:3'],
-            'max_fills_opt'=>['max:1'],
-            'max_retail_fills'=>['max:6'],
-            'min_rx_days'=>['max:1'],
-            'max_rx_days'=>['max:1'],
-            'min_rx_qty'=>['max:6'],
-            'max_rx_qty'=>['max:6']
+            "rx_network_type" => ['max:6'],
+            "min_rx_days" => ['max:1'],
+            "max_rx_days" => ['max:1'],
+            "effective_date" => ['max:6'],
+            "max_retail_fills" => ['max:6'],
+            "max_fills_opt" => ['max:1'],
+            "starter_dose_days" => ['max:3'],
+            "price_schedule_ovrd" => ['max:6'],
+            "starter_dose_bypass_days" => ['max:3'],
+            "starter_dose_maint_bypass_days" => ['max:3'],
+            "termination_date" => ['max:6'],
+            "comm_charge_paid" => ['max:10'],
+            "comm_charge_reject" => ['max:10'],
         ]);
 
         if ($validator->fails()) {

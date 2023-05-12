@@ -755,4 +755,28 @@ class TherapyClassController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
+    public function delete_therapy(Request $request)
+    {
+        if (isset($request->ther_class_exception_list) && ($request->therapy_class)) {
+            $all_exceptions_lists =  DB::table('TC_EXCEPTION_LISTS')
+                ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
+                ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->ther_class_exception_list)) {
+            $exception_delete =  DB::table('TC_EXCEPTIONS')
+                ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
 }

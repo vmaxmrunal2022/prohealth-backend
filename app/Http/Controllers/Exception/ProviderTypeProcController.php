@@ -444,7 +444,31 @@ class ProviderTypeProcController extends Controller
 
         }
     }
+    public function providertype_proc_delete(Request $request)
+    {
+        if (isset($request->prov_type_proc_assoc_id) && ($request->provider_type)) {
+            $all_exceptions_lists =  DB::table('PROV_TYPE_PROC_ASSOC')
+                ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
+                ->delete();
 
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->prov_type_proc_assoc_id)) {
+
+            $exception_delete =  DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
+                ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
 
 
 }

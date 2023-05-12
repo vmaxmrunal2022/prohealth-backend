@@ -19,6 +19,25 @@ class CopayStrategyController extends Controller
 
         if ($request->has('new')) {
 
+
+            $validator = Validator::make($request->all(), [
+                "copay_strategy_id" => ['required', 'max:10', Rule::unique('PRICING_STRATEGY_NAMES')->where(function ($q) {
+                    $q->whereNotNull('pricing_strategy_id');
+                })],
+                "copay_strategy_name" => ['required','max:35'],
+                "pharm_type_variation_ind" => ['max:1'],
+                "network_part_variation_ind" => ['required', 'max:10'],
+                "claim_type_variation_ind" => ['max:1'],
+                "formulary_variation_ind" => ['max:1'],
+                "effective_date" => ['required','max:1'],
+                "copay_schedule" => ['required','max:10'],
+                "module_exit" => ['max:10'],
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
             $accum_benfit_stat_names = DB::table('COPAY_STRATEGY_NAMES')->insert(
                 [
                     'copay_strategy_id' => $request->copay_strategy_id,
@@ -47,6 +66,22 @@ class CopayStrategyController extends Controller
             );
         } else {
 
+            $validator = Validator::make($request->all(), [
+                "copay_strategy_id" => ['required', 'max:10'],
+                "copay_strategy_name" => ['required','max:35'],
+                "pharm_type_variation_ind" => ['max:1'],
+                "network_part_variation_ind" => ['required', 'max:10'],
+                "claim_type_variation_ind" => ['max:1'],
+                "formulary_variation_ind" => ['max:1'],
+                "effective_date" => ['required','max:1'],
+                "copay_schedule" => ['required','max:10'],
+                "module_exit" => ['max:10'],
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+            
             $benefitcode = DB::table('COPAY_STRATEGY_NAMES')
                 ->where('copay_strategy_id', $request->copay_strategy_id)
                 ->update(

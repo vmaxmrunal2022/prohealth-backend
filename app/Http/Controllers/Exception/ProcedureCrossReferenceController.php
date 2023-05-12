@@ -98,7 +98,6 @@ class ProcedureCrossReferenceController extends Controller
                         'DATE_TIME_CREATED'=>$createddate,
                         'USER_ID_CREATED'=>'',
                         'DATE_TIME_MODIFIED'=>$createddate,
-                        
                      
                     ]
                 );
@@ -380,5 +379,29 @@ class ProcedureCrossReferenceController extends Controller
         }
     }
 
+    public function delete(Request $request)
+    {
+        if (isset($request->procedure_xref_id) && ($request->sub_procedure_code)) {
+            $all_exceptions_lists =  DB::table('PROCEDURE_XREF')
+                ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
+                ->delete();
 
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->procedure_xref_id)) {
+
+            $exception_delete =  DB::table('ENTITY_NAMES')
+                ->where('ENTITY_USER_ID', $request->procedure_xref_id)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
 }

@@ -31,6 +31,21 @@ class FlexibleNetworkController extends Controller
                             $q->whereNotNull('rx_network_rule_id');
                         })],
                         "rx_network_rule_name" => ['max:35'],
+                        // "network_name" => ['required'],
+                        "min_rx_qty" => ['max:6', 'numeric'],
+                        "max_rx_qty" => ['max:6', 'numeric'],
+                        "price_schedule_ovrd" => ['max:16'],
+                        "min_rx_days" => ['max:16'],
+                        "max_rx_days" => ['max:6'],
+                        "gpi_exception_list_ovrd" => ['max:6'],
+                        "ndc_exception_list_ovrd" => ['max:6'],
+                        "max_retail_fills" => ['max:6'],
+                        "max_fills_opt" => ['max:1'],
+                        "default_comm_charge_paid" => ['max:3'],
+                        "default_comm_charge_reject" => ['max:3'],
+                        "starter_dose_days" => ['max:3'],
+                        "starter_dose_bypass_days" => ['max:3'],
+                        "starter_dose_maint_bypass_days" => ['max:3'],
                     ]);
                     if ($validator->fails()) {
                         return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), 'false');
@@ -122,6 +137,20 @@ class FlexibleNetworkController extends Controller
                 $validator = Validator::make($request->all(), [
                     "rx_network_rule_id" => ['required', 'max:10'],
                     "rx_network_rule_name" => ['max:35'],
+                    "min_rx_qty" => ['max:6', 'numeric'],
+                    "max_rx_qty" => ['max:6', 'numeric'],
+                    "price_schedule_ovrd" => ['max:16'],
+                    "min_rx_days" => ['max:16'],
+                    "max_rx_days" => ['max:6'],
+                    "gpi_exception_list_ovrd" => ['max:6'],
+                    "ndc_exception_list_ovrd" => ['max:6'],
+                    "max_retail_fills" => ['max:6'],
+                    "max_fills_opt" => ['max:1'],
+                    "default_comm_charge_paid" => ['max:3'],
+                    "default_comm_charge_reject" => ['max:3'],
+                    "starter_dose_days" => ['max:3'],
+                    "starter_dose_bypass_days" => ['max:3'],
+                    "starter_dose_maint_bypass_days" => ['max:3'],
                 ]);
                 if ($validator->fails()) {
                     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), 'false');

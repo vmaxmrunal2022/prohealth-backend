@@ -54,10 +54,10 @@ class PlanValidationController extends Controller
   public function addPlanValidation(Request $request)
   {
     $validator = Validator::make($request->all(), [
-      "customer_id" => ['required'],
-      "client_id"=>['required'],
-      "client_group_id" => ['required'],
-      "plan_id" => ['required'],
+      'customer_id' => ['required', 'max:10'],
+      'client_id' => ['required','max:15'],
+      'client_group_id' => ['required','max:15'],
+      'plan_id' => ['required','max:15'],
       
     ]);
     if ($validator->fails()) {
