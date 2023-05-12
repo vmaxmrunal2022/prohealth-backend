@@ -27,11 +27,11 @@ class ReasonsController extends Controller
         }
     }
 
-    public function all(Request $request){
+    public function all(Request $request)
+    {
         $reasoncodes = DB::table('REASON_CODES')
-        ->get();
-    return $this->respondWithToken($this->token(), '', $reasoncodes);
-
+            ->get();
+        return $this->respondWithToken($this->token(), '', $reasoncodes);
     }
 
     public function add(Request $request)
@@ -92,9 +92,18 @@ class ReasonsController extends Controller
 
     public function delete(Request $request)
     {
-        return DB::table('REASON_CODES')->where('REASON_CODE', $request->id)->delete()
-            ? $this->respondWithToken($this->token(), 'Successfully deleted')
-            : $this->respondWithToken($this->token(), 'Could find data');
+        if (isset($request->reason_code)) {
+            $delete_reason_code =  DB::table('REASON_CODES')
+                ->where('reason_code', $request->reason_code)
+                ->delete();
+            if ($delete_reason_code) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
+        }
     }
 
     public function checkReasonExist(Request $request)

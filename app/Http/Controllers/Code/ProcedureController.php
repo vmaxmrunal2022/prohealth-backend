@@ -28,23 +28,18 @@ class ProcedureController extends Controller
     }
 
 
-    public function getCodes(Request $request){
+    public function getCodes(Request $request)
+    {
 
         $procedurecodes = DB::table('PROCEDURE_CODES')->get();
 
-        if($procedurecodes){
+        if ($procedurecodes) {
 
             return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $procedurecodes);
-
-
-        }else{
+        } else {
 
             return $this->respondWithToken($this->token(), 'There Was an Error', $procedurecodes);
-
-
         }
-
-
     }
 
     public function add(Request $request)
@@ -107,9 +102,19 @@ class ProcedureController extends Controller
 
     public function delete(Request $request)
     {
-        return DB::table('PROCEDURE_CODES')->where('PROCEDURE_CODE', $request->id)->delete()
-            ? $this->respondWithToken($this->token(), 'Successfully deleted')
-            : $this->respondWithToken($this->token(), 'Could find data');
+        if (isset($request->procedure_code)) {
+            $delete_procedure_code =  DB::table('PROCEDURE_CODES')
+                ->where('PROCEDURE_CODE', $request->procedure_code)
+                ->delete();
+            // dd($delete_procedure_code);
+            if ($delete_procedure_code) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
+        }
     }
 
     public function checkProcedureCodeExist(Request $reqeust)

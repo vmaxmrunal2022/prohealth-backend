@@ -97,13 +97,22 @@ class ServiceModifierController extends Controller
         }
     }
 
-    
+
 
     public function delete(Request $request)
     {
-        return  DB::table('SERVICE_MODIFIERS')->where('SERVICE_MODIFIER', $request->id)->delete()
-            ? $this->respondWithToken($this->token(), 'Record Deleted Successfully')
-            : $this->respondWithToken($this->token(), 'Could find data');
+        if (isset($request->service_modifier)) {
+            $delete_service_modifier =  DB::table('SERVICE_MODIFIERS')
+                ->where('SERVICE_MODIFIER', $request->service_modifier)
+                ->delete();
+            if ($delete_service_modifier) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
+        }
     }
 
     public function checkServiceExist(Request $request)
