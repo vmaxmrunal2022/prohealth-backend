@@ -475,6 +475,7 @@ class ProcedureController extends Controller
 
     public function getPCList($ndcid)
     {
+       
         $ndclist = DB::table('PROCEDURE_EXCEPTION_LISTS')
                 // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
                 ->join('PROCEDURE_EXCEPTION_NAMES','PROCEDURE_EXCEPTION_NAMES.PROCEDURE_EXCEPTION_LIST','=','PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST')
@@ -532,10 +533,10 @@ class ProcedureController extends Controller
     }
     public function delete_procedure_code(Request $request)
     {
-       return $request->all();
+      
         if (isset($request->procedure_exception_list) && ($request->proc_code_list_id)) {
-
-            $all_exceptions_lists =  DB::table('PROCEDURE_EXCEPTION_LISTS')->where('PROCEDURE_EXCEPTION_LIST', strtoupper($request->procedure_exception_list))->delete();
+           return "1";
+            $all_exceptions_lists = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('PROCEDURE_EXCEPTION_LIST', strtoupper($request->procedure_exception_list))->delete();
             
             if ($all_exceptions_lists) {
                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
@@ -547,9 +548,10 @@ class ProcedureController extends Controller
             }
             
             } else if (isset($request->procedure_exception_list)) {
+              
                 $exception_delete = DB::table('PROCEDURE_EXCEPTION_NAMES')
                 
-                ->where('EXCEPTION_NAME', strtoupper($request->procedure_exception_list))
+                ->where('PROCEDURE_EXCEPTION_LIST', strtoupper($request->procedure_exception_list))
                 
                 ->delete();
             

@@ -822,7 +822,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/procedure/details', [ExceptionProcedureController::class, 'getPCItemDetails'])->name('procedure.details.get'); // DETAILS
     Route::post('/procedure/add', [ExceptionProcedureController::class, 'add'])->name('procedure.add'); // SEARCH
     Route::get('/allphysicain_lists', [ExceptionProcedureController::class, 'AllPhysicainLists'])->name('allphysicians'); // SEARCH
-    Route::get('/delete/procedure/code', [ExceptionProcedureController::class, 'delete_procedure_code'])->name('delete_procedure_code');
+    Route::post('/delete/procedure/code', [ExceptionProcedureController::class, 'delete_procedure_code'])->name('delete_procedure_code');
 
 
     // BENEFIT LIST EXCEPTION
