@@ -171,7 +171,6 @@ class CustomerController extends Controller
 
     public function add(Request $request)
     {
-      
         // return getUserData1();
         // $userId = config('user_id');
         // return $userId;
@@ -213,49 +212,8 @@ class CustomerController extends Controller
                 'city' => ['max:18'],
                 'state' => ['max:2'],
                 'zip_code' => ['max:10'],
-                'effective_date' => ['required','max:10'],
-                'termination_date' => ['required','max:10', 'after:effective_date'],
-                'phone'=> ['max:13'],
-                'fax'=> ['max:10'],
-                'contact'=> ['max:25'],
-                'edi_address'=> ['max:25'],
-                'policy_anniv_month'=> ['max:2'],
-                'policy_anniv_day'=> ['max:2'],
-                'census_date'=> ['max:10'],
-                'num_of_active_members'=> ['max:7'],
-                'num_of_active_contracts'=> ['max:7'],
-                'num_of_termed_contracts'=> ['max:7'],
-                'num_of_pending_contracts'=> ['max:7'],
-                'num_of_pending_members'=> ['max:7'],
-                'num_of_termed_members'=> ['max:7'],
-                'pharmacy_exceptions_flag'=> ['max:1'],
-                'prescriber_exceptions_flag'=> ['max:1'],
-                'prescriber_exceptions_flag_2'=> ['max:1'],
-                'phys_file_srce_id'=> ['max:10'],
-                'membership_processing_flag'=> ['max:1'],
-                'overlap_coverage_tie_breaker'=> ['max:1'],
-                'eligibility_exceptions_flag'=> ['max:1'],
-                'auth_xfer_ind'=> ['max:1'],
-                'member_change_log_opt'=> ['max:1'],
-                'other_cov_proc_flag'=> ['max:1'],
-                'accum_bene_fam_sum_ind'=> ['max:1'],
-                'max_days_interim_elig'=> ['max:3'],
-                'date_written_to_first_fill'=> ['max:6'],
-                'date_filled_to_sub_online'=> ['max:6'],
-                'date_filled_to_sub_dmr'=> ['max:6'],
-                'date_sub_to_filled_future'=> ['max:6'],
-                'days_for_reversals'=> ['max:6'],
-                'non_profit_tax_exempt_flag'=> ['max:1'],
-                'reqd_u_and_c_flag'=> ['max:1'],
-                'admin_fee'=> ['numeric'],
-                'admin_percent'=> ['numeric'],
-                'dmr_fee'=>['numeric'],
-                'ucf_fee'=> ['numeric'],
-                'elig_upd_fee'=>['numeric'],
-                'prior_auth_fee'=>['numeric'],
-                'mail_ord_letter_fee'=>['numeric','max:12'],
-                
-                
+                'effective_date' => ['max:10'],
+                'termination_date' => ['max:10', 'after:effective_date'],
                 // 'comm_charge_paid' => ['numeric'],
                 // 'comm_charge_reject' => ['numeric'],
 
@@ -491,8 +449,8 @@ class CustomerController extends Controller
                         'record_snapshot' => $record_snapshot,
                         // 'record_snapshot' => $record_snapshot,
                     ]);
-                // return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
-                return $this->respondWithToken($this->token(), auth('web')->user(), $benefitcode);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
+                // return $this->respondWithToken($this->token(), auth('web')->user(), $benefitcode);
             }
         }
     }
