@@ -324,38 +324,34 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/accumulated/benifit/add', [AccumlatedBenifitController::class, 'add'])->name('accumulated.benifit.add'); // SEARCH
         Route::get('/accumulated/benifit/all', [AccumlatedBenifitController::class, 'get_all'])->name('accumulated.benifit.search'); // SEARCH
 
+        Route::post('/accumulated/benifit/delete', [AccumlatedBenifitController::class, 'delete'])->name('accumulated.benifit.delete'); // delete
+
         Route::get('/accumulated/drop-down', [AccumlatedController::class, 'getAllAcuumlatedBenefits'])->name('accumulated.all'); // SEARCH
 
         Route::get('/gpiExclusion/search', [GpiExclusionController::class, 'search'])->name('gpiExclusion.search'); // SEARCH
-
-
         Route::get('/gpiExclusion/get/{ndcid}', [GpiExclusionController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
-
         Route::get('/gpiExclusion/details/{ndcid}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
         Route::post('/gpiExclusion/add', [GpiExclusionController::class, 'add'])->name('gpiExclusion.add'); // ADD
+        Route::post('/gpiExclusion/delete', [GpiExclusionController::class, 'delete'])->name('gpiExclusion.delete'); // delete
 
 
 
 
         Route::get('/ndcExclusion/search', [NdcExlusionController::class, 'search'])->name('ndcExclusion.search'); // SEARCH
-
-
         Route::get('/ndcExclusion/get/{ndcid}', [NdcExlusionController::class, 'getList'])->name('ndcExclusion.list.get'); // LIST ITEMS
-
         Route::get('/ndcExclusion/details/{ndcid}', [NdcExlusionController::class, 'getDetails'])->name('ndcExclusion.get'); // DETAIL
         Route::post('/ndcExclusion/add', [NdcExlusionController::class, 'add'])->name('ndcExclusion.add'); // SEARCH
+        Route::post('/ndcExclusion/delete', [NdcExlusionController::class, 'delete'])->name('ndcExclusion.delete'); // delete
 
 
 
         Route::get('customer/search', [MajorMedicalController::class, 'search']);
         Route::get('client/get/{customerid}', [MajorMedicalController::class, 'getClient']);
-
         Route::get('clientgroup/get/{client}', [MajorMedicalController::class, 'getClientGroup']);
-
         Route::get('clientgroup/details/{client}', [MajorMedicalController::class, 'getDetails']);
         Route::post('major/medical/add', [MajorMedicalController::class, 'add']);
-
         Route::post('clientgroup/add', [ClientGroupController::class, 'add']);
+        Route::post('/major-medical/delete', [MajorMedicalController::class, 'delete'])->name('major.medical.delete'); // delete
 
 
 
