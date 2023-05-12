@@ -1096,6 +1096,7 @@ class NDCExceptionController extends Controller
 
             $all_exceptions_lists=  DB::table('NDC_EXCEPTION_LISTS')
             ->where('ndc_exception_list',$request->ndc_exception_list)
+            ->where('ndc',$request->ndc)
             ->delete();
             if($all_exceptions_lists){
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
@@ -1115,6 +1116,10 @@ class NDCExceptionController extends Controller
             ->where('ndc_exception_list',$request->ndc_exception_list)
             ->delete();
 
+            $all_exceptions_lists=  DB::table('NDC_EXCEPTION_LISTS')
+            ->where('ndc_exception_list',$request->ndc_exception_list)
+            ->delete();
+
             if($exception_delete){
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
 
@@ -1129,6 +1134,7 @@ class NDCExceptionController extends Controller
 
 
         }
+        
 
 
      

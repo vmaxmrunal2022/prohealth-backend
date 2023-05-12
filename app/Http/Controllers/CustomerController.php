@@ -367,7 +367,7 @@ class CustomerController extends Controller
                         'record_snapshot' => $record_snapshot,
                     ]);
 
-                return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $benefitcode);
             }
         } else {
             $validator = Validator::make($request->all(), [

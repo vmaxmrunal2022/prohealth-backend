@@ -37,22 +37,40 @@ class FlexibleNetworkController extends Controller
                     } else {
                         $network_rule_names = DB::table('RX_NETWORK_RULE_NAMES')->insert(
                             [
-                                'rx_network_rule_id' =>$request->rx_network_rule_id,
-                                'rx_network_rule_name' => $request->rx_network_rule_name,
-                                'gpi_exception_list_ovrd' => $request->gpi_exception_list_ovrd,
-                                'ndc_exception_list_ovrd' => $request->ndc_exception_list_ovrd,
-                                'default_comm_charge_paid' => $request->default_comm_charge_paid,
-                                'default_comm_charge_reject' => $request->default_comm_charge_reject,
-                                'min_rx_qty' => $request->min_rx_qty,
-                                'max_rx_qty' => $request->max_rx_qty,
-                                'min_rx_days' => $request->min_rx_days,
-                                'max_rx_days' => $request->max_rx_days,
-                                'max_retail_fills' => $request->max_retail_fills,
-                                'max_fills_opt' => $request->max_fills_opt,
-                                'starter_dose_days' => $request->starter_dose_days,
-                                'starter_dose_bypass_days' => $request->starter_dose_bypass_days,
-                                'starter_dose_maint_bypass_days' => $request->starter_dose_maint_bypass_days,
-                                'pricing_ovrd_list_id' => $request->pricing_ovrd_list_id,
+                                'RX_NETWORK_RULE_ID' =>$request->rx_network_rule_id,
+                                'RX_NETWORK_RULE_NAME' => $request->rx_network_rule_name,
+                                'DEFAULT_PRICE_SCHEDULE_OVRD'=>$request->default_price_schedule_ovrd,
+                                'DEFAULT_BILLING_TYPE'=>$request->default_billing_type,
+                                'DEFAULT_CAP_AMOUNT'=>$request->default_cap_amount,
+                                'DEFAULT_COMM_CHARGE_PAID'=>$request->default_comm_charge_paid,
+                                'DEFAULT_COMM_CHARGE_REJECT'=>$request->default_comm_charge_reject,
+                                'GPI_EXCEPTION_LIST_OVRD' => $request->gpi_exception_list_ovrd,
+                                'NDC_EXCEPTION_LIST_OVRD' => $request->ndc_exception_list_ovrd,
+                                'HIGHEST_RULE_ID_NUMBER'=>$request->highest_rule_id_number,
+                                'WITHHOLD_PAID_AMT'=>$request->withhold_paid_amt,
+                                'WITHHOLD_PAID_PERCENT'=>$request->withhold_paid_percent,
+                                'WITHHOLD_U_AND_C_FLAG'=>$request->withhold_u_and_c_flag,
+                                'WITHHOLD_ACTIVE_FLAG'=>$request->withhold_active_flag,
+                                'MIN_RX_QTY' => $request->min_rx_qty,
+                                'MAX_RX_QTY' => $request->max_rx_qty,
+                                'MIN_RX_DAYS' => $request->min_rx_days,
+                                'MAX_RX_DAYS' => $request->max_rx_days,
+                                'MAX_REFILLS' => $request->max_refills,
+                                'MAINT_DRUG_LIST_OPT' => $request->maint_drug_list_opt,
+                                'MAINT_DRUG_LIST'=>$request->maint_drug_list,
+                                'QTY_DSUP_COMPARE_RULE'=>$request->qty_dsup_compare_rule,
+                                'MAX_FILLS_OPT' => $request->max_fills_opt,
+                                'MAX_RETAIL_FILLS' => $request->max_retail_fills,
+                                'MAINT_COPAY_SCHED' => $request->maint_copay_sched,
+                                'STARTER_DOSE_DAYS'=>$request->starter_dose_days,
+                                'STARTER_DOSE_BYPASS_DAYS'=>$request->starter_dose_bypass_days,
+                                'STARTER_DOSE_MAINT_BYPASS_DAYS'=>$request->starter_dose_maint_bypass_days,
+                                'PRICING_OVRD_LIST_ID'=>$request->pricing_ovrd_list_id,
+                                'MAINT_MIN_RX_QTY'=>$request->maint_min_rx_qty,
+                                'MAINT_MAX_RX_QTY'=>$request->maint_max_rx_qty,
+                                'MAINT_MIN_RX_DAYS'=>$request->maint_min_rx_days,
+                                'MAINT_MAX_RX_DAYS'=>$request->maint_max_rx_days,
+                                'MAINT_QTY_DSUP_COMPARE_RULE'=>$request->maint_qty_dsup_compare_rule
                             ]
                         );
     
@@ -113,21 +131,40 @@ class FlexibleNetworkController extends Controller
                         ->where('rx_network_rule_id',$request->rx_network_rule_id)
                         ->update(
                             [
-                                'rx_network_rule_name' =>$request->rx_network_rule_name,
-                                'gpi_exception_list_ovrd' => $request->gpi_exception_list_ovrd,
-                                'ndc_exception_list_ovrd' => $request->ndc_exception_list_ovrd,
-                                'default_comm_charge_paid' => $request->default_comm_charge_paid,
-                                'default_comm_charge_reject' => $request->default_comm_charge_reject,
-                                'min_rx_qty' => $request->min_rx_qty,
-                                'max_rx_qty' => $request->max_rx_qty,
-                                'min_rx_days' => $request->min_rx_days,
-                                'max_rx_days' => $request->max_rx_days,
-                                'max_retail_fills' => $request->max_retail_fills,
-                                'max_fills_opt' => $request->max_fills_opt,
-                                'starter_dose_days' => $request->starter_dose_days,
-                                'starter_dose_bypass_days' => $request->starter_dose_bypass_days,
-                                'starter_dose_maint_bypass_days' => $request->starter_dose_maint_bypass_days,
-                                'pricing_ovrd_list_id' => $request->pricing_ovrd_list_id,
+                                'RX_NETWORK_RULE_NAME' => $request->rx_network_rule_name,
+                                'DEFAULT_PRICE_SCHEDULE_OVRD'=>$request->default_price_schedule_ovrd,
+                                'DEFAULT_BILLING_TYPE'=>$request->default_billing_type,
+                                'DEFAULT_CAP_AMOUNT'=>$request->default_cap_amount,
+                                'DEFAULT_COMM_CHARGE_PAID'=>$request->default_comm_charge_paid,
+                                'DEFAULT_COMM_CHARGE_REJECT'=>$request->default_comm_charge_reject,
+                                'GPI_EXCEPTION_LIST_OVRD' => $request->gpi_exception_list_ovrd,
+                                'NDC_EXCEPTION_LIST_OVRD' => $request->ndc_exception_list_ovrd,
+                                'HIGHEST_RULE_ID_NUMBER'=>$request->highest_rule_id_number,
+                                'WITHHOLD_PAID_AMT'=>$request->withhold_paid_amt,
+                                'WITHHOLD_PAID_PERCENT'=>$request->withhold_paid_percent,
+                                'WITHHOLD_U_AND_C_FLAG'=>$request->withhold_u_and_c_flag,
+                                'WITHHOLD_ACTIVE_FLAG'=>$request->withhold_active_flag,
+                                'MIN_RX_QTY' => $request->min_rx_qty,
+                                'MAX_RX_QTY' => $request->max_rx_qty,
+                                'MIN_RX_DAYS' => $request->min_rx_days,
+                                'MAX_RX_DAYS' => $request->max_rx_days,
+                                'MAX_REFILLS' => $request->max_refills,
+                                'MAINT_DRUG_LIST_OPT' => $request->maint_drug_list_opt,
+                                'MAINT_DRUG_LIST'=>$request->maint_drug_list,
+                                'QTY_DSUP_COMPARE_RULE'=>$request->qty_dsup_compare_rule,
+                                'MAX_FILLS_OPT' => $request->max_fills_opt,
+                                'MAX_RETAIL_FILLS' => $request->max_retail_fills,
+                                'MAINT_COPAY_SCHED' => $request->maint_copay_sched,
+                                'STARTER_DOSE_DAYS'=>$request->starter_dose_days,
+                                'STARTER_DOSE_BYPASS_DAYS'=>$request->starter_dose_bypass_days,
+                                'STARTER_DOSE_MAINT_BYPASS_DAYS'=>$request->starter_dose_maint_bypass_days,
+                                'PRICING_OVRD_LIST_ID'=>$request->pricing_ovrd_list_id,
+                                'MAINT_MIN_RX_QTY'=>$request->maint_min_rx_qty,
+                                'MAINT_MAX_RX_QTY'=>$request->maint_max_rx_qty,
+                                'MAINT_MIN_RX_DAYS'=>$request->maint_min_rx_days,
+                                'MAINT_MAX_RX_DAYS'=>$request->maint_max_rx_days,
+                                'MAINT_QTY_DSUP_COMPARE_RULE'=>$request->maint_qty_dsup_compare_rule
+                                
                             ]
                         );
 
@@ -207,6 +244,22 @@ class FlexibleNetworkController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function NdcExceptionNames(Request $request){
+
+        $ndcnames = DB::table('NDC_EXCEPTIONS')->get();
+
+        return $this->respondWithToken($this->token(), '', $ndcnames);
+
+    }
+
+    public function GpiExceptionNames(Request $request){
+
+        $gpinames = DB::table('GPI_EXCEPTIONS')->get();
+
+        return $this->respondWithToken($this->token(), '', $gpinames);
+
+    }
+
 
 
     public function search(Request $request)
@@ -218,6 +271,15 @@ class FlexibleNetworkController extends Controller
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+ 
+    public function getflixibleNetworks(Request $request)
+    {
+        $data = DB::table('RX_NETWORK_RULES')
+            ->where('RX_NETWORK_RULE_ID', $request->rx_network_rule_id)
+            ->get();
+        return $this->respondWithToken($this->token(), '', $data);
     }
 
 

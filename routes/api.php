@@ -499,6 +499,13 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('flexiblenetwork/add', [FlexibleNetworkController::class, 'add']);
         Route::get('flexiblenetwork/dropdown', [FlexibleNetworkController::class, 'flexibledropdown']);
 
+        Route::get('flexiblenetwork/getflixibleNetworks', [FlexibleNetworkController::class, 'getflixibleNetworks']);
+
+        Route::get('flexiblenetwork/ndcnames/dropdown', [FlexibleNetworkController::class, 'NdcExceptionNames']);
+        Route::get('flexiblenetwork/gpinames/dropdown', [FlexibleNetworkController::class, 'GpiExceptionNames']);
+
+
+        
 
         
         //Rule Id 

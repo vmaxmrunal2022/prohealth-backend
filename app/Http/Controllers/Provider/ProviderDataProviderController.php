@@ -84,6 +84,7 @@ class ProviderDataProviderController extends Controller
 
     public function add(Request $request)
     {
+        // dd('hii');
         $getEligibilityData = DB::table('PHARMACY_TABLE')
             ->where('pharmacy_nabp',$request->pharmacy_nabp)
             ->first();
@@ -243,7 +244,7 @@ class ProviderDataProviderController extends Controller
             if ($addData) {
                 return $this->respondWithToken($this->token(), 'Added Successfully...!!!', $addData);
             }
-        } else if ($request->updateForm == 'update') {
+        } else if ($request->add_new == 0) {
             $updateData = DB::table('PHARMACY_TABLE')
                 ->where('pharmacy_nabp',$request->pharmacy_nabp)
                 ->update([
@@ -543,5 +544,6 @@ class ProviderDataProviderController extends Controller
                       ];
                return $this->respondWithToken($this->token(), '', $merged);
             }
+            
  
 }

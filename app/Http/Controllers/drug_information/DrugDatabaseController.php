@@ -13,12 +13,12 @@ class DrugDatabaseController extends Controller
     public function add(Request $request)
     {
 
-        
+
         $getData = DB::table('DRUG_MASTER')
             ->where('NDC', $request->ndc)
-                // ->Where('LABEL_NAME',$request->label_name))
-                // ->Where('GENERIC_NAME',$request->generic_name))
-                // ->Where('PACKAGE_SIZE',$request->package_size))
+            // ->Where('LABEL_NAME',$request->label_name))
+            // ->Where('GENERIC_NAME',$request->generic_name))
+            // ->Where('PACKAGE_SIZE',$request->package_size))
             ->first();
 
         if ($request->has('new')) {
@@ -35,17 +35,17 @@ class DrugDatabaseController extends Controller
                 $addData = DB::table('DRUG_MASTER')
                     ->insert([
                         'NDC' => $request->ndc,
-                        'LABEL_NAME' =>$request->label_name,
-                        'GENERIC_PRODUCT_ID' =>$request->generic_product_id,
+                        'LABEL_NAME' => $request->label_name,
+                        'GENERIC_PRODUCT_ID' => $request->generic_product_id,
                         'GENERIC_NAME' => $request->generic_name,
                         'MANUFACTURER_NAME' => $request->manufacturer_name,
                         'MANUFACTURER_NAME_ABBR' => $request->manufacturer_name_abbr,
                         'GENERIC_CODE' => $request->generic_code,
                         'DEA_CLASS_CODE' => $request->dea_class_code,
                         'THERAPEUTIC_CLASS_CODE' => $request->therapeutic_class_code,
-                        'THERAPEUTIC_EQUIV_CODE' =>$request->therapeutic_equiv_code,
+                        'THERAPEUTIC_EQUIV_CODE' => $request->therapeutic_equiv_code,
                         'RX_OTC_INDICATOR' => $request->rx_otc_indicator,
-                        'GPPC_CODE' =>$request->gppc_code,
+                        'GPPC_CODE' => $request->gppc_code,
                         'METRIC_STRENGTH' => $request->metric_strength,
                         'STRENGTH_UOM' => $request->strength_uom,
                         'DOSAGE_FORM' => $request->dosage_form,
@@ -76,46 +76,46 @@ class DrugDatabaseController extends Controller
                         'USER_ID' => $request->user_id,
                         'OTC_EQUIV_IND' => $request->otc_equiv_ind,
                         'BRAND_NAME_CODE' => $request->brand_name_code,
-                        'THIRD_PARTY_REST_CODE'=>$request->third_party_rest_code,
-                        'FORM_TYPE_CODE'=>$request->form_type_code
+                        'THIRD_PARTY_REST_CODE' => $request->third_party_rest_code,
+                        'FORM_TYPE_CODE' => $request->form_type_code
 
 
 
                     ]);
 
 
-                    
 
 
-                    $pricing_list_obj = json_decode(json_encode($request->pricing_form, true));
+
+                $pricing_list_obj = json_decode(json_encode($request->pricing_form, true));
 
 
-                    if(!empty($request->pricing_form)){
+                if (!empty($request->pricing_form)) {
 
-                        $pricing_list = $pricing_list_obj[0];
+                    $pricing_list = $pricing_list_obj[0];
                     // $effective_date   = $limitation_list->effective_date;
                     // $termination_date = $limitation_list->termination_date;
                     // $limitations_list = $limitation_list->limitations_list;
                     foreach ($pricing_list_obj as $key => $pricing_list) {
-                       
 
 
 
-                    $drug_price = DB::table('DRUG_PRICE')
-                    ->insert([
-                        'NDC' => $request->ndc,
-                        'PRICE_SOURCE' => $pricing_list->price_source,
-                        'PRICE_TYPE' => $pricing_list->price_type,
-                        'PRICE_EFF_DATE_1' => $pricing_list->price_eff_date_1,
-                        'PRICE_AMT_1' => $pricing_list->price_amt_1,
-                        'PRICE_EFF_DATE_2' => $pricing_list->price_eff_date_2,
-                        'PRICE_AMT_2' => $pricing_list->price_amt_2,
-                        'PRICE_EFF_DATE_3' => $pricing_list->price_eff_date_3,
-                        'PRICE_AMT_3' => $pricing_list->price_amt_3,
+
+                        $drug_price = DB::table('DRUG_PRICE')
+                            ->insert([
+                                'NDC' => $request->ndc,
+                                'PRICE_SOURCE' => $pricing_list->price_source,
+                                'PRICE_TYPE' => $pricing_list->price_type,
+                                'PRICE_EFF_DATE_1' => $pricing_list->price_eff_date_1,
+                                'PRICE_AMT_1' => $pricing_list->price_amt_1,
+                                'PRICE_EFF_DATE_2' => $pricing_list->price_eff_date_2,
+                                'PRICE_AMT_2' => $pricing_list->price_amt_2,
+                                'PRICE_EFF_DATE_3' => $pricing_list->price_eff_date_3,
+                                'PRICE_AMT_3' => $pricing_list->price_amt_3,
 
 
 
-                    ]);
+                            ]);
 
 
 
@@ -183,45 +183,45 @@ class DrugDatabaseController extends Controller
 
                         'OTC_EQUIV_IND' => $request->otc_equiv_ind,
                         'BRAND_NAME_CODE' => $request->brand_name_code,
-                        'THIRD_PARTY_REST_CODE'=>$request->third_party_rest_code,
-                        'FORM_TYPE_CODE'=>$request->form_type_code
+                        'THIRD_PARTY_REST_CODE' => $request->third_party_rest_code,
+                        'FORM_TYPE_CODE' => $request->form_type_code
 
-                        
+
                     ]);
 
 
-                
-                    $data=DB::table('DRUG_PRICE')->where('NDC',$request->ndc)->delete(); 
 
-                    $pricing_list_obj = json_decode(json_encode($request->pricing_form, true));
+                $data = DB::table('DRUG_PRICE')->where('NDC', $request->ndc)->delete();
+
+                $pricing_list_obj = json_decode(json_encode($request->pricing_form, true));
 
 
-                    if(!empty($request->pricing_form)){
+                if (!empty($request->pricing_form)) {
 
-                        $pricing_list = $pricing_list_obj[0];
+                    $pricing_list = $pricing_list_obj[0];
                     // $effective_date   = $limitation_list->effective_date;
                     // $termination_date = $limitation_list->termination_date;
                     // $limitations_list = $limitation_list->limitations_list;
                     foreach ($pricing_list_obj as $key => $pricing_list) {
-                       
 
 
 
-                    $drug_price = DB::table('DRUG_PRICE')
-                    ->insert([
-                        'NDC' => $request->ndc,
-                        'PRICE_SOURCE' => $pricing_list->price_source,
-                        'PRICE_TYPE' => $pricing_list->price_type,
-                        'PRICE_EFF_DATE_1' => $pricing_list->price_eff_date_1,
-                        'PRICE_AMT_1' => $pricing_list->price_amt_1,
-                        'PRICE_EFF_DATE_2' => $pricing_list->price_eff_date_2,
-                        'PRICE_AMT_2' => $pricing_list->price_amt_2,
-                        'PRICE_EFF_DATE_3' => $pricing_list->price_eff_date_3,
-                        'PRICE_AMT_3' => $pricing_list->price_amt_3,
+
+                        $drug_price = DB::table('DRUG_PRICE')
+                            ->insert([
+                                'NDC' => $request->ndc,
+                                'PRICE_SOURCE' => $pricing_list->price_source,
+                                'PRICE_TYPE' => $pricing_list->price_type,
+                                'PRICE_EFF_DATE_1' => $pricing_list->price_eff_date_1,
+                                'PRICE_AMT_1' => $pricing_list->price_amt_1,
+                                'PRICE_EFF_DATE_2' => $pricing_list->price_eff_date_2,
+                                'PRICE_AMT_2' => $pricing_list->price_amt_2,
+                                'PRICE_EFF_DATE_3' => $pricing_list->price_eff_date_3,
+                                'PRICE_AMT_3' => $pricing_list->price_amt_3,
 
 
 
-                    ]);
+                            ]);
 
 
 
@@ -247,10 +247,10 @@ class DrugDatabaseController extends Controller
     public function get(Request $request)
     {
         $data = DB::table('DRUG_MASTER')
-            ->where('NDC', 'like', '%' . $request->search. '%')
-            ->orWhere('LABEL_NAME', 'like', '%' . $request->search. '%')
-            ->orWhere('GENERIC_NAME', 'like', '%' . $request->search. '%')
-            ->orWhere('PACKAGE_SIZE', 'like', '%' . $request->search. '%')
+            ->where('NDC', 'like', '%' . $request->search . '%')
+            ->orWhere('LABEL_NAME', 'like', '%' . $request->search . '%')
+            ->orWhere('GENERIC_NAME', 'like', '%' . $request->search . '%')
+            ->orWhere('PACKAGE_SIZE', 'like', '%' . $request->search . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $data);
@@ -273,28 +273,28 @@ class DrugDatabaseController extends Controller
 
             ->first();
 
-        if ($request->add_drug_price== 0 ||$request->add_drug_price== 1 ) {
+        if ($request->add_drug_price == 0 || $request->add_drug_price == 1) {
 
             if ($getrecord) {
 
                 $updateUser = DB::table('DRUG_PRICE')
-                ->where('NDC', $request->ndc)
-                ->where('PRICE_SOURCE',$request->price_source)
-                ->update([
-                    'PRICE_TYPE' => $request->price_type,
-                    'PRICE_EFF_DATE_1' => $request->price_eff_date_1,
-                    'PRICE_AMT_1' => $request->price_amt_1,
-                    'PRICE_EFF_DATE_2' => $request->price_eff_date_2,
-                    'PRICE_AMT_2' => $request->price_amt_2,
-                    'PRICE_EFF_DATE_3' => $request->price_eff_date_3,
-                    'PRICE_AMT_3' => $request->price_amt_3,
-                ]);
+                    ->where('NDC', $request->ndc)
+                    ->where('PRICE_SOURCE', $request->price_source)
+                    ->update([
+                        'PRICE_TYPE' => $request->price_type,
+                        'PRICE_EFF_DATE_1' => $request->price_eff_date_1,
+                        'PRICE_AMT_1' => $request->price_amt_1,
+                        'PRICE_EFF_DATE_2' => $request->price_eff_date_2,
+                        'PRICE_AMT_2' => $request->price_amt_2,
+                        'PRICE_EFF_DATE_3' => $request->price_eff_date_3,
+                        'PRICE_AMT_3' => $request->price_amt_3,
+                    ]);
 
-            if ($updateUser) {
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully !!!', $updateUser);
-            }
+                if ($updateUser) {
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully !!!', $updateUser);
+                }
 
-            } else if($request->add_price ==0  || $request->add_drug_price== 1 ) {
+            } else if ($request->add_price == 0 || $request->add_drug_price == 1) {
 
 
                 $addData = DB::table('DRUG_PRICE')
@@ -321,9 +321,9 @@ class DrugDatabaseController extends Controller
 
             }
 
-    }
+        }
 
-}
+    }
 
 
 }
