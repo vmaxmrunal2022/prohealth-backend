@@ -102,24 +102,60 @@ class DrugClassController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function getNDCItemDetails($ndcid,$ndcid2)
+    public function getNDCItemDetails($DRUG_CATGY_EXCEPTION_LIST,$scategory,$stype,$new_drug_status,$process_rule,$effective_date)
     {
 
-        $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
-            ->select(
-                'DRUG_CATGY_EXCEPTION_NAMES.*',
-                'PLAN_DRUG_CATGY_EXCEPTIONS.*',
-                'FE_SYSTEM_CATEGORIES.SDESCRIPTION',
-                'MASTER1.LABEL_NAME as preferd_ndc_description',
-                'MASTER2.LABEL_NAME as conversion_ndc_description'
-            )
-            ->leftjoin('PLAN_DRUG_CATGY_EXCEPTIONS', 'PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', '=', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST')
-            ->leftjoin('DRUG_MASTER AS MASTER1', 'MASTER1.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.PREFERRED_PRODUCT_NDC')
-            ->leftjoin('DRUG_MASTER AS MASTER2', 'MASTER2.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.CONVERSION_PRODUCT_NDC')
-            ->leftjoin('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
+        // $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+        //     ->select(
+        //         'DRUG_CATGY_EXCEPTION_NAMES.*',
+        //         'PLAN_DRUG_CATGY_EXCEPTIONS.*',
+        //         'FE_SYSTEM_CATEGORIES.SDESCRIPTION',
+        //         'MASTER1.LABEL_NAME as preferd_ndc_description',
+        //         'MASTER2.LABEL_NAME as conversion_ndc_description'
+        //     )
+        //     ->leftjoin('PLAN_DRUG_CATGY_EXCEPTIONS', 'PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', '=', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST')
+        //     ->leftjoin('DRUG_MASTER AS MASTER1', 'MASTER1.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.PREFERRED_PRODUCT_NDC')
+        //     ->leftjoin('DRUG_MASTER AS MASTER2', 'MASTER2.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.CONVERSION_PRODUCT_NDC')
+        //     ->leftjoin('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
 
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST',$ndcid)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST',$ndcid2)->get();
+        //     // ->where('DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST',$DRUG_CATGY_EXCEPTION_LIST)
+        //     ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST',$DRUG_CATGY_EXCEPTION_LIST)
+        //     ->where('PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY',$scategory)
+        //     ->where('PLAN_DRUG_CATGY_EXCEPTIONS.STYPE',$stype)
+        //     ->where('PLAN_DRUG_CATGY_EXCEPTIONS.NEW_DRUG_STATUS',$new_drug_status)
+        //     ->where('PLAN_DRUG_CATGY_EXCEPTIONS.process_rule',$process_rule)
+        //     ->where('PLAN_DRUG_CATGY_EXCEPTIONS.EFFECTIVE_DATE',$effective_date)
+        //     ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DIAGNOSIS_LIST',$diagnosis_list)
+
+        //     ->first();
+
+
+            $ndc = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
+            // ->select(
+            //     'DRUG_CATGY_EXCEPTION_NAMES.*',
+            //     'PLAN_DRUG_CATGY_EXCEPTIONS.*',
+            //     'FE_SYSTEM_CATEGORIES.SDESCRIPTION',
+            //     'MASTER1.LABEL_NAME as preferd_ndc_description',
+            //     'MASTER2.LABEL_NAME as conversion_ndc_description'
+            // )
+            // ->leftjoin('PLAN_DRUG_CATGY_EXCEPTIONS', 'PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST', '=', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST')
+            // ->leftjoin('DRUG_MASTER AS MASTER1', 'MASTER1.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.PREFERRED_PRODUCT_NDC')
+            // ->leftjoin('DRUG_MASTER AS MASTER2', 'MASTER2.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.CONVERSION_PRODUCT_NDC')
+            // ->leftjoin('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
+
+            // ->where('DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST',$DRUG_CATGY_EXCEPTION_LIST)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST',$DRUG_CATGY_EXCEPTION_LIST)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY',$scategory)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.STYPE',$stype)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.NEW_DRUG_STATUS',$new_drug_status)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.process_rule',$process_rule)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.EFFECTIVE_DATE',$effective_date)
+            // ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DIAGNOSIS_LIST',$diagnosis_list)
+
+            ->first();
+
+
+
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }

@@ -547,7 +547,7 @@ class ProcedureController extends Controller
             }
             
             } else if (isset($request->procedure_exception_list)) {
-                $exception_delete =  DB::table('PROCEDURE_EXCEPTION_NAMES')
+                $exception_delete = DB::table('PROCEDURE_EXCEPTION_NAMES')
                 
                 ->where('EXCEPTION_NAME', strtoupper($request->procedure_exception_list))
                 

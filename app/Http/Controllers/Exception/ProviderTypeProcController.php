@@ -35,7 +35,7 @@ class ProviderTypeProcController extends Controller
 
     }
 
-    public function getDetails($id)
+    public function getDetails($id,$provider_type,$procedure_code,$servive_modifier,$effe)
     {
 
         $Details = DB::table('PROV_TYPE_PROC_ASSOC')
@@ -61,7 +61,12 @@ class ProviderTypeProcController extends Controller
 
 
             ->where('PROV_TYPE_PROC_ASSOC.PROV_TYPE_PROC_ASSOC_ID', $id)
+            ->where('PROV_TYPE_PROC_ASSOC.PROVIDER_TYPE', $provider_type)
+            ->where('PROV_TYPE_PROC_ASSOC.PROC_CODE_LIST_ID', $procedure_code)
+            ->where('PROV_TYPE_PROC_ASSOC.SERVICE_MODIFIER', $servive_modifier)
+            ->where('PROV_TYPE_PROC_ASSOC.EFFECTIVE_DATE', $effe)
             ->first();
+            
         return $this->respondWithToken($this->token(), '', $Details);
 
 

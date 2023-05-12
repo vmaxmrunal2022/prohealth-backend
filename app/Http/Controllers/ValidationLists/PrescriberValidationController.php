@@ -253,7 +253,7 @@ class PrescriberValidationController extends Controller
                     ->pluck('physician_id')->toArray();
 
 
-                    if (in_array($request->pharmacy_nabp, $insert_check)) {
+                    if (in_array($request->physician_id, $insert_check)) {
                        
                         $update_names = DB::table('PHYSICIAN_EXCEPTIONS')
                         ->where('physician_list', $request->physician_list )
@@ -270,7 +270,7 @@ class PrescriberValidationController extends Controller
                         ->update(
                             [
                                 
-                                'PHYSICIAN_STATUS' => $request->physician_status,
+                                'physician_status' => $request->physician_status,
     
                             ]
                         );
@@ -279,7 +279,7 @@ class PrescriberValidationController extends Controller
                    
                     } else {
 
-                        
+
     
                         $checkexists = DB::table('PHYSICIAN_VALIDATIONS')
                         ->insert(
