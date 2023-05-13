@@ -315,24 +315,26 @@ class ClientGroupController extends Controller
     {
         $client = DB::table('CLIENT_GROUP')
             // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
-            ->where('CLIENT_GROUP_ID', 'like', '%' . strtoupper($clientgrpid) . '%')
+            ->where(DB::raw('UPPER(CLIENT_GROUP_ID)'), 'like', '%' . strtoupper($clientgrpid) . '%')
             ->first();
-
         return $this->respondWithToken($this->token(), '', $client);
     }
 
     public function searchClientgroup(Request $request)
     {
+        // $search = $request->search;
+        // $client = DB::table('CLIENT_GROUP')
+        //     // ->join('customer', 'client.CUSTOMER_ID', '=', 'customer.CUSTOMER_ID')
+        //     ->select('CLIENT_ID', 'GROUP_NAME', 'CUSTOMER_ID', 'CLIENT_GROUP_ID')
+        //     ->where('CUSTOMER_ID', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->orWhere('CLIENT_ID', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->orWhere('CLIENT_GROUP_ID', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->orWhere('GROUP_NAME', 'like', '%' . strtoupper($request->search) . '%')
+        //     ->get();
 
-        $search = $request->search;
-
+        // return $this->respondWithToken($this->token(), '', $client);
         $client = DB::table('CLIENT_GROUP')
-            // ->join('customer', 'client.CUSTOMER_ID', '=', 'customer.CUSTOMER_ID')
-            ->select('CLIENT_ID', 'GROUP_NAME', 'CUSTOMER_ID', 'CLIENT_GROUP_ID')
-            ->where('CUSTOMER_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('CLIENT_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('CLIENT_GROUP_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('GROUP_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->where(DB::raw('UPPER(CLIENT_GROUP_ID)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $client);
