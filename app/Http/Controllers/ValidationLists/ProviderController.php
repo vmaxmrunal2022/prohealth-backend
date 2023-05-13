@@ -33,14 +33,19 @@ class ProviderController extends Controller
 
     public function getProviderValidationList($pharmacy_list)
     {
-
         $pharmacyValidationData = DB::table('PHARMACY_VALIDATIONS')
-            // ->select('PHARMACY_TABLE.PHARMACY_NABP', 'PHARMACY_VALIDATIONS.PHARMACY_LIST', 'PHARMACY_VALIDATIONS.PHARMACY_STATUS', 'PHARMACY_NAME')
+            ->select(
+                'PHARMACY_TABLE.PHARMACY_NABP',
+                'PHARMACY_VALIDATIONS.PHARMACY_LIST',
+                'PHARMACY_VALIDATIONS.PHARMACY_STATUS',
+                'PHARMACY_TABLE.PHARMACY_NAME',
+                'PHARMACY_EXCEPTIONS.EXCEPTION_NAME'
+            )
             ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'PHARMACY_VALIDATIONS.PHARMACY_NABP')
             ->join('PHARMACY_EXCEPTIONS', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST', '=', 'PHARMACY_VALIDATIONS.PHARMACY_LIST')
             ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $pharmacy_list)
             ->get();
-
+        // return $pharmacyValidationData;
         return $this->respondWithToken($this->token(), '', $pharmacyValidationData);
     }
 
@@ -166,6 +171,11 @@ class ProviderController extends Controller
 
     public function addProviderData(Request $request)
     {
+        /** $providerList is to get all the pharmacy validation record which are falling under particular pharmacy list */
+        $providerList = DB::table('PHARMACY_VALIDATIONS')
+            ->where(DB::raw('UPPER(pharmacy_list)'), strtoupper($request->pharmacy_list))
+            ->get();
+
         if ($request->add_new) {
             $validator = Validator::make($request->all(), [
                 // "pharmacy_list" => ['required', 'max:10', Rule::unique('PHARMACY_EXCEPTIONS')->where(function ($q) {
@@ -175,14 +185,23 @@ class ProviderController extends Controller
                 "pharmacy_nabp" => ['required'],
             ]);
             if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
             } else {
+                if (!$request->updateForm) {
+                    $ifExist = DB::table('PHARMACY_EXCEPTIONS')
+                        ->where(DB::raw('pharmacy_list'), strtoupper($request->pharmacy_list))
+                        ->get();
+
+                    if (count($ifExist) >= 1) {
+                        return $this->respondWithToken($this->token(), [["Provider List ID already exists"]], $providerList, false);
+                    }
+                } else {
+                }
                 if ($request->pharmacy_list && $request->pharmacy_nabp) {
                     $count = DB::table('PHARMACY_EXCEPTIONS')
                         ->where(DB::raw('UPPER(PHARMACY_LIST)'), strtoupper($request->pharmacy_list))
                         ->get()
                         ->count();
-                    // dd($count);
                     //if exception is not existing
                     if ($count <= 0) {
                         $addException = DB::table('PHARMACY_EXCEPTIONS')
@@ -212,8 +231,8 @@ class ProviderController extends Controller
                             ->first();
                         return $this->respondWithToken(
                             $this->token(),
+                            'Record Added successfully',
                             $reecord,
-                            'Added successfully!!!',
                         );
                     } else {
                         $updateProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
@@ -236,8 +255,8 @@ class ProviderController extends Controller
                         if ($countValidation >= 1) {
                             return $this->respondWithToken(
                                 $this->token(),
-                                [['Record already existed!!!']],
-                                [['Record already existed!!!']],
+                                [['Provider ID already exists']],
+                                [['Provider ID already exists']],
                                 false
                             );
                         } else {
@@ -258,8 +277,8 @@ class ProviderController extends Controller
                                 ->first();
                             return $this->respondWithToken(
                                 $this->token(),
+                                'Record Added successfully',
                                 $reecord,
-                                'Added successfully!!!',
                             );
                         }
                     }
@@ -287,8 +306,8 @@ class ProviderController extends Controller
 
             return $this->respondWithToken(
                 $this->token(),
-                'Updated successfully!!!',
-                'Updated successfully!!!',
+                'Record Updated successfully',
+                $providerList,
             );
         }
     }
