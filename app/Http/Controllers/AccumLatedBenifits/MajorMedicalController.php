@@ -93,9 +93,8 @@ class MajorMedicalController extends Controller
 
     public function getClientGroup($ndcid)
     {
-
         $ndc = DB::table('CLIENT_GROUP')
-            ->where('CLIENT_ID', 'like', '%' . $ndcid . '%')
+            ->where(DB::raw('UPPER(CLIENT_GROUP_ID)'), 'like', '%' . strtoupper($ndcid) . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
