@@ -189,7 +189,7 @@ class BenefitListController extends Controller
         if ($request->add_new == 1) {
 
             $validator = Validator::make($request->all(), [
-                'benefit_list_id' => ['required', 'max:10', Rule::unique(['BENEFIT_LIST_NAMES','BENEFIT_LIST'])->where(function ($q) {
+                'benefit_list_id' => ['required', 'max:10', Rule::unique('BENEFIT_LIST_NAMES')->where(function ($q) {
                     $q->whereNotNull('benefit_list_id');
                 })],
                 // 'ndc' => ['required', 'max:11', Rule::unique('BENEFIT_LIST')->where(function ($q) {
@@ -204,8 +204,8 @@ class BenefitListController extends Controller
                 //     $q->whereNotNull('benefit_list_id');
                 // })],
 
-                "description"=>['required','max:2'],
-                "effective_date"=>['required','max:1'],
+                "description"=>['required','max:20'],
+                "effective_date"=>['required','max:10'],
                 'termination_date'=>['required'],
                 'module_exit'=>['max:10'],
                 'pricing_strategy_id'=>['max:10'],
@@ -228,7 +228,7 @@ class BenefitListController extends Controller
                 'message_stop_date'=>['max:6'],
                 'reject_only_msg_flag'=>['max:6'],
                 'valid_relation_code'=>['max:6'],
-                'sex_restriction'=>['min:2','max:12'],      
+                'sex_restriction'=>['min:1',],      
 
             
             ]);
