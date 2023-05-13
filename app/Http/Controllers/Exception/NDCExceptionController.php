@@ -545,20 +545,11 @@ class NDCExceptionController extends Controller
         if ($request->add_new == 1) {
 
             $validator = Validator::make($request->all(), [
-                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
-                //     $q->whereNotNull('NDC_EXCEPTIONS');
-                // })],
-                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                //     $q->whereNotNull('NDC');
-                // })],
-
-                'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                    $q->whereNotNull('effective_date');
+              
+            
+                'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
+                    $q->whereNotNull('ndc_exception_list');
                 })],
-
-                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
-                //     $q->whereNotNull('ndc_exception_list');
-                // })],
 
                 "exception_name" => ['max:36'],
                 "NEW_DRUG_STATUS"=>['max:2'],
@@ -641,9 +632,9 @@ class NDCExceptionController extends Controller
             }
 
             else{
-                if ($validation->count() > 0) {
-                    return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
-                }
+                // if ($validation->count() > 0) {
+                //     return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
+                // }
                 $add_names = DB::table('NDC_EXCEPTIONS')->insert(
                     [
                         'ndc_exception_list' => $request->ndc_exception_list,
@@ -1092,7 +1083,6 @@ class NDCExceptionController extends Controller
 
     public function ndcdelete(Request $request){
         
-        return $request->all();
 
         if(isset($request->ndc_exception_list) && ($request->ndc )){
 
