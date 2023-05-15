@@ -550,81 +550,108 @@ class NDCExceptionController extends Controller
                 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
                     $q->whereNotNull('ndc_exception_list');
                 })],
+                'ndc' => ['required', 'max:11'],
+                "exception_name" => ['required','max:36'],
+                "effective_date" => ['required'],
+                "termination_date" => ['required','date','after:effective_date'],
 
-                "exception_name" => ['max:36'],
-                "NEW_DRUG_STATUS"=>['max:2'],
-                "PROCESS_RULE"=>['max:1'],
-                'MAXIMUM_ALLOWABLE_COST'=>['max:15','min:5'],
-                'PHYSICIAN_LIST'=>['max:10'],
-                'PHYSICIAN_SPECIALTY_LIST'=>['max:10'],
-                'PHARMACY_LIST'=>['max:10'],
-                'DIAGNOSIS_LIST'=>['max:10'],
-                'PREFERRED_PRODUCT_NDC'=>['max:11'],
-                'CONVERSION_PRODUCT_NDC'=>['max:11'],
-                'ALTERNATE_PRICE_SCHEDULE'=>['max:10'],
-                'ALTERNATE_COPAY_SCHED'=>['max:10'],
-                'MESSAGE'=>['max:40'],
-                'MESSAGE_STOP_DATE'=>['max:10'],
-                'MIN_RX_QTY'=>['max:6'],
-                'MAX_RX_QTY'=>['max:6'],
-                'MIN_RX_DAYS'=>['max:6'],
-                'MAX_RX_DAYS'=>['max:6'],
-                'MIN_CTL_DAYS'=>['max:6'],
-                'MAX_CTL_DAYS'=>['max:6'],
-                'MAX_REFILLS'=>['max:6'],
-                'MAX_DAYS_PER_FILL'=>['max:6'],
-                'MAX_DOSE'=>['max:6'],
-                'MIN_AGE'=>['max:6'],
-                'MAX_AGE'=>['max:6'],
-                'MIN_PRICE'=>['min:2','max:12'],
-                'MAX_PRICE'=>['min:2','max:12'],
-                'MAX_RXS_PATIENT'=>['max:6'],
-                'MAX_PRICE_PATIENT'=>['max:12','min:2'],
-                'GENERIC_COPAY_AMT'=>['max:12','min:2'],
-                'BRAND_COPAY_AMT'=>['max:12|min:2'],
-                'MAINT_DOSE_UNITS_DAY'=>['max:6'],
-                'ACUTE_DOSING_DAYS'=>['max:6'],
-                'DENIAL_OVERRIDE'=>['max:2'],
-                'MAINTENANCE_DRUG'=>['max:1'],
-                'GENERIC_INDICATOR'=>['max:1'],
-                'MERGE_DEFAULTS'=>['max:1'],
-                'SEX_RESTRICTION'=>['numeric|max:6'],
-                'MAIL_ORDER_MIN_RX_DAYS'=>['numeric|max:6'],
-                'MAIL_ORDER_MAX_RX_DAYS'=>['numeric|max:6'],
-                'MAIL_ORDER_MAX_REFILLS'=>['numeric|max:6'],
-                'MODULE_EXIT'=>['max:1'],
-                'MAX_RXS_TIME_FLAG'=>['numeric|max:6'],
-                'MAX_PRICE_TIME_FLAG'=>['numeric|max:6'],
-                'USER_ID'=>['max:10'],
-                'COPAY_NETWORK_OVRD'=>['max:10'],
-                'MAX_DAYS_SUPPLY_OPT'=>['max:1'],
-                'MAIL_ORD_MAX_DAYS_SUPPLY_OPT'=>['max:1'],
-                'RETAIL_MAX_FILLS_OPT'=>['max:1'],
-                'MAIL_ORD_MAX_FILLS_OPT'=>['max:1'],
-                'MIN_PRICE_OPT'=>['max:1'],
-                'MAX_PRICE_OPT'=>['max:1'],
-                'VALID_RELATION_CODE'=>['max:1'],
-                'STARTER_DOSE_DAYS'=>['max:3'],
-                'STARTER_DOSE_BYPASS_DAYS'=>['max:3'],
-                'DRUG_COV_START_DAYS'=>['max:3'],
-                'PKG_DETERMINE_ID'=>['max:10'],
-                'MAX_RX_QTY_OPT'=>['max:1'],
-                'TERMINATION_DATE'=>['max:10'],
-                'MAX_QTY_OVER_TIME'=>['max:6'],
-                'MAX_DAYS_OVER_TIME'=>['max:6'],
-                'REJECT_ONLY_MSG_FLAG'=>['max:1'],
-                'USER_ID_CREATED'=>['max:10'],
-                'STARTER_DOSE_MAINT_BYPASS_DAYS'=>['numeric|max:3'],
-                'MAX_QTY_PER_FILL'=>['numeric|min:3|max:8'],
-                'BNG_SNGL_INC_EXC_IND'=>['max:1'],
-                'BNG_MULTI_INC_EXC_IND'=>['max:1'],
-                'BGA_INC_EXC_IND'=>['max:1'],
-                'GEN_INC_EXC_IND'=>['max:1'],
-                'RX_QTY_OPT_MULTIPLIER'=>['numeric|max:6'],
-                'DAYS_SUPPLY_OPT_MULTIPLIER'=>['numeric|max:6'],
+                'min_rx_qty'=>['nullable','max:6'],
+                'max_rx_qty'=>['nullable','max:6','gt:max_rx_qty'],
+
+                'mail_order_min_rx_days'=>['nullable','max:6'],
+                'mail_ord_max_days_supply_opt'=>['nullable','max:6','gt:mail_order_min_rx_days'],
+
+                'days_supply_opt_multiplier' =>['nullable','max:6'],
+                'max_days_supply_opt' =>['nullable','max:6','gt:days_supply_opt_multiplier'],
+
+                'min_ctl_days'=>['nullable','max:6'],
+                'max_ctl_days'=>['nullable','max:12','gt:min_ctl_days'],
+
+                'mail_order_min_rx_days'=>['nullable','max:6'],
+                'mail_ord_max_days_supply_opt'=>['nullable','max:6','gt:mail_order_min_rx_days'],
+
+                'min_age'=>['nullable','max:6'],
+                'max_age'=>['nullable','max:6','gt:min_age'],
+                // "NEW_DRUG_STATUS"=>['max:2'],
+                // "PROCESS_RULE"=>['max:1'],
+                // 'MAXIMUM_ALLOWABLE_COST'=>['max:15','min:5'],
+                // 'PHYSICIAN_LIST'=>['max:10'],
+                // 'PHYSICIAN_SPECIALTY_LIST'=>['max:10'],
+                // 'PHARMACY_LIST'=>['max:10'],
+                // 'DIAGNOSIS_LIST'=>['max:10'],
+                // 'PREFERRED_PRODUCT_NDC'=>['max:11'],
+                // 'CONVERSION_PRODUCT_NDC'=>['max:11'],
+                // 'ALTERNATE_PRICE_SCHEDULE'=>['max:10'],
+                // 'ALTERNATE_COPAY_SCHED'=>['max:10'],
+                // 'MESSAGE'=>['max:40'],
+                // 'MESSAGE_STOP_DATE'=>['max:10'],
+                // 'MIN_RX_QTY'=>['max:6'],
+                // 'MAX_RX_QTY'=>['max:6'],
+                // 'MIN_RX_DAYS'=>['max:6'],
+                // 'MAX_RX_DAYS'=>['max:6'],
+                // 'MIN_CTL_DAYS'=>['max:6'],
+                // 'MAX_CTL_DAYS'=>['max:6'],
+                // 'MAX_REFILLS'=>['max:6'],
+                // 'MAX_DAYS_PER_FILL'=>['max:6'],
+                // 'MAX_DOSE'=>['max:6'],
+                // 'MIN_AGE'=>['max:6'],
+                // 'MAX_AGE'=>['max:6'],
+                // 'MIN_PRICE'=>['min:2','max:12'],
+                // 'MAX_PRICE'=>['min:2','max:12'],
+                // 'MAX_RXS_PATIENT'=>['max:6'],
+                // 'MAX_PRICE_PATIENT'=>['max:12','min:2'],
+                // 'GENERIC_COPAY_AMT'=>['max:12','min:2'],
+                // 'BRAND_COPAY_AMT'=>['max:12|min:2'],
+                // 'MAINT_DOSE_UNITS_DAY'=>['max:6'],
+                // 'ACUTE_DOSING_DAYS'=>['max:6'],
+                // 'DENIAL_OVERRIDE'=>['max:2'],
+                // 'MAINTENANCE_DRUG'=>['max:1'],
+                // 'GENERIC_INDICATOR'=>['max:1'],
+                // 'MERGE_DEFAULTS'=>['max:1'],
+                // 'SEX_RESTRICTION'=>['numeric|max:6'],
+                // 'MAIL_ORDER_MIN_RX_DAYS'=>['numeric|max:6'],
+                // 'MAIL_ORDER_MAX_RX_DAYS'=>['numeric|max:6'],
+                // 'MAIL_ORDER_MAX_REFILLS'=>['numeric|max:6'],
+                // 'MODULE_EXIT'=>['max:1'],
+                // 'MAX_RXS_TIME_FLAG'=>['numeric|max:6'],
+                // 'MAX_PRICE_TIME_FLAG'=>['numeric|max:6'],
+                // 'USER_ID'=>['max:10'],
+                // 'COPAY_NETWORK_OVRD'=>['max:10'],
+                // 'MAX_DAYS_SUPPLY_OPT'=>['max:1'],
+                // 'MAIL_ORD_MAX_DAYS_SUPPLY_OPT'=>['max:1'],
+                // 'RETAIL_MAX_FILLS_OPT'=>['max:1'],
+                // 'MAIL_ORD_MAX_FILLS_OPT'=>['max:1'],
+                // 'MIN_PRICE_OPT'=>['max:1'],
+                // 'MAX_PRICE_OPT'=>['max:1'],
+                // 'VALID_RELATION_CODE'=>['max:1'],
+                // 'STARTER_DOSE_DAYS'=>['max:3'],
+                // 'STARTER_DOSE_BYPASS_DAYS'=>['max:3'],
+                // 'DRUG_COV_START_DAYS'=>['max:3'],
+                // 'PKG_DETERMINE_ID'=>['max:10'],
+                // 'MAX_RX_QTY_OPT'=>['max:1'],
+                // 'TERMINATION_DATE'=>['max:10'],
+                // 'MAX_QTY_OVER_TIME'=>['max:6'],
+                // 'MAX_DAYS_OVER_TIME'=>['max:6'],
+                // 'REJECT_ONLY_MSG_FLAG'=>['max:1'],
+                // 'USER_ID_CREATED'=>['max:10'],
+                // 'STARTER_DOSE_MAINT_BYPASS_DAYS'=>['numeric|max:3'],
+                // 'MAX_QTY_PER_FILL'=>['numeric|min:3|max:8'],
+                // 'BNG_SNGL_INC_EXC_IND'=>['max:1'],
+                // 'BNG_MULTI_INC_EXC_IND'=>['max:1'],
+                // 'BGA_INC_EXC_IND'=>['max:1'],
+                // 'GEN_INC_EXC_IND'=>['max:1'],
+                // 'RX_QTY_OPT_MULTIPLIER'=>['numeric|max:6'],
+                // 'DAYS_SUPPLY_OPT_MULTIPLIER'=>['numeric|max:6'],
 
 
 
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_age.gt' =>  'Max Age must be greater than Min Age',
+                'max_rx_qty.gt' => 'Max Quantity must be greater than Min Quantity',
+                'max_ctl_days.gt' => 'Max Ctl must be greater than Min Ctl',
+                'mail_ord_max_days_supply_opt.gt' => 'Max day Mail Service must be greater than Min day Mail Service',
+                'max_days_supply_opt' => 'Max day  must be greater than Min day ',
             ]);
 
             if ($validator->fails()) {
@@ -635,6 +662,26 @@ class NDCExceptionController extends Controller
                 // if ($validation->count() > 0) {
                 //     return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
                 // }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('NDC_EXCEPTION_LISTS')
+                ->where('NDC_EXCEPTION_LIST', $request->ndc_exception_list)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For same Therapy Class,dates cannot overlap', $validation, true, 200, 1);
+                }
+
+
                 $add_names = DB::table('NDC_EXCEPTIONS')->insert(
                     [
                         'ndc_exception_list' => $request->ndc_exception_list,
@@ -741,80 +788,106 @@ class NDCExceptionController extends Controller
                 'ndc_exception_list' => ['required', 'max:10'],
                 'ndc' => ['required', 'max:11'],
                 'effective_date' => ['required', 'max:10'],        
-                "exception_name" => ['max:36'],
-                "NEW_DRUG_STATUS"=>['max:2'],
-                "PROCESS_RULE"=>['max:1'],
-                'MAXIMUM_ALLOWABLE_COST'=>['max:15','min:5'],
-                'PHYSICIAN_LIST'=>['max:10'],
-                'PHYSICIAN_SPECIALTY_LIST'=>['max:10'],
-                'PHARMACY_LIST'=>['max:10'],
-                'DIAGNOSIS_LIST'=>['max:10'],
-                'PREFERRED_PRODUCT_NDC'=>['max:11'],
-                'CONVERSION_PRODUCT_NDC'=>['max:11'],
-                'ALTERNATE_PRICE_SCHEDULE'=>['max:10'],
-                'ALTERNATE_COPAY_SCHED'=>['max:10'],
-                'MESSAGE'=>['max:40'],
-                'MESSAGE_STOP_DATE'=>['max:10'],
-                'MIN_RX_QTY'=>['max:6'],
-                'MAX_RX_QTY'=>['max:6'],
-                'MIN_RX_DAYS'=>['max:6'],
-                'MAX_RX_DAYS'=>['max:6'],
-                'MIN_CTL_DAYS'=>['max:6'],
-                'MAX_CTL_DAYS'=>['max:6'],
-                'MAX_REFILLS'=>['max:6'],
-                'MAX_DAYS_PER_FILL'=>['max:6'],
-                'MAX_DOSE'=>['max:6'],
-                'MIN_AGE'=>['max:6'],
-                'MAX_AGE'=>['max:6'],
-                'MIN_PRICE'=>['min:2','max:12'],
-                'MAX_PRICE'=>['min:2','max:12'],
-                'MAX_RXS_PATIENT'=>['max:6'],
-                'MAX_PRICE_PATIENT'=>['max:12','min:2'],
-                'GENERIC_COPAY_AMT'=>['max:12','min:2'],
-                'BRAND_COPAY_AMT'=>['max:12|min:2'],
-                'MAINT_DOSE_UNITS_DAY'=>['max:6'],
-                'ACUTE_DOSING_DAYS'=>['max:6'],
-                'DENIAL_OVERRIDE'=>['max:2'],
-                'MAINTENANCE_DRUG'=>['max:1'],
-                'GENERIC_INDICATOR'=>['max:1'],
-                'MERGE_DEFAULTS'=>['max:1'],
-                'SEX_RESTRICTION'=>['numeric|max:6'],
-                'MAIL_ORDER_MIN_RX_DAYS'=>['numeric|max:6'],
-                'MAIL_ORDER_MAX_RX_DAYS'=>['numeric|max:6'],
-                'MAIL_ORDER_MAX_REFILLS'=>['numeric|max:6'],
-                'MODULE_EXIT'=>['max:1'],
-                'MAX_RXS_TIME_FLAG'=>['numeric|max:6'],
-                'MAX_PRICE_TIME_FLAG'=>['numeric|max:6'],
-                'USER_ID'=>['max:10'],
-                'COPAY_NETWORK_OVRD'=>['max:10'],
-                'MAX_DAYS_SUPPLY_OPT'=>['max:1'],
-                'MAIL_ORD_MAX_DAYS_SUPPLY_OPT'=>['max:1'],
-                'RETAIL_MAX_FILLS_OPT'=>['max:1'],
-                'MAIL_ORD_MAX_FILLS_OPT'=>['max:1'],
-                'MIN_PRICE_OPT'=>['max:1'],
-                'MAX_PRICE_OPT'=>['max:1'],
-                'VALID_RELATION_CODE'=>['max:1'],
-                'STARTER_DOSE_DAYS'=>['max:3'],
-                'STARTER_DOSE_BYPASS_DAYS'=>['max:3'],
-                'DRUG_COV_START_DAYS'=>['max:3'],
-                'PKG_DETERMINE_ID'=>['max:10'],
-                'MAX_RX_QTY_OPT'=>['max:1'],
-                'TERMINATION_DATE'=>['max:10'],
-                'MAX_QTY_OVER_TIME'=>['max:6'],
-                'MAX_DAYS_OVER_TIME'=>['max:6'],
-                'REJECT_ONLY_MSG_FLAG'=>['max:1'],
-                'USER_ID_CREATED'=>['max:10'],
-                'STARTER_DOSE_MAINT_BYPASS_DAYS'=>['numeric|max:3'],
-                'MAX_QTY_PER_FILL'=>['numeric|min:3|max:8'],
-                'BNG_SNGL_INC_EXC_IND'=>['max:1'],
-                'BNG_MULTI_INC_EXC_IND'=>['max:1'],
-                'BGA_INC_EXC_IND'=>['max:1'],
-                'GEN_INC_EXC_IND'=>['max:1'],
-                'RX_QTY_OPT_MULTIPLIER'=>['numeric|max:6'],
-                'DAYS_SUPPLY_OPT_MULTIPLIER'=>['numeric|max:6'],
+                "exception_name" => ['required','max:36'],
+                "termination_date" => ['required','date','after:effective_date'],
+
+                'min_rx_qty'=>['nullable','max:6'],
+                'max_rx_qty'=>['nullable','max:6','gt:max_rx_qty'],
+
+                'mail_order_min_rx_days'=>['nullable','max:6'],
+                'mail_ord_max_days_supply_opt'=>['nullable','max:6','gt:mail_order_min_rx_days'],
+
+                'days_supply_opt_multiplier' =>['nullable','max:6'],
+                'max_days_supply_opt' =>['nullable','max:6','gt:days_supply_opt_multiplier'],
+
+                'min_ctl_days'=>['nullable','max:6'],
+                'max_ctl_days'=>['nullable','max:12','gt:min_ctl_days'],
+
+                'mail_order_min_rx_days'=>['nullable','max:6'],
+                'mail_ord_max_days_supply_opt'=>['nullable','max:6','gt:mail_order_min_rx_days'],
+
+                'min_age'=>['nullable','max:6'],
+                'max_age'=>['nullable','max:6','gt:min_age'],
+                // "NEW_DRUG_STATUS"=>['max:2'],
+                // "PROCESS_RULE"=>['max:1'],
+                // 'MAXIMUM_ALLOWABLE_COST'=>['max:15','min:5'],
+                // 'PHYSICIAN_LIST'=>['max:10'],
+                // 'PHYSICIAN_SPECIALTY_LIST'=>['max:10'],
+                // 'PHARMACY_LIST'=>['max:10'],
+                // 'DIAGNOSIS_LIST'=>['max:10'],
+                // 'PREFERRED_PRODUCT_NDC'=>['max:11'],
+                // 'CONVERSION_PRODUCT_NDC'=>['max:11'],
+                // 'ALTERNATE_PRICE_SCHEDULE'=>['max:10'],
+                // 'ALTERNATE_COPAY_SCHED'=>['max:10'],
+                // 'MESSAGE'=>['max:40'],
+                // 'MESSAGE_STOP_DATE'=>['max:10'],
+                // 'MIN_RX_QTY'=>['max:6'],
+                // 'MAX_RX_QTY'=>['max:6'],
+                // 'MIN_RX_DAYS'=>['max:6'],
+                // 'MAX_RX_DAYS'=>['max:6'],
+                // 'MIN_CTL_DAYS'=>['max:6'],
+                // 'MAX_CTL_DAYS'=>['max:6'],
+                // 'MAX_REFILLS'=>['max:6'],
+                // 'MAX_DAYS_PER_FILL'=>['max:6'],
+                // 'MAX_DOSE'=>['max:6'],
+                // 'MIN_AGE'=>['max:6'],
+                // 'MAX_AGE'=>['max:6'],
+                // 'MIN_PRICE'=>['min:2','max:12'],
+                // 'MAX_PRICE'=>['min:2','max:12'],
+                // 'MAX_RXS_PATIENT'=>['max:6'],
+                // 'MAX_PRICE_PATIENT'=>['max:12','min:2'],
+                // 'GENERIC_COPAY_AMT'=>['max:12','min:2'],
+                // 'BRAND_COPAY_AMT'=>['max:12|min:2'],
+                // 'MAINT_DOSE_UNITS_DAY'=>['max:6'],
+                // 'ACUTE_DOSING_DAYS'=>['max:6'],
+                // 'DENIAL_OVERRIDE'=>['max:2'],
+                // 'MAINTENANCE_DRUG'=>['max:1'],
+                // 'GENERIC_INDICATOR'=>['max:1'],
+                // 'MERGE_DEFAULTS'=>['max:1'],
+                // 'SEX_RESTRICTION'=>['numeric|max:6'],
+                // 'MAIL_ORDER_MIN_RX_DAYS'=>['numeric|max:6'],
+                // 'MAIL_ORDER_MAX_RX_DAYS'=>['numeric|max:6'],
+                // 'MAIL_ORDER_MAX_REFILLS'=>['numeric|max:6'],
+                // 'MODULE_EXIT'=>['max:1'],
+                // 'MAX_RXS_TIME_FLAG'=>['numeric|max:6'],
+                // 'MAX_PRICE_TIME_FLAG'=>['numeric|max:6'],
+                // 'USER_ID'=>['max:10'],
+                // 'COPAY_NETWORK_OVRD'=>['max:10'],
+                // 'MAX_DAYS_SUPPLY_OPT'=>['max:1'],
+                // 'MAIL_ORD_MAX_DAYS_SUPPLY_OPT'=>['max:1'],
+                // 'RETAIL_MAX_FILLS_OPT'=>['max:1'],
+                // 'MAIL_ORD_MAX_FILLS_OPT'=>['max:1'],
+                // 'MIN_PRICE_OPT'=>['max:1'],
+                // 'MAX_PRICE_OPT'=>['max:1'],
+                // 'VALID_RELATION_CODE'=>['max:1'],
+                // 'STARTER_DOSE_DAYS'=>['max:3'],
+                // 'STARTER_DOSE_BYPASS_DAYS'=>['max:3'],
+                // 'DRUG_COV_START_DAYS'=>['max:3'],
+                // 'PKG_DETERMINE_ID'=>['max:10'],
+                // 'MAX_RX_QTY_OPT'=>['max:1'],
+                // 'TERMINATION_DATE'=>['max:10'],
+                // 'MAX_QTY_OVER_TIME'=>['max:6'],
+                // 'MAX_DAYS_OVER_TIME'=>['max:6'],
+                // 'REJECT_ONLY_MSG_FLAG'=>['max:1'],
+                // 'USER_ID_CREATED'=>['max:10'],
+                // 'STARTER_DOSE_MAINT_BYPASS_DAYS'=>['numeric|max:3'],
+                // 'MAX_QTY_PER_FILL'=>['numeric|min:3|max:8'],
+                // 'BNG_SNGL_INC_EXC_IND'=>['max:1'],
+                // 'BNG_MULTI_INC_EXC_IND'=>['max:1'],
+                // 'BGA_INC_EXC_IND'=>['max:1'],
+                // 'GEN_INC_EXC_IND'=>['max:1'],
+                // 'RX_QTY_OPT_MULTIPLIER'=>['numeric|max:6'],
+                // 'DAYS_SUPPLY_OPT_MULTIPLIER'=>['numeric|max:6'],
 
 
 
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_age.gt' =>  'Max Age must be greater than Min Age',
+                'max_rx_qty.gt' => 'Max Quantity must be greater than Min Quantity',
+                'max_ctl_days.gt' => 'Max Ctl must be greater than Min Ctl',
+                'mail_ord_max_days_supply_opt.gt' => 'Max day Mail Service must be greater than Min day Mail Service',
+                'max_days_supply_opt' => 'Max day  must be greater than Min day ',
             ]);
 
             if ($validator->fails()) {
@@ -826,6 +899,25 @@ class NDCExceptionController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('NDC_EXCEPTION_LISTS')
+                ->where('NDC_EXCEPTION_LIST', $request->ndc_exception_list)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For same Therapy Class,dates cannot overlap', $validation, true, 200, 1);
+                }
+
     
                 $update_names = DB::table('NDC_EXCEPTIONS')
                 ->where('ndc_exception_list', $request->ndc_exception_list )

@@ -125,10 +125,12 @@ class PrcedureCodeListController extends Controller
 
                 "description"=>['required','max:36'],
                 "effective_date"=>['required','max:10'],
-                'termination_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10','after:effective_date'],
                 'procedure_code'=>['required','max:10'],
                 
 
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
 
             if ($validator->fails()) {
@@ -139,6 +141,25 @@ class PrcedureCodeListController extends Controller
                 if ($validation->count() > 0) {
                     return $this->respondWithToken($this->token(), 'Procedure Exception Already Exists', $validation, true, 200, 1);
                 }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PROC_CODE_LISTS')
+                ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For Same  Procedure Code ,dates cannot overlap.', $validation, true, 200, 1);
+                }
+
                 $add_names = DB::table('PROC_CODE_LIST_NAMES')->insert(
                     [
                         'proc_code_list_id' => $request->proc_code_list_id,
@@ -173,11 +194,13 @@ class PrcedureCodeListController extends Controller
                 "proc_code_list_id" => ['required','max:36'],
                 "description"=>['required','max:36'],
                 "effective_date"=>['required','max:10'],
-                'termination_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10','after:effective_date'],
                 'procedure_code'=>['required','max:10'],
                 
                 
 
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
 
             if ($validator->fails()) {
@@ -189,6 +212,25 @@ class PrcedureCodeListController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
+
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PROC_CODE_LISTS')
+                ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For Same  Procedure Code , dates cannot overlap.', $validation, true, 200, 1);
+                }
     
                 $update_names = DB::table('PROC_CODE_LIST_NAMES')
                 ->where('proc_code_list_id', $request->proc_code_list_id )

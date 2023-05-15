@@ -20,6 +20,8 @@ class ProviderTypeProcController extends Controller
             ->orWhere('DESCRIPTION', 'like', '%' . $request->search . '%')
             ->get();
 
+            
+
         return $this->respondWithToken($this->token(), '', $data);
     }
 
@@ -220,7 +222,7 @@ class ProviderTypeProcController extends Controller
 
     public function add(Request $request)
     {
-   
+    //    return 'hii';
         $createddate = date('y-m-d');
 
         $validation = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
@@ -288,7 +290,7 @@ class ProviderTypeProcController extends Controller
                 ->exists();
                 if ($overlapExists) {
                     // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
-                    return $this->respondWithToken($this->token(), 'For same Provider Type, Procedure Code and Service Modifier, effective date range cannot overlap.', $validation, true, 200, 1);
+                    return $this->respondWithToken($this->token(), 'For same Provider Type, Procedure Code and Service Modifier,  dates range cannot overlap.', $validation, true, 200, 1);
                 }
                 $add_names = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')->insert(
                     [
@@ -348,23 +350,47 @@ class ProviderTypeProcController extends Controller
 
             $validator = Validator::make($request->all(), [
 
-                
-                "description" => ['max:36'],
-                "provider_type" => ['max:2'],
-                "service_modifier" => ['max:2'],
-                'ucr' => ['max:10'],
-                'effective_date' => ['max:10'],
-                'termination_date' => ['max:10'],
+                'prov_type_proc_assoc_id' => ['required','max:10',],
+                "description" => ['required','max:36'],
+                "provider_type" => ['required','max:2'],
+                "service_modifier" => ['required','max:2'],
+                'ucr' => ['nullable','max:10'],
+                'effective_date' => ['required','max:10'],
+                'termination_date' => ['required','max:10','after:effective_date'],
+                'prov_type_proc_assoc_id'=> ['required','max:36'],
+                'proc_code_list_id'=> ['required'],
+                'max_age'=> ['nullable','gt:min_age'],
 
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_age.gt'=> 'Max Age must be Greater than Min Age'
             ]);
 
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            } else {
+            } 
+            else {
 
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PROV_TYPE_PROC_ASSOC')
+                ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For same Provider Type, Procedure Code and Service Modifier, effective date range cannot overlap.', $validation, true, 200, 1);
+                }
 
                 $update_names = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
                     ->where('prov_type_proc_assoc_id', $request->prov_type_proc_assoc_id)
@@ -467,6 +493,7 @@ class ProviderTypeProcController extends Controller
     {
         if (isset($request->prov_type_proc_assoc_id) && ($request->provider_type)) {
             $all_exceptions_lists =  DB::table('PROV_TYPE_PROC_ASSOC')
+                ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
                 ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
                 ->delete();
 

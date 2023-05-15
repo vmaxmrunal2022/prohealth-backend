@@ -127,9 +127,11 @@ public function add(Request $request)
             "description" => ['max:36'],
             "provider_type"=>['required','max:2'],
             "effective_date"=>['max:10'],
-            'termination_date'=>['max:15','min:5'],
+            'termination_date'=>['max:15','after:effective_date'],
             'proc_code_list'=>['max:10'],
         
+        ],[
+            'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
         ]);
 
         if ($validator->fails()) {
@@ -140,6 +142,24 @@ public function add(Request $request)
             if ($validation->count() > 0) {
                 return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
             }
+            $effectiveDate=$request->effective_date;
+            $terminationDate=$request->termination_date;
+            $overlapExists = DB::table('PROVIDER_TYPE_VALIDATIONS')
+            ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
+            ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                    ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                    ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                            ->where('TERMINATION_DATE', '>=', $terminationDate);
+                    });
+            })
+            ->exists();
+            if ($overlapExists) {
+                // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                return $this->respondWithToken($this->token(), 'For same Provider Type, Procedure Code List ID , dates cannot overlap.', $validation, true, 200, 1);
+            }
+
             $add_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')->insert(
                 [
                     'prov_type_list_id' => $request->prov_type_list_id,
@@ -178,11 +198,13 @@ public function add(Request $request)
             "description" => ['max:36'],
             "provider_type"=>['required','max:2'],
             "effective_date"=>['max:10'],
-            'termination_date'=>['max:15','min:5'],
+            'termination_date'=>['max:15','after:effective_date'],
             'proc_code_list'=>['max:10'],
 
 
 
+        ],[
+            'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
         ]);
 
         if ($validator->fails()) {
@@ -194,6 +216,23 @@ public function add(Request $request)
             // if ($validation->count() < 1) {
             //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
             // }
+            $effectiveDate=$request->effective_date;
+            $terminationDate=$request->termination_date;
+            $overlapExists = DB::table('PROVIDER_TYPE_VALIDATIONS')
+            ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
+            ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                    ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                    ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                            ->where('TERMINATION_DATE', '>=', $terminationDate);
+                    });
+            })
+            ->exists();
+            if ($overlapExists) {
+                // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                return $this->respondWithToken($this->token(), 'For same Provider Type, Procedure Code List ID , dates cannot overlap.', $validation, true, 200, 1);
+            }
 
             $update_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
             ->where('prov_type_list_id', $request->prov_type_list_id )

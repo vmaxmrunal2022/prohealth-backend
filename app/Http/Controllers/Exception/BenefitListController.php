@@ -206,31 +206,34 @@ class BenefitListController extends Controller
 
                 "description"=>['required','max:20'],
                 "effective_date"=>['required','max:10'],
-                'termination_date'=>['required'],
+                'termination_date'=>['required','after:effective_date'],
                 'module_exit'=>['max:10'],
                 'pricing_strategy_id'=>['max:10'],
                 'accum_bene_strategy_id'=>['max:10'],
                 'copay_strategy_id'=>['max:10'],
                 'min_price'=>['max:11'],
                 'max_price'=>['max:11'],
-                'min_age'=>['max:10'],
-                'max_age'=>['max:10'],
+                'min_age'=>['nullable','max:10'],
+                'max_age'=>['nullable','max:10','gt:min_age'],
                 'coverage_start_days'=>['max:40'],
                 'max_qty_over_time'=>['max:10'],
                 'days_per_disability'=>['max:6'],
                 'max_price_per_day'=>['max:6'],
-                'max_price_per_diag'=>['max:6'],
-                'max_base_amount'=>['max:6'],
-                'base_apply_percent'=>['max:6'],
-                'base_apply_percent_opt'=>['max:6'],
-                'apply_mm_claim_max_opt'=>['max:6'],
-                'message'=>['max:6'],
-                'message_stop_date'=>['max:6'],
-                'reject_only_msg_flag'=>['max:6'],
-                'valid_relation_code'=>['max:6'],
-                'sex_restriction'=>['min:1',],      
+                'max_price_per_diag'=>['nullable','max:6'],
+                'max_base_amount'=>['nullable','max:6'],
+                'base_apply_percent'=>['nullable','max:6'],
+                'base_apply_percent_opt'=>['nullable','max:6'],
+                'apply_mm_claim_max_opt'=>['nullable','max:6'],
+                'message'=>['nullable','max:6'],
+                'message_stop_date'=>['nullable','max:10'],
+                'reject_only_msg_flag'=>['nullable','max:6'],
+                'valid_relation_code'=>['nullable','max:6'],
+                
 
             
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_age.gt' =>  'MaX Age must be greater than Min Age'
             ]);
 
             if ($validator->fails()) {
@@ -241,6 +244,25 @@ class BenefitListController extends Controller
                 if ($validation->count() > 0) {
                     return $this->respondWithToken($this->token(), 'Benefit List  Already Exists', $validation, true, 200, 1);
                 }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('BENEFIT_LIST')
+                ->where('BENEFIT_LIST_ID', $request->benefit_list_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For same Benefit Code , dates cannot overlap.', $validation, true, 200, 1);
+                }
+
                 $add_names = DB::table('BENEFIT_LIST_NAMES')->insert(
                     [
                         'benefit_list_id' => $request->benefit_list_id,
@@ -308,32 +330,35 @@ class BenefitListController extends Controller
             $validator = Validator::make($request->all(), [
 
                 "benefit_list_id" => ['required','max:36'],
-                "description"=>['required','max:2'],
-                "effective_date"=>['required','max:1'],
-                'termination_date'=>['required'],
+                "description"=>['required','max:35'],
+                "effective_date"=>['required'],
+                'termination_date'=>['required','after:effective_date'],
                 'module_exit'=>['max:10'],
                 'pricing_strategy_id'=>['max:10'],
                 'accum_bene_strategy_id'=>['max:10'],
                 'copay_strategy_id'=>['max:10'],
                 'min_price'=>['max:11'],
                 'max_price'=>['max:11'],
-                'min_age'=>['max:10'],
-                'max_age'=>['max:10'],
+                'min_age'=>['nullable','max:10'],
+                'max_age'=>['nullable','max:10','gt:min_age'],
                 'coverage_start_days'=>['max:40'],
                 'max_qty_over_time'=>['max:10'],
                 'days_per_disability'=>['max:6'],
-                'max_price_per_day'=>['max:6'],
-                'max_price_per_diag'=>['max:6'],
-                'max_base_amount'=>['max:6'],
-                'base_apply_percent'=>['max:6'],
-                'base_apply_percent_opt'=>['max:6'],
-                'apply_mm_claim_max_opt'=>['max:6'],
-                'message'=>['max:6'],
-                'message_stop_date'=>['max:6'],
-                'reject_only_msg_flag'=>['max:6'],
-                'valid_relation_code'=>['max:6'],
-                'sex_restriction'=>['min:2','max:12'],   
+                'max_price_per_day'=>['nullable','max:6'],
+                'max_price_per_diag'=>['nullable','max:6'],
+                'max_base_amount'=>['nullable','max:6'],
+                'base_apply_percent'=>['nullable','max:6'],
+                'base_apply_percent_opt'=>['nullable','max:6'],
+                'apply_mm_claim_max_opt'=>['nullable','max:6'],
+                'message'=>['nullable','max:6'],
+                'message_stop_date'=>['nullable','max:10'],
+                'reject_only_msg_flag'=>['nullable','max:6'],
+                'valid_relation_code'=>['nullable','max:6'],
+              
 
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_age.gt' =>  'MaX Age must be greater than Min Age'
             ]);
 
             if ($validator->fails()) {
@@ -345,6 +370,24 @@ class BenefitListController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('BENEFIT_LIST')
+                ->where('BENEFIT_LIST_ID', $request->benefit_list_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For same Benefit Code , dates cannot overlap.', $validation, true, 200, 1);
+                }
     
                 $update_names = DB::table('BENEFIT_LIST_NAMES')
                 ->where('benefit_list_id', $request->benefit_list_id )

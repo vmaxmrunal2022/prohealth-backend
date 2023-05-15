@@ -42,6 +42,7 @@ class LimitationsController extends Controller
             'max_days_supply_opt' => ['nullable ','gt:days_supply_opt_multiplier'],
             'max_ctl_days'=> ['nullable ','gt:min_ctl_days'],
             'mail_order_max_rx_days'=> ['nullable ','gt:mail_order_min_rx_days'],
+            'max_age'=> ['nullable ','gt:min_age'],
             
         ],[
             'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
@@ -49,6 +50,7 @@ class LimitationsController extends Controller
             'max_days_supply_opt.gt'=> 'Max Day must be greater than Min Day',
             'max_ctl_days.gt'=> 'Max Ctl must be greater than Min Ctl',
             'mail_order_max_rx_days.gt'=>'Max day Mail Service must be greater than Min day Mail Service',
+            'max_age.gt' => 'Max Age must be greater than Min Age',
 
         ]);
 
