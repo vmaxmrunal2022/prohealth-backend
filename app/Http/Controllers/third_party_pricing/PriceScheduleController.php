@@ -15,7 +15,7 @@ class PriceScheduleController extends Controller
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')
             ->where('PRICE_SCHEDULE',  $request->search)
-            ->orWhere('PRICE_SCHEDULE_NAME',$request->search)
+            ->orWhere('PRICE_SCHEDULE_NAME', $request->search)
             ->orWhere('COPAY_SCHEDULE', $request->search)
             ->get();
         return $this->respondWithToken($this->token(), '', $priceShedule);
@@ -23,8 +23,8 @@ class PriceScheduleController extends Controller
     public function getAll(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')
-        ->select('price_schedule','price_schedule_name')
-        ->get();
+            ->select('price_schedule', 'price_schedule_name')
+            ->get();
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }
 
@@ -626,6 +626,18 @@ class PriceScheduleController extends Controller
                     ->first();
                 return $this->respondWithToken($this->token(), 'Record  Updated Successfully', $price_schedule);
             }
+        }
+    }
+    public function priceschedultdelete(Request $request)
+    {
+        $all_exceptions_lists =  DB::table('price_schedule')
+            ->where('PRICE_SCHEDULE', $request->price_schedule)
+            ->delete();
+
+        if ($all_exceptions_lists) {
+            return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
 }

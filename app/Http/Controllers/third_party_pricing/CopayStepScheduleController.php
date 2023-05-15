@@ -23,8 +23,6 @@ class CopayStepScheduleController extends Controller
 
                 ->get();
             return $this->respondWithToken($this->token(), '', $copayStepData);
-
-
         } else if ($request->search == 'cost_max' && $request->copay_list) {
 
             // $copayStepData = DB::table('COPAY_MATRIX')
@@ -39,7 +37,6 @@ class CopayStepScheduleController extends Controller
 
                 ->get();
             return $this->respondWithToken($this->token(), '', $copayStepData);
-
         }
     }
 
@@ -56,8 +53,6 @@ class CopayStepScheduleController extends Controller
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $copayStepData);
-
-
         } else if ($request->search == 'cost_max') {
 
             $copayStepData = DB::table('COPAY_MATRIX')
@@ -66,11 +61,7 @@ class CopayStepScheduleController extends Controller
                 ->where('COPAY_MATRIX.DAYS_SUPPLY', '=', 0)
                 ->get();
             return $this->respondWithToken($this->token(), '', $copayStepData);
-
-
         }
-
-
     }
 
     public function getDaysSupply(Request $requeest)
@@ -99,7 +90,6 @@ class CopayStepScheduleController extends Controller
             ->get();
 
         return $this->respondWithToken($this->token(), '', $copayStepData);
-
     }
 
     public function submit(Request $request)
@@ -107,11 +97,7 @@ class CopayStepScheduleController extends Controller
         $validate = $request->validate([
             'copay_list' => ['required'],
         ]);
-<<<<<<< HEAD
-        $copayStepSchedule = DB::table('COPAY_MATRIX')->where('copay_list',  $request->copay_list)->get();
-=======
         $recordcheck = DB::table('COPAY_LIST')->where('copay_list', $request->copay_list)->first();
->>>>>>> d598b3a8b36f783c7698d872ad45f84ca0592df4
         if ($validate) {
 
             if ($request->add_new == '1') {
@@ -119,7 +105,6 @@ class CopayStepScheduleController extends Controller
                 if ($recordcheck) {
 
                     return $this->respondWithToken($this->token(), 'Copay List ID Alredy Exists', $recordcheck, true, 200, 1);
-
                 } else {
 
 
@@ -159,16 +144,8 @@ class CopayStepScheduleController extends Controller
                                         'days_supply' => $days_supply,
                                         'step_schedule_indicator' => $step_schedule_indicator
                                     ]);
-
                             }
-
-
-
                         }
-
-
-
-
                     }
 
 
@@ -199,16 +176,8 @@ class CopayStepScheduleController extends Controller
                                         'days_supply' => $matrix_list->days_supply,
                                         'step_schedule_indicator' => $step_schedule_indicator
                                     ]);
-
                             }
-
-
-
                         }
-
-
-
-
                     }
 
 
@@ -216,14 +185,7 @@ class CopayStepScheduleController extends Controller
                     if ($addCopaylist1) {
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', $addCopaylist1);
                     }
-
-
-
                 }
-
-
-
-
             } else if ($request->add_new == 0) {
 
 
@@ -254,20 +216,12 @@ class CopayStepScheduleController extends Controller
                                     'days_supply' => $days_supply,
                                     'step_schedule_indicator' => $step_schedule_indicator
                                 ]);
-
                         }
-
-
-
                     }
 
                     if ($addCopaymatrix1) {
                         return $this->respondWithToken($this->token(), 'Record Updated Successfully', $addCopaymatrix1);
                     }
-
-
-
-
                 }
 
 
@@ -297,27 +251,14 @@ class CopayStepScheduleController extends Controller
                                     'days_supply' => $matrix_list->days_supply,
                                     'step_schedule_indicator' => $step_schedule_indicator
                                 ]);
-
                         }
-
-
-
                     }
 
 
                     if ($addCopaymatrix1) {
                         return $this->respondWithToken($this->token(), 'Record Updated Successfully', $addCopaymatrix1);
                     }
-
-
-
-
                 }
-
-
-
-
-
             }
         }
     }
@@ -328,5 +269,30 @@ class CopayStepScheduleController extends Controller
             ->where('copay_list', $request->copay_list)
             ->count();
         return $this->respondWithToken($this->token(), '', $exist);
+    }
+    public function copayscheduledelete(Request $request)
+    {
+        if (isset($request->copay_list) && ($request->cost_max)) {
+            $all_exceptions_lists =  DB::table('COPAY_MATRIX')
+                ->where('COPAY_LIST', $request->copay_list)
+                ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->copay_list)) {
+
+            $exception_delete =  DB::table('COPAY_LIST')
+                ->where('COPAY_LIST', $request->copay_list)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
     }
 }

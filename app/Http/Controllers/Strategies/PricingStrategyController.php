@@ -30,22 +30,19 @@ class PricingStrategyController extends Controller
 
     public function get_all(Request $request)
     {
-       
+
         $pricing_strategies = DB::table('PRICING_STRATEGY_NAMES')->get();
 
-        if($pricing_strategies){
+        if ($pricing_strategies) {
 
             return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $pricing_strategies);
-
-        }else{
+        } else {
 
             return $this->respondWithToken($this->token(), 'something Went Wrong', $pricing_strategies);
-
         }
-
     }
 
-    
+
 
     public function getProviderList($ndcid)
     {
@@ -119,7 +116,6 @@ class PricingStrategyController extends Controller
                 );
 
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $accum_benfit_stat);
-
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -166,7 +162,32 @@ class PricingStrategyController extends Controller
                     );
 
                 return $this->respondWithToken($this->token(), 'Record Updated Successfully', $accum_benfit_stat);
+            }
+        }
+    }
 
+    public function pricingstrategy_delete(Request $request)
+    {
+        if (isset($request->pricing_strategy_id) && ($request->pricing_strategy_name)) {
+            $all_exceptions_lists =  DB::table('PRICING_STRATEGY_NAMES')
+                ->where('PRICING_STRATEGY_ID', $request->pricing_strategy_id)
+                ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->pricing_strategy_id)) {
+
+            $exception_delete =  DB::table('PRICING_STRATEGY')
+                ->where('PRICING_STRATEGY_ID', $request->pricing_strategy_id)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         }
     }

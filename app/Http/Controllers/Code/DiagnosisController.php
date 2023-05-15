@@ -58,7 +58,8 @@ class DiagnosisController extends Controller
                 'diagnosis_id' => ['required', 'max:8', Rule::unique('DIAGNOSIS_CODES')->where(function ($q) {
                     $q->whereNotNull('diagnosis_id');
                 })],
-                "description" => ['max:35']
+                "description" => ['max:35'],
+                'complete_code_ind' => ['required'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -81,7 +82,8 @@ class DiagnosisController extends Controller
         } else {
             $validator = Validator::make($request->all(), [
                 'diagnosis_id' => ['required', 'max:8'],
-                "description" => ['max:35']
+                "description" => ['max:35'],
+                'complete_code_ind' => ['required'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
