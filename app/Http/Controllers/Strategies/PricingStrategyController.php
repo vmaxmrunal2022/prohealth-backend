@@ -74,7 +74,7 @@ class PricingStrategyController extends Controller
         $createddate = date('y-m-d');
 
         // if ($request->has('new')) {
-        if ($request->new == 1) {
+        if ($request->add_new == 1) {
             $validator = Validator::make($request->all(), [
                 "pricing_strategy_id" => ['required', 'max:10', Rule::unique('PRICING_STRATEGY_NAMES')->where(function ($q) {
                     $q->whereNotNull('pricing_strategy_id');
@@ -100,7 +100,7 @@ class PricingStrategyController extends Controller
 
                 $accum_benfit_stat = DB::table('PRICING_STRATEGY')->insert(
                     [
-                        'pricing_strategy_id' => strtoupper($request->pricing_strategy_id),
+                        'pricing_strategy_id' => $request->pricing_strategy_id,
                         'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
                         'formulary_variation_ind' => $request->formulary_variation_ind,
                         'network_part_variation_ind' => $request->network_part_variation_ind,
@@ -110,8 +110,8 @@ class PricingStrategyController extends Controller
                         'date_time_modified' => '',
                         'form_id' => '',
                         'user_id_created' => '',
-                        //'effective_date' => $request->effective_date,
-                        'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                        'effective_date' => $request->effective_date,
+                        // 'effective_date' => date('Ymd', strtotime($request->effective_date)),
                         'module_exit' => $request->module_exit,
                         'price_schedule' => $request->price_schedule,
                         'mac_list' => $request->mac_list,
@@ -121,7 +121,7 @@ class PricingStrategyController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $accum_benfit_stat);
 
             }
-        } else {
+        } else if($request->add_new ==0 ) {
             $validator = Validator::make($request->all(), [
                 "pricing_strategy_id" => ['required', 'max:10'],
                 "pricing_strategy_name" => ['max:35'],
@@ -136,38 +136,89 @@ class PricingStrategyController extends Controller
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
-                $benefitcode = DB::table('PRICING_STRATEGY_NAMES')
-                    ->where('pricing_strategy_id', $request->pricing_strategy_id)
-                    ->update(
-                        [
-                            'pricing_strategy_id' => strtoupper($request->pricing_strategy_id),
-                            'pricing_strategy_name' => $request->pricing_strategy_name,
-                        ]
-                    );
-                $accum_benfit_stat = DB::table('PRICING_STRATEGY')
-                    ->where('pricing_strategy_id', $request->pricing_strategy_id)
-                    ->update(
-                        [
-                            'pricing_strategy_id' => strtoupper($request->pricing_strategy_id),
-                            'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
-                            'formulary_variation_ind' => $request->formulary_variation_ind,
-                            'network_part_variation_ind' => $request->network_part_variation_ind,
-                            'claim_type_variation_ind' => $request->claim_type_variation_ind,
-                            'date_time_created' => $createddate,
-                            'user_id' => '',
-                            'date_time_modified' => '',
-                            'form_id' => '',
-                            'user_id_created' => '',
-                            'effective_date' => $request->effective_date,
-                            'module_exit' => $request->module_exit,
-                            'price_schedule' => $request->price_schedule,
-                            'mac_list' => $request->mac_list,
-                        ]
-                    );
 
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $accum_benfit_stat);
+                $checkGPI = DB::table('PRICING_STRATEGY')
+                    ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                    ->where('effective_date',$request->effective_date)
+                    ->get()
+                    ->count();
+
+
+                    if ($checkGPI <= "0") {
+
+                        $accum_benfit_stat = DB::table('PRICING_STRATEGY')->insert(
+                            [
+                                'pricing_strategy_id' => $request->pricing_strategy_id,
+                                'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
+                                'formulary_variation_ind' => $request->formulary_variation_ind,
+                                'network_part_variation_ind' => $request->network_part_variation_ind,
+                                'claim_type_variation_ind' => $request->claim_type_variation_ind,
+                                'date_time_created' => $createddate,
+                                'user_id' => '',
+                                'date_time_modified' => '',
+                                'form_id' => '',
+                                'user_id_created' => '',
+                                'effective_date' => $request->effective_date,
+                                // 'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                                'module_exit' => $request->module_exit,
+                                'price_schedule' => $request->price_schedule,
+                                'mac_list' => $request->mac_list,
+                            ]
+                        );
+
+                      
+    
+                        $update = DB::table('PRICING_STRATEGY')->where('PRICING_STRATEGY_ID', 'like', '%' . $request->pricing_strategy_id . '%')->first();
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+    
+                    } else {
+
+                        $benefitcode = DB::table('PRICING_STRATEGY_NAMES')
+                        ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                        ->update(
+                            [
+                                'pricing_strategy_id' => strtoupper($request->pricing_strategy_id),
+                                'pricing_strategy_name' => $request->pricing_strategy_name,
+                            ]
+                        );
+                    
+
+
+                        $update = DB::table('PRICING_STRATEGY')
+                            ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                            ->where('effective_date', $request->effective_date)
+                            ->update(
+                                [
+                                    'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
+                                    'formulary_variation_ind' => $request->formulary_variation_ind,
+                                    'network_part_variation_ind' => $request->network_part_variation_ind,
+                                    'claim_type_variation_ind' => $request->claim_type_variation_ind,
+                                    'date_time_created' => $createddate,
+                                    'user_id' => '',
+                                    'date_time_modified' => '',
+                                    'form_id' => '',
+                                    'user_id_created' => '',
+                                    // 'effective_date' => $request->effective_date,
+                                    // 'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                                    'module_exit' => $request->module_exit,
+                                    'price_schedule' => $request->price_schedule,
+                                    'mac_list' => $request->mac_list,
+                                ]
+                            );
+                            
+                        $update = DB::table('PRICING_STRATEGY')->where('pricing_strategy_id', 'like', '%' . $request->pricing_strategy_id . '%')->first();
+                        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                    }
+
+
+
+
+               
+
 
             }
         }
     }
+
+   
 }

@@ -502,7 +502,7 @@ class DrugClassController extends Controller
 
                 "drug_catgy_exception_name"=>['required','max:2'],
                 "effective_date"=>['max:1'],
-                'termination_date'=>['required|date|after_or_equal:effective_date','max:15','min:5'],
+                'termination_date'=>['required'],
                 'scategory'=>['max:10'],
                 'sdescription'=>['max:10'],
                 'stype'=>['max:10'],
@@ -665,7 +665,7 @@ class DrugClassController extends Controller
                 "drug_catgy_exception_list" => ['required','max:36'],
                 "drug_catgy_exception_name"=>['required','max:2'],
                 "effective_date"=>['max:1'],
-                'termination_date'=>['required|date|after_or_equal:effective_date','max:15','min:5'],
+                'termination_date'=>['required'],
                 'scategory'=>['max:10'],
                 'sdescription'=>['max:10'],
                 'stype'=>['max:10'],
