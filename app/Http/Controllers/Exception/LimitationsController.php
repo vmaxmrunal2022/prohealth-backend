@@ -37,8 +37,19 @@ class LimitationsController extends Controller
             "limitations_list" => ['required','max:36'],
             "limitations_list_name" => ['required','max:36'],
             'effective_date'=>['required'],
-            'termination_date'=>['required'],  
+            'termination_date'=>['required','after:effective_date'],  
+            'max_rx_qty'  => ['nullable ','gt:min_rx_qty'],
+            'max_days_supply_opt' => ['nullable ','gt:days_supply_opt_multiplier'],
+            'max_ctl_days'=> ['nullable ','gt:min_ctl_days'],
+            'mail_order_max_rx_days'=> ['nullable ','gt:mail_order_min_rx_days'],
             
+        ],[
+            'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+            'max_rx_qty.gt' => 'Max Quantity must be Greater than Min Quantity',
+            'max_days_supply_opt.gt'=> 'Max Day must be greater than Min Day',
+            'max_ctl_days.gt'=> 'Max Ctl must be greater than Min Ctl',
+            'mail_order_max_rx_days.gt'=>'Max day Mail Service must be greater than Min day Mail Service',
+
         ]);
 
         if ($validator->fails()) {
@@ -46,7 +57,6 @@ class LimitationsController extends Controller
         }
 
         $createddate = date( 'y-m-d' );
-
         $recordcheck = DB::table('LIMITATIONS_LIST')
         ->where('limitations_list', $request->limitations_list)
         ->first();
@@ -134,9 +144,6 @@ class LimitationsController extends Controller
             
            
         } else {
-
-
-           
 
             $update = DB::table('LIMITATIONS_LIST' )
             ->where('limitations_list', $request->limitations_list )

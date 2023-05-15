@@ -178,11 +178,8 @@ class ProcedureCrossReferenceController extends Controller
 
     public function add(Request $request)
     {
-
-        
-
+// dd('test');
         $createddate = date( 'y-m-d' );
-
         $validation = DB::table('ENTITY_NAMES')
         ->where('ENTITY_USER_ID',$request->procedure_xref_id)
         ->get();
@@ -209,8 +206,10 @@ class ProcedureCrossReferenceController extends Controller
                 "date_time_created"=>['max:10'],
                 "procedure_xref_id" => ['required','max:36'],
                 'effective_date'=>['required'],
-                'termination_date'=>['required'],  
+                'termination_date'=>['required','after:effective_date'],  
                
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
 
             if ($validator->fails()) {
@@ -219,7 +218,24 @@ class ProcedureCrossReferenceController extends Controller
 
             else{
                 if ($validation->count() > 0) {
-                    return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
+                    return $this->respondWithToken($this->token(), 'Procedure Cross Reference List Id Already Exists', $validation, true, 200, 1);
+                }
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PROCEDURE_XREF')
+                ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For Same Submitted Procedure Code And History Procedure Code,dates cannot overlap.', $validation, true, 200, 1);
                 }
                 $add_names = DB::table('ENTITY_NAMES')
                 ->insert(
@@ -282,8 +298,10 @@ class ProcedureCrossReferenceController extends Controller
                 "date_time_created"=>['max:10'],
                 // "procedure_xref_id" => ['required','max:36'],
                 'effective_date'=>['required'],
-                'termination_date'=>['required'],  
+                'termination_date'=>['required','after:effective_date'],  
                
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
 
             if ($validator->fails()) {
@@ -295,6 +313,23 @@ class ProcedureCrossReferenceController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PROCEDURE_XREF')
+                ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For Same Submitted Procedure Code And History Procedure Code,dates cannot overlap.', $validation, true, 200, 1);
+                }
     
                 $update_names = DB::table('ENTITY_NAMES')
                 ->where('ENTITY_USER_ID', $request->procedure_xref_id )
@@ -381,21 +416,31 @@ class ProcedureCrossReferenceController extends Controller
 
     public function delete(Request $request)
     {
-        if (isset($request->procedure_xref_id) && ($request->sub_procedure_code)) {
+       
+        if (isset($request->procedure_xref_id) && isset($request->sub_procedure_code) && isset($request->hist_procedure_code) && isset($request->termination_date) && isset($request->effective_date)) {
+     
             $all_exceptions_lists =  DB::table('PROCEDURE_XREF')
                 ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
+                ->where('SUB_PROCEDURE_CODE', $request->sub_procedure_code)
+                ->where('HIST_PROCEDURE_CODE', $request->hist_procedure_code)
+                ->where('EFFECTIVE_DATE', str_replace('-', '', $request->effective_date))
+                ->where('TERMINATION_DATE',str_replace('-', '', $request->termination_date))
                 ->delete();
-
+              
+           
             if ($all_exceptions_lists) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         } else if (isset($request->procedure_xref_id)) {
-
+           
             $exception_delete =  DB::table('ENTITY_NAMES')
                 ->where('ENTITY_USER_ID', $request->procedure_xref_id)
                 ->delete();
+            $all_exceptions_lists =  DB::table('PROCEDURE_XREF')
+            ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
+            ->delete();
 
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
