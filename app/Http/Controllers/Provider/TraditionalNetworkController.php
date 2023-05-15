@@ -230,7 +230,11 @@ class TraditionalNetworkController extends Controller
 
     public function search(Request $request)
     {
-        $ndc = DB::select("SELECT * FROM RX_NETWORK_NAMES");
+        $ndc =  DB::table('RX_NETWORK_NAMES')
+        ->where('NETWORK_ID', 'like', '%' . $request->search . '%')
+        ->orWhere('NETWORK_NAME', 'like', '%' . $request->search . '%')
+
+        ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }

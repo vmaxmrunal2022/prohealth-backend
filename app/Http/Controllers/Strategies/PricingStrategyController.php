@@ -79,9 +79,14 @@ class PricingStrategyController extends Controller
                 "pricing_strategy_id" => ['required', 'max:10', Rule::unique('PRICING_STRATEGY_NAMES')->where(function ($q) {
                     $q->whereNotNull('pricing_strategy_id');
                 })],
+
+                // "effective_date" => ['required', 'max:10', Rule::unique('PRICING_STRATEGY')->where(function ($q) {
+                //     $q->whereNotNull('effective_date');
+                // })],
+
                 "pricing_strategy_name" => ['max:35'],
                 "pharm_type_variation_ind" => ['max:1'],
-                "effective_date" => ['required', 'max:10'],
+                // "effective_date" => ['required', 'max:10'],
                 "network_part_variation_ind" => ['max:1'],
                 "claim_type_variation_ind" => ['max:1'],
                 "formulary_variation_ind" => ['max:1'],
@@ -123,10 +128,13 @@ class PricingStrategyController extends Controller
             }
         } else if($request->add_new ==0 ) {
             $validator = Validator::make($request->all(), [
+
+
+             
                 "pricing_strategy_id" => ['required', 'max:10'],
                 "pricing_strategy_name" => ['max:35'],
                 "pharm_type_variation_ind" => ['max:1'],
-                "effective_date" => ['required', 'max:10'],
+                // "effective_date" => ['required', 'max:10'],
                 "network_part_variation_ind" => ['max:1'],
                 "claim_type_variation_ind" => ['max:1'],
                 "formulary_variation_ind" => ['max:1'],
@@ -211,9 +219,6 @@ class PricingStrategyController extends Controller
                     }
 
 
-
-
-               
 
 
             }
