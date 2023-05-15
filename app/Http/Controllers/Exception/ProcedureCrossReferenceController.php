@@ -209,7 +209,7 @@ class ProcedureCrossReferenceController extends Controller
                 "date_time_created"=>['max:10'],
                 "procedure_xref_id" => ['required','max:36'],
                 'effective_date'=>['required'],
-                'termination_date'=>['required'],  
+                'termination_date'=>['required','after:effective_date'],  
                
             ]);
 
@@ -220,6 +220,23 @@ class ProcedureCrossReferenceController extends Controller
             else{
                 if ($validation->count() > 0) {
                     return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
+                }
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PROCEDURE_XREF')
+                ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'effective and termination date overlap', $validation, true, 200, 1);
                 }
                 $add_names = DB::table('ENTITY_NAMES')
                 ->insert(
