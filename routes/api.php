@@ -281,6 +281,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
 
         //DIAGNOSIS VALIDATION LIST
+
         Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search']); // SEARCH
         Route::get('/diagnosisvalidation/get/{diagnosis_list}', [DiagnosisValidationListController::class, 'getPriorityDiagnosis'])->name('diagnosisvalidation.list.get'); // LIST ITEMS
         Route::get('diagnosisvalidation/diagnosis-code-list/{disgnosis_code?}', [DiagnosisValidationListController::class, 'getDiagnosisCodeList']); //diagnosis code drop down with search
@@ -912,6 +913,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
 
     //DIAGNOSIS VALIDATION LIST
+    Route::post('/diagnosisvalidation/delete-limitation', [DiagnosisValidationListController::class, 'deleteLimitation']); //delete limitation
     Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search'])->name('diagnosisvalidation.search'); // SEARCH
     Route::get('/diagnosisvalidation/get/{diagnosis_list}', [DiagnosisValidationListController::class, 'getPriorityDiagnosis'])->name('diagnosisvalidation.list.get'); // LIST ITEMS
     Route::get('diagnosisvalidation/diagnosis-code-list/{disgnosis_code?}', [DiagnosisValidationListController::class, 'getDiagnosisCodeList']); //diagnosis code drop down with search
