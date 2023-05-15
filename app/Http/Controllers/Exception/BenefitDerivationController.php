@@ -29,6 +29,7 @@ class BenefitDerivationController extends Controller
             if ($recordcheck) {
 
                 return $this->respondWithToken($this->token(), 'Benefit Derivation ID Already Exists', $recordcheck);
+
             }
 
             $accum_benfit_stat_names = DB::table('BENEFIT_DERIVATION_NAMES')->insert(
@@ -55,6 +56,9 @@ class BenefitDerivationController extends Controller
             );
 
             return $this->respondWithToken($this->token(), 'Record Added Successfully', $accum_benfit_stat);
+
+
+
         } else {
 
             $benefitcode = DB::table('BENEFIT_DERIVATION_NAMES')
@@ -83,15 +87,17 @@ class BenefitDerivationController extends Controller
                 );
 
             return $this->respondWithToken($this->token(), 'Record Updated Successfully', $accum_benfit_stat);
+
         }
+
     }
 
 
     public function add(Request $request)
     {
 
-
-
+        
+        
 
         $createddate = date('y-m-d');
 
@@ -104,7 +110,7 @@ class BenefitDerivationController extends Controller
             $validator = Validator::make($request->all(), [
                 'benefit_derivation_id' => [
                     'required',
-                    'max:10', Rule::unique(['BENEFIT_DERIVATION_NAMES', 'BENEFIT_DERIVATION'])->where(function ($q) {
+                    'max:10', Rule::unique(['BENEFIT_DERIVATION_NAMES','BENEFIT_DERIVATION'])->where(function ($q) {
                         $q->whereNotNull('benefit_derivation_id');
                     })
                 ],
@@ -124,13 +130,13 @@ class BenefitDerivationController extends Controller
                 // ],
 
                 // "benefit_derivation_id" => ['required','max:36'],
-                "description" => ['required', 'max:2'],
-                "service_type" => ['required', 'max:1'],
-                'service_modifier' => ['required'],
-                'proc_code_list_id' => ['required', 'max:10'],
-                'benefit_code' => ['max:10'],
-                'effective_date' => ['required', 'max:10'],
-                'termination_date' => ['required', 'max:10'],
+                "description"=>['required','max:2'],
+                "service_type"=>['required','max:1'],
+                'service_modifier'=>['required'],
+                'proc_code_list_id'=>['required','max:10'],
+                'benefit_code'=>['max:10'],
+                'effective_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10'],
 
 
             ]);
@@ -177,9 +183,9 @@ class BenefitDerivationController extends Controller
                             'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
                             'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
                             'COVERAGE_START_DAYS' => $request->coverage_start_days,
-                            'PROC_CODE_LIST_ID' => $request->proc_code_list_id,
+                            'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
                             'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
-
+                           
 
                         ]
                     );
@@ -187,19 +193,23 @@ class BenefitDerivationController extends Controller
 
                 $add = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
             }
+
+
+
         } else if ($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
 
-                "benefit_derivation_id" => ['required', 'max:36'],
-                "description" => ['required', 'max:2'],
-                "service_type" => ['required', 'max:1'],
-                'service_modifier' => ['required'],
-                'proc_code_list_id' => ['required', 'max:10'],
-                'benefit_code' => ['max:10'],
-                'effective_date' => ['required', 'max:10'],
-                'termination_date' => ['required', 'max:10'],
+                "benefit_derivation_id" => ['required','max:36'],
+                "description"=>['required','max:2'],
+                "service_type"=>['required','max:1'],
+                'service_modifier'=>['required'],
+                'proc_code_list_id'=>['required','max:10'],
+                'benefit_code'=>['max:10'],
+                'effective_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10'],
 
 
             ]);
@@ -219,9 +229,9 @@ class BenefitDerivationController extends Controller
 
                 $checkGPI = DB::table('BENEFIT_DERIVATION')
                     ->where('benefit_derivation_id', $request->benefit_derivation_id)
-                    ->where('service_type', $request->service_type)
-                    ->where('service_modifier', $request->service_modifier)
-                    ->where('proc_code_list_id', $request->proc_code_list_id)
+                    ->where('service_type',$request->service_type)
+                    ->where('service_modifier',$request->service_modifier)
+                    ->where('proc_code_list_id',$request->proc_code_list_id)
                     ->where('benefit_code', $request->benefit_code)
                     ->where('effective_date', $request->effective_date)
                     ->get()
@@ -260,7 +270,7 @@ class BenefitDerivationController extends Controller
                                 'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
                                 'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
                                 'COVERAGE_START_DAYS' => $request->coverage_start_days,
-                                'PROC_CODE_LIST_ID' => $request->proc_code_list_id,
+                                'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
                                 'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
 
                             ]
@@ -269,6 +279,7 @@ class BenefitDerivationController extends Controller
 
                     $update = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
                 } else {
 
 
@@ -282,37 +293,37 @@ class BenefitDerivationController extends Controller
                         );
 
                     $update = DB::table('BENEFIT_DERIVATION')
-                        ->where('benefit_derivation_id', $request->benefit_derivation_id)
-                        ->where('service_type', $request->service_type)
-                        ->where('service_modifier', $request->service_modifier)
-                        ->where('proc_code_list_id', $request->proc_code_list_id)
-                        ->where('benefit_code', $request->benefit_code)
-                        ->where('effective_date', $request->effective_date)
+                    ->where('benefit_derivation_id', $request->benefit_derivation_id)
+                    ->where('service_type',$request->service_type)
+                    ->where('service_modifier',$request->service_modifier)
+                    ->where('proc_code_list_id',$request->proc_code_list_id)
+                    ->where('benefit_code', $request->benefit_code)
+                    ->where('effective_date', $request->effective_date)
 
                         ->update(
                             [
-
-                                'TERMINATION_DATE' => $request->termination_date,
-                                'DATE_TIME_CREATED' => $createddate,
-                                'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
-                                'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
-                                'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
-                                'MESSAGE' => $request->message,
-                                'MESSAGE_STOP_DATE' => $request->message_stop_date,
-                                'MIN_AGE' => $request->min_age,
-                                'MAX_AGE' => $request->max_age,
-                                'MIN_PRICE' => $request->min_price,
-                                'MAX_PRICE' => $request->max_price,
-                                'MIN_PRICE_OPT' => $request->max_price_opt,
-                                'MAX_PRICE_OPT' => $request->max_price_opt,
-                                'VALID_RELATION_CODE' => $request->valid_relation_code,
-                                'SEX_RESTRICTION' => $request->sex_restriction,
-                                'MODULE_EXIT' => $request->module_exit,
-                                'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
-                                'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
-                                'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
-                                'COVERAGE_START_DAYS' => $request->coverage_start_days,
-                                'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
+                            
+                            'TERMINATION_DATE' => $request->termination_date,
+                            'DATE_TIME_CREATED' => $createddate,
+                            'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
+                            'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                            'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
+                            'MESSAGE' => $request->message,
+                            'MESSAGE_STOP_DATE' => $request->message_stop_date,
+                            'MIN_AGE' => $request->min_age,
+                            'MAX_AGE' => $request->max_age,
+                            'MIN_PRICE' => $request->min_price,
+                            'MAX_PRICE' => $request->max_price,
+                            'MIN_PRICE_OPT' => $request->max_price_opt,
+                            'MAX_PRICE_OPT' => $request->max_price_opt,
+                            'VALID_RELATION_CODE' => $request->valid_relation_code,
+                            'SEX_RESTRICTION' => $request->sex_restriction,
+                            'MODULE_EXIT' => $request->module_exit,
+                            'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
+                            'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
+                            'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
+                            'COVERAGE_START_DAYS' => $request->coverage_start_days,
+                            'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
 
                             ]
 
@@ -321,7 +332,12 @@ class BenefitDerivationController extends Controller
                     $update = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                 }
+
+
+
             }
+
+
         }
     }
 
@@ -334,13 +350,14 @@ class BenefitDerivationController extends Controller
             ->get();
 
         return $this->respondWithToken($this->token(), 'data fetched Successfully', $data);
+
     }
 
     public function search(Request $request)
     {
         $ndc = DB::table('BENEFIT_DERIVATION_NAMES')
             ->select('BENEFIT_DERIVATION_ID', 'DESCRIPTION')
-            ->where('BENEFIT_DERIVATION_ID', 'like', '%' . $request->search . '%')
+            ->where('BENEFIT_DERIVATION_ID', 'like', '%' . $request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -396,6 +413,8 @@ class BenefitDerivationController extends Controller
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndclist);
+
+
     }
     public function benefitderivationdelete(Request $request)
     {

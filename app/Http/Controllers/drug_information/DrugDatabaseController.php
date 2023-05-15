@@ -14,7 +14,6 @@ class DrugDatabaseController extends Controller
     {
 
 
-
         $getData = DB::table('DRUG_MASTER')
             ->where('NDC', $request->ndc)
             // ->Where('LABEL_NAME',$request->label_name))
@@ -27,6 +26,8 @@ class DrugDatabaseController extends Controller
             if ($getData) {
 
                 return $this->respondWithToken($this->token(), 'NDC ID Already Exists', $getData);
+
+
             } else {
 
 
@@ -115,6 +116,9 @@ class DrugDatabaseController extends Controller
 
 
                             ]);
+
+
+
                     }
                 }
 
@@ -126,7 +130,12 @@ class DrugDatabaseController extends Controller
                 if ($addData) {
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
                 }
+
+
+
+
             }
+
         } else { {
                 $updateData = DB::table('DRUG_MASTER')
                     ->where('NDC', $request->ndc)
@@ -213,6 +222,9 @@ class DrugDatabaseController extends Controller
 
 
                             ]);
+
+
+
                     }
                 }
 
@@ -226,6 +238,9 @@ class DrugDatabaseController extends Controller
                 }
             }
         }
+
+
+
     }
 
 
@@ -278,7 +293,8 @@ class DrugDatabaseController extends Controller
                 if ($updateUser) {
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully !!!', $updateUser);
                 }
-            } else if ($request->add_price == 0  || $request->add_drug_price == 1) {
+
+            } else if ($request->add_price == 0 || $request->add_drug_price == 1) {
 
 
                 $addData = DB::table('DRUG_PRICE')
@@ -301,21 +317,13 @@ class DrugDatabaseController extends Controller
                 if ($addData) {
                     return $this->respondWithToken($this->token(), 'Record Added Successfully!!!', $addData);
                 }
-            }
-        }
-    }
-    public function drug_database_delete(Request $request)
-    {
-        if (isset($request->ndc) && ($request->generic_product_id)) {
-            $all_exceptions_lists =  DB::table('DRUG_MASTER')
-                ->where('NDC', $request->ndc)
-                ->delete();
 
-            if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
+
             }
+
         }
+
     }
+
+
 }

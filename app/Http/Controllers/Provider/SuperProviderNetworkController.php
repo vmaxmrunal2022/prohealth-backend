@@ -23,20 +23,25 @@ class SuperProviderNetworkController extends Controller
     {
 
         $validator = Validator::make($request->all(), [
-            "super_rx_network_id" => ['required','max:10'],
-            "super_rx_network_id_name"=>['required','max:36'],
+
+            "super_rx_network_id" => ['required', 'max:10'],
+            "super_rx_network_id_name" => ['required','max:35'],
+            "min_rx_qty" => ['max:6'],
+            "max_rx_qty" => ['max:6'],
             "rx_network_id" => ['required'],
-            'comm_charge_paid'=>['max:10'],
-            'comm_charge_reject'=>['max:10'],
-            'starter_dose_maint_bypass_days'=>['max:3'],
-            'starter_dose_bypass_days'=>['max:3'],
-            'starter_dose_days'=>['max:3'],
-            'max_fills_opt'=>['max:1'],
-            'max_retail_fills'=>['max:6'],
-            'min_rx_days'=>['max:1'],
-            'max_rx_days'=>['max:1'],
-            'min_rx_qty'=>['max:6'],
-            'max_rx_qty'=>['max:6']
+            "rx_network_type" => ['max:6'],
+            "min_rx_days" => ['max:1'],
+            "max_rx_days" => ['max:1'],
+            "effective_date" => ['max:6'],
+            "max_retail_fills" => ['max:6'],
+            "max_fills_opt" => ['max:1'],
+            "starter_dose_days" => ['max:3'],
+            "price_schedule_ovrd" => ['max:6'],
+            "starter_dose_bypass_days" => ['max:3'],
+            "starter_dose_maint_bypass_days" => ['max:3'],
+            "termination_date" => ['max:6'],
+            "comm_charge_paid" => ['max:10'],
+            "comm_charge_reject" => ['max:10'],
         ]);
 
         if ($validator->fails()) {
@@ -140,13 +145,11 @@ class SuperProviderNetworkController extends Controller
                     'comm_charge_paid'=>$request->comm_charge_paid,
                     'comm_charge_reject'=>$request->comm_charge_reject,
                     'days_supply_opt'=>$request->days_supply_opt,
-                    'effective_date'=>$request->effective_date,
                     'max_fills_opt'=>$request->max_fills_opt,
                     'max_retail_fills'=>$request->max_retail_fills,
                     'max_rx_qty'=>$request->max_rx_qty,
                     'min_rx_qty'=>$request->min_rx_qty,
                     'price_schedule_ovrd'=>$request->price_schedule_ovrd,
-                    'rx_network_id'=>$request->rx_network_id,
                     'rx_network_type'=>$request->rx_network_type,
                     'starter_dose_bypass_days'=>$request->starter_dose_bypass_days,
                     'starter_dose_days'=>$request->starter_dose_days,

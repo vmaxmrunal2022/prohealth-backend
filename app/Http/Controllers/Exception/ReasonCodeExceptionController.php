@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-
 class ReasonCodeExceptionController extends Controller
 {
 
@@ -143,11 +142,11 @@ class ReasonCodeExceptionController extends Controller
                 //     })
                 // ],
                 // "reason_code_list_id" => ['required','max:36'],
-                "reason_code_name" => ['required', 'max:36'],
-                "reject_code" => ['required', 'max:2'],
-                'reason_code' => ['required', 'max:1'],
-                'effective_date' => ['required', 'max:10'],
-                'termination_date' => ['required', 'max:10'],
+                "reason_code_name"=>['required','max:36'],
+                "reject_code"=>['required','max:11'],
+                'reason_code'=>['required','max:10'],
+                'effective_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10'],
             ]);
 
             if ($validator->fails()) {
@@ -165,31 +164,35 @@ class ReasonCodeExceptionController extends Controller
                 );
 
                 $add = DB::table('REASON_CODE_LISTS')
-                    ->insert(
-                        [
-                            'reason_code_list_id' => $request->reason_code_list_id,
-                            'reject_code' => $request->reject_code,
-                            'reason_code' => $request->reason_code,
-                            'effective_date' => $request->effective_date,
-                            'termination_date' => $request->termination_date,
-                            'date_time_created' => $createddate,
-                            'date_time_modified' => $createddate,
-                        ]
-                    );
-
+                ->insert(
+                    [
+                        'reason_code_list_id' => $request->reason_code_list_id,
+                        'reject_code' => $request->reject_code,
+                        'reason_code' => $request->reason_code,
+                        'effective_date' => $request->effective_date,
+                        'termination_date' => $request->termination_date,
+                        'date_time_created' => $createddate,
+                        'date_time_modified' => $createddate,
+                    ]
+                );
+                    
                 $add = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
             }
+
+
+
         } else if ($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
 
-                "reason_code_list_id" => ['required', 'max:36'],
-                "reason_code_name" => ['required', 'max:36'],
-                "reject_code" => ['required', 'max:2'],
-                'reason_code' => ['required', 'max:1'],
-                'effective_date' => ['required', 'max:10'],
-                'termination_date' => ['required', 'max:10'],
+                "reason_code_list_id" => ['required','max:36'],
+                "reason_code_name"=>['required','max:36'],
+                "reject_code"=>['required','max:2'],
+                'reason_code'=>['required','max:1'],
+                'effective_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10'],
             ]);
 
             if ($validator->fails()) {
@@ -218,20 +221,21 @@ class ReasonCodeExceptionController extends Controller
 
                 if ($checkGPI <= "0") {
                     $update = DB::table('REASON_CODE_LISTS')
-                        ->insert(
-                            [
-                                'reason_code_list_id' => $request->reason_code_list_id,
-                                'reject_code' => $request->reject_code,
-                                'reason_code' => $request->reason_code,
-                                'effective_date' => $request->effective_date,
-                                'termination_date' => $request->termination_date,
-                                'date_time_created' => $createddate,
-                                'date_time_modified' => $createddate,
-                            ]
-                        );
-
+                    ->insert(
+                        [
+                            'reason_code_list_id' => $request->reason_code_list_id,
+                            'reject_code' => $request->reject_code,
+                            'reason_code' => $request->reason_code,
+                            'effective_date' => $request->effective_date,
+                            'termination_date' => $request->termination_date,
+                            'date_time_created' => $createddate,
+                            'date_time_modified' => $createddate,
+                        ]
+                    );
+                       
                     $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
                 } else {
 
 
@@ -245,19 +249,24 @@ class ReasonCodeExceptionController extends Controller
                         );
 
                     $update = DB::table('REASON_CODE_LISTS')
-                        ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
-                        ->where('REJECT_CODE', $request->reject_code)
-                        ->where('reason_code', $request->reason_code)
+                    ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
+                    ->where('REJECT_CODE', $request->reject_code)
+                    ->where('reason_code', $request->reason_code)
                         ->update(
                             [
-                                'TERMINATION_DATE' => $request->termination_date,
+                                'TERMINATION_DATE'=>$request->termination_date,
 
                             ]
                         );
                     $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                 }
+
+
+
             }
+
+
         }
     }
 
@@ -267,23 +276,39 @@ class ReasonCodeExceptionController extends Controller
     {
         $ndc = DB::table('REASON_CODE_LISTS')
             ->join('REASON_CODE_LIST_NAMES', 'REASON_CODE_LISTS.REASON_CODE_LIST_ID', '=', 'REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID')
-            ->where('REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID', 'like', '%' . $request->search . '%')
-            ->orWhere('REASON_CODE_LISTS.REASON_CODE_LIST_ID', 'like', '%' . $request->search . '%')
+            ->where('REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID', 'like', '%' .$request->search. '%')
+            ->orWhere('REASON_CODE_LISTS.REASON_CODE_LIST_ID', 'like', '%' . $request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function getNDCItemDetails($ndcid)
+    public function getNDCItemDetails($list_id,$reject_code,$reason_code,$efff)
     {
         $ndc = DB::table('REASON_CODE_LISTS')
             // ->select('NDC_EXCEPTION_LISTS.*', 'REASON_CODE_LIST_NAMES.NDC_EXCEPTION_LIST as exception_list', 'REASON_CODE_LIST_NAMES.EXCEPTION_NAME as exception_name')
             ->join('REASON_CODE_LIST_NAMES', 'REASON_CODE_LISTS.REASON_CODE_LIST_ID', '=', 'REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID')
-            ->where('REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID', 'like', '%' . strtoupper($ndcid) . '%')
+            ->where('REASON_CODE_LISTS.REASON_CODE_LIST_ID', $list_id)
+            ->where('REASON_CODE_LISTS.REJECT_CODE', $reject_code)
+            ->where('REASON_CODE_LISTS.REASON_CODE', $reason_code)
+            ->where('REASON_CODE_LISTS.EFFECTIVE_DATE', $efff)
+
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
+
     }
+
+    public function getList($id){
+
+        $ndc = DB::table('REASON_CODE_LISTS')
+        // ->select('NDC_EXCEPTION_LISTS.*', 'REASON_CODE_LIST_NAMES.NDC_EXCEPTION_LIST as exception_list', 'REASON_CODE_LIST_NAMES.EXCEPTION_NAME as exception_name')
+            ->where('REASON_CODE_LIST_ID',$id)->first();
+
+            return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
+
     public function delete(Request $request)
     {
         if (isset($request->reason_code_list_id) && ($request->reason_code)) {

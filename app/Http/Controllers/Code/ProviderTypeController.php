@@ -98,9 +98,18 @@ class ProviderTypeController extends Controller
 
     public function delete(Request $request)
     {
-        return DB::table('PROVIDER_TYPES')->where('PROVIDER_TYPE', $request->id)->delete()
-            ? $this->respondWithToken($this->token(), 'Successfully deleted')
-            : $this->respondWithToken($this->token(), 'Could find data');
+        if (isset($request->provider_type)) {
+            $delete_provider_type =  DB::table('PROVIDER_TYPES')
+                ->where('PROVIDER_TYPE', $request->provider_type)
+                ->delete();
+            if ($delete_provider_type) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
+        }
     }
 
     public function checkProviderTypeExist(Request $request)

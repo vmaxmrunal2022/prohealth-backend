@@ -19,6 +19,25 @@ class CopayStrategyController extends Controller
 
         if ($request->has('new')) {
 
+
+            $validator = Validator::make($request->all(), [
+                "copay_strategy_id" => ['required', 'max:10', Rule::unique('PRICING_STRATEGY_NAMES')->where(function ($q) {
+                    $q->whereNotNull('pricing_strategy_id');
+                })],
+                "copay_strategy_name" => ['required','max:35'],
+                "pharm_type_variation_ind" => ['max:1'],
+                "network_part_variation_ind" => ['required', 'max:10'],
+                "claim_type_variation_ind" => ['max:1'],
+                "formulary_variation_ind" => ['max:1'],
+                "effective_date" => ['required','max:1'],
+                "copay_schedule" => ['required','max:10'],
+                "module_exit" => ['max:10'],
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
             $accum_benfit_stat_names = DB::table('COPAY_STRATEGY_NAMES')->insert(
                 [
                     'copay_strategy_id' => $request->copay_strategy_id,
@@ -41,17 +60,33 @@ class CopayStrategyController extends Controller
                     'form_id' => '',
                     'user_id_created' => '',
                     'effective_date' => $request->effective_date,
-                    'copay_schedule' => $request->copay_schedule
+                    'copay_schedule'=>$request->copay_schedule
 
                 ]
             );
         } else {
 
+            $validator = Validator::make($request->all(), [
+                "copay_strategy_id" => ['required', 'max:10'],
+                "copay_strategy_name" => ['required','max:35'],
+                "pharm_type_variation_ind" => ['max:1'],
+                "network_part_variation_ind" => ['required', 'max:10'],
+                "claim_type_variation_ind" => ['max:1'],
+                "formulary_variation_ind" => ['max:1'],
+                "effective_date" => ['required','max:1'],
+                "copay_schedule" => ['required','max:10'],
+                "module_exit" => ['max:10'],
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+            
             $benefitcode = DB::table('COPAY_STRATEGY_NAMES')
                 ->where('copay_strategy_id', $request->copay_strategy_id)
                 ->update(
                     [
-                        'copay_strategy_id' => $request->copay_strategy_id,
+                        'copay_strategy_id' =>$request->copay_strategy_id,
                         'copay_strategy_name' => $request->copay_strategy_name,
 
 
@@ -72,7 +107,7 @@ class CopayStrategyController extends Controller
                         'form_id' => '',
                         'user_id_created' => '',
                         'effective_date' => $request->effective_date,
-                        'copay_schedule' => $request->copay_schedule
+                        'copay_schedule'=>$request->copay_schedule
 
 
 
@@ -98,8 +133,8 @@ class CopayStrategyController extends Controller
             $ndc = DB::table('COPAY_STRATEGY')
                 ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
                 ->select('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name')
-                ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' . $request->search . '%')
-                ->orWhere('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME', 'like', '%' . $request->search . '%')
+                ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' .$request->search. '%')
+                ->orWhere('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME', 'like', '%' .$request->search. '%')
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $ndc);
@@ -109,9 +144,9 @@ class CopayStrategyController extends Controller
     public function getList($ndcid)
     {
         $ndclist = DB::table('COPAY_STRATEGY')
-            ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
+        ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
             // ->select( 'DIAGNOSIS_LIST', 'DIAGNOSIS_ID', 'PRIORITY' )
-            ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' . $ndcid . '%')
+            ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' .$ndcid . '%')
             // ->orWhere( 'EXCEPTION_NAME', 'like', '%' . strtoupper( $ndcid ) . '%' )
             ->get();
 
@@ -135,30 +170,5 @@ class CopayStrategyController extends Controller
             ->get();
 
         return $this->respondWithToken($this->token(), 'Data Fetched Suceefully', $ndc);
-    }
-    public function copay_delete(Request $request)
-    {
-        if (isset($request->copay_strategy_id) && ($request->copay_strategy_name)) {
-            $all_exceptions_lists =  DB::table('COPAY_STRATEGY_NAMES')
-                ->where('COPAY_STRATEGY_ID', $request->copay_strategy_id)
-                ->delete();
-
-            if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
-            }
-        } else if (isset($request->copay_strategy_id)) {
-
-            $exception_delete =  DB::table('COPAY_STRATEGY')
-                ->where('COPAY_STRATEGY_ID', $request->copay_strategy_id)
-                ->delete();
-
-            if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
-            }
-        }
     }
 }

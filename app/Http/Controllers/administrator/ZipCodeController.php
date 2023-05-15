@@ -41,6 +41,19 @@ class ZipCodeController extends Controller
 
         if ($request->has('new')) {
 
+            $validator = Validator::make($request->all(), [
+                'zip_code' => ['required','max:9'],
+                'city' => ['max:18'],
+                'state' => ['max:2'],
+                'user_id' => ['max:10'],
+                'form_id' => ['max:10'],
+                'county' => ['max:20'],
+                'country_code' => ['max:4'],
+            ]);
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
+
             if($record){
 
                 return $this->respondWithToken($this->token(), 'ZipCode Already Exists', $record);
@@ -65,6 +78,19 @@ class ZipCodeController extends Controller
             }
         }
           } else {
+
+            $validator = Validator::make($request->all(), [
+                'zip_code' => ['required','max:9'],
+                'city' => ['max:18'],
+                'state' => ['max:2'],
+                'user_id' => ['max:10'],
+                'form_id' => ['max:10'],
+                'county' => ['max:20'],
+                'country_code' => ['max:4'],
+            ]);
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            }
             $updateUser = DB::table('ZIP_CODES')
                 ->where('ZIP_CODE', $request->zip_code)
                 ->update([

@@ -21,7 +21,7 @@ class DiagnosisController extends Controller
     public function get(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'search' => ['required']
+            // 'search' => ['required']
         ]);
         if ($validator->fails()) {
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -36,8 +36,8 @@ class DiagnosisController extends Controller
     }
 
 
-  
-    
+
+
 
 
 
@@ -112,9 +112,18 @@ class DiagnosisController extends Controller
 
     public function delete(Request $request)
     {
-        return  DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', $request->id)->delete()
-            ? $this->respondWithToken($this->token(), 'Successfully deleted')
-            : $this->respondWithToken($this->token(), 'Could find data');
+        if (isset($request->diagnosis_id)) {
+            $delete_diagnosis_code =  DB::table('DIAGNOSIS_CODES')
+                ->where('DIAGNOSIS_ID', $request->diagnosis_id)
+                ->delete();
+            if ($delete_diagnosis_code) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
+        }
     }
 
     public function checkDiagnosisCodeExist(Request $request)

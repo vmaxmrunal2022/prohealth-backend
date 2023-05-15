@@ -104,13 +104,14 @@ class AccumlatedController extends Controller
         return $this->respondWithToken($this->token(), 'Successfully updated', $data);
     }
 
-    public function getAllAcuumlatedBenefits(Request $request)
-    {
+    public function getAllAcuumlatedBenefits(Request $request){
 
         $existdata = DB::table('accum_bene_strategy_names')
-            ->get();
+        ->get();
 
         return $this->respondWithToken($this->token(), 'Successfully added', $existdata);
+
+
     }
 
     public function search(Request $request)
@@ -153,30 +154,5 @@ class AccumlatedController extends Controller
             ->get();
 
         return $this->respondWithToken($this->token(), 'Data Fetched Suceefully', $ndc);
-    }
-    public function accumulated_delete(Request $request)
-    {
-        if (isset($request->accum_bene_strategy_name) && ($request->accum_bene_strategy_id)) {
-            $all_exceptions_lists =  DB::table('accum_bene_strategy_names')
-                ->where('ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
-                ->delete();
-
-            if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
-            }
-        } else if (isset($request->accum_bene_strategy_id)) {
-
-            $exception_delete =  DB::table('ACCUM_BENEFIT_STRATEGY')
-                ->where('ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
-                ->delete();
-
-            if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
-            }
-        }
     }
 }

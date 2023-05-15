@@ -7,13 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
-
 class MacListController extends Controller
 {
     public function get(Request $request)
     {
         $macList = DB::table('MAC_LIST')
-            ->where('MAC_LIST', 'like', '%' . $request->search . '%')
+            ->where('MAC_LIST', 'like', '%' . $request->search. '%')
             ->orWhere('MAC_DESC', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
@@ -136,15 +135,15 @@ class MacListController extends Controller
         }
     }
 
-
+    
 
     public function submit(Request $request)
     {
-        $createddate = date('y-m-d');
+        $createddate = date( 'y-m-d' );
 
         $validation = DB::table('mac_list')
-            ->where('mac_list', $request->mac_list)
-            ->get();
+        ->where('mac_list',$request->mac_list)
+        ->get();
 
         if ($request->add_new == 1) {
 
@@ -165,7 +164,7 @@ class MacListController extends Controller
                 // })],
 
                 "ma_desc" => ['max:36'],
-
+              
 
 
 
@@ -173,172 +172,172 @@ class MacListController extends Controller
 
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            } else {
+            }
+
+            else{
                 if ($validation->count() > 0) {
                     return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
                 }
                 $add_names = DB::table('mac_list')->insert(
                     [
                         'mac_list' => $request->mac_list,
-                        'mac_desc' => $request->mac_desc,
-
+                        'mac_desc'=>$request->mac_desc,
+                        
                     ]
                 );
-
+    
                 $add = DB::table('MAC_TABLE')
                     ->insert([
-
-
-                        'MAC_LIST' => $request->mac_list,
-                        'GPI' => $request->gpi,
-                        'MAC_AMOUNT' => $request->mac_amount,
-                        'ALLOW_FEE' => $request->allow_fee,
-                        'EFFECTIVE_DATE' => $request->effective_date,
-                        'TERMINATION_DATE' => $request->termination_date,
-                        'PRICE_SOURCE' => $request->price_source,
-                        'PRICE_TYPE' => $request->price_type,
-
-
-
+    
+                        
+                            'MAC_LIST' =>$request->mac_list,
+                            'GPI'=>$request->gpi,
+                            'MAC_AMOUNT'=>$request->mac_amount,
+                            'ALLOW_FEE'=>$request->allow_fee,
+                            'EFFECTIVE_DATE'=>$request->effective_date,
+                            'TERMINATION_DATE'=>$request->termination_date,
+                            'PRICE_SOURCE'=>$request->price_source,
+                            'PRICE_TYPE'=>$request->price_type,
+                           
+                        
+                        
                     ]);
-
+    
                 $add = DB::table('MAC_TABLE')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
             }
+
+
+           
         } else if ($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
 
                 'mac_list' => ['required', 'max:10'],
-
+                
 
 
             ]);
 
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            } else {
+            }
+
+            else{
 
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
-
+    
                 $mac_list = DB::table('mac_list')
-                    ->where('mac_list', $request->mac_list)
-                    ->first();
-
-
+                ->where('mac_list', $request->mac_list )
+                ->first();
+                    
+    
                 $checkGPI = DB::table('MAC_TABLE')
                     ->where('MAC_LIST', $request->mac_list)
-                    ->where('gpi', $request->gpi)
+                    ->where('gpi',$request->gpi)
                     ->get()
                     ->count();
 
-                // dd($checkGPI);
+                    // dd($checkGPI);
 
 
                 $effect_date_check = DB::table('MAC_TABLE')
                     ->where('MAC_LIST', $request->mac_list)
-                    ->where('gpi', $request->gpi)
-                    ->where('effective_date', $request->effective_date)
+                    ->where('gpi',$request->gpi)
+                    ->where('effective_date',$request->effective_date)
                     ->get()
                     ->count();
-                // dd($effective_date);
+                    // dd($effective_date);
                 // if result >=1 then update NDC_EXCEPTION_LISTS table record
                 //if result 0 then add NDC_EXCEPTION_LISTS record
 
 
-                if ($effect_date_check == 1) {
+                if($effect_date_check == 1){
 
                     $add_names = DB::table('mac_list')
-                        ->where('mac_list', $request->mac_list)
+                    ->where('mac_list',$request->mac_list)
+                    ->update(
+                        [
+                            'mac_desc'=>$request->mac_desc,
+                            
+                        ]
+                    );
+
+
+                    $update = DB::table('MAC_TABLE' )
+                    ->where('MAC_LIST', $request->mac_list)
+                    ->where('gpi',$request->gpi)
+                    ->where('effective_date',$request->effective_date) 
+                    ->where('termination_date',$request->termination_date)      
+     
                         ->update(
                             [
-                                'mac_desc' => $request->mac_desc,
-
+                                'MAC_AMOUNT'=>$request->mac_amount,
+                                'ALLOW_FEE'=>$request->allow_fee,
+                                'TERMINATION_DATE'=>$request->termination_date,
+                                'PRICE_SOURCE'=>$request->price_source,
+                                'PRICE_TYPE'=>$request->price_type,
+                                
                             ]
                         );
+                        $update = DB::table('MAC_TABLE')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
+                        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+
+                   
 
 
-                    $update = DB::table('MAC_TABLE')
-                        ->where('MAC_LIST', $request->mac_list)
-                        ->where('gpi', $request->gpi)
-                        ->where('effective_date', $request->effective_date)
-                        ->where('termination_date', $request->termination_date)
+                }else if($checkGPI == 1)
+                {
 
-                        ->update(
-                            [
-                                'MAC_AMOUNT' => $request->mac_amount,
-                                'ALLOW_FEE' => $request->allow_fee,
-                                'TERMINATION_DATE' => $request->termination_date,
-                                'PRICE_SOURCE' => $request->price_source,
-                                'PRICE_TYPE' => $request->price_type,
+                    return $this->respondWithToken($this->token(), 'Record already  exists',$checkGPI);
 
-                            ]
-                        );
-                    $update = DB::table('MAC_TABLE')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-                } else if ($checkGPI == 1) {
 
-                    return $this->respondWithToken($this->token(), 'Record already  exists', $checkGPI);
-                } else {
+                }
+                else{
                     if ($checkGPI <= "0") {
                         $update = DB::table('MAC_TABLE')
-                            ->insert([
+                        ->insert([
+    
+                        
+                            'MAC_LIST' =>$request->mac_list,
+                            'GPI'=>$request->gpi,
+                            'MAC_AMOUNT'=>$request->mac_amount,
+                            'ALLOW_FEE'=>$request->allow_fee,
+                            'EFFECTIVE_DATE'=>$request->effective_date,
+                            'TERMINATION_DATE'=>$request->termination_date,
+                            'PRICE_SOURCE'=>$request->price_source,
+                            'PRICE_TYPE'=>$request->price_type,
+                           
+                        
+                        
+                    ]);
+                       
+                    $add_names = DB::table('mac_list')
+                    ->where('mac_list',$request->mac_list)
+                    ->update(
+                        [
+                            'mac_desc'=>$request->mac_desc,
+                            
+                        ]
+                    );
+    
+                    $update = DB::table('mac_list')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+    
+                    } 
 
-
-                                'MAC_LIST' => $request->mac_list,
-                                'GPI' => $request->gpi,
-                                'MAC_AMOUNT' => $request->mac_amount,
-                                'ALLOW_FEE' => $request->allow_fee,
-                                'EFFECTIVE_DATE' => $request->effective_date,
-                                'TERMINATION_DATE' => $request->termination_date,
-                                'PRICE_SOURCE' => $request->price_source,
-                                'PRICE_TYPE' => $request->price_type,
-
-
-
-                            ]);
-
-                        $add_names = DB::table('mac_list')
-                            ->where('mac_list', $request->mac_list)
-                            ->update(
-                                [
-                                    'mac_desc' => $request->mac_desc,
-
-                                ]
-                            );
-
-                        $update = DB::table('mac_list')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-                    }
                 }
-            }
-        }
-    }
-    public function maclist_Delete(Request $request)
-    {
-        if (isset($request->mac_list) && ($request->gpi)) {
-            $all_exceptions_lists =  DB::table('MAC_TABLE')
-                ->where('MAC_LIST', $request->mac_list)
-                ->delete();
+               
+                
 
-            if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
+    
+            
             }
-        } else if (isset($request->mac_list)) {
 
-            $exception_delete =  DB::table('mac_list')
-                ->where('COPAY_LIST', $request->mac_list)
-                ->delete();
-
-            if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
-            }
+           
         }
     }
 }

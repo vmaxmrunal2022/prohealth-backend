@@ -12,8 +12,8 @@ class TaxScheduleController extends Controller
     public function get(Request $request)
     {
         $taxData = DB::table('tax_schedule')
-            ->where('tax_schedule_id', 'like', '%' . $request->search . '%')
-            ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->get();
+        ->where('tax_schedule_id', 'like', '%' . $request->search. '%')
+        ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->get();
 
         return $this->respondWithToken($this->token(), '', $taxData);
     }
@@ -80,18 +80,6 @@ class TaxScheduleController extends Controller
                     'OTC_TAX_BASE_PRICE' => $request->otc_tax_base_price,
                 ]);
             return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_tax_schedule);
-        }
-    }
-    public function tax_schedule_delete(Request $request)
-    {
-        $all_exceptions_lists =  DB::table('tax_schedule')
-            ->where('TAX_SCHEDULE_ID', $request->tax_schedule_id)
-            ->delete();
-
-        if ($all_exceptions_lists) {
-            return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-        } else {
-            return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
 }

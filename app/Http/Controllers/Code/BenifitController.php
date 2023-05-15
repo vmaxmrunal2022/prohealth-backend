@@ -31,22 +31,19 @@ class BenifitController extends Controller
 
     public function get_all(Request $request)
     {
-        
-            $benefitcodes = DB::table('benefit_codes')->get();
-            if($benefitcodes){
 
-                return $this->respondWithToken($this->token(), 'Datafetched Successfully', $benefitcodes);
+        $benefitcodes = DB::table('benefit_codes')->get();
+        if ($benefitcodes) {
 
-            }else{
-                return $this->respondWithToken($this->token(), 'something went wrong', $benefitcodes);
-
-            }
-        
+            return $this->respondWithToken($this->token(), 'Datafetched Successfully', $benefitcodes);
+        } else {
+            return $this->respondWithToken($this->token(), 'something went wrong', $benefitcodes);
+        }
     }
 
     public function add(Request $request)
     {
-        
+
         $response  = new Response();
         // $response = $response->setStatusCode(200);
         // return $response;
@@ -109,9 +106,19 @@ class BenifitController extends Controller
 
     public function delete(Request $request)
     {
-        return  DB::table('benefit_codes')->where('benefit_code', $request->id)->delete()
-            ? $this->respondWithToken($this->token(), 'Record Deleted Successfully')
-            : $this->respondWithToken($this->token(), 'Could find data');
+        if (isset($request->benefit_code)) {
+
+            $delete_benefit_code =  DB::table('BENEFIT_CODES')
+                ->where('benefit_code', $request->benefit_code)
+                ->delete();
+            if ($delete_benefit_code) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
+        }
     }
 
     public function checkBenifitCodeExist(Request $reqeust)

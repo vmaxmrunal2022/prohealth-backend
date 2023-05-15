@@ -27,24 +27,16 @@ class ServiceTypeController extends Controller
         }
     }
 
-    public function getallServicetypes(Request $request){
+    public function getallServicetypes(Request $request)
+    {
 
-       $service_types_data= DB::table('SERVICE_TYPES')->get();
+        $service_types_data = DB::table('SERVICE_TYPES')->get();
 
-       if($service_types_data){
-        return  $this->respondWithToken($this->token(), 'data Fetched Successfully', $service_types_data);
-       }
-
-       else{
-        return  $this->respondWithToken($this->token(), 'something went wrong', $service_types_data);
-
-       }
-
-
-
-
-
-
+        if ($service_types_data) {
+            return  $this->respondWithToken($this->token(), 'data Fetched Successfully', $service_types_data);
+        } else {
+            return  $this->respondWithToken($this->token(), 'something went wrong', $service_types_data);
+        }
     }
 
     public function add(Request $request)
@@ -105,9 +97,18 @@ class ServiceTypeController extends Controller
 
     public function delete(Request $request)
     {
-        return DB::table('SERVICE_TYPES')->where('SERVICE_TYPE', $request->id)->delete()
-            ? $this->respondWithToken($this->token(), 'Successfully deleted')
-            : $this->respondWithToken($this->token(), 'Could not find data');
+        if (isset($request->service_type)) {
+            $delete_service_type =  DB::table('SERVICE_TYPES')
+                ->where('SERVICE_TYPE', $request->service_type)
+                ->delete();
+            if ($delete_service_type) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
+        }
     }
 
     public function checkServiceTypeExist(Request $request)

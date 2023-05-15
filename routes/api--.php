@@ -212,7 +212,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/reason/exception/details/{id}/{}', [ReasonCodeExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
         Route::post('/reason/exception/add', [ReasonCodeExceptionController::class, 'add'])->name('reason.exception.add'); // DETAILS
         Route::post('/reason/exception/delete', [ReasonCodeExceptionController::class, 'delete'])->name('reason.delete');
-
         // NDC
         Route::get('/diagnosis/search', [ValidationListsController::class, 'search'])->name('diagnosis.search'); // SEARCH
         Route::get('/diagnosis/get/{ndcid}', [ValidationListsController::class, 'getDiagnosisList'])->name('diagnosis.list.get'); // LIST ITEMS
@@ -233,7 +232,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/providertype-proc/getlist/{id}', [ProviderTypeProcController::class, 'getList'])->name('provtype.get'); // SEARCH
         Route::get('/get-all-ndc', [NDCExceptionController::class, 'getAllNDCS'])->name('getall.ndcs'); // SEARCH
         Route::post('/providertype-proc/delete', [ProviderTypeProcController::class, 'providertype_proc_delete'])->name('providertype_proc_delete');
-
 
 
 
@@ -787,14 +785,21 @@ Route::group(['prefix' => 'exception'], function ($router) {
 
     // Drug Classification
     Route::get('/drugcalss/search', [DrugClassController::class, 'search'])->name('drugclass.search'); // SEARCH
-    Route::get('drugcalss/get-ndc', [DrugClassController::class, 'getNdc'])->name('');
+    Route::get('drugcalss/get-ndc', [DrugClassController::class, 'getNdc']);
     Route::get('/drugcalss/get/{ndcid}', [DrugClassController::class, 'getDetailsList'])->name('drugclass.list.get'); // LIST ITEMS
+<<<<<<< HEAD
+    Route::get('/drugcalss/details/{ndcid}/{ndcid2}', [DrugClassController::class, 'getNDCItemDetails'])->name('drugclass.details.get'); // DETAILS
+=======
     Route::get('/drugcalss/details/{drug_catgy_exception_list}/{scategory}/{stype}/{new_drug_status}/{process_rule}/{effective_date}', [DrugClassController::class, 'getNDCItemDetails'])->name('drugclass.details.get'); // DETAILS
+>>>>>>> 22316b9ebf18d4f30f7af34ff2432e344ac72215
     Route::post('/drugcalss/add', [DrugClassController::class, 'add']); // add
     Route::get('/drugcategories', [DrugClassController::class, 'DrugCategoryList']); // SEARCH
     Route::get('/drugclass/dropdown', [DrugClassController::class, 'drugClassDropDown']); // SEARCH
     Route::post('/drugclass/delete', [DrugClassController::class, 'drugclassDelete'])->name('drugclassDelete'); //
+<<<<<<< HEAD
+=======
 
+>>>>>>> 22316b9ebf18d4f30f7af34ff2432e344ac72215
 
     // GPI
 
@@ -806,6 +811,10 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/gpi/gpi-drop-down', [GPIExceptionController::class, 'getGpiDropDown']);
     Route::get('/gpi/list', [GPIExceptionController::class, 'GpiList'])->name('gpi.search'); // SEARCH
     Route::post('/gpi/delete', [GPIExceptionController::class, 'gpi_delete'])->name('gpi_delete');
+<<<<<<< HEAD
+
+=======
+>>>>>>> 22316b9ebf18d4f30f7af34ff2432e344ac72215
 
 
 
@@ -826,7 +835,10 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::post('/procedure/add', [ExceptionProcedureController::class, 'add'])->name('procedure.add'); // SEARCH
     Route::get('/allphysicain_lists', [ExceptionProcedureController::class, 'AllPhysicainLists'])->name('allphysicians'); // SEARCH
     Route::post('/delete/procedure/code', [ExceptionProcedureController::class, 'delete_procedure_code'])->name('delete_procedure_code');
+<<<<<<< HEAD
+=======
 
+>>>>>>> 22316b9ebf18d4f30f7af34ff2432e344ac72215
 
     // BENEFIT LIST EXCEPTION
     Route::get('/benefit/search', [BenefitListController::class, 'search'])->name('benefit.search'); // SEARCH
@@ -844,7 +856,10 @@ Route::group(['prefix' => 'exception'], function ($router) {
 
     Route::get('/benifitcodes/list/all', [BenefitListController::class, 'BenefitLists']);
     Route::post('/benefit/list/delete', [BenefitListController::class, 'benefit_list_delete'])->name('benefit_list_delete');
+<<<<<<< HEAD
+=======
 
+>>>>>>> 22316b9ebf18d4f30f7af34ff2432e344ac72215
 
 
 
@@ -855,7 +870,10 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/provider-type-validation/getDetails/{ncdid}/{ndcid2}/{ncdid3}/{ncdid4}', [ProviderTypeValidationController::class, 'getNDCItemDetails'])->name('provider-type-validation-getFormData');
     Route::get('/provider-type-validation-association-names/list', [ProviderTypeValidationController::class, 'getAllNames'])->name('provider-type-validation-get');
     Route::post('/providertype/validation/delete', [ProviderTypeValidationController::class, 'provider_type_validation_delete'])->name('provider_type_validation_delete');
+<<<<<<< HEAD
+=======
 
+>>>>>>> 22316b9ebf18d4f30f7af34ff2432e344ac72215
 
 
 
@@ -869,7 +887,10 @@ Route::group(['prefix' => 'exception'], function ($router) {
 
     Route::get('/procedure-code-list/details', [PrcedureCodeListController::class, 'getDetails'])->name('procedure-code-details');
     Route::post('/procedure-code-list/delete', [PrcedureCodeListController::class, 'produrecodelistdelete'])->name('produrecodelistdelete');
+<<<<<<< HEAD
+=======
 
+>>>>>>> 22316b9ebf18d4f30f7af34ff2432e344ac72215
 
     //Super Benefit List
     Route::get('/super-benefit-list/get', [SuperBenefitControler::class, 'get']);
@@ -877,7 +898,12 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::post('/super-benefit-list/add', [SuperBenefitControler::class, 'add']);
     Route::post('/super-benefit-list/delete', [SuperBenefitControler::class, 'super_benefit_list_delete'])->name('super_benefit_list_delete');
 
+<<<<<<< HEAD
+    Route::get('/super-benefit-list/get/{id}', [SuperBenefitControler::class, 'getNDCItemDetails']);
+    Route::post('/super-benefit-list/delete', [SuperBenefitControler::class, 'super_benefit_list_delete'])->name('super_benefit_list_delete');
+=======
     Route::get('/super-benefit-list/get/{listid}/{benefitcode}/{effe}', [SuperBenefitControler::class, 'getNDCItemDetails']);
+>>>>>>> 22316b9ebf18d4f30f7af34ff2432e344ac72215
 });
 
 
@@ -927,14 +953,14 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/pricingstrategy/get/{ndcid}', [PricingStrategyController::class, 'getProviderList'])->name('pricingstrategy.list.get'); // LIST ITEMS
     Route::get('/pricingstrategy/details/{ndcid}', [PricingStrategyController::class, 'getNDCItemDetails'])->name('pricingstrategy.details.get'); // DETAIL
     Route::post('/pricingstrategy/add', [PricingStrategyController::class, 'add'])->name('pricingstrategy.add'); // SEARCH
-
+    Route::post('/pricingstrategy/delete', [PricingStrategyController::class, 'pricingstrategy_delete'])->name('pricingstrategy_delete');
 
 
     Route::get('/copay/search', [CopayStrategyController::class, 'search'])->name('copay.search'); // SEARCH
     Route::get('/copay/get/{ndcid}', [CopayStrategyController::class, 'getList'])->name('copay.list.get'); // LIST ITEMS
     Route::get('/copay/details/{ndcid}', [CopayStrategyController::class, 'getDetails'])->name('copay.details.get'); // DETAIL
     Route::post('/copay/add', [CopayStrategyController::class, 'add'])->name('copay.add'); // SEARCH
-
+    Route::post('copay/delete', [CopayStrategyController::class, 'copay_delete'])->name('copay_delete');
 
 
     Route::get('/accumulated/search', [AccumlatedController::class, 'search'])->name('accumulated.search'); // SEARCH
@@ -943,7 +969,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::post('/accumulated/add', [AccumlatedController::class, 'add'])->name('accumulated.add'); // SEARCH
 
     Route::get('/accumulated/all', [AccumlatedController::class, 'getAllAcuumlatedBenefits'])->name('accumulated.all'); // DETAIL
-
+    Route::post('accumulated/benefit/delete', [AccumlatedController::class, 'accumulated_delete'])->name('accumulated.delete');
 
     Route::get('/accumulated/benifit/search', [AccumlatedBenifitController::class, 'search'])->name('accumulated.benifit.search'); // SEARCH
     Route::get('/accumulated/benifit/get/{ndcid}', [AccumlatedBenifitController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
@@ -989,8 +1015,6 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
 
     // getDetails
-
-
     Route::get('/prescriber/search', [PrescriberValidationController::class, 'search'])->name('prescriber.search'); // SEARCH
     Route::get('/prescriber/get/{physicain_list}', [PrescriberValidationController::class, 'getProviderValidationList'])->name('prescriber.list.get'); // LIST ITEMS
     Route::get('/prescriber/details/{physicain_list}/{physicain_id}', [PrescriberValidationController::class, 'getProviderDetails'])->name('prescriber.details.get'); // DETAIL
@@ -1135,7 +1159,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('price-schedule/get-brand-source', [PriceScheduleController::class, 'getBrandSource']);
     Route::post('price-schedule/submit', [PriceScheduleController::class, 'submitPriceSchedule']);
     Route::get('price-schedule/get-all', [PriceScheduleController::class, 'getAll']);
-
+    Route::post('price-schedule/delete', [PriceScheduleController::class, 'priceschedultdelete'])->name('priceschedultdelete');
     //Copay Schedule
     Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
     Route::get('copay-schedule/get-copay-data', [CopayScheduleController::class, 'getCopayData'])->name('get.copay.single');
@@ -1145,7 +1169,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('copay-schedule/get-daw-options', [CopayScheduleController::class, 'getDawOptions']);
     Route::get('copay-schedule/get-coinsurance-calculation-option', [CopayScheduleController::class, 'getConinsuranceCalculationOption']);
     Route::post('copay-schedule/submit', [CopayScheduleController::class, 'submitCopaySchedule']);
-
+    Route::post('copay-schedule/delete', [CopayScheduleController::class, 'deleteCopaySchedule'])->name('delete.copay');
     //Copay Step Schedule
     Route::get('copay-step-schedule/get', [CopayStepScheduleController::class, 'get'])->name('get.copay-step');
     Route::get('copay-step-schedule/get-days-supply', [CopayStepScheduleController::class, 'getDaysSupply']);
@@ -1153,7 +1177,11 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('copay-step-schedule/check-copay-list-existing', [CopayStepScheduleController::class, 'checkCopayListExist']);
     Route::post('copay-step-schedule/submit', [CopayStepScheduleController::class, 'submit'])->name('submitstep');
     Route::get('copay-step-schedule/getmaxcosts/{id}', [CopayStepScheduleController::class, 'getmaxList'])->name('getmaxlists');
+<<<<<<< HEAD
+    Route::post('copay-step-scheule/delete', [CopayStepScheduleController::class, 'copayscheduledelete',])->name('copay_schedule');
+=======
 
+>>>>>>> 22316b9ebf18d4f30f7af34ff2432e344ac72215
 
     Route::get('copay-step-schedule/getcopaylistdata', [CopayStepScheduleController::class, 'getList']);
 
@@ -1164,24 +1192,29 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('mac-list/get-price-source', [MacListController::class, 'getPriceSource']);
     Route::get('mac-list/get-price-type', [MacListController::class, 'getPriceType']);
     Route::post('mac-list/submit', [MacListController::class, 'submit']);
+    Route::post('mac-list/delete', [MacListController::class, 'maclist_Delete'])->name('maclist_Delete');
 
     //Tax Schedule
     Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
     Route::get('tax-schedule/get-calculations', [TaxScheduleController::class, 'getCalculations']);
     Route::get('tax-schedule/get-base-prices', [TaxScheduleController::class, 'getBasePrices']);
     Route::post('tax-schedule/submit', [TaxScheduleController::class, 'submitTaxSchedule']);
-
+    Route::post('tax-schedule/delete', [TaxScheduleController::class, 'tax_schedule_delete'])->name('tax_schedule_delete');
     //Procedure UCR list
     Route::get('procedure-ucr-list/get', [ProcedureUcrList::class, 'get']);
     Route::get('procedure-ucr-list/get-procedure-list-data', [ProcedureUcrList::class, 'getProcedureListData']);
     Route::get('procedure-ucr-list/get-procedure-code', [ProcedureUcrList::class, 'getProcedureCode']);
     Route::post('procedure-ucr-list/submit', [ProcedureUcrList::class, 'submitProcedureList']);
-
+    Route::post('procedure-ucr-list/delete', [ProcedureUcrList::class, 'procedure_delete'])->name('procedure_delete');
     //RVA List
     Route::get('rva-list/get', [RvaListController::class, 'get']);
     Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
     Route::post('rva-list/submit', [RvaListController::class, 'submitRva']);
     Route::get('rva-list/dropdown', [RvaListController::class, 'RvaListDropdown']);
+<<<<<<< HEAD
+    Route::post('rva-list/delete', [RvaListController::class, 'delete_rav'])->name('delete_rav');
+=======
+>>>>>>> 22316b9ebf18d4f30f7af34ff2432e344ac72215
 });
 
 
@@ -1196,6 +1229,7 @@ Route::group(['prefix' => "drug-information/"], function () {
     Route::get('ndc-gpi/details/{ndcid}', [NdcGpiController::class, 'getDetails']);
 
     Route::get('ndc-gpi/drop-down', [NdcGpiController::class, 'GpiDropDown']);
+    Route::get('drug-information-delete', [DrugClassController::class, 'drugDelete'])->name('drugDelete');
 });
 
 
@@ -1216,6 +1250,10 @@ Route::group(['prefix' => 'plan-design/'], function () {
     Route::get('plan-association/get-transaction-association', [PlanAssociationController::class, 'getTransactionAssociation']);
     Route::get('plan-association/get-client-group-label', [PlanAssociationController::class, 'getClientGroupLabel']);
     Route::get('plan-association/get-plan-id', [PlanAssociationController::class, 'getPlanId']);
+<<<<<<< HEAD
+    Route::post('plan-association/delete-plan', [PlanAssociationController::class, 'delete_plan'])->name('delete_plan');
+=======
+>>>>>>> 22316b9ebf18d4f30f7af34ff2432e344ac72215
 });
 
 //Membership

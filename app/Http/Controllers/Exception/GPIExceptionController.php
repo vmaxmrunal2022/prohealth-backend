@@ -24,9 +24,12 @@ class GPIExceptionController extends Controller
         if ($request->add_new == 1) {
 
             $validator = Validator::make($request->all(), [
-                'gpi_exception_list' => ['required', 'max:10', Rule::unique('GPI_EXCEPTION_LISTS')->where(function ($q) {
-                    $q->whereNotNull('gpi_exception_list');
-                })],
+                'gpi_exception_list' => [
+                    'required',
+                    'max:10', Rule::unique('GPI_EXCEPTION_LISTS')->where(function ($q) {
+                        $q->whereNotNull('gpi_exception_list');
+                    })
+                ],
                 // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
                 //     $q->whereNotNull('NDC');
                 // })],
@@ -197,7 +200,11 @@ class GPIExceptionController extends Controller
 
                 $add = DB::table('GPI_EXCEPTION_LISTS')->where('GPI_EXCEPTION_LIST', 'like', '%' . $request->gpi_exception_list . '%')->first();
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
             }
+
+
+
         } else if ($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
@@ -371,6 +378,7 @@ class GPIExceptionController extends Controller
 
                     $update = DB::table('GPI_EXCEPTION_LISTS')->where('gpi_exception_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
                 } else {
                     $update = DB::table('GPI_EXCEPTION_LISTS')
                         ->where('generic_product_id', $request->generic_product_id)
@@ -457,7 +465,12 @@ class GPIExceptionController extends Controller
                     $update = DB::table('GPI_EXCEPTION_LISTS')->where('gpi_exception_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                 }
+
+
+
             }
+
+
         }
     }
 
@@ -525,28 +538,38 @@ class GPIExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
+
+
+
     public function gpi_delete(Request $request)
     {
+
         if (isset($request->gpi_exception_list) && ($request->generic_product_id)) {
-            $all_exceptions_lists =  DB::table('GPI_EXCEPTION_LISTS')
-                ->where('GPI_EXCEPTION_LISTS', $request->gpi_exception_list)
+
+            $exception_delete = DB::table('GPI_EXCEPTION_LISTS')
+
+                ->where('GENERIC_PRODUCT_ID', $request->generic_product_id)
+
+                ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
+
                 ->delete();
 
-            if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
-            }
-        } else if (isset($request->gpi_exception_list)) {
-            $exception_delete =  DB::table('GPI_EXCEPTIONS')
-                ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
-                ->delete();
+
+
 
             if ($exception_delete) {
+
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+
             } else {
+
                 return $this->respondWithToken($this->token(), 'Record Not Found');
+
             }
+
         }
+
     }
+
+
 }

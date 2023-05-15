@@ -31,9 +31,11 @@ class ProviderTypeProcController extends Controller
             ->where('PROV_TYPE_PROC_ASSOC.prov_type_proc_assoc_id', 'like', '%' . $id . '%')
             ->get();
         return $this->respondWithToken($this->token(), '', $data);
+
+
     }
 
-    public function getDetails($id)
+    public function getDetails($id,$provider_type,$procedure_code,$servive_modifier,$effe)
     {
 
         $Details = DB::table('PROV_TYPE_PROC_ASSOC')
@@ -59,8 +61,15 @@ class ProviderTypeProcController extends Controller
 
 
             ->where('PROV_TYPE_PROC_ASSOC.PROV_TYPE_PROC_ASSOC_ID', $id)
+            ->where('PROV_TYPE_PROC_ASSOC.PROVIDER_TYPE', $provider_type)
+            ->where('PROV_TYPE_PROC_ASSOC.PROC_CODE_LIST_ID', $procedure_code)
+            ->where('PROV_TYPE_PROC_ASSOC.SERVICE_MODIFIER', $servive_modifier)
+            ->where('PROV_TYPE_PROC_ASSOC.EFFECTIVE_DATE', $effe)
             ->first();
+            
         return $this->respondWithToken($this->token(), '', $Details);
+
+
     }
 
 
@@ -79,6 +88,8 @@ class ProviderTypeProcController extends Controller
 
             if ($recordcheck) {
                 return $this->respondWithToken($this->token(), 'ProviderType ID Already Exists ', $recordcheck);
+
+
             } else {
 
                 $insert1 = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')->insert(
@@ -135,7 +146,13 @@ class ProviderTypeProcController extends Controller
                     ]
                 );
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $insert);
+
+
+
             }
+
+
+
         } else {
 
 
@@ -194,13 +211,16 @@ class ProviderTypeProcController extends Controller
 
 
             return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+
         }
+
+
     }
 
 
     public function add(Request $request)
     {
-
+       
         $createddate = date('y-m-d');
 
         $validation = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
@@ -234,15 +254,15 @@ class ProviderTypeProcController extends Controller
                 //     })
                 // ],
 
-                "description" => ['required', 'max:36'],
-                "provider_type" => ['required', 'max:2'],
-                "service_modifier" => ['required', 'max:2'],
+                "description" => ['required','max:36'],
+                "provider_type" => ['required','max:2'],
+                "service_modifier" => ['required','max:2'],
                 'ucr' => ['max:10'],
-                'effective_date' => ['required', 'max:10'],
-                'termination_date' => ['required', 'max:10'],
-                'prov_type_proc_assoc_id' => ['required', 'max:36'],
-                'proc_code_list_id' => ['required']
-
+                'effective_date' => ['required','max:10'],
+                'termination_date' => ['required','max:10'],
+                'prov_type_proc_assoc_id'=> ['required','max:36'],
+                'proc_code_list_id'=> ['required']
+               
             ]);
 
             if ($validator->fails()) {
@@ -260,52 +280,56 @@ class ProviderTypeProcController extends Controller
                 );
 
                 $add = DB::table('PROV_TYPE_PROC_ASSOC')
-                    ->insert(
-                        [
-                            'PROV_TYPE_PROC_ASSOC_ID' => $request->prov_type_proc_assoc_id,
-                            'PROVIDER_TYPE' => $request->provider_type,
-                            'SERVICE_MODIFIER' => $request->service_modifier,
-                            'UCR' => $request->ucr,
-                            'EFFECTIVE_DATE' => $request->effective_date,
-                            'TERMINATION_DATE' => $request->termination_date,
-                            'DATE_TIME_CREATED' => '',
-                            'USER_ID_CREATED' => '',
-                            'USER_ID' => '',
-                            'DATE_TIME_MODIFIED' => '',
-                            'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
-                            'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
-                            'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
-                            'MESSAGE' => $request->message,
-                            'MESSAGE_STOP_DATE' => $request->message_stop_date,
-                            'MIN_AGE' => $request->min_age,
-                            'MAX_AGE' => $request->max_age,
-                            'MIN_PRICE' => $request->min_price,
-                            'MAX_PRICE' => $request->max_price,
-                            'MIN_PRICE_OPT' => $request->min_price_opt,
-                            'MAX_PRICE_OPT' => $request->max_price_opt,
-                            'VALID_RELATION_CODE' => $request->valid_relation_code,
-                            'SEX_RESTRICTION' => $request->sex_restriction,
-                            'MODULE_EXIT' => $request->module_exit,
-                            'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
-                            'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
-                            'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
-                            'COVERAGE_START_DAYS' => $request->coverage_start_days,
-                            'PROC_CODE_LIST_ID' => $request->proc_code_list_id,
-                            'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
+                ->insert(
+                    [
+                        'PROV_TYPE_PROC_ASSOC_ID' => $request->prov_type_proc_assoc_id,
+                        'PROVIDER_TYPE' => $request->provider_type,
+                        'SERVICE_MODIFIER' => $request->service_modifier,
+                        'UCR' => $request->ucr,
+                        'EFFECTIVE_DATE' => $request->effective_date,
+                        'TERMINATION_DATE' => $request->termination_date,
+                        'DATE_TIME_CREATED' => '',
+                        'USER_ID_CREATED' => '',
+                        'USER_ID' => '',
+                        'DATE_TIME_MODIFIED' => '',
+                        'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
+                        'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                        'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
+                        'MESSAGE' => $request->message,
+                        'MESSAGE_STOP_DATE' => $request->message_stop_date,
+                        'MIN_AGE' => $request->min_age,
+                        'MAX_AGE' => $request->max_age,
+                        'MIN_PRICE' => $request->min_price,
+                        'MAX_PRICE' => $request->max_price,
+                        'MIN_PRICE_OPT' => $request->min_price_opt,
+                        'MAX_PRICE_OPT' => $request->max_price_opt,
+                        'VALID_RELATION_CODE' => $request->valid_relation_code,
+                        'SEX_RESTRICTION' => $request->sex_restriction,
+                        'MODULE_EXIT' => $request->module_exit,
+                        'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
+                        'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
+                        'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
+                        'COVERAGE_START_DAYS' => $request->coverage_start_days,
+                        'PROC_CODE_LIST_ID' => $request->proc_code_list_id,
+                        'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
 
 
 
-                        ]
-                    );
-
+                    ]
+                );
+                    
                 $add = DB::table('PROV_TYPE_PROC_ASSOC')->where('prov_type_proc_assoc_id', 'like', '%' . $request->prov_type_proc_assoc_id . '%')->first();
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
             }
+
+
+
         } else if ($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
 
-
+                
                 "description" => ['max:36'],
                 "provider_type" => ['max:2'],
                 "service_modifier" => ['max:2'],
@@ -343,47 +367,48 @@ class ProviderTypeProcController extends Controller
 
                 if ($checkGPI <= "0") {
                     $update = DB::table('PROV_TYPE_PROC_ASSOC')
-                        ->insert(
-                            [
-                                'PROV_TYPE_PROC_ASSOC_ID' => $request->prov_type_proc_assoc_id,
-                                'PROVIDER_TYPE' => $request->provider_type,
-                                'SERVICE_MODIFIER' => $request->service_modifier,
-                                'UCR' => $request->ucr,
-                                'EFFECTIVE_DATE' => $request->effective_date,
-                                'TERMINATION_DATE' => $request->termination_date,
-                                'DATE_TIME_CREATED' => '',
-                                'USER_ID_CREATED' => '',
-                                'USER_ID' => '',
-                                'DATE_TIME_MODIFIED' => '',
-                                'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
-                                'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
-                                'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
-                                'MESSAGE' => $request->message,
-                                'MESSAGE_STOP_DATE' => $request->message_stop_date,
-                                'MIN_AGE' => $request->min_age,
-                                'MAX_AGE' => $request->max_age,
-                                'MIN_PRICE' => $request->min_price,
-                                'MAX_PRICE' => $request->max_price,
-                                'MIN_PRICE_OPT' => $request->min_price_opt,
-                                'MAX_PRICE_OPT' => $request->max_price_opt,
-                                'VALID_RELATION_CODE' => $request->valid_relation_code,
-                                'SEX_RESTRICTION' => $request->sex_restriction,
-                                'MODULE_EXIT' => $request->module_exit,
-                                'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
-                                'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
-                                'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
-                                'COVERAGE_START_DAYS' => $request->coverage_start_days,
-                                'PROC_CODE_LIST_ID' => $request->proc_code_list_id,
-                                'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
-
-
-
-                            ]
-                        );
-
-
+                    ->insert(
+                        [
+                            'PROV_TYPE_PROC_ASSOC_ID' => $request->prov_type_proc_assoc_id,
+                            'PROVIDER_TYPE' => $request->provider_type,
+                            'SERVICE_MODIFIER' => $request->service_modifier,
+                            'UCR' => $request->ucr,
+                            'EFFECTIVE_DATE' => $request->effective_date,
+                            'TERMINATION_DATE' => $request->termination_date,
+                            'DATE_TIME_CREATED' => '',
+                            'USER_ID_CREATED' => '',
+                            'USER_ID' => '',
+                            'DATE_TIME_MODIFIED' => '',
+                            'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
+                            'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                            'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
+                            'MESSAGE' => $request->message,
+                            'MESSAGE_STOP_DATE' => $request->message_stop_date,
+                            'MIN_AGE' => $request->min_age,
+                            'MAX_AGE' => $request->max_age,
+                            'MIN_PRICE' => $request->min_price,
+                            'MAX_PRICE' => $request->max_price,
+                            'MIN_PRICE_OPT' => $request->min_price_opt,
+                            'MAX_PRICE_OPT' => $request->max_price_opt,
+                            'VALID_RELATION_CODE' => $request->valid_relation_code,
+                            'SEX_RESTRICTION' => $request->sex_restriction,
+                            'MODULE_EXIT' => $request->module_exit,
+                            'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
+                            'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
+                            'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
+                            'COVERAGE_START_DAYS' => $request->coverage_start_days,
+                            'PROC_CODE_LIST_ID' => $request->proc_code_list_id,
+                            'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
+    
+    
+    
+                        ]
+                    );
+                    
+                       
                     $update = DB::table('PROV_TYPE_PROC_ASSOC')->where('prov_type_proc_assoc_id', 'like', '%' . $request->prov_type_proc_assoc_id . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
                 } else {
 
 
@@ -397,24 +422,28 @@ class ProviderTypeProcController extends Controller
                         );
 
                     $update = DB::table('PROV_TYPE_PROC_ASSOC')
-                        ->where('prov_type_proc_assoc_id', $request->prov_type_proc_assoc_id)
-                        ->where('provider_type', $request->provider_type)
-                        ->where('service_modifier', $request->service_modifier)
-                        ->where('proc_code_list_id', $request->proc_code_list_id)
-                        ->where('effective_date', $request->effective_date)
+                    ->where('prov_type_proc_assoc_id', $request->prov_type_proc_assoc_id)
+                    ->where('provider_type', $request->provider_type)
+                    ->where('service_modifier', $request->service_modifier)
+                    ->where('proc_code_list_id', $request->proc_code_list_id)
+                    ->where('effective_date', $request->effective_date)
                         ->update(
                             [
-                                'TERMINATION_DATE' => $request->termination_date,
+                                'TERMINATION_DATE'=>$request->termination_date,
 
                             ]
                         );
                     $update = DB::table('PROV_TYPE_PROC_ASSOC')->where('prov_type_proc_assoc_id', 'like', '%' . $request->prov_type_proc_assoc_id . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                 }
+
+
+
             }
+
+
         }
     }
-
     public function providertype_proc_delete(Request $request)
     {
         if (isset($request->prov_type_proc_assoc_id) && ($request->provider_type)) {
@@ -440,4 +469,6 @@ class ProviderTypeProcController extends Controller
             }
         }
     }
+
+
 }
