@@ -739,7 +739,7 @@ Route::group(['prefix' => 'codes'], function ($router) {
     // COUSE OF LOSS
     Route::get('/couse-of-loss', [CouseOfLossController::class, 'get'])->name('couseofloss.get'); // SEARCH
     Route::post('/couse-of-loss/submit', [CouseOfLossController::class, 'add'])->name('couseofloss.submit'); // add
-    Route::post('/couse-of-loss/delete', [CouseOfLossController::class, 'delete'])->name('couseofloss.delete'); // DELETE
+    Route::post('/cause-of-loss/delete', [CouseOfLossController::class, 'delete'])->name('causeofloss.delete'); // DELETE
     Route::get('/check-couse-of-loss-existed', [CouseOfLossController::class, 'checkCauseOfLossExisted']);
 });
 

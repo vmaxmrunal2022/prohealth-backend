@@ -107,17 +107,16 @@ class BenifitController extends Controller
     public function delete(Request $request)
     {
         if (isset($request->benefit_code)) {
-
             $delete_benefit_code =  DB::table('BENEFIT_CODES')
                 ->where('benefit_code', $request->benefit_code)
                 ->delete();
             if ($delete_benefit_code) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
+                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }
         } else {
-            return $this->respondWithToken($this->token(), 'Record Not Found');
+            return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
         }
     }
 
