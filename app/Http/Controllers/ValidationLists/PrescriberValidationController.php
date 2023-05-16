@@ -147,7 +147,7 @@ class PrescriberValidationController extends Controller
 
     public function addPrescriberData(Request $request)
     {
-        $createddate = date('y-m-d');
+        $createddate = date('d-M-y');
         $validation = DB::table('PHYSICIAN_EXCEPTIONS')
             ->where('physician_list', $request->physician_list)
             ->get();
@@ -203,9 +203,9 @@ class PrescriberValidationController extends Controller
                             [
                                 'physician_list' => $request->physician_list,
                                 'EXCEPTION_NAME' => $request->exception_name,
-                                'date_time_created' => date('Ydm'),
+                                'date_time_created' => date('d-M-y'),
                                 'user_id' => Cache::get('userId'),
-                                'date_time_modified' => date('y-m-d'),
+                                'date_time_modified' => date('d-M-y'),
                                 'form_id' => ''
                             ]
                         );
@@ -214,9 +214,9 @@ class PrescriberValidationController extends Controller
                                 'PHYSICIAN_LIST' => $request->physician_list,
                                 'PHYSICIAN_ID' => $request->physician_id,
                                 'PHYSICIAN_STATUS' => $request->physician_status,
-                                'date_time_created' => date('y-m-d'),
+                                'date_time_created' => date('d-M-y'),
                                 'user_id' => Cache::get('userId'),
-                                'date_time_modified' => date('Ydm'),
+                                'date_time_modified' => date('d-M-y'),
                                 'form_id' => ''
                             ]);
 

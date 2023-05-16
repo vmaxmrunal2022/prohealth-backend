@@ -254,7 +254,7 @@ class DiagnosisValidationListController extends Controller
     public function addDiagnosisValidations_old(Request $request)
     {
         // dd($request->all());
-        $createddate = date('y-M-d');
+        $createddate = date('d-M-y');
         // $validation = DB::table('DIAGNOSIS_EXCEPTIONS')
         //     ->where('diagnosis_list', $request->diagnosis_list)
         //     ->get();
@@ -429,7 +429,7 @@ class DiagnosisValidationListController extends Controller
     public function addDiagnosisValidations(Request $request)
     {
         // return $request->all();
-        $createddate = date('y-M-d');
+        $createddate = date('d-M-y');
         if ($request->new) {
 
             if (!$request->updateForm) {
@@ -453,9 +453,9 @@ class DiagnosisValidationListController extends Controller
                         [
                             'diagnosis_list' => $request->diagnosis_list,
                             'EXCEPTION_NAME' => $request->exception_name,
-                            'date_time_created' => date('y-M-d'),
+                            'date_time_created' => date('d-M-y'),
                             'user_id' => Cache::get('userId'),
-                            'date_time_modified' => date('y-M-d'),
+                            'date_time_modified' => date('d-M-y'),
                             'form_id' => ''
                         ]
                     );
@@ -464,9 +464,9 @@ class DiagnosisValidationListController extends Controller
                             'diagnosis_list' => $request->diagnosis_list,
                             'diagnosis_id' => $request->diagnosis_id,
                             'diagnosis_status' => $request->diagnosis_status,
-                            'date_time_created' => date('y-M-d'),
+                            'date_time_created' => date('d-M-y'),
                             'user_id' => Cache::get('userId'),
-                            'date_time_modified' => date('y-M-d'),
+                            'date_time_modified' => date('d-M-y'),
                             'priority' => $request->priority == null ? "1" : $request->priority,
                             'form_id' => ''
                         ]);
@@ -737,7 +737,9 @@ class DiagnosisValidationListController extends Controller
             ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
             ->where(DB::raw('UPPER(diagnosis_id)'), strtoupper($request->diagnosis_id))
             ->where('effective_date', date('Ymd', strtotime($request->effective_date)))
-            ->delete();
+            ->get();
+
+        return $delete_limitation;
 
         return $this->respondWithToken($this->token(), 'Limitation Deleted', $delete_limitation);
     }

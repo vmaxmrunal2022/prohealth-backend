@@ -189,9 +189,8 @@ class ProviderController extends Controller
             } else {
                 if (!$request->updateForm) {
                     $ifExist = DB::table('PHARMACY_EXCEPTIONS')
-                        ->where(DB::raw('pharmacy_list'), strtoupper($request->pharmacy_list))
+                        ->where(DB::raw('UPPER(PHARMACY_LIST)'), strtoupper($request->pharmacy_list))
                         ->get();
-
                     if (count($ifExist) >= 1) {
                         return $this->respondWithToken($this->token(), [["Provider List ID already exists"]], $providerList, false);
                     }
