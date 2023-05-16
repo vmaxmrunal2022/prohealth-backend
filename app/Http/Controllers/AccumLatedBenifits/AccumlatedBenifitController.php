@@ -199,10 +199,10 @@ class AccumlatedBenifitController extends Controller
             if ($delete_plan_accum_deduct_id) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
+                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }
         } else {
-            return $this->respondWithToken($this->token(), 'Record Not Found');
+            return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
         }
     }
 
