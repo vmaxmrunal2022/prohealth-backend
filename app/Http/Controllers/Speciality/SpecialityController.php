@@ -146,7 +146,7 @@ class SpecialityController extends Controller
 
     public function addSpeciality(Request $request)
     {
-        $createddate = date('y-m-d');
+        $createddate = date('d-M-y');
 
         $validation = DB::table('SPECIALTY_EXCEPTIONS')
             ->where('specialty_list', $request->specialty_list)
@@ -196,13 +196,14 @@ class SpecialityController extends Controller
                         ->get()
                         ->count();
                     if ($count <= 0) {
+                        // return date('d-M-y');
                         $add_names = DB::table('SPECIALTY_EXCEPTIONS')->insert(
                             [
                                 'specialty_list' => $request->specialty_list,
                                 'EXCEPTION_NAME' => $request->exception_name,
-                                'date_time_created' => date('Ydm'),
+                                'DATE_TIME_CREATED' => date('d-M-y'),
                                 'user_id' => Cache::get('userId'),
-                                'date_time_modified' => date('y-m-d'),
+                                'DATE_TIME_MODIFIED' => date('d-M-y'),
                                 'form_id' => ''
                             ]
                         );
@@ -211,9 +212,9 @@ class SpecialityController extends Controller
                                 'specialty_list' => $request->specialty_list,
                                 'specialty_id' => $request->specialty_id,
                                 'specialty_status' => $request->specialty_status,
-                                'date_time_created' => date('y-m-d'),
+                                'DATE_TIME_CREATED' => date('d-M-y'),
                                 'user_id' => Cache::get('userId'),
-                                'date_time_modified' => date('Ydm'),
+                                'DATE_TIME_MODIFIED' => date('d-M-y'),
                                 'form_id' => ''
                             ]);
 
