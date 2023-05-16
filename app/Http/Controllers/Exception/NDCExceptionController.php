@@ -924,10 +924,10 @@ class NDCExceptionController extends Controller
                             $termination_date = DB::table('NDC_EXCEPTION_LISTS')
                             ->where(DB::raw('UPPER(ndc_exception_list)'), strtoupper($request->ndc_exception_list))
                             ->where(DB::raw('UPPER(ndc)'), strtoupper($request->ndc))
-
                             ->pluck('termination_date')->toArray();
 
-                            if($request->effective_date>max($termination_date)){
+
+                                if(!empty($termination_date ) && $request->effective_date >max($termination_date)){
 
                                 $addProviderValidationData = DB::table('NDC_EXCEPTION_LISTS')
                                 ->insert([
