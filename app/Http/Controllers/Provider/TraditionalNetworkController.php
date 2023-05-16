@@ -196,8 +196,8 @@ class TraditionalNetworkController extends Controller
             }
 
 
-            if ($update_rx_networks) {
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_rx_networks);
+            if ($benefitcode) {
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
             }
 
 

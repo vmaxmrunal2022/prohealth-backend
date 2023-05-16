@@ -239,7 +239,7 @@ class PrescriberValidationController extends Controller
                         if (count($countValidation) >= 1) {
                             return $this->respondWithToken(
                                 $this->token(),
-                                [['Physician ID already exists']],
+                                [['Prescriber ID already exists']],
                                 [['Physician ID already exists']],
                                 false
                             );

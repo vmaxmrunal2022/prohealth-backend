@@ -121,6 +121,7 @@ class SuperProviderNetworkController extends Controller
 
 
         } else if($request->add_new == 0) {
+            
 
 
             $benefitcode = DB::table('SUPER_RX_NETWORK_NAMES')
