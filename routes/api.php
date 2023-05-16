@@ -411,7 +411,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
         Route::post('superprovider/add', [SuperProviderNetworkController::class, 'add']);
         Route::get('supernetwork/dropdown', [SuperProviderNetworkController::class, 'dropDown']);
-
+        Route::get('supernetwork/getDetails/{ndcid}', [SuperProviderNetworkController::class, 'getDetails']);
 
 
         //TRADITIONAL NETWORK
@@ -887,7 +887,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
     Route::get('/accumulated/search', [AccumlatedController::class, 'search'])->name('accumulated.search'); // SEARCH
     Route::get('/accumulated/get/{ndcid}', [AccumlatedController::class, 'getList'])->name('accumulated.list.get'); // LIST ITEMS
-    Route::get('/accumulated/details/{ndcid}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
+    Route::get('/accumulated/details/{ndcid}/{effective_date}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
     Route::post('/accumulated/add', [AccumlatedController::class, 'add'])->name('accumulated.add'); // SEARCH
 
 

@@ -227,6 +227,7 @@ class SpecialityController extends Controller
                                 'exception_name' => $request->exception_name,
                                 'user_id' => Cache::get('userId'),
                                 'date_time_modified' => date('d-M-y'),
+                                // 'specialty_status' => $request->specialty_status,
                                 'form_id' => ''
                             ]);
                         $countValidation = DB::table('SPECIALTY_VALIDATIONS')
@@ -284,6 +285,7 @@ class SpecialityController extends Controller
                 ->update([
                     'specialty_list' => $request->specialty_list,
                     'date_time_modified' => date('d-M-y'),
+                    'specialty_status' => $request->specialty_status,
                     'form_id' => ''
                 ]);
 
