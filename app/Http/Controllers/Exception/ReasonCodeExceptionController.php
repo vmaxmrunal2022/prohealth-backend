@@ -213,8 +213,8 @@ class ReasonCodeExceptionController extends Controller
 
                 "reason_code_list_id" => ['required','max:36'],
                 "reason_code_name"=>['required','max:36'],
-                "reject_code"=>['required','max:2'],
-                'reason_code'=>['required','max:1'],
+                "reject_code"=>['required'],
+                'reason_code'=>['required'],
                 'effective_date'=>['required','max:10'],
                 'termination_date'=>['required','max:10','after:effective_date'],
             ],[
