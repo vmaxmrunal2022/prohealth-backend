@@ -543,24 +543,24 @@ class TherapyClassController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
+                
 
-                $effectiveDate=$request->effective_date;
-                $terminationDate=$request->termination_date;
-                $overlapExists = DB::table('TC_EXCEPTION_LISTS')
-                ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
-                ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                                ->where('TERMINATION_DATE', '>=', $terminationDate);
-                        });
-                })
-                ->exists();
-                if ($overlapExists) {
-                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
-                    return $this->respondWithToken($this->token(), 'For same Therapy Class,dates cannot overlap', $validation, true, 200, 1);
-                }
+                // $effectiveDate=$request->effective_date;
+                // $terminationDate=$request->termination_date;
+                // $overlapExists = DB::table('TC_EXCEPTION_LISTS')
+                // ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
+                // ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
+                //         });
+                // })
+                // ->exists();
+                // if ($overlapExists) {
+                //     return $this->respondWithToken($this->token(), 'For same Therapy Class,dates cannot overlap', $validation, true, 200, 1);
+                // }
     
                 $update_names = DB::table('TC_EXCEPTIONS')
                 ->where('ther_class_exception_list', $request->ther_class_exception_list )

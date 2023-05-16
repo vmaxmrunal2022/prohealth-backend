@@ -313,26 +313,28 @@ class ProcedureCrossReferenceController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
-                $effectiveDate=$request->effective_date;
-                $terminationDate=$request->termination_date;
-                $overlapExists = DB::table('PROCEDURE_XREF')
-                ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
-                ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                                ->where('TERMINATION_DATE', '>=', $terminationDate);
-                        });
-                })
-                ->exists();
-                if ($overlapExists) {
-                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
-                    return $this->respondWithToken($this->token(), 'For Same Submitted Procedure Code And History Procedure Code,dates cannot overlap.', $validation, true, 200, 1);
-                }
+
+                
+                // $effectiveDate=$request->effective_date;
+                // $terminationDate=$request->termination_date;
+                // $overlapExists = DB::table('PROCEDURE_XREF')
+                // ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
+                // ->where('EFFECTIVE_DATE', '!=',$effectiveDate)
+                // ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
+                //         });
+                // })
+                // ->exists();
+                // if ($overlapExists) {
+                //     return $this->respondWithToken($this->token(), 'For Same Submitted Procedure Code And History Procedure Code,dates cannot overlap.', $validation, true, 200, 1);
+                // }
     
                 $update_names = DB::table('ENTITY_NAMES')
-                ->where('ENTITY_USER_ID', $request->procedure_xref_id )
+                ->where('ENTITY_USER_ID', $request->procedure_xref_id)
                 ->first();
                     
     
@@ -349,6 +351,7 @@ class ProcedureCrossReferenceController extends Controller
 
     
                 if ($checkGPI <= "0") {
+                   
                     $update = DB::table('PROCEDURE_XREF')
                     ->insert(
                         [
@@ -365,7 +368,6 @@ class ProcedureCrossReferenceController extends Controller
                             'MESSAGE_STOP_DATE'=>$request->message_stop_date,
                             
                         ]
-                    
                     );
                   
                 $update = DB::table('PROCEDURE_XREF')->where('PROCEDURE_XREF_ID', 'like', '%' . $request->procedure_xref_id . '%')->first();

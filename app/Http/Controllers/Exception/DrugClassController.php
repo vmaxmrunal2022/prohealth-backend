@@ -760,24 +760,24 @@ class DrugClassController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
+                
 
-                $effectiveDate=$request->effective_date;
-                $terminationDate=$request->termination_date;
-                $overlapExists = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
-                ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
-                ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                                ->where('TERMINATION_DATE', '>=', $terminationDate);
-                        });
-                })
-                ->exists();
-                if ($overlapExists) {
-                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
-                    return $this->respondWithToken($this->token(), 'For same Drug Class, dates cannot overlap.', $validation, true, 200, 1);
-                }
+                // $effectiveDate=$request->effective_date;
+                // $terminationDate=$request->termination_date;
+                // $overlapExists = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
+                // ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
+                // ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
+                //         });
+                // })
+                // ->exists();
+                // if ($overlapExists) {
+                //     return $this->respondWithToken($this->token(), 'For same Drug Class, dates cannot overlap.', $validation, true, 200, 1);
+                // }
     
                
                 $update_names = DB::table('DRUG_CATGY_EXCEPTION_NAMES')

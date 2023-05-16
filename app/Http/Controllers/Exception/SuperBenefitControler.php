@@ -246,23 +246,22 @@ class SuperBenefitControler extends Controller
     
                 if ($checkGPI <= "0") {
 
-                    $effectiveDate=$request->effective_date;
-                    $terminationDate=$request->termination_date;
-                    $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
-                    ->where('SUPER_BENEFIT_LIST_ID', $request->procedure_xref_id)
-                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
-                            });
-                    })
-                    ->exists();
-                    if ($overlapExists) {
-                        // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
-                        return $this->respondWithToken($this->token(), 'For same Benefit List, dates cannot overlap.', $validation, true, 200, 1);
-                    }
+                    // $effectiveDate=$request->effective_date;
+                    // $terminationDate=$request->termination_date;
+                    // $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
+                    // ->where('SUPER_BENEFIT_LIST_ID', $request->procedure_xref_id)
+                    // ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                    //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                    //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                    //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                    //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
+                    //         });
+                    // })
+                    // ->exists();
+                    // if ($overlapExists) {
+                    //     return $this->respondWithToken($this->token(), 'For same Benefit List, dates cannot overlap.', $validation, true, 200, 1);
+                    // }
 
                     $update = DB::table('SUPER_BENEFIT_LISTS')
                     ->insert(
@@ -283,23 +282,22 @@ class SuperBenefitControler extends Controller
 
                 } else {
                     
-                     $effectiveDate=$request->effective_date;
-                    $terminationDate=$request->termination_date;
-                    $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
-                    ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
-                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
-                            });
-                    })
-                    ->exists();
-                    if ($overlapExists) {
-                        // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
-                        return $this->respondWithToken($this->token(), 'For same Benefit List, dates cannot overlap.', $validation, true, 200, 1);
-                    }
+                    // $effectiveDate=$request->effective_date;
+                    // $terminationDate=$request->termination_date;
+                    // $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
+                    // ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
+                    // ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                    //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                    //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                    //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                    //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
+                    //         });
+                    // })
+                    // ->exists();
+                    // if ($overlapExists) {
+                    //     return $this->respondWithToken($this->token(), 'For same Benefit List, dates cannot overlap.', $validation, true, 200, 1);
+                    // }
                    
                     $add_names = DB::table('SUPER_BENEFIT_LIST_NAMES')
                     ->where('super_benefit_list_id',$request->super_benefit_list_id)
