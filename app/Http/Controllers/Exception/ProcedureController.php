@@ -163,45 +163,49 @@ class ProcedureController extends Controller
                 // })],
 
                 "exception_name" => ['max:36'],
-                "NEW_CLAIM_STATUS"=>['max:2'],
-                "SERVICE_TYPE"=>['max:1'],
-                'PROCESS_RULE'=>['max:15','min:5'],
-                'PHYSICIAN_LIST'=>['max:10'],
-                'PHYSICIAN_SPECIALTY_LIST'=>['max:10'],
-                'DIAGNOSIS_LIST'=>['max:10'],
-                'PRICING_STRATEGY_ID'=>['max:11'],
-                'ACCUM_BENE_STRATEGY_ID'=>['max:11'],
-                'COPAY_STRATEGY_ID'=>['max:10'],
-                'MESSAGE'=>['max:10'],
-                'MESSAGE_STOP_DATE'=>['max:10'],
-                'MIN_AGE'=>['max:6'],
-                'MAX_AGE'=>['max:6'],
-                'MIN_PRICE'=>['max:6'],
-                'MAX_PRICE'=>['max:6'],
-                'MIN_PRICE_OPT'=>['max:6'],
-                'MAX_PRICE_OPT'=>['max:6'],
-                'VALID_RELATION_CODE'=>['max:6'],
-                'SEX_RESTRICTION'=>['max:6'],
-                'MODULE_EXIT'=>['max:6'],
-                'DATE_TIME_CREATED'=>['max:6'],
-                'USER_ID_CREATED'=>['max:6'],
-                'DATE_TIME_MODIFIED'=>['min:2','max:12'],
+                "new_claim_status"=>['max:2'],
+                "service_type"=>['max:1'],
+                // 'process_rule'=>['max:15'],
+                'physician_list'=>['max:10'],
+                'physician_specialty_list'=>['max:10'],
+                'diagnosis_list'=>['max:10'],
+                'pricing_strategy_id'=>['max:11'],
+                'accum_bene_strategy_id'=>['max:11'],
+                'copay_strategy_id'=>['max:10'],
+                'message'=>['max:10'],
+                'message_stop_date'=>['max:10'],
+                'min_age'=>['nullable','max:6'],
+                'max_age'=>['nullable','max:6','gt:min_age'],
+                'min_price'=>['max:6'],
+                'max_price'=>['max:6'],
+                // 'MIN_PRICE_OPT'=>['max:6'],
+                // 'MAX_PRICE_OPT'=>['max:6'],
+                'valid_relation_code'=>['max:6'],
+                'sex_restriction'=>['max:6'],
+                'module_exit'=>['max:6'],
+                // 'DATE_TIME_CREATED'=>['max:6'],
+                // 'USER_ID_CREATED'=>['max:6'],
+                // 'DATE_TIME_MODIFIED'=>['min:2','max:12'],
                 'USER_ID'=>['min:2','max:12'],
-                'EFFECTIVE_DATE'=>['max:6'],
-                'TERMINATION_DATE'=>['max:12','min:2'],
-                'REJECT_ONLY_MSG_FLAG'=>['max:12','min:2'],
-                'MAX_QTY_OVER_TIME'=>['max:12|min:2'],
-                'COVERAGE_START_DAYS'=>['max:6'],
-                'BENEFIT_CODE'=>['max:6'],
-                'SERVICE_MODIFIER'=>['max:2'],
-                'DIAGNOSIS_ID'=>['max:1'],
-                'MAX_RX_QTY_OPT'=>['max:1'],
-                'PROVIDER_TYPE'=>['max:1'],
-                'UCR'=>['numeric|max:6'],
-                'PROC_CODE_LIST_ID'=>['numeric|max:6'],
-                'RX_QTY_OPT_MULTIPLIER'=>['numeric|max:6'],
+                // 'effective_date'=>['max:6'],
+                'termination_date'=>['max:12','after:effective_date'],
+                'reject_only_msg_flag'=>['max:12',],
+                'max_qty_over_time'=>['max:12'],
+                'coverage_start_days'=>['max:6'],
+                // 'benefit_code'=>['max:6'],
+                'service_modifier'=>['max:2'],
+                // 'diagnosis_id'=>['max:1'],
+                // 'MAX_RX_QTY_OPT'=>['max:1'],
+                // 'provider_type'=>['max:1'],
+                // 'ucr'=>['max:9'],
+                // 'proc_code_list_id'=>['numeric','max:6'],
+                // 'RX_QTY_OPT_MULTIPLIER'=>['numeric|max:6'],
 
 
+            ],[
+                
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_age.gt' =>  'MaX Age must be greater than Min Age'
             ]);
 
             if ($validator->fails()) {
@@ -212,6 +216,25 @@ class ProcedureController extends Controller
                 if ($validation->count() > 0) {
                     return $this->respondWithToken($this->token(), 'Procedure Exception Already Exists', $validation, true, 200, 1);
                 }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PROCEDURE_EXCEPTION_LISTS')
+                ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For same Procedure Code, Benefit Code, Service Type, Service Modifier, Diagnosis ID and Provider Type, dates cannot overlap.', $validation, true, 200, 1);
+                }
+
                 $add_names = DB::table('PROCEDURE_EXCEPTION_NAMES')->insert(
                     [
                         'procedure_exception_list' => $request->procedure_exception_list,
@@ -268,47 +291,49 @@ class ProcedureController extends Controller
         } else if ($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
-
+                'procedure_exception_list' => ['required', 'max:10'],
                 "exception_name" => ['max:36'],
-                "NEW_CLAIM_STATUS"=>['max:2'],
-                "SERVICE_TYPE"=>['max:1'],
-                'PROCESS_RULE'=>['max:15','min:5'],
-                'PHYSICIAN_LIST'=>['max:10'],
-                'PHYSICIAN_SPECIALTY_LIST'=>['max:10'],
-                'DIAGNOSIS_LIST'=>['max:10'],
-                'PRICING_STRATEGY_ID'=>['max:11'],
-                'ACCUM_BENE_STRATEGY_ID'=>['max:11'],
-                'COPAY_STRATEGY_ID'=>['max:10'],
-                'MESSAGE'=>['max:10'],
-                'MESSAGE_STOP_DATE'=>['max:10'],
-                'MIN_AGE'=>['max:6'],
-                'MAX_AGE'=>['max:6'],
-                'MIN_PRICE'=>['max:6'],
-                'MAX_PRICE'=>['max:6'],
-                'MIN_PRICE_OPT'=>['max:6'],
-                'MAX_PRICE_OPT'=>['max:6'],
-                'VALID_RELATION_CODE'=>['max:6'],
-                'SEX_RESTRICTION'=>['max:6'],
-                'MODULE_EXIT'=>['max:6'],
-                'DATE_TIME_CREATED'=>['max:6'],
-                'USER_ID_CREATED'=>['max:6'],
-                'DATE_TIME_MODIFIED'=>['min:2','max:12'],
+                "new_claim_status"=>['max:2'],
+                "service_type"=>['max:1'],
+                // 'process_rule'=>['max:15'],
+                'physician_list'=>['max:10'],
+                'physician_specialty_list'=>['max:10'],
+                'diagnosis_list'=>['max:10'],
+                'pricing_strategy_id'=>['max:11'],
+                'accum_bene_strategy_id'=>['max:11'],
+                'copay_strategy_id'=>['max:10'],
+                'message'=>['max:10'],
+                'message_stop_date'=>['max:10'],
+                'min_age'=>['nullable','max:6'],
+                'max_age'=>['nullable','max:6','gt:min_age'],
+                'min_price'=>['max:6'],
+                'max_price'=>['max:6'],
+                // 'MIN_PRICE_OPT'=>['max:6'],
+                // 'MAX_PRICE_OPT'=>['max:6'],
+                'valid_relation_code'=>['max:6'],
+                'sex_restriction'=>['max:6'],
+                'module_exit'=>['max:6'],
+                // 'DATE_TIME_CREATED'=>['max:6'],
+                // 'USER_ID_CREATED'=>['max:6'],
+                // 'DATE_TIME_MODIFIED'=>['min:2','max:12'],
                 'USER_ID'=>['min:2','max:12'],
-                'EFFECTIVE_DATE'=>['max:6'],
-                'TERMINATION_DATE'=>['max:12','min:2'],
-                'REJECT_ONLY_MSG_FLAG'=>['max:12','min:2'],
-                'MAX_QTY_OVER_TIME'=>['max:12|min:2'],
-                'COVERAGE_START_DAYS'=>['max:6'],
-                'BENEFIT_CODE'=>['max:6'],
-                'SERVICE_MODIFIER'=>['max:2'],
-                'DIAGNOSIS_ID'=>['max:1'],
-                'MAX_RX_QTY_OPT'=>['max:1'],
-                'PROVIDER_TYPE'=>['max:1'],
-                'UCR'=>['numeric|max:6'],
-                'PROC_CODE_LIST_ID'=>['numeric|max:6'],
-                'RX_QTY_OPT_MULTIPLIER'=>['numeric|max:6'],
-
-
+                // 'effective_date'=>['max:6'],
+                'termination_date'=>['max:12','after:effective_date'],
+                'reject_only_msg_flag'=>['max:12',],
+                'max_qty_over_time'=>['max:12'],
+                'coverage_start_days'=>['max:6'],
+                // 'benefit_code'=>['max:6'],
+                'service_modifier'=>['max:2'],
+                // 'diagnosis_id'=>['max:1'],
+                // 'MAX_RX_QTY_OPT'=>['max:1'],
+                // 'provider_type'=>['max:1'],
+                // 'ucr'=>['numeric','max:9'],
+                // 'proc_code_list_id'=>['numeric','max:6'],
+                // 'RX_QTY_OPT_MULTIPLIER'=>['numeric|max:6'],
+            ],[
+                
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_age.gt' =>  'MaX Age must be greater than Min Age'
             ]);
 
             if ($validator->fails()) {
@@ -320,6 +345,25 @@ class ProcedureController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PROCEDURE_EXCEPTION_LISTS')
+                ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For same Procedure Code, Benefit Code, Service Type, Service Modifier, Diagnosis ID and Provider Type, dates cannot overlap.', $validation, true, 200, 1);
+                }
+
     
                 $update_names = DB::table('PROCEDURE_EXCEPTION_NAMES')
                 ->where('procedure_exception_list', $request->procedure_exception_list )

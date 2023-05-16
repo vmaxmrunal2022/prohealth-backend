@@ -501,58 +501,64 @@ class DrugClassController extends Controller
                 // })],
 
                 "drug_catgy_exception_name"=>['required','max:2'],
-                "effective_date"=>['max:1'],
-                'termination_date'=>['required'],
-                'scategory'=>['max:10'],
-                'sdescription'=>['max:10'],
-                'stype'=>['max:10'],
-                'new_drug_status'=>['max:10'],
-                'process_rule'=>['max:11'],
-                'module_exit'=>['max:11'],
-                'preferred_product_ndc'=>['max:10'],
-                'conversion_product_ndc'=>['max:10'],
-                'message'=>['max:40'],
-                'message_stop_date'=>['max:10'],
-                'reject_only_msg_flag'=>['max:6'],
+                "effective_date"=>['max:10'],
+                'termination_date'=>['required','date','after:effective_date','max:15','min:5'],
+                // 'scategory'=>['max:10'],
+                // 'sdescription'=>['max:10'],
+                // 'stype'=>['max:10'],
+                // 'new_drug_status'=>['max:10'],
+                // 'process_rule'=>['max:11'],
+                // 'module_exit'=>['max:11'],
+                // 'preferred_product_ndc'=>['max:10'],
+                // 'conversion_product_ndc'=>['max:10'],
+                // 'message'=>['max:40'],
+                // 'message_stop_date'=>['max:10'],
+                // 'reject_only_msg_flag'=>['max:6'],
                 'min_rx_qty'=>['max:6'],
-                'max_rx_qty'=>['max:6'],
-                'max_rxs_patient'=>['max:6'],
+                'max_rx_qty'=>['max:6','gt:min_rx_qty'],
+                // 'max_rxs_patient'=>['max:6'],
                 'mail_order_min_rx_days'=>['max:6'],
-                'mail_ord_max_days_supply_opt'=>['max:6'],
-                'min_price'=>['max:6'],
-                'max_price'=>['max:6'],
-                'max_price_patient'=>['max:6'],
-                'mail_ord_max_fills_opt'=>['max:6'],
-                'min_rx_days'=>['max:6'],
-                'max_days_supply_opt'=>['min:2','max:12'],
-                'retail_max_fills_opt'=>['min:2','max:12'],
-                'valid_relation_code'=>['max:6'],
-                'min_ctl_days'=>['max:12','min:2'],
-                'max_ctl_days'=>['max:12','min:2'],
-                'max_rx_qty_opt'=>['max:12|min:2'],
-                'valid_relation_code'=>['max:6'],
-                'max_days_per_fill'=>['max:6'],
-                'max_dose'=>['max:2'],
-                'starter_dose_days'=>['max:1'],
-                'sex_restriction'=>['max:1'],
-                'drug_cov_start_days'=>['max:1'],
-                'starter_dose_bypass_days'=>['numeric|max:6'],
-                'alternate_price_schedule'=>['numeric|max:6'],
-                'drug_cov_start_days'=>['numeric|max:6'],
-                'starter_dose_bypass_days'=>['numeric|max:6'],
-                'alternate_copay_sched'=>['max:1'],
-                'brand_copay_amt'=>['max:1'],
-                'min_age'=>['numeric|max:6'],
-                'max_age'=>['numeric|max:6'],
-                'maint_dose_units_day'=>['max:10'],
-                'generic_copay_amt'=>['max:10'],
-                'merge_defaults'=>['max:1'],
-                'max_qty_over_time'=>['max:1'],
-                'maximum_allowable_cost'=>['max:1'],
-                'max_days_over_time'=>['max:1'],
+                'mail_ord_max_days_supply_opt'=>['max:6','gt:mail_order_min_rx_days'],
+                // 'min_price'=>['max:6'],
+                // 'max_price'=>['max:6'],
+                // 'max_price_patient'=>['max:6'],
+                // 'mail_ord_max_fills_opt'=>['max:6'],
+                // 'min_rx_days'=>['max:6'],
+                // 'max_days_supply_opt'=>['min:2','max:12'],
+                // 'retail_max_fills_opt'=>['min:2','max:12'],
+                // 'valid_relation_code'=>['max:6'],
+                'min_ctl_days'=>['max:12'],
+                'max_ctl_days'=>['max:12','gt:min_ctl_days'],
+                // 'max_rx_qty_opt'=>['max:12|min:2'],
+                // 'valid_relation_code'=>['max:6'],
+                // 'max_days_per_fill'=>['max:6'],
+                // 'max_dose'=>['max:2'],
+                // 'starter_dose_days'=>['max:1'],
+                // 'sex_restriction'=>['max:1'],
+                // 'drug_cov_start_days'=>['max:1'],
+                // 'starter_dose_bypass_days'=>['numeric|max:6'],
+                // 'alternate_price_schedule'=>['numeric|max:6'],
+                // 'drug_cov_start_days'=>['numeric|max:6'],
+                // 'starter_dose_bypass_days'=>['numeric|max:6'],
+                // 'alternate_copay_sched'=>['max:1'],
+                // 'brand_copay_amt'=>['max:1'],
+                'min_age'=>['max:6'],
+                'max_age'=>['max:6','gt:min_age'],
+                // 'maint_dose_units_day'=>['max:10'],
+                // 'generic_copay_amt'=>['max:10'],
+                // 'merge_defaults'=>['max:1'],
+                // 'max_qty_over_time'=>['max:1'],
+                // 'maximum_allowable_cost'=>['max:1'],
+                // 'max_days_over_time'=>['max:1'],
                
 
 
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_rx_qty.gt' => 'Max Quantity must be greater than Min Quantity',
+                'max_ctl_days.gt' => 'Max Ctl must be greater than Min Ctl',
+                'max_age.gt' => 'Max Age must be greater than Min Age',
+                'mail_ord_max_days_supply_opt.gt' => 'Max day Mail Service must be greater than Min day Mail Service'
             ]);
 
             if ($validator->fails()) {
@@ -563,6 +569,25 @@ class DrugClassController extends Controller
                 if ($validation->count() > 0) {
                     return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
                 }
+                
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
+                ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For same Drug Class, dates cannot overlap.', $validation, true, 200, 1);
+                }
+
                 $add_names = DB::table('DRUG_CATGY_EXCEPTION_NAMES')->insert(
                     [
                         'drug_catgy_exception_list' => $request->drug_catgy_exception_list,
@@ -664,57 +689,64 @@ class DrugClassController extends Controller
                 
                 "drug_catgy_exception_list" => ['required','max:36'],
                 "drug_catgy_exception_name"=>['required','max:2'],
-                "effective_date"=>['max:1'],
-                'termination_date'=>['required'],
-                'scategory'=>['max:10'],
-                'sdescription'=>['max:10'],
-                'stype'=>['max:10'],
-                'new_drug_status'=>['max:10'],
-                'process_rule'=>['max:11'],
-                'module_exit'=>['max:11'],
-                'preferred_product_ndc'=>['max:10'],
-                'conversion_product_ndc'=>['max:10'],
-                'message'=>['max:40'],
-                'message_stop_date'=>['max:10'],
-                'reject_only_msg_flag'=>['max:6'],
+                "effective_date"=>['max:10'],
+                'termination_date'=>['required','date','after:effective_date','max:15','min:5'],
+                // 'scategory'=>['max:10'],
+                // 'sdescription'=>['max:10'],
+                // 'stype'=>['max:10'],
+                // 'new_drug_status'=>['max:10'],
+                // 'process_rule'=>['max:11'],
+                // 'module_exit'=>['max:11'],
+                // 'preferred_product_ndc'=>['max:10'],
+                // 'conversion_product_ndc'=>['max:10'],
+                // 'message'=>['max:40'],
+                // 'message_stop_date'=>['max:10'],
+                // 'reject_only_msg_flag'=>['max:6'],
                 'min_rx_qty'=>['max:6'],
-                'max_rx_qty'=>['max:6'],
-                'max_rxs_patient'=>['max:6'],
+                'max_rx_qty'=>['max:6','gt:min_rx_qty'],
+                // 'max_rxs_patient'=>['max:6'],
                 'mail_order_min_rx_days'=>['max:6'],
-                'mail_ord_max_days_supply_opt'=>['max:6'],
-                'min_price'=>['max:6'],
-                'max_price'=>['max:6'],
-                'max_price_patient'=>['max:6'],
-                'mail_ord_max_fills_opt'=>['max:6'],
-                'min_rx_days'=>['max:6'],
-                'max_days_supply_opt'=>['min:2','max:12'],
-                'retail_max_fills_opt'=>['min:2','max:12'],
-                'valid_relation_code'=>['max:6'],
-                'min_ctl_days'=>['max:12','min:2'],
-                'max_ctl_days'=>['max:12','min:2'],
-                'max_rx_qty_opt'=>['max:12|min:2'],
-                'valid_relation_code'=>['max:6'],
-                'max_days_per_fill'=>['max:6'],
-                'max_dose'=>['max:2'],
-                'starter_dose_days'=>['max:1'],
-                'sex_restriction'=>['max:1'],
-                'drug_cov_start_days'=>['max:1'],
-                'starter_dose_bypass_days'=>['numeric|max:6'],
-                'alternate_price_schedule'=>['numeric|max:6'],
-                'drug_cov_start_days'=>['numeric|max:6'],
-                'starter_dose_bypass_days'=>['numeric|max:6'],
-                'alternate_copay_sched'=>['max:1'],
-                'brand_copay_amt'=>['max:1'],
-                'min_age'=>['numeric|max:6'],
-                'max_age'=>['numeric|max:6'],
-                'maint_dose_units_day'=>['max:10'],
-                'generic_copay_amt'=>['max:10'],
-                'merge_defaults'=>['max:1'],
-                'max_qty_over_time'=>['max:1'],
-                'maximum_allowable_cost'=>['max:1'],
-                'max_days_over_time'=>['max:1'],
+                'mail_ord_max_days_supply_opt'=>['max:6','gt:mail_order_min_rx_days'],
+                // 'min_price'=>['max:6'],
+                // 'max_price'=>['max:6'],
+                // 'max_price_patient'=>['max:6'],
+                // 'mail_ord_max_fills_opt'=>['max:6'],
+                // 'min_rx_days'=>['max:6'],
+                // 'max_days_supply_opt'=>['min:2','max:12'],
+                // 'retail_max_fills_opt'=>['min:2','max:12'],
+                // 'valid_relation_code'=>['max:6'],
+                'min_ctl_days'=>['max:12'],
+                'max_ctl_days'=>['max:12','gt:min_ctl_days'],
+                // 'max_rx_qty_opt'=>['max:12|min:2'],
+                // 'valid_relation_code'=>['max:6'],
+                // 'max_days_per_fill'=>['max:6'],
+                // 'max_dose'=>['max:2'],
+                // 'starter_dose_days'=>['max:1'],
+                // 'sex_restriction'=>['max:1'],
+                // 'drug_cov_start_days'=>['max:1'],
+                // 'starter_dose_bypass_days'=>['numeric|max:6'],
+                // 'alternate_price_schedule'=>['numeric|max:6'],
+                // 'drug_cov_start_days'=>['numeric|max:6'],
+                // 'starter_dose_bypass_days'=>['numeric|max:6'],
+                // 'alternate_copay_sched'=>['max:1'],
+                // 'brand_copay_amt'=>['max:1'],
+                'min_age'=>['max:6'],
+                'max_age'=>['max:6','gt:min_age'],
+                // 'maint_dose_units_day'=>['max:10'],
+                // 'generic_copay_amt'=>['max:10'],
+                // 'merge_defaults'=>['max:1'],
+                // 'max_qty_over_time'=>['max:1'],
+                // 'maximum_allowable_cost'=>['max:1'],
+                // 'max_days_over_time'=>['max:1'],
                
 
+
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_rx_qty.gt' => 'Max Quantity must be greater than Min Quantity',
+                'max_ctl_days.gt' => 'Max Ctl must be greater than Min Ctl',
+                'max_age.gt' => 'Max Age must be greater than Min Age',
+                'mail_ord_max_days_supply_opt.gt' => 'Max day Mail Service must be greater than Min day Mail Service'
             ]);
 
             if ($validator->fails()) {
@@ -728,6 +760,24 @@ class DrugClassController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
+                ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For same Drug Class, dates cannot overlap.', $validation, true, 200, 1);
+                }
     
                
                 $update_names = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
@@ -921,7 +971,7 @@ class DrugClassController extends Controller
                 //     ]
                 //     );
                 //     $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->where('plan_id', 'like', '%' . $request->plan_id . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_names);
+                    // return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_names);
                 }
     
                

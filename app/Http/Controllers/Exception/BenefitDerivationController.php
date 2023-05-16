@@ -110,7 +110,7 @@ class BenefitDerivationController extends Controller
             $validator = Validator::make($request->all(), [
                 'benefit_derivation_id' => [
                     'required',
-                    'max:10', Rule::unique(['BENEFIT_DERIVATION_NAMES','BENEFIT_DERIVATION'])->where(function ($q) {
+                    'max:10', Rule::unique('BENEFIT_DERIVATION_NAMES')->where(function ($q) {
                         $q->whereNotNull('benefit_derivation_id');
                     })
                 ],
@@ -122,23 +122,23 @@ class BenefitDerivationController extends Controller
                 //     $q->whereNotNull('effective_date');
                 // })],
 
-                // 'benefit_derivation_id' => [
-                //     'required',
-                //     'max:10', Rule::unique('BENEFIT_DERIVATION')->where(function ($q) {
-                //         $q->whereNotNull('benefit_derivation_id');
-                //     })
-                // ],
+                'benefit_derivation_id' => [
+                    'required',
+                    'max:10', Rule::unique('BENEFIT_DERIVATION')->where(function ($q) {
+                        $q->whereNotNull('benefit_derivation_id');
+                    })
+                ],
 
                 // "benefit_derivation_id" => ['required','max:36'],
-                "description"=>['required','max:2'],
+                "description"=>['required','max:35'],
                 "service_type"=>['required','max:1'],
                 'service_modifier'=>['required'],
                 'proc_code_list_id'=>['required','max:10'],
                 'benefit_code'=>['max:10'],
                 'effective_date'=>['required','max:10'],
-                'termination_date'=>['required','max:10'],
-
-
+                'termination_date'=>['required','max:10','after:effective_date'],
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
 
             if ($validator->fails()) {
@@ -147,6 +147,25 @@ class BenefitDerivationController extends Controller
                 if ($validation->count() > 0) {
                     return $this->respondWithToken($this->token(), 'Benefit List  Already Exists', $validation, true, 200, 1);
                 }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('BENEFIT_DERIVATION')
+                ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For same Benefit Code , dates cannot overlap.', $validation, true, 200, 1);
+                }
+
                 $add_names = DB::table('BENEFIT_DERIVATION_NAMES')->insert(
                     [
                         'benefit_derivation_id' => $request->benefit_derivation_id,
@@ -203,15 +222,17 @@ class BenefitDerivationController extends Controller
             $validator = Validator::make($request->all(), [
 
                 "benefit_derivation_id" => ['required','max:36'],
-                "description"=>['required','max:2'],
+                "description"=>['required','max:35'],
                 "service_type"=>['required','max:1'],
                 'service_modifier'=>['required'],
                 'proc_code_list_id'=>['required','max:10'],
                 'benefit_code'=>['max:10'],
                 'effective_date'=>['required','max:10'],
-                'termination_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10','after:effective_date'],
 
 
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
 
             if ($validator->fails()) {
@@ -221,6 +242,24 @@ class BenefitDerivationController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('BENEFIT_DERIVATION')
+                ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For same Benefit Code , dates cannot overlap.', $validation, true, 200, 1);
+                }
 
                 $update_names = DB::table('BENEFIT_DERIVATION_NAMES')
                     ->where('benefit_derivation_id', $request->benefit_derivation_id)
