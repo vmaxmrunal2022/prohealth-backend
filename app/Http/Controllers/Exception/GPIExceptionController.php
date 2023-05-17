@@ -45,18 +45,18 @@ class GPIExceptionController extends Controller
                 // })],
                 "exception_name" => ['required'],
                 "effective_date" => ['required'],
-                "termination_date" => ['required', 'max:10','after:effective_date'],
-                "generic_product_id" => ['required', 'max:14'],
+                "termination_date" => ['required', 'after:effective_date'],
+                "generic_product_id" => ['required'],
                 // "new_drug_status" => ['max:1'],
                 // "process_rule" => ['max:1'],
                 // 'preferred_product_gpi' => ['max:15', 'min:5'],
                 // 'conversion_product_gpi' => ['max:10'],
                 // 'message_stop_date' => ['max:10'],
-                'min_rx_qty'=>['nullable','max:6'],
-                'max_rx_qty'=>['nullable','max:6','gt:max_rx_qty'],
+                'min_rx_qty'=>['nullable'],
+                'max_rx_qty'=>['nullable','gt:min_rx_qty'],
                 // 'max_rxs_patient' => ['max:11'],
-                'mail_order_min_rx_days'=>['nullable','max:10'],
-                'mail_ord_max_days_supply_opt'=>['nullable','max:10','gt:mail_order_min_rx_days'],
+                'mail_order_min_rx_days'=>['nullable'],
+                'mail_ord_max_days_supply_opt'=>['nullable','gt:mail_order_min_rx_days'],
                 // 'min_price' => ['max:10'],
                 // 'max_price' => ['max:40'],
                 // 'max_price_patient' => ['max:10'],
@@ -64,8 +64,8 @@ class GPIExceptionController extends Controller
                 // 'min_rx_days' => ['max:6'],
                 // 'max_rx_days' => ['max:6'],
                 // 'max_refills' => ['max:6'],
-                'min_ctl_days'=>['nullable','max:6'],
-                'max_ctl_days'=>['nullable','max:12','gt:min_ctl_days'],
+                'min_ctl_days'=>['nullable'],
+                'max_ctl_days'=>['nullable','gt:min_ctl_days'],
                 // 'max_rx_qty_opt' => ['max:6'],
                 // 'valid_relation_code' => ['max:6'],
                 // 'sex_restriction' => ['max:6'],
@@ -78,8 +78,8 @@ class GPIExceptionController extends Controller
                 // 'acute_dosing_days' => ['max:12', 'min:2'],
                 // 'starter_dose_maint_bypass_days' => ['max:12|min:2'],
                 // 'alternate_copay_sched' => ['max:6'],
-                'min_age'=>['nullable','max:6'],
-                'max_age'=>['nullable','max:6','gt:min_age'],
+                'min_age'=>['nullable'],
+                'max_age'=>['nullable','gt:min_age'],
                 // 'maint_dose_units_day' => ['max:1'],
                 // 'brand_copay_amt' => ['max:1'],
                 // 'merge_defaults' => ['max:1'],
@@ -246,11 +246,11 @@ class GPIExceptionController extends Controller
                 // 'preferred_product_gpi' => ['max:15', 'min:5'],
                 // 'conversion_product_gpi' => ['max:10'],
                 // 'message_stop_date' => ['max:10'],
-                'min_rx_qty'=>['nullable','max:6'],
-                'max_rx_qty'=>['nullable','max:6','gt:max_rx_qty'],
+                'min_rx_qty'=>['nullable'],
+                'max_rx_qty'=>['nullable','gt:min_rx_qty'],
                 // 'max_rxs_patient' => ['max:11'],
-                'mail_order_min_rx_days'=>['nullable','max:10'],
-                'mail_ord_max_days_supply_opt'=>['nullable','max:10','gt:mail_order_min_rx_days'],
+                'mail_order_min_rx_days'=>['nullable'],
+                'mail_ord_max_days_supply_opt'=>['nullable','gt:mail_order_min_rx_days'],
                 // 'min_price' => ['max:10'],
                 // 'max_price' => ['max:40'],
                 // 'max_price_patient' => ['max:10'],
@@ -258,8 +258,8 @@ class GPIExceptionController extends Controller
                 // 'min_rx_days' => ['max:6'],
                 // 'max_rx_days' => ['max:6'],
                 // 'max_refills' => ['max:6'],
-                'min_ctl_days'=>['nullable','max:6'],
-                'max_ctl_days'=>['nullable','max:12','gt:min_ctl_days'],
+                'min_ctl_days'=>['nullable'],
+                'max_ctl_days'=>['nullable','gt:min_ctl_days'],
                 // 'max_rx_qty_opt' => ['max:6'],
                 // 'valid_relation_code' => ['max:6'],
                 // 'sex_restriction' => ['max:6'],
@@ -272,8 +272,8 @@ class GPIExceptionController extends Controller
                 // 'acute_dosing_days' => ['max:12', 'min:2'],
                 // 'starter_dose_maint_bypass_days' => ['max:12|min:2'],
                 // 'alternate_copay_sched' => ['max:6'],
-                'min_age'=>['nullable','max:6'],
-                'max_age'=>['nullable','max:6','gt:min_age'],
+                'min_age'=>['nullable'],
+                'max_age'=>['nullable','gt:min_age'],
                 // 'maint_dose_units_day' => ['max:1'],
                 // 'brand_copay_amt' => ['max:1'],
                 // 'merge_defaults' => ['max:1'],
@@ -305,24 +305,24 @@ class GPIExceptionController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
+                
 
-                $effectiveDate=$request->effective_date;
-                $terminationDate=$request->termination_date;
-                $overlapExists = DB::table('GPI_EXCEPTION_LISTS')
-                ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
-                ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                                ->where('TERMINATION_DATE', '>=', $terminationDate);
-                        });
-                })
-                ->exists();
-                if ($overlapExists) {
-                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
-                    return $this->respondWithToken($this->token(), 'For same GPI, dates cannot overlap.', $validation, true, 200, 1);
-                }
+                // $effectiveDate=$request->effective_date;
+                // $terminationDate=$request->termination_date;
+                // $overlapExists = DB::table('GPI_EXCEPTION_LISTS')
+                // ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
+                // ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
+                //         });
+                // })
+                // ->exists();
+                // if ($overlapExists) {
+                //     return $this->respondWithToken($this->token(), 'For same GPI, dates cannot overlap.', $validation, true, 200, 1);
+                // }
                 
 
                 $update_names = DB::table('GPI_EXCEPTIONS')
