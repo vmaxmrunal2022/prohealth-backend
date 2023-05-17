@@ -325,6 +325,26 @@ class GPIExceptionController extends Controller
                 // }
 
                 if($request->update_new == 0){
+                    // $effectiveDate=$request->effective_date;
+                    // $terminationDate=$request->termination_date;
+                    // $overlapExists = DB::table('GPI_EXCEPTION_LISTS')
+                    // ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
+                    // ->where('generic_product_id','!=' ,$request->generic_product_id)
+                    // ->where('effective_date','!=' , $request->effective_date)
+                    // ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                    //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                    //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                    //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                    //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
+                    //         });
+                    // })
+                    // ->exists();
+                    // if ($overlapExists) {
+                    //     return $this->respondWithToken($this->token(),  [['For same GPI, dates cannot overlap.']], '', 'false');
+                    // }
+
+
                     $update = DB::table('GPI_EXCEPTION_LISTS')
                     ->where('generic_product_id', $request->generic_product_id)
                     ->where('gpi_exception_list', $request->gpi_exception_list)
@@ -411,6 +431,7 @@ class GPIExceptionController extends Controller
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
 
                 }elseif($request->update_new == 1){
+
                     $checkGPI = DB::table('GPI_EXCEPTION_LISTS')
                     ->where('generic_product_id', $request->generic_product_id)
                     ->where('gpi_exception_list', $request->gpi_exception_list)
@@ -418,8 +439,28 @@ class GPIExceptionController extends Controller
                     ->get();
 
                     if(count($checkGPI) >= 1){
-                        return $this->respondWithToken($this->token(), [["GPI Class    Already Exists"]], '', 'false');
-                    }else{
+                        return $this->respondWithToken($this->token(), [["GPI  Already Exists"]], '', 'false');
+                    }
+                    else{
+                        // $effectiveDate=$request->effective_date;
+                        // $terminationDate=$request->termination_date;
+                        // $overlapExists = DB::table('GPI_EXCEPTION_LISTS')
+                        // ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
+                        // ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                        //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                        //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                        //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        //         });
+                        // })
+                        // ->exists();
+                        // if ($overlapExists) {
+                        //     return $this->respondWithToken($this->token(),  [['For same GPI Exception, dates cannot overlap.']], '', 'false');
+                        // }
+
+
+
                         $update = DB::table('GPI_EXCEPTION_LISTS')->insert([
                             'GPI_EXCEPTION_LIST' => $request->gpi_exception_list,
                             'GENERIC_PRODUCT_ID' => $request->generic_product_id,
@@ -497,8 +538,6 @@ class GPIExceptionController extends Controller
                             'DAYS_SUPPLY_OPT_MULTIPLIER' => $request->days_supply_opt_multiplier,
                             'MODULE_EXIT' => $request->module_exit,
                         ]);
-    
-    
                         $update = DB::table('GPI_EXCEPTION_LISTS')->where('gpi_exception_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
                     }
