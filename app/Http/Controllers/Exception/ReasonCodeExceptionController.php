@@ -248,6 +248,7 @@ class ReasonCodeExceptionController extends Controller
 
 
                 if($request->update_new == 0){
+                    // return "test1";
 
                     $add_names = DB::table('REASON_CODE_LIST_NAMES')
                         ->where('reason_code_list_id', $request->reason_code_list_id)
@@ -273,29 +274,33 @@ class ReasonCodeExceptionController extends Controller
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
 
                 }elseif($request->update_new == 1){
+                    
                     $checkGPI = DB::table('REASON_CODE_LISTS')
                     ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
                     ->where('REJECT_CODE', $request->reject_code)
                     ->where('REASON_CODE', $request->reason_code)
                     ->where('EFFECTIVE_DATE',$request->effective_date)
                     ->get();
-// return $checkGPI;
+// return[$checkGPI,$request->all()];
                     if(count($checkGPI) >= 1){
                         return $this->respondWithToken($this->token(), [["Reason Code List ID already exists"]], '', 'false');
                     }else{
-                        $update = DB::table('SUPER_BENEFIT_LISTS')
-                        ->insert(
-                            [
-                                'SUPER_BENEFIT_LIST_ID'=>$request->super_benefit_list_id,
-                                'BENEFIT_LIST_ID'=>$request->benefit_list_id,
-                                'EFFECTIVE_DATE'=>$request->effective_date,
-                                'TERMINATION_DATE'=>$request->termination_date,
-                                'ACCUM_BENEFIT_STRATEGY_ID'=>$request->accum_benefit_strategy_id,
-                                'DATE_TIME_CREATED'=>$createddate,
-                                
-                            ]);
-                        $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                             $update = DB::table('REASON_CODE_LISTS')
+                            ->insert(
+                                [
+                                    'reason_code_list_id' => $request->reason_code_list_id,
+                                    'reject_code' => $request->reject_code,
+                                    'reason_code' => $request->reason_code,
+                                    'effective_date' => $request->effective_date,
+                                    'termination_date' => $request->termination_date,
+                                    'date_time_created' => $createddate,
+                                    'date_time_modified' => $createddate,
+                                ]
+                            );
+                               
+                            $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
+                            return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+        
                     }
 
                 }
@@ -372,10 +377,10 @@ class ReasonCodeExceptionController extends Controller
 
     public function search(Request $request)
     {
-        $ndc = DB::table('REASON_CODE_LISTS')
-            ->join('REASON_CODE_LIST_NAMES', 'REASON_CODE_LISTS.REASON_CODE_LIST_ID', '=', 'REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID')
+        $ndc = DB::table('REASON_CODE_LIST_NAMES')
+            // ->join('REASON_CODE_LIST_NAMES', 'REASON_CODE_LISTS.REASON_CODE_LIST_ID', '=', 'REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID')
             ->where('REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID', 'like', '%' .$request->search. '%')
-            ->orWhere('REASON_CODE_LISTS.REASON_CODE_LIST_ID', 'like', '%' . $request->search. '%')
+            // ->orWhere('REASON_CODE_LISTS.REASON_CODE_LIST_ID', 'like', '%' . $request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -400,8 +405,11 @@ class ReasonCodeExceptionController extends Controller
     public function getList($id){
 
         $ndc = DB::table('REASON_CODE_LISTS')
-        // ->select('NDC_EXCEPTION_LISTS.*', 'REASON_CODE_LIST_NAMES.NDC_EXCEPTION_LIST as exception_list', 'REASON_CODE_LIST_NAMES.EXCEPTION_NAME as exception_name')
-            ->where('REASON_CODE_LIST_ID',$id)->first();
+            ->join('REASON_CODE_LIST_NAMES', 'REASON_CODE_LISTS.REASON_CODE_LIST_ID', '=', 'REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID')
+            // ->where('REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID', 'like', '%' .$request->search. '%')
+            // ->orWhere('REASON_CODE_LISTS.REASON_CODE_LIST_ID', 'like', '%' . $request->search. '%')
+            // ->select('NDC_EXCEPTION_LISTS.*', 'REASON_CODE_LIST_NAMES.NDC_EXCEPTION_LIST as exception_list', 'REASON_CODE_LIST_NAMES.EXCEPTION_NAME as exception_name')
+            ->where('REASON_CODE_LISTS.REASON_CODE_LIST_ID',$id)->get();
 
             return $this->respondWithToken($this->token(), '', $ndc);
 
