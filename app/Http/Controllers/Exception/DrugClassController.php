@@ -791,10 +791,11 @@ class DrugClassController extends Controller
                     );
 
                     $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS' )
+                    ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
                     ->where('SCATEGORY', $request->scategory)
                     ->where('STYPE', $request->stype)
-                    ->where('effective_date', $request->effective_date)
-                    ->where('termination_date', $request->termination_date)
+                    ->where('EFFECTIVE_DATE', $request->effective_date)
+                    // ->where('termination_date', $request->termination_date)
                     ->update(
                     [
                         'max_price_patient' => $request->max_price_patient,
@@ -874,15 +875,16 @@ class DrugClassController extends Controller
 
                 }elseif($request->update_new == 1){
                     $checkGPI =  DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
-                        ->where('SCATEGORY', $request->scategory)
-                        ->where('STYPE', $request->stype)
-                        ->where('effective_date', $request->effective_date)
-                        // ->where('termination_date', date('Ymd', strtotime($request->termination_date)))
-                        ->get();
-
+                               ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
+                                ->where('SCATEGORY', $request->scategory)
+                                ->where('STYPE', $request->stype)
+                                ->where('EFFECTIVE_DATE', $request->effective_date)
+                                // ->where('termination_date', date('Ymd', strtotime($request->termination_date)))
+                                ->get();
+// return $checkGPI;
                        
-                    if(count($checkGPI >= 1)){
-                        return $this->respondWithToken($this->token(), [["Drug ID  already exists"]], '', 'false');
+                    if(count($checkGPI) >= 1){
+                        return $this->respondWithToken($this->token(), [["Drug Class Type   already exists"]], '', 'false');
                     }else{
                         $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
                         ->insert(
