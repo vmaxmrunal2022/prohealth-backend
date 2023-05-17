@@ -411,7 +411,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
         Route::post('superprovider/add', [SuperProviderNetworkController::class, 'add']);
         Route::get('supernetwork/dropdown', [SuperProviderNetworkController::class, 'dropDown']);
-        Route::get('supernetwork/getDetails/{ndcid}', [SuperProviderNetworkController::class, 'getDetails']);
+        Route::get('supernetwork/getDetails/{ndcid}/{provider_network_id}', [SuperProviderNetworkController::class, 'getDetails']);
 
 
         //TRADITIONAL NETWORK

@@ -181,28 +181,28 @@ class SuperProviderNetworkController extends Controller
         if ($request->add_new) {
 
             $validator = Validator::make($request->all(), [
-                "super_rx_network_id" => ['required', 'max:10'],
-                "super_rx_network_id_name" => ['required', 'max:35'],
-                "min_rx_qty" => ['max:6'],
-                "max_rx_qty" => ['max:6'],
-                "rx_network_id" => ['required'],
-                "rx_network_type" => ['max:6'],
-                "min_rx_days" => ['max:1'],
-                "max_rx_days" => ['max:1'],
-                "effective_date" => ['max:6'],
-                "max_retail_fills" => ['max:6'],
-                "max_fills_opt" => ['max:1'],
-                "starter_dose_days" => ['max:3'],
-                "price_schedule_ovrd" => ['max:6'],
-                "starter_dose_bypass_days" => ['max:3'],
-                "starter_dose_maint_bypass_days" => ['max:3'],
-                "termination_date" => ['max:6'],
-                "comm_charge_paid" => ['max:10'],
-                "comm_charge_reject" => ['max:10'],
+                // "super_rx_network_id" => ['required', 'max:10'],
+                // "super_rx_network_id_name" => ['required', 'max:35'],
+                // "min_rx_qty" => ['max:6'],
+                // "max_rx_qty" => ['max:6'],
+                // "rx_network_id" => ['required'],
+                // "rx_network_type" => ['max:6'],
+                // "min_rx_days" => ['max:1'],
+                // "max_rx_days" => ['max:1'],
+                // "effective_date" => ['max:10'],
+                // "max_retail_fills" => ['max:6'],
+                // "max_fills_opt" => ['max:1'],
+                // "starter_dose_days" => ['max:3'],
+                // "price_schedule_ovrd" => ['max:6'],
+                // "starter_dose_bypass_days" => ['max:3'],
+                // "starter_dose_maint_bypass_days" => ['max:3'],
+                // "termination_date" => ['max:10'],
+                // "comm_charge_paid" => ['max:10'],
+                // "comm_charge_reject" => ['max:10'],
             ]);
 
             if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
             } else {
 
                 if (!$request->updateForm) {
@@ -256,7 +256,7 @@ class SuperProviderNetworkController extends Controller
                                 'starter_dose_bypass_days' => $request->starter_dose_bypass_days,
                                 'starter_dose_days' => $request->starter_dose_days,
                                 'starter_dose_maint_bypass_days' => $request->starter_dose_maint_bypass_days,
-                                'super_rx_network_priority' => $request->super_rx_network_priority,
+                                'super_rx_network_priority' => $request->super_rx_network_priority == null ? "1" : $request->super_rx_network_priority,
                                 'termination_date' => $request->termination_date,
                                 'min_rx_days' => $request->min_rx_days,
                                 'max_rx_days' => $request->max_rx_days,
@@ -310,7 +310,7 @@ class SuperProviderNetworkController extends Controller
                                     'starter_dose_bypass_days' => $request->starter_dose_bypass_days,
                                     'starter_dose_days' => $request->starter_dose_days,
                                     'starter_dose_maint_bypass_days' => $request->starter_dose_maint_bypass_days,
-                                    'super_rx_network_priority' => $request->super_rx_network_priority,
+                                    'super_rx_network_priority' => $request->super_rx_network_priority == null ? "1" : $request->super_rx_network_priority,
                                     'termination_date' => $request->termination_date,
                                     'min_rx_days' => $request->min_rx_days,
                                     'max_rx_days' => $request->max_rx_days,
@@ -362,7 +362,7 @@ class SuperProviderNetworkController extends Controller
                     'starter_dose_bypass_days' => $request->starter_dose_bypass_days,
                     'starter_dose_days' => $request->starter_dose_days,
                     'starter_dose_maint_bypass_days' => $request->starter_dose_maint_bypass_days,
-                    'super_rx_network_priority' => $request->super_rx_network_priority,
+                    'super_rx_network_priority' => $request->super_rx_network_priority == null ? "1" : $request->super_rx_network_priority,
                     'termination_date' => $request->termination_date,
                     'min_rx_days' => $request->min_rx_days,
                     'max_rx_days' => $request->max_rx_days,
@@ -388,7 +388,7 @@ class SuperProviderNetworkController extends Controller
 
         $ndc = DB::table('SUPER_RX_NETWORK_NAMES')
             // ->join('SUPER_RX_NETWORKS', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
-            ->where('SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID', 'like', '%' . $request->search . '%')
+            ->where(DB::raw('UPPER(SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID)'), 'like', '%' . strtoupper($request->search) . '%')
             ->distinct()
             ->get();
 
@@ -397,24 +397,34 @@ class SuperProviderNetworkController extends Controller
 
     public function networkList($ndcid)
     {
-
         $ndclist =  DB::table('SUPER_RX_NETWORK_NAMES')
             ->join('SUPER_RX_NETWORKS', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
             ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', 'like', '%' . $ndcid . '%')
+            ->orderBy('SUPER_RX_NETWORK_PRIORITY', 'asc')
             ->get();
-
+        // $ndclist =  DB::table('SUPER_RX_NETWORKS')
+        //     ->where(DB::raw('UPPER(SUPER_RX_NETWORK_ID)'), strtoupper($ndcid))
+        //     ->orderBy('SUPER_RX_NETWORK_PRIORITY', 'asc')
+        //     ->get();
 
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
 
 
-    public function getDetails($ndcid)
+    public function getDetails($ndcid, $rx_network_id)
     {
 
-        $ndc =  DB::table('SUPER_RX_NETWORK_NAMES')
-            ->join('SUPER_RX_NETWORKS', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
-            ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', 'like', '%' . $ndcid . '%')
+        // $ndc =  DB::table('SUPER_RX_NETWORK_NAMES')
+        //     ->join('SUPER_RX_NETWORKS', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
+        //     ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', 'like', '%' . $ndcid . '%')
+        //     ->where('SUPER_RX_NETWORKS.rx_newtwork_id', $rx_network_id)
+        //     ->first();
+
+        $ndc =  DB::table('SUPER_RX_NETWORKS')
+            ->join('SUPER_RX_NETWORK_NAMES', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID')
+            ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', $ndcid)
+            ->where('SUPER_RX_NETWORKS.rx_network_id', $rx_network_id)
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

@@ -191,8 +191,14 @@ class AccumlatedController extends Controller
 
         $ndclist = DB::table('ACCUM_BENEFIT_STRATEGY')
             ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
-            ->where('ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', $ndcid)
+            ->where('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', $ndcid)
             ->get();
+
+        // $ndclist = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+        //     ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID)'), strtoupper($ndcid))
+        //     ->get();
+
+        // $arr = [$ndclist, $ndc];
 
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
