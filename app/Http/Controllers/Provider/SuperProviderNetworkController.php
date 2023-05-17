@@ -189,20 +189,20 @@ class SuperProviderNetworkController extends Controller
                 "rx_network_type" => ['max:6'],
                 "min_rx_days" => ['max:1'],
                 "max_rx_days" => ['max:1'],
-                "effective_date" => ['max:6'],
+                "effective_date" => ['max:10'],
                 "max_retail_fills" => ['max:6'],
                 "max_fills_opt" => ['max:1'],
                 "starter_dose_days" => ['max:3'],
-                "price_schedule_ovrd" => ['max:6'],
+                "price_schedule_ovrd" => ['max:100'],
                 "starter_dose_bypass_days" => ['max:3'],
                 "starter_dose_maint_bypass_days" => ['max:3'],
-                "termination_date" => ['max:6'],
+                "termination_date" => ['max:10'],
                 "comm_charge_paid" => ['max:10'],
                 "comm_charge_reject" => ['max:10'],
             ]);
 
             if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
             } else {
 
                 if (!$request->updateForm) {
@@ -388,7 +388,7 @@ class SuperProviderNetworkController extends Controller
 
         $ndc = DB::table('SUPER_RX_NETWORK_NAMES')
             // ->join('SUPER_RX_NETWORKS', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
-            ->where('SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID', 'like', '%' . $request->search . '%')
+            ->where(DB::raw('UPPER(SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID)'), 'like', '%' . strtoupper($request->search) . '%')
             ->distinct()
             ->get();
 
@@ -409,12 +409,19 @@ class SuperProviderNetworkController extends Controller
 
 
 
-    public function getDetails($ndcid)
+    public function getDetails($ndcid, $rx_network_id)
     {
 
-        $ndc =  DB::table('SUPER_RX_NETWORK_NAMES')
-            ->join('SUPER_RX_NETWORKS', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
-            ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', 'like', '%' . $ndcid . '%')
+        // $ndc =  DB::table('SUPER_RX_NETWORK_NAMES')
+        //     ->join('SUPER_RX_NETWORKS', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
+        //     ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', 'like', '%' . $ndcid . '%')
+        //     ->where('SUPER_RX_NETWORKS.rx_newtwork_id', $rx_network_id)
+        //     ->first();
+
+        $ndc =  DB::table('SUPER_RX_NETWORKS')
+            ->join('SUPER_RX_NETWORK_NAMES', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID')
+            ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', $ndcid)
+            ->where('SUPER_RX_NETWORKS.rx_network_id', $rx_network_id)
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
