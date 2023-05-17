@@ -555,23 +555,23 @@ class NDCExceptionController extends Controller
                 "effective_date" => ['required'],
                 "termination_date" => ['required','date','after:effective_date'],
 
-                'min_rx_qty'=>['nullable','max:6'],
-                'max_rx_qty'=>['nullable','max:6','gt:max_rx_qty'],
+                'min_rx_qty'=>['nullable'],
+                'max_rx_qty'=>['nullable','gt:min_rx_qty'],
 
-                'mail_order_min_rx_days'=>['nullable','max:6'],
-                'mail_ord_max_days_supply_opt'=>['nullable','max:6','gt:mail_order_min_rx_days'],
+                'mail_order_min_rx_days'=>['nullable'],
+                'mail_ord_max_days_supply_opt'=>['nullable','gt:mail_order_min_rx_days'],
 
-                'days_supply_opt_multiplier' =>['nullable','max:6'],
-                'max_days_supply_opt' =>['nullable','max:6','gt:days_supply_opt_multiplier'],
+                'days_supply_opt_multiplier' =>['nullable'],
+                'max_days_supply_opt' =>['nullable','gt:days_supply_opt_multiplier'],
 
-                'min_ctl_days'=>['nullable','max:6'],
-                'max_ctl_days'=>['nullable','max:12','gt:min_ctl_days'],
+                'min_ctl_days'=>['nullable'],
+                'max_ctl_days'=>['nullable','gt:min_ctl_days'],
 
-                'mail_order_min_rx_days'=>['nullable','max:6'],
-                'mail_ord_max_days_supply_opt'=>['nullable','max:6','gt:mail_order_min_rx_days'],
+                'mail_order_min_rx_days'=>['nullable'],
+                'mail_ord_max_days_supply_opt'=>['nullable','gt:mail_order_min_rx_days'],
 
-                'min_age'=>['nullable','max:6'],
-                'max_age'=>['nullable','max:6','gt:min_age'],
+                'min_age'=>['nullable'],
+                'max_age'=>['nullable','gt:min_age'],
                 // "NEW_DRUG_STATUS"=>['max:2'],
                 // "PROCESS_RULE"=>['max:1'],
                 // 'MAXIMUM_ALLOWABLE_COST'=>['max:15','min:5'],
@@ -791,23 +791,23 @@ class NDCExceptionController extends Controller
                 "exception_name" => ['required','max:36'],
                 "termination_date" => ['required','date','after:effective_date'],
 
-                'min_rx_qty'=>['nullable','max:6'],
-                'max_rx_qty'=>['nullable','max:6','gt:max_rx_qty'],
+                'min_rx_qty'=>['nullable'],
+                'max_rx_qty'=>['nullable','gt:min_rx_qty'],
 
-                'mail_order_min_rx_days'=>['nullable','max:6'],
-                'mail_ord_max_days_supply_opt'=>['nullable','max:6','gt:mail_order_min_rx_days'],
+                'mail_order_min_rx_days'=>['nullable'],
+                'mail_ord_max_days_supply_opt'=>['nullable','gt:mail_order_min_rx_days'],
 
-                'days_supply_opt_multiplier' =>['nullable','max:6'],
-                'max_days_supply_opt' =>['nullable','max:6','gt:days_supply_opt_multiplier'],
+                'days_supply_opt_multiplier' =>['nullable'],
+                'max_days_supply_opt' =>['nullable','gt:days_supply_opt_multiplier'],
 
-                'min_ctl_days'=>['nullable','max:6'],
-                'max_ctl_days'=>['nullable','max:12','gt:min_ctl_days'],
+                'min_ctl_days'=>['nullable'],
+                'max_ctl_days'=>['nullable','gt:min_ctl_days'],
 
-                'mail_order_min_rx_days'=>['nullable','max:6'],
-                'mail_ord_max_days_supply_opt'=>['nullable','max:6','gt:mail_order_min_rx_days'],
+                'mail_order_min_rx_days'=>['nullable'],
+                'mail_ord_max_days_supply_opt'=>['nullable','gt:mail_order_min_rx_days'],
 
-                'min_age'=>['nullable','max:6'],
-                'max_age'=>['nullable','max:6','gt:min_age'],
+                'min_age'=>['nullable'],
+                'max_age'=>['nullable','gt:min_age'],
                 // "NEW_DRUG_STATUS"=>['max:2'],
                 // "PROCESS_RULE"=>['max:1'],
                 // 'MAXIMUM_ALLOWABLE_COST'=>['max:15','min:5'],

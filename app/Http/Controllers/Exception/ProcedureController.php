@@ -306,8 +306,8 @@ class ProcedureController extends Controller
                 'message_stop_date'=>['max:10'],
                 'min_age'=>['nullable','max:6'],
                 'max_age'=>['nullable','max:6','gt:min_age'],
-                'min_price'=>['max:6'],
-                'max_price'=>['max:6'],
+                // 'min_price'=>['max:6'],
+                // 'max_price'=>['max:6'],
                 // 'MIN_PRICE_OPT'=>['max:6'],
                 // 'MAX_PRICE_OPT'=>['max:6'],
                 'valid_relation_code'=>['max:6'],
@@ -364,73 +364,9 @@ class ProcedureController extends Controller
                 //     return $this->respondWithToken($this->token(), 'For same Procedure Code, Benefit Code, Service Type, Service Modifier, Diagnosis ID and Provider Type, dates cannot overlap.', $validation, true, 200, 1);
                 // }
 
-    
-                $update_names = DB::table('PROCEDURE_EXCEPTION_NAMES')
-                ->where('procedure_exception_list', $request->procedure_exception_list )
-                ->first();
-                    
-    
-                $checkGPI = DB::table('PROCEDURE_EXCEPTION_LISTS')
-                ->where('procedure_exception_list',$request->procedure_exception_list)
-                ->where('proc_code_list_id',$request->proc_code_list_id)
-                ->where('service_modifier',$request->service_modifier)
-                ->where('benefit_code',$request->benefit_code)
-                ->where('diagnosis_list',$request->diagnosis_list)
-                ->where('provider_type',$request->provider_type)
-                ->where('service_type',$request->service_type)
-                ->where('effective_date',$request->effective_date)
 
-                    ->get()
-                    ->count();
-                    // dd($checkGPI);
-                // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                //if result 0 then add NDC_EXCEPTION_LISTS record
 
-    
-                if ($checkGPI <= "0") {
-                    $update = DB::table('PROCEDURE_EXCEPTION_LISTS')
-                    ->insert(
-                        [
-                            'procedure_exception_list'=>$request->procedure_exception_list,
-                            'accum_bene_strategy_id'=>$request->accum_bene_strategy_id,
-                            'benefit_code'=>$request->benefit_code,
-                            'copay_strategy_id'=>$request->copay_strategy_id,
-                            'coverage_start_days'=>$request->coverage_start_days,
-                            'diagnosis_id'=>$request->diagnosis_id,
-                            'diagnosis_list'=>$request->diagnosis_list,
-                            'max_price'=>$request->max_price,
-                            'max_price_opt'=>$request->max_price_opt,
-                            'module_exit'=>$request->module_exit,
-                            'new_claim_status'=>$request->new_claim_status,
-                            'physician_list'=>$request->physician_list,
-                            'physician_specialty_list'=>$request->physician_specialty_list,
-                            'pricing_strategy_id'=>$request->pricing_strategy_id,
-                            'proc_code_list_id'=>$request->proc_code_list_id,
-                            'process_rule'=>$request->process_rule,
-                            'provider_type'=>$request->provider_type,
-                            'reject_only_msg_flag'=>$request->reject_only_msg_flag,
-                            'rx_qty_opt_multiplier'=>$request->rx_qty_opt_multiplier,
-                            'service_modifier'=>$request->service_modifier,
-                            'service_type'=>$request->service_type,
-                            'sex_restriction'=>$request->sex_restriction,
-                            'valid_relation_code'=>$request->valid_relation_code,
-                            'effective_date' => $request->effective_date,
-                            'termination_date' => $request->termination_date,
-                            'message_stop_date' => $request->message_stop_date,
-                            'message'=>$request->message,
-                            'min_price'=>$request->min_price,
-                            'max_age'=>$request->max_age,
-                            'min_age'=>$request->min_age,
-                            'max_qty_over_time'=>$request->max_qty_over_time,
-                            'ucr'=>$request->ucr,
-                        ]);
-                    
-
-                $update = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('procedure_exception_list', 'like', '%' . $request->procedure_exception_list . '%')->first();
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-
-                } else {
-  
+                if($request->update_new == 0){
 
                     $add_names = DB::table('PROCEDURE_EXCEPTION_NAMES')
                     ->where('procedure_exception_list',$request->procedure_exception_list)
@@ -443,13 +379,13 @@ class ProcedureController extends Controller
 
                     $update = DB::table('PROCEDURE_EXCEPTION_LISTS' )
                     ->where('procedure_exception_list',$request->procedure_exception_list)
-                ->where('proc_code_list_id',$request->proc_code_list_id)
-                ->where('service_modifier',$request->service_modifier)
-                ->where('benefit_code',$request->benefit_code)
-                ->where('diagnosis_list',$request->diagnosis_list)
-                ->where('provider_type',$request->provider_type)
-                ->where('service_type',$request->service_type)
-                ->where('effective_date',$request->effective_date)
+                    ->where('proc_code_list_id',$request->proc_code_list_id)
+                    ->where('service_modifier',$request->service_modifier)
+                    ->where('benefit_code',$request->benefit_code)
+                    ->where('diagnosis_list',$request->diagnosis_list)
+                    ->where('provider_type',$request->provider_type)
+                    ->where('service_type',$request->service_type)
+                    ->where('effective_date',$request->effective_date)
                     ->update(
                         [
                             'accum_bene_strategy_id'=>$request->accum_bene_strategy_id,
@@ -483,7 +419,192 @@ class ProcedureController extends Controller
                     );
                     $update = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('procedure_exception_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+
                 }
+                elseif($request->update_new == 1){
+                    $checkGPI = DB::table('PROCEDURE_EXCEPTION_LISTS')
+                    ->where('procedure_exception_list',$request->procedure_exception_list)
+                    ->where('proc_code_list_id',$request->proc_code_list_id)
+                    ->where('service_modifier',$request->service_modifier)
+                    ->where('benefit_code',$request->benefit_code)
+                    ->where('diagnosis_list',$request->diagnosis_list)
+                    ->where('provider_type',$request->provider_type)
+                    ->where('service_type',$request->service_type)
+                    ->where('effective_date',$request->effective_date)->get();
+
+                    if(count($checkGPI) >= 1){
+                        return $this->respondWithToken($this->token(), [["Procedure Code List ID already exists"]], '', 'false');
+                    }else{
+
+                        $update = DB::table('PROCEDURE_EXCEPTION_LISTS')
+                        ->insert(
+                            [
+                                'procedure_exception_list'=>$request->procedure_exception_list,
+                                'accum_bene_strategy_id'=>$request->accum_bene_strategy_id,
+                                'benefit_code'=>$request->benefit_code,
+                                'copay_strategy_id'=>$request->copay_strategy_id,
+                                'coverage_start_days'=>$request->coverage_start_days,
+                                'diagnosis_id'=>$request->diagnosis_id,
+                                'diagnosis_list'=>$request->diagnosis_list,
+                                'max_price'=>$request->max_price,
+                                'max_price_opt'=>$request->max_price_opt,
+                                'module_exit'=>$request->module_exit,
+                                'new_claim_status'=>$request->new_claim_status,
+                                'physician_list'=>$request->physician_list,
+                                'physician_specialty_list'=>$request->physician_specialty_list,
+                                'pricing_strategy_id'=>$request->pricing_strategy_id,
+                                'proc_code_list_id'=>$request->proc_code_list_id,
+                                'process_rule'=>$request->process_rule,
+                                'provider_type'=>$request->provider_type,
+                                'reject_only_msg_flag'=>$request->reject_only_msg_flag,
+                                'rx_qty_opt_multiplier'=>$request->rx_qty_opt_multiplier,
+                                'service_modifier'=>$request->service_modifier,
+                                'service_type'=>$request->service_type,
+                                'sex_restriction'=>$request->sex_restriction,
+                                'valid_relation_code'=>$request->valid_relation_code,
+                                'effective_date' => $request->effective_date,
+                                'termination_date' => $request->termination_date,
+                                'message_stop_date' => $request->message_stop_date,
+                                'message'=>$request->message,
+                                'min_price'=>$request->min_price,
+                                'max_age'=>$request->max_age,
+                                'min_age'=>$request->min_age,
+                                'max_qty_over_time'=>$request->max_qty_over_time,
+                                'ucr'=>$request->ucr,
+                            ]);
+                        
+    
+                    $update = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('procedure_exception_list', 'like', '%' . $request->procedure_exception_list . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+                    }
+
+                }
+
+
+
+
+
+    
+                // $update_names = DB::table('PROCEDURE_EXCEPTION_NAMES')
+                // ->where('procedure_exception_list', $request->procedure_exception_list )
+                // ->first();
+                    
+    
+                // $checkGPI = DB::table('PROCEDURE_EXCEPTION_LISTS')
+                // ->where('procedure_exception_list',$request->procedure_exception_list)
+                // ->where('proc_code_list_id',$request->proc_code_list_id)
+                // ->where('service_modifier',$request->service_modifier)
+                // ->where('benefit_code',$request->benefit_code)
+                // ->where('diagnosis_list',$request->diagnosis_list)
+                // ->where('provider_type',$request->provider_type)
+                // ->where('service_type',$request->service_type)
+                // ->where('effective_date',$request->effective_date)
+
+                //     ->get()
+                //     ->count();
+                //     // dd($checkGPI);
+                // // if result >=1 then update NDC_EXCEPTION_LISTS table record
+                // //if result 0 then add NDC_EXCEPTION_LISTS record
+
+    
+                // if ($checkGPI <= "0") {
+                //     $update = DB::table('PROCEDURE_EXCEPTION_LISTS')
+                //     ->insert(
+                //         [
+                //             'procedure_exception_list'=>$request->procedure_exception_list,
+                //             'accum_bene_strategy_id'=>$request->accum_bene_strategy_id,
+                //             'benefit_code'=>$request->benefit_code,
+                //             'copay_strategy_id'=>$request->copay_strategy_id,
+                //             'coverage_start_days'=>$request->coverage_start_days,
+                //             'diagnosis_id'=>$request->diagnosis_id,
+                //             'diagnosis_list'=>$request->diagnosis_list,
+                //             'max_price'=>$request->max_price,
+                //             'max_price_opt'=>$request->max_price_opt,
+                //             'module_exit'=>$request->module_exit,
+                //             'new_claim_status'=>$request->new_claim_status,
+                //             'physician_list'=>$request->physician_list,
+                //             'physician_specialty_list'=>$request->physician_specialty_list,
+                //             'pricing_strategy_id'=>$request->pricing_strategy_id,
+                //             'proc_code_list_id'=>$request->proc_code_list_id,
+                //             'process_rule'=>$request->process_rule,
+                //             'provider_type'=>$request->provider_type,
+                //             'reject_only_msg_flag'=>$request->reject_only_msg_flag,
+                //             'rx_qty_opt_multiplier'=>$request->rx_qty_opt_multiplier,
+                //             'service_modifier'=>$request->service_modifier,
+                //             'service_type'=>$request->service_type,
+                //             'sex_restriction'=>$request->sex_restriction,
+                //             'valid_relation_code'=>$request->valid_relation_code,
+                //             'effective_date' => $request->effective_date,
+                //             'termination_date' => $request->termination_date,
+                //             'message_stop_date' => $request->message_stop_date,
+                //             'message'=>$request->message,
+                //             'min_price'=>$request->min_price,
+                //             'max_age'=>$request->max_age,
+                //             'min_age'=>$request->min_age,
+                //             'max_qty_over_time'=>$request->max_qty_over_time,
+                //             'ucr'=>$request->ucr,
+                //         ]);
+                    
+
+                // $update = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('procedure_exception_list', 'like', '%' . $request->procedure_exception_list . '%')->first();
+                // return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+                // } else {
+  
+
+                //     $add_names = DB::table('PROCEDURE_EXCEPTION_NAMES')
+                //     ->where('procedure_exception_list',$request->procedure_exception_list)
+                //     ->update(
+                //         [
+                //             'exception_name'=>$request->exception_name,
+                            
+                //         ]
+                //     );
+
+                //     $update = DB::table('PROCEDURE_EXCEPTION_LISTS' )
+                //     ->where('procedure_exception_list',$request->procedure_exception_list)
+                //     ->where('proc_code_list_id',$request->proc_code_list_id)
+                //     ->where('service_modifier',$request->service_modifier)
+                //     ->where('benefit_code',$request->benefit_code)
+                //     ->where('diagnosis_list',$request->diagnosis_list)
+                //     ->where('provider_type',$request->provider_type)
+                //     ->where('service_type',$request->service_type)
+                //     ->where('effective_date',$request->effective_date)
+                //     ->update(
+                //         [
+                //             'accum_bene_strategy_id'=>$request->accum_bene_strategy_id,
+                //             'copay_strategy_id'=>$request->copay_strategy_id,
+                //             'coverage_start_days'=>$request->coverage_start_days,
+                //             'diagnosis_list'=>$request->diagnosis_list,
+                //             'max_age'=>$request->max_age,
+                //             'max_price'=>$request->max_price,
+                //             'max_price_opt'=>$request->max_price_opt,
+                //             'module_exit'=>$request->module_exit,
+                //             'new_claim_status'=>$request->new_claim_status,
+                //             'physician_list'=>$request->physician_list,
+                //             'physician_specialty_list'=>$request->physician_specialty_list,
+                //             'pricing_strategy_id'=>$request->pricing_strategy_id,
+                //             'proc_code_list_id'=>$request->proc_code_list_id,
+                //             'process_rule'=>$request->process_rule,
+                //             'reject_only_msg_flag'=>$request->reject_only_msg_flag,
+                //             'rx_qty_opt_multiplier'=>$request->rx_qty_opt_multiplier,
+                //             'sex_restriction'=>$request->sex_restriction,
+                //             'valid_relation_code'=>$request->valid_relation_code,
+                //             'termination_date' => $request->termination_date,
+                //             'message_stop_date' => $request->message_stop_date,
+                //             'message'=>$request->message,
+                //             'min_price'=>$request->min_price,
+                //             'min_age'=>$request->min_age,
+                //             'max_qty_over_time'=>$request->max_qty_over_time,
+                //             'ucr'=>$request->ucr,
+                            
+        
+                //         ]
+                //     );
+                //     $update = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('procedure_exception_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                // }
     
                
 

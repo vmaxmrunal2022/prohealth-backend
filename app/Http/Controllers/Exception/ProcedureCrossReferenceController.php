@@ -332,58 +332,9 @@ class ProcedureCrossReferenceController extends Controller
                 // if ($overlapExists) {
                 //     return $this->respondWithToken($this->token(), 'For Same Submitted Procedure Code And History Procedure Code,dates cannot overlap.', $validation, true, 200, 1);
                 // }
-    
-                $update_names = DB::table('ENTITY_NAMES')
-                ->where('ENTITY_USER_ID', $request->procedure_xref_id)
-                ->first();
-                    
-    
-                $checkGPI = DB::table('PROCEDURE_XREF')
-                    ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
-                    ->where('SUB_PROCEDURE_CODE',$request->sub_procedure_code)
-                    ->where('HIST_PROCEDURE_CODE',$request->hist_procedure_code)
-                    ->where('EFFECTIVE_DATE',$request->effective_date)
-                    ->get()
-                    ->count();
-                    // dd($checkGPI);
-                // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                //if result 0 then add NDC_EXCEPTION_LISTS record
 
-    
-                if ($checkGPI <= "0") {
-                   
-                    $update = DB::table('PROCEDURE_XREF')
-                    ->insert(
-                        [
-                            'PROCEDURE_XREF_ID' => $request->procedure_xref_id,
-                            'SUB_PROCEDURE_CODE'=>$request->sub_procedure_code,
-                            'HIST_PROCEDURE_CODE'=>$request->hist_procedure_code,
-                            'EFFECTIVE_DATE'=>$request->effective_date,
-                            'TERMINATION_DATE'=>$request->termination_date,
-                            'TOOTH_OPT'=>$request->tooth_opt,
-                            'SURFACE_OPT'=>$request->surface_opt,
-                            'QUADRANT_OPT'=>$request->quadrant_opt,
-                            'NEW_DRUG_STATUS'=>$request->new_drug_status,
-                            'MESSAGE'=>$request->message,
-                            'MESSAGE_STOP_DATE'=>$request->message_stop_date,
-                            
-                        ]
-                    );
-                  
-                $update = DB::table('PROCEDURE_XREF')->where('PROCEDURE_XREF_ID', 'like', '%' . $request->procedure_xref_id . '%')->first();
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
 
-                } else {
-  
-
-                    $add_names = DB::table('ENTITY_NAMES')
-                    ->where('ENTITY_USER_ID',$request->procedure_xref_id)
-                    ->update(
-                        [
-                            'entity_user_name'=>$request->entity_user_name,
-                            
-                        ]
-                    );
+                if($request->update_new == 0){
 
                     $update = DB::table('PROCEDURE_XREF' )
                     ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
@@ -406,7 +357,116 @@ class ProcedureCrossReferenceController extends Controller
                     
                     $update = DB::table('PROCEDURE_XREF')->where('PROCEDURE_XREF_ID', 'like', '%' . $request->procedure_xref_id . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+
                 }
+                elseif($request->update_new == 1){
+                    $checkGPI = DB::table('PROCEDURE_XREF')
+                    ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
+                    ->where('SUB_PROCEDURE_CODE',$request->sub_procedure_code)
+                    ->where('HIST_PROCEDURE_CODE',$request->hist_procedure_code)
+                    ->where('EFFECTIVE_DATE',$request->effective_date)
+                    ->get();
+
+                    if(count($checkGPI) >= 1){
+                        return $this->respondWithToken($this->token(), [["Submitted Procedure Code already exists"]], '', 'false');
+                    }else{
+                        $update = DB::table('PROCEDURE_XREF')
+                        ->insert(
+                            [
+                                'PROCEDURE_XREF_ID' => $request->procedure_xref_id,
+                                'SUB_PROCEDURE_CODE'=>$request->sub_procedure_code,
+                                'HIST_PROCEDURE_CODE'=>$request->hist_procedure_code,
+                                'EFFECTIVE_DATE'=>$request->effective_date,
+                                'TERMINATION_DATE'=>$request->termination_date,
+                                'TOOTH_OPT'=>$request->tooth_opt,
+                                'SURFACE_OPT'=>$request->surface_opt,
+                                'QUADRANT_OPT'=>$request->quadrant_opt,
+                                'NEW_DRUG_STATUS'=>$request->new_drug_status,
+                                'MESSAGE'=>$request->message,
+                                'MESSAGE_STOP_DATE'=>$request->message_stop_date,
+                                
+                            ]
+                        );
+                      
+                        $update = DB::table('PROCEDURE_XREF')->where('PROCEDURE_XREF_ID', 'like', '%' . $request->procedure_xref_id . '%')->first();
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                    }
+                }
+    
+                // $update_names = DB::table('ENTITY_NAMES')
+                // ->where('ENTITY_USER_ID', $request->procedure_xref_id)
+                // ->first();
+                    
+    
+                // $checkGPI = DB::table('PROCEDURE_XREF')
+                //     ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
+                //     ->where('SUB_PROCEDURE_CODE',$request->sub_procedure_code)
+                //     ->where('HIST_PROCEDURE_CODE',$request->hist_procedure_code)
+                //     ->where('EFFECTIVE_DATE',$request->effective_date)
+                //     ->get()
+                //     ->count();
+                //     // dd($checkGPI);
+                // // if result >=1 then update NDC_EXCEPTION_LISTS table record
+                // //if result 0 then add NDC_EXCEPTION_LISTS record
+
+    
+                // if ($checkGPI <= "0") {
+                   
+                //     $update = DB::table('PROCEDURE_XREF')
+                //     ->insert(
+                //         [
+                //             'PROCEDURE_XREF_ID' => $request->procedure_xref_id,
+                //             'SUB_PROCEDURE_CODE'=>$request->sub_procedure_code,
+                //             'HIST_PROCEDURE_CODE'=>$request->hist_procedure_code,
+                //             'EFFECTIVE_DATE'=>$request->effective_date,
+                //             'TERMINATION_DATE'=>$request->termination_date,
+                //             'TOOTH_OPT'=>$request->tooth_opt,
+                //             'SURFACE_OPT'=>$request->surface_opt,
+                //             'QUADRANT_OPT'=>$request->quadrant_opt,
+                //             'NEW_DRUG_STATUS'=>$request->new_drug_status,
+                //             'MESSAGE'=>$request->message,
+                //             'MESSAGE_STOP_DATE'=>$request->message_stop_date,
+                            
+                //         ]
+                //     );
+                  
+                // $update = DB::table('PROCEDURE_XREF')->where('PROCEDURE_XREF_ID', 'like', '%' . $request->procedure_xref_id . '%')->first();
+                // return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+                // } else {
+  
+
+                //     $add_names = DB::table('ENTITY_NAMES')
+                //     ->where('ENTITY_USER_ID',$request->procedure_xref_id)
+                //     ->update(
+                //         [
+                //             'entity_user_name'=>$request->entity_user_name,
+                            
+                //         ]
+                //     );
+
+                //     $update = DB::table('PROCEDURE_XREF' )
+                //     ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
+                //     ->where('SUB_PROCEDURE_CODE',$request->sub_procedure_code)
+                //     ->where('HIST_PROCEDURE_CODE',$request->hist_procedure_code)
+                //     ->where('EFFECTIVE_DATE',$request->effective_date)
+                //     ->update(
+                //         [
+                               
+                //                 'TERMINATION_DATE'=>$request->termination_date,
+                //                 'TOOTH_OPT'=>$request->tooth_opt,
+                //                 'SURFACE_OPT'=>$request->surface_opt,
+                //                 'QUADRANT_OPT'=>$request->quadrant_opt,
+                //                 'NEW_DRUG_STATUS'=>$request->new_drug_status,
+                //                 'MESSAGE'=>$request->message,
+                //                 'MESSAGE_STOP_DATE'=>$request->message_stop_date,
+                            
+                //         ]
+                //     );  
+                    
+                //     $update = DB::table('PROCEDURE_XREF')->where('PROCEDURE_XREF_ID', 'like', '%' . $request->procedure_xref_id . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                // }
     
                
 

@@ -247,41 +247,7 @@ class ReasonCodeExceptionController extends Controller
                 // }
 
 
-                $update_names = DB::table('REASON_CODE_LIST_NAMES')
-                    ->where('reason_code_list_id', $request->reason_code_list_id)
-                    ->first();
-
-
-                $checkGPI = DB::table('REASON_CODE_LISTS')
-                    ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
-                    ->where('REJECT_CODE', $request->reject_code)
-                    ->where('reason_code', $request->reason_code)
-                    ->get()
-                    ->count();
-                // dd($checkGPI);
-                // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                //if result 0 then add NDC_EXCEPTION_LISTS record
-
-
-                if ($checkGPI <= "0") {
-                    $update = DB::table('REASON_CODE_LISTS')
-                    ->insert(
-                        [
-                            'reason_code_list_id' => $request->reason_code_list_id,
-                            'reject_code' => $request->reject_code,
-                            'reason_code' => $request->reason_code,
-                            'effective_date' => $request->effective_date,
-                            'termination_date' => $request->termination_date,
-                            'date_time_created' => $createddate,
-                            'date_time_modified' => $createddate,
-                        ]
-                    );
-                       
-                    $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-
-                } else {
-
+                if($request->update_new == 0){
 
                     $add_names = DB::table('REASON_CODE_LIST_NAMES')
                         ->where('reason_code_list_id', $request->reason_code_list_id)
@@ -295,16 +261,108 @@ class ReasonCodeExceptionController extends Controller
                     $update = DB::table('REASON_CODE_LISTS')
                     ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
                     ->where('REJECT_CODE', $request->reject_code)
-                    ->where('reason_code', $request->reason_code)
-                        ->update(
-                            [
-                                'TERMINATION_DATE'=>$request->termination_date,
+                    ->where('REASON_CODE', $request->reason_code)
+                    ->where('EFFECTIVE_DATE',$request->effective_date)
+                    ->get();
 
-                            ]
-                        );
+                    // return $request->all();
+                        // ->update(
+                        //     [
+                        //         'TERMINATION_DATE'=>$request->termination_date,
+
+                        //     ]
+                        // );
                     $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+
+                }elseif($request->update_new == 1){
+                    $checkGPI = DB::table('REASON_CODE_LISTS')
+                    ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
+                    ->where('REJECT_CODE', $request->reject_code)
+                    ->where('REASON_CODE', $request->reason_code)
+                    ->where('EFFECTIVE_DATE',$request->effective_date)
+                   
+                    ->get();
+// return $checkGPI;
+                    if(count($checkGPI) >= 1){
+                        return $this->respondWithToken($this->token(), [["Reason Code List ID already exists"]], '', 'false');
+                    }else{
+                        $update = DB::table('SUPER_BENEFIT_LISTS')
+                        ->insert(
+                            [
+                                'SUPER_BENEFIT_LIST_ID'=>$request->super_benefit_list_id,
+                                'BENEFIT_LIST_ID'=>$request->benefit_list_id,
+                                'EFFECTIVE_DATE'=>$request->effective_date,
+                                'TERMINATION_DATE'=>$request->termination_date,
+                                'ACCUM_BENEFIT_STRATEGY_ID'=>$request->accum_benefit_strategy_id,
+                                'DATE_TIME_CREATED'=>$createddate,
+                                
+                            ]);
+                        $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                    }
+
                 }
+
+
+                // $update_names = DB::table('REASON_CODE_LIST_NAMES')
+                //     ->where('reason_code_list_id', $request->reason_code_list_id)
+                //     ->first();
+
+
+                // $checkGPI = DB::table('REASON_CODE_LISTS')
+                //     ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
+                //     ->where('REJECT_CODE', $request->reject_code)
+                //     ->where('reason_code', $request->reason_code)
+                //     ->get()
+                //     ->count();
+                // // dd($checkGPI);
+                // // if result >=1 then update NDC_EXCEPTION_LISTS table record
+                // //if result 0 then add NDC_EXCEPTION_LISTS record
+
+
+                // if ($checkGPI <= "0") {
+                //     $update = DB::table('REASON_CODE_LISTS')
+                //     ->insert(
+                //         [
+                //             'reason_code_list_id' => $request->reason_code_list_id,
+                //             'reject_code' => $request->reject_code,
+                //             'reason_code' => $request->reason_code,
+                //             'effective_date' => $request->effective_date,
+                //             'termination_date' => $request->termination_date,
+                //             'date_time_created' => $createddate,
+                //             'date_time_modified' => $createddate,
+                //         ]
+                //     );
+                       
+                //     $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+                // } else {
+
+
+                //     $add_names = DB::table('REASON_CODE_LIST_NAMES')
+                //         ->where('reason_code_list_id', $request->reason_code_list_id)
+                //         ->update(
+                //             [
+                //                 'reason_code_name' => $request->reason_code_name,
+
+                //             ]
+                //         );
+
+                //     $update = DB::table('REASON_CODE_LISTS')
+                //     ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
+                //     ->where('REJECT_CODE', $request->reject_code)
+                //     ->where('reason_code', $request->reason_code)
+                //         ->update(
+                //             [
+                //                 'TERMINATION_DATE'=>$request->termination_date,
+
+                //             ]
+                //         );
+                //     $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                // }
 
 
 

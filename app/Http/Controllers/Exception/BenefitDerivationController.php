@@ -131,12 +131,12 @@ class BenefitDerivationController extends Controller
 
                 // "benefit_derivation_id" => ['required','max:36'],
                 "description"=>['required','max:35'],
-                "service_type"=>['required','max:1'],
+                "service_type"=>['required'],
                 'service_modifier'=>['required'],
-                'proc_code_list_id'=>['required','max:10'],
-                'benefit_code'=>['max:10'],
-                'effective_date'=>['required','max:10'],
-                'termination_date'=>['required','max:10','after:effective_date'],
+                'proc_code_list_id'=>['required'],
+                // 'benefit_code'=>['max:10'],
+                'effective_date'=>['required'],
+                'termination_date'=>['required','after:effective_date'],
             ],[
                 'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
@@ -223,12 +223,12 @@ class BenefitDerivationController extends Controller
 
                 "benefit_derivation_id" => ['required','max:36'],
                 "description"=>['required','max:35'],
-                "service_type"=>['required','max:1'],
+                "service_type"=>['required'],
                 'service_modifier'=>['required'],
-                'proc_code_list_id'=>['required','max:10'],
-                'benefit_code'=>['max:10'],
-                'effective_date'=>['required','max:10'],
-                'termination_date'=>['required','max:10','after:effective_date'],
+                'proc_code_list_id'=>['required'],
+                // 'benefit_code'=>['max:10'],
+                'effective_date'=>['required'],
+                'termination_date'=>['required','after:effective_date'],
 
 
             ],[

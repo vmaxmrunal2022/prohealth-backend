@@ -132,7 +132,7 @@ class SuperBenefitControler extends Controller
                 // })],
 
                
-                "description"=>['required','max:10'],
+                "description"=>['required','max:36'],
                 "benefit_list_id"=>['required','max:36'],
                 'accum_benefit_strategy_id'=>['max:10'],
                 'effective_date'=>['required','max:10'],
@@ -154,7 +154,7 @@ class SuperBenefitControler extends Controller
                 $effectiveDate=$request->effective_date;
                 $terminationDate=$request->termination_date;
                 $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
-                ->where('SUPER_BENEFIT_LIST_ID', $request->procedure_xref_id)
+                ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
                 ->where(function ($query) use ($effectiveDate, $terminationDate) {
                     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
                         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
@@ -203,7 +203,7 @@ class SuperBenefitControler extends Controller
 
             $validator = Validator::make($request->all(), [
                 "super_benefit_list_id" => ['required','max:36'],
-                "description"=>['required','max:10'],
+                "description"=>['required','max:36'],
                 "benefit_list_id"=>['required','max:36'],
                 'accum_benefit_strategy_id'=>['max:10'],
                 'effective_date'=>['required','max:10'],
@@ -225,44 +225,52 @@ class SuperBenefitControler extends Controller
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
 
-              
+                
+              if($request->update_new == 0){
+
+                        $add_names = DB::table('SUPER_BENEFIT_LIST_NAMES')
+                        ->where('super_benefit_list_id',$request->super_benefit_list_id)
+                        ->update(
+                            [
+                                'description'=>$request->description,
+                                
+                            ]
+                        );
     
-                $update_names = DB::table('SUPER_BENEFIT_LIST_NAMES')
-                ->where('super_benefit_list_id', $request->super_benefit_list_id )
-                ->first();
+                        $update = DB::table('SUPER_BENEFIT_LISTS' )
+                        ->where('super_benefit_list_id', $request->super_benefit_list_id )
+                        ->where('benefit_list_id',$request->benefit_list_id)
+                        ->where('effective_date',$request->effective_date)
+                        // ->where('termination_date',$request->termination_date)
+    
+                        ->update(
+                            [
+                                'TERMINATION_DATE'=>$request->termination_date,
+                                'ACCUM_BENEFIT_STRATEGY_ID'=>$request->accum_benefit_strategy_id
+                                
+            
+                            ]
+                        );
+                        $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
+                        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+
+                   
                     
-    
+
+              }
+              elseif($request->update_new == 1){
+                    
+              
                 $checkGPI = DB::table('SUPER_BENEFIT_LISTS')
-                ->where('super_benefit_list_id', $request->super_benefit_list_id )
-                ->where('benefit_list_id',$request->benefit_list_id)
-                ->where('effective_date',$request->effective_date)
-                ->where('termination_date',$request->termination_date)
-                ->get()
-                ->count();
-                    // dd($checkGPI);
-                // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                //if result 0 then add NDC_EXCEPTION_LISTS record
+                    ->where('super_benefit_list_id', $request->super_benefit_list_id )
+                    ->where('benefit_list_id',$request->benefit_list_id)
+                    ->where('effective_date',$request->effective_date)
+                    // ->where('termination_date',$request->termination_date)
+                    ->get();
 
-    
-                if ($checkGPI <= "0") {
-
-                    // $effectiveDate=$request->effective_date;
-                    // $terminationDate=$request->termination_date;
-                    // $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
-                    // ->where('SUPER_BENEFIT_LIST_ID', $request->procedure_xref_id)
-                    // ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                    //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                    //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                    //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                    //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                    //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
-                    //         });
-                    // })
-                    // ->exists();
-                    // if ($overlapExists) {
-                    //     return $this->respondWithToken($this->token(), 'For same Benefit List, dates cannot overlap.', $validation, true, 200, 1);
-                    // }
-
+                if(count($checkGPI) >= 1){
+                    return $this->respondWithToken($this->token(), [["Benefit List ID already exists"]], '', 'false');
+                }else{
                     $update = DB::table('SUPER_BENEFIT_LISTS')
                     ->insert(
                         [
@@ -273,58 +281,116 @@ class SuperBenefitControler extends Controller
                             'ACCUM_BENEFIT_STRATEGY_ID'=>$request->accum_benefit_strategy_id,
                             'DATE_TIME_CREATED'=>$createddate,
                             
-                            
                         ]);
+                    $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                }
+
+              }
+
+
+
+             //   exit();
+    
+                // $update_names = DB::table('SUPER_BENEFIT_LIST_NAMES')
+                // ->where('super_benefit_list_id', $request->super_benefit_list_id )
+                // ->first();
+                    
+    
+                // $checkGPI = DB::table('SUPER_BENEFIT_LISTS')
+                // ->where('super_benefit_list_id', $request->super_benefit_list_id )
+                // ->where('benefit_list_id',$request->benefit_list_id)
+                // ->where('effective_date',$request->effective_date)
+                // ->where('termination_date',$request->termination_date)
+                // ->get()
+                // ->count();
+                //     // dd($checkGPI);
+                // // if result >=1 then update NDC_EXCEPTION_LISTS table record
+                // //if result 0 then add NDC_EXCEPTION_LISTS record
+
+    
+                // if ($checkGPI <= "0") {
+                  
+
+                //     // $effectiveDate=$request->effective_date;
+                //     // $terminationDate=$request->termination_date;
+                //     // $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
+                //     // ->where('SUPER_BENEFIT_LIST_ID', $request->procedure_xref_id)
+                //     // ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                //     //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                //     //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                //     //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                //     //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                //     //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
+                //     //         });
+                //     // })
+                //     // ->exists();
+                //     // if ($overlapExists) {
+                //     //     return $this->respondWithToken($this->token(), 'For same Benefit List, dates cannot overlap.', $validation, true, 200, 1);
+                //     // }
+
+                //     $update = DB::table('SUPER_BENEFIT_LISTS')
+                //     ->insert(
+                //         [
+                //             'SUPER_BENEFIT_LIST_ID'=>$request->super_benefit_list_id,
+                //             'BENEFIT_LIST_ID'=>$request->benefit_list_id,
+                //             'EFFECTIVE_DATE'=>$request->effective_date,
+                //             'TERMINATION_DATE'=>$request->termination_date,
+                //             'ACCUM_BENEFIT_STRATEGY_ID'=>$request->accum_benefit_strategy_id,
+                //             'DATE_TIME_CREATED'=>$createddate,
+                            
+                            
+                //         ]);
                        
 
-                $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                //     $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
 
-                } else {
+                // } else {
                     
-                    // $effectiveDate=$request->effective_date;
-                    // $terminationDate=$request->termination_date;
-                    // $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
-                    // ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
-                    // ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                    //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                    //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                    //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                    //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                    //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
-                    //         });
-                    // })
-                    // ->exists();
-                    // if ($overlapExists) {
-                    //     return $this->respondWithToken($this->token(), 'For same Benefit List, dates cannot overlap.', $validation, true, 200, 1);
-                    // }
+                //     // $effectiveDate=$request->effective_date;
+                //     // $terminationDate=$request->termination_date;
+                //     // $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
+                //     // ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
+                //     // ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                //     //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                //     //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                //     //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                //     //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                //     //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
+                //     //         });
+                //     // })
+                //     // ->exists();
+                //     // if ($overlapExists) {
+                //     //     return $this->respondWithToken($this->token(), 'For same Benefit List, dates cannot overlap.', $validation, true, 200, 1);
+                //     // }
                    
-                    $add_names = DB::table('SUPER_BENEFIT_LIST_NAMES')
-                    ->where('super_benefit_list_id',$request->super_benefit_list_id)
-                    ->update(
-                        [
-                            'description'=>$request->description,
+                //     $add_names = DB::table('SUPER_BENEFIT_LIST_NAMES')
+                //     ->where('super_benefit_list_id',$request->super_benefit_list_id)
+                //     ->update(
+                //         [
+                //             'description'=>$request->description,
                             
-                        ]
-                    );
+                //         ]
+                //     );
 
-                    $update = DB::table('SUPER_BENEFIT_LISTS' )
-                    ->where('super_benefit_list_id', $request->super_benefit_list_id )
-                    ->where('benefit_list_id',$request->benefit_list_id)
-                    ->where('effective_date',$request->effective_date)
-                    ->where('termination_date',$request->termination_date)
+                //     $update = DB::table('SUPER_BENEFIT_LISTS' )
+                //     ->where('super_benefit_list_id', $request->super_benefit_list_id )
+                //     ->where('benefit_list_id',$request->benefit_list_id)
+                //     ->where('effective_date',$request->effective_date)
+                //     ->where('termination_date',$request->termination_date)
 
-                    ->update(
-                        [
-                            'TERMINATION_DATE'=>$request->termination_date,
-                            'ACCUM_BENEFIT_STRATEGY_ID'=>$request->accum_benefit_strategy_id
+                //     ->update(
+                //         [
+                //             'TERMINATION_DATE'=>$request->termination_date,
+                //             'ACCUM_BENEFIT_STRATEGY_ID'=>$request->accum_benefit_strategy_id
                             
         
-                        ]
-                    );
-                    $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-                }
+                //         ]
+                //     );
+                //     $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                // }
     
             }
 
