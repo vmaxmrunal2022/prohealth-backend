@@ -27,7 +27,7 @@ class FlexibleNetworkController extends Controller
 
                 // }
                     $validator = Validator::make($request->all(), [
-                        "rx_network_rule_id" => ['required', 'max:10', Rule::unique('RX_NETWORK_RULES')->where(function ($q) {
+                        "rx_network_rule_id" => ['required', 'max:10', Rule::unique('RX_NETWORK_RULE_NAMES')->where(function ($q) {
                             $q->whereNotNull('rx_network_rule_id');
                         })],
                         // "rx_network_rule_name" => ['max:35'],
@@ -127,8 +127,8 @@ class FlexibleNetworkController extends Controller
                         }
             
             
-                        if ($Network_rules) {
-                            return $this->respondWithToken($this->token(), 'Record Added Successfully', $Network_rules);
+                        if ($network_rule_names) {
+                            return $this->respondWithToken($this->token(), 'Record Added Successfully', $network_rule_names);
                         }
                 
               
@@ -193,7 +193,6 @@ class FlexibleNetworkController extends Controller
                                 'MAINT_MIN_RX_DAYS'=>$request->maint_min_rx_days,
                                 'MAINT_MAX_RX_DAYS'=>$request->maint_max_rx_days,
                                 'MAINT_QTY_DSUP_COMPARE_RULE'=>$request->maint_qty_dsup_compare_rule
-                                
                             ]
                         );
 
@@ -235,8 +234,8 @@ class FlexibleNetworkController extends Controller
             }
 
 
-            if ($Network_rules) {
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $Network_rules);
+            if ($network_rule_names) {
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $network_rule_names);
             }
 
                    
