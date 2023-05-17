@@ -21,51 +21,25 @@ class MajorMedicalController extends Controller
             'mm_claim_max' => ['max:16'],
             'mm_life_maximum' => ['max:16'],
         ]);
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        }
-        if ($request->has('new')) {
-            $insert = DB::table('MM_LIFE_MAX')->insert(
-                [
-                    'customer_id' => $request->customer_id,
-                    'client_id' => $request->client_id,
-                    'client_group_id' => $request->client_group_id,
-                    'mm_life_maximum' => $request->mm_life_maximum,
-                    'grouping_type' => $request->grouping_type,
-                    'mm_claim_max' => $request->mm_claim_max,
-                    'effective_date' => '19950701',
-                    'termination_date' => '19950701'
-                ]
-            );
-            // $benefitcode = DB::table('TEMP_MM_LIFE_MAX')->where('customer_id',$request->customer_id)->first();
-            $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%' . $request->mm_life_maximum . '%')->first();
-        } else {
-            $update = DB::table('MM_LIFE_MAX')
-                ->where('customer_id', $request->customer_id)
-                ->where('client_id', $request->client_id)
-                ->where('client_group_id', $request->client_group_id)
-                ->update(
-                    [
-                        'mm_life_maximum' => $request->mm_life_maximum,
-                        'grouping_type' => $request->grouping_type,
-                        'mm_claim_max' => $request->mm_claim_max,
 
-                    ]
-                );
+  
+        $record_check=DB::table('MM_LIFE_MAX')
+        ->where('customer_id', $request->customer_id)
+        ->where('client_id', $request->client_id)
+        ->where('client_group_id', $request->client_group_id)
+        ->where('effective_date',$request->effective_date)
+        ->where('termination_date',$request->termination_date)
+        ->first();
 
-            $recordcheck = DB::table('MM_LIFE_MAX')
-                ->where('customer_id', strtoupper($request->customer_id))
-                ->where('client_id', strtoupper($request->client_id))
-                ->where('client_group_id', strtoupper($request->client_group_id))
-                ->first();
-
-
-            // dd($request->all());
-
+       
+        
             if ($request->new == 1) {
-                if ($recordcheck) {
-                    return $this->respondWithToken($this->token(), 'Record already exists in the system..!!!', $recordcheck, false);
-                } else {
+
+
+                if ($record_check) {
+                    return $this->respondWithToken($this->token(), 'Record Already Exists', "false");
+                }else{
+
                     $insert = DB::table('MM_LIFE_MAX')->insert(
                         [
                             'customer_id' => $request->customer_id,
@@ -82,7 +56,9 @@ class MajorMedicalController extends Controller
                     );
                     // $benefitcode = DB::table('TEMP_MM_LIFE_MAX')->where('customer_id',$request->customer_id)->first();    
                     return $this->respondWithToken($this->token(), 'Record added Successfully', $insert);
+
                 }
+                    
             } else {
 
                 $update = DB::table('MM_LIFE_MAX')
@@ -109,10 +85,15 @@ class MajorMedicalController extends Controller
                     ->first();
 
                 // $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%'.$request->mm_life_maximum .'%')->first();
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
             }
+
         }
-    }
+            // dd($request->all());
+
+            
+        
+    
 
     public function delete(Request $request)
     {
