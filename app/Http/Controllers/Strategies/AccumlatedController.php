@@ -208,7 +208,7 @@ class AccumlatedController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function AccumlatedDropDown(Request $request)
+    public function getAllAcuumlatedBenefits(Request $request)
     {
 
         $ndc = DB::table('ACCUM_BENE_STRATEGY_NAMES')
