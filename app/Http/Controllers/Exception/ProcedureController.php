@@ -138,6 +138,7 @@ class ProcedureController extends Controller
 
     public function add(Request $request)
     {
+       
         $createddate = date( 'y-m-d' );
 
         $validation = DB::table('PROCEDURE_EXCEPTION_NAMES')
@@ -302,8 +303,8 @@ class ProcedureController extends Controller
                 'pricing_strategy_id'=>['max:11'],
                 'accum_bene_strategy_id'=>['max:11'],
                 'copay_strategy_id'=>['max:10'],
-                'message'=>['max:10'],
-                'message_stop_date'=>['max:10'],
+                // 'message'=>['max:10'],
+                // 'message_stop_date'=>['max:10'],
                 'min_age'=>['nullable','max:6'],
                 'max_age'=>['nullable','max:6','gt:min_age'],
                 // 'min_price'=>['max:6'],
@@ -382,16 +383,17 @@ class ProcedureController extends Controller
                     ->where('proc_code_list_id',$request->proc_code_list_id)
                     ->where('service_modifier',$request->service_modifier)
                     ->where('benefit_code',$request->benefit_code)
-                    ->where('diagnosis_list',$request->diagnosis_list)
+                    ->where('diagnosis_id',$request->diagnosis_id)
                     ->where('provider_type',$request->provider_type)
                     ->where('service_type',$request->service_type)
                     ->where('effective_date',$request->effective_date)
+                    // ->get();
+                    // dd($update);
                     ->update(
                         [
                             'accum_bene_strategy_id'=>$request->accum_bene_strategy_id,
                             'copay_strategy_id'=>$request->copay_strategy_id,
                             'coverage_start_days'=>$request->coverage_start_days,
-                            'diagnosis_list'=>$request->diagnosis_list,
                             'max_age'=>$request->max_age,
                             'max_price'=>$request->max_price,
                             'max_price_opt'=>$request->max_price_opt,
@@ -414,7 +416,6 @@ class ProcedureController extends Controller
                             'max_qty_over_time'=>$request->max_qty_over_time,
                             'ucr'=>$request->ucr,
                             
-        
                         ]
                     );
                     $update = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('procedure_exception_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
@@ -427,11 +428,12 @@ class ProcedureController extends Controller
                     ->where('proc_code_list_id',$request->proc_code_list_id)
                     ->where('service_modifier',$request->service_modifier)
                     ->where('benefit_code',$request->benefit_code)
-                    ->where('diagnosis_list',$request->diagnosis_list)
+                    ->where('diagnosis_id',$request->diagnosis_id)
                     ->where('provider_type',$request->provider_type)
                     ->where('service_type',$request->service_type)
-                    ->where('effective_date',$request->effective_date)->get();
-
+                    ->where('effective_date',$request->effective_date)
+                    ->get();
+// return  $checkGPI;
                     if(count($checkGPI) >= 1){
                         return $this->respondWithToken($this->token(), [["Procedure Code List ID already exists"]], '', 'false');
                     }else{

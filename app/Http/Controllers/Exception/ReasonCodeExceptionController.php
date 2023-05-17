@@ -263,15 +263,12 @@ class ReasonCodeExceptionController extends Controller
                     ->where('REJECT_CODE', $request->reject_code)
                     ->where('REASON_CODE', $request->reason_code)
                     ->where('EFFECTIVE_DATE',$request->effective_date)
-                    ->get();
+                        ->update(
+                            [
+                                'TERMINATION_DATE'=>$request->termination_date,
 
-                    // return $request->all();
-                        // ->update(
-                        //     [
-                        //         'TERMINATION_DATE'=>$request->termination_date,
-
-                        //     ]
-                        // );
+                            ]
+                        );
                     $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
 
@@ -281,7 +278,6 @@ class ReasonCodeExceptionController extends Controller
                     ->where('REJECT_CODE', $request->reject_code)
                     ->where('REASON_CODE', $request->reason_code)
                     ->where('EFFECTIVE_DATE',$request->effective_date)
-                   
                     ->get();
 // return $checkGPI;
                     if(count($checkGPI) >= 1){

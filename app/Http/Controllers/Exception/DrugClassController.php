@@ -778,124 +778,24 @@ class DrugClassController extends Controller
                 // if ($overlapExists) {
                 //     return $this->respondWithToken($this->token(), 'For same Drug Class, dates cannot overlap.', $validation, true, 200, 1);
                 // }
-    
-               
-                $update_names = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
-                ->where('drug_catgy_exception_list', $request->drug_catgy_exception_list )
-                ->update(
-                    [
-                        'drug_catgy_exception_name'=>$request->drug_catgy_exception_name,
-                        
-                    ]
-                );
 
-              
-                    
-    
-                $checkGPI =  DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
-                ->where('SCATEGORY', $request->scategory)
-                ->where('STYPE', $request->stype)
-                ->where('effective_date', date('Ymd', strtotime($request->effective_date)))
-                ->where('termination_date', date('Ymd', strtotime($request->termination_date)))
-                ->get()
-                ->count();
-                    // dd($checkGPI);
-                // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                //if result 0 then add NDC_EXCEPTION_LISTS record
+                if($request->update_new == 0){
 
-    
-                if ($checkGPI <= "0") {
-                    $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
-                    ->insert(
+                    $update_names = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+                    ->where('drug_catgy_exception_list', $request->drug_catgy_exception_list )
+                    ->update(
                         [
-                            'max_price_patient' => $request->max_price_patient,
-                            'effective_date' => date('Ymd', strtotime($request->effective_date)),
-                            'termination_date' => date('Ymd', strtotime($request->termination_date)),
-                            'PLAN_ID' => $request->plan_id,
-                            'SCATEGORY' => $request->scategory,
-                            'STYPE' => $request->stype,
-                            'NEW_DRUG_STATUS' => $request->new_drug_status,
-                            'PROCESS_RULE' => $request->process_rule,
-                            'MAXIMUM_ALLOWABLE_COST' => $request->maximum_allowable_cost,
-                            'PHYSICIAN_LIST' => $request->physician_list,
-                            'PHYSICIAN_SPECIALTY_LIST' => $request->physician_specialty_list,
-                            'PHARMACY_LIST' => $request->pharmacy_list,
-                            'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                            'PREFERRED_PRODUCT_NDC' => $request->preferred_product_ndc,
-                            'CONVERSION_PRODUCT_NDC' => $request->conversion_product_ndc,
-                            'ALTERNATE_PRICE_SCHEDULE' => $request->alternate_price_schedule,
-                            'ALTERNATE_COPAY_SCHED' => $request->alternate_copay_sched,
-                            'MESSAGE' => $request->message,
-                            'MESSAGE_STOP_DATE' => date('Ymd', strtotime($request->message_stop_date)),
-                            'MIN_RX_QTY' => $request->min_rx_qty,
-                            'MAX_RX_QTY' => $request->max_rx_qty,
-                            'MIN_RX_DAYS' => $request->min_rx_days,
-                            'MAX_RX_DAYS' => $request->max_rx_days,
-                            'MIN_CTL_DAYS' => $request->min_ctl_days,
-                            'MAX_CTL_DAYS' => $request->max_ctl_days,
-                            'MAX_REFILLS' => $request->max_refills,
-                            'MAX_DAYS_PER_FILL' => $request->max_days_per_fill,
-                            'MAX_DOSE' => $request->max_dose,
-                            'MIN_AGE' => $request->min_age,
-                            'MAX_AGE' => $request->max_age,
-                            'MIN_PRICE' => $request->min_price,
-                            'MAX_PRICE' => $request->max_price,
-                            'MAX_RXS_PATIENT' => $request->max_rxs_patient,
-                            'GENERIC_COPAY_AMT' => $request->generic_copay_amt,
-                            'BRAND_COPAY_AMT' => $request->brand_copay_amt,
-                            'MAINT_DOSE_UNITS_DAY' => $request->maint_dose_units_day,
-                            'ACUTE_DOSING_DAYS' => $request->acute_dosing_days,
-                            'DENIAL_OVERRIDE' => $request->denial_override,
-                            'MAINTENANCE_DRUG' => $request->maintenance_drug,
-                            'SEX_RESTRICTION' => $request->sex_restriction,
-                            'MERGE_DEFAULTS' => $request->merge_defaults,
-                            'MAIL_ORDER_MIN_RX_DAYS' => $request->mail_order_min_rx_days,
-                            'MAIL_ORDER_MAX_RX_DAYS' => $request->mail_order_max_rx_days,
-                            'MAIL_ORDER_MAX_REFILLS' => $request->mail_order_max_refills,
-                            'MODULE_EXIT' => $request->module_exit,
-                            'MAX_RXS_TIME_FLAG' => $request->max_rxs_time_flag,
-                            'MAX_PRICE_TIME_FLAG' => $request->max_price_time_flag,
-                            'QTY_DSUP_COMPARE_RULE' => $request->qty_dsup_compare_rule,
-                            'COPAY_NETWORK_OVRD' => $request->copay_network_ovrd,
-                            'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_list,
-                            'MAX_DAYS_SUPPLY_OPT' => $request->max_days_supply_opt,
-                            'MAIL_ORD_MAX_DAYS_SUPPLY_OPT' => $request->mail_ord_max_days_supply_opt,
-                            'RETAIL_MAX_FILLS_OPT' => $request->retail_max_fills_opt,
-                            'MAIL_ORD_MAX_FILLS_OPT' => $request->mail_ord_max_fills_opt,
-                            'MIN_PRICE_OPT' => $request->min_price_opt,
-                            'MAX_PRICE_OPT' => $request->macx_price_opt,
-                            'VALID_RELATION_CODE' => $request->valid_relation_code,
-                            'STARTER_DOSE_DAYS' => $request->starter_dose_days,
-                            'STARTER_DOSE_BYPASS_DAYS' => $request->starter_dose_bypass_days,
-                            'DRUG_COV_START_DAYS' => $request->drug_cov_start_days,
-                            'PKG_DETERMINE_ID' => $request->pkg_determine_id,
-                            'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
-                            'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
-                            'MAX_DAYS_OVER_TIME' => $request->max_days_over_time,
-                            'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
-                            'STARTER_DOSE_MAINT_BYPASS_DAYS' => $request->starter_dose_maint_bypass_days,
-                            'MAX_QTY_PER_FILL' => $request->max_qty_per_fill,
-                            'BNG_SNGL_INC_EXC_IND' => $request->bng_sngl_inc_exc_ind,
-                            'BNG_MULTI_INC_EXC_IND' => $request->bng_multi_inc_exc_ind,
-                            'BGA_INC_EXC_IND' => $request->bga_inc_exc_ind,
-                            'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
-        
-                        ]);
-
-                $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->where('plan_id', 'like', '%' . $request->plan_id . '%')->first();
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-
-                } else {
-
- 
-                  
+                            'drug_catgy_exception_name'=>$request->drug_catgy_exception_name,
+                            
+                        ]
+                    );
 
                     $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS' )
                     ->where('SCATEGORY', $request->scategory)
                     ->where('STYPE', $request->stype)
                     ->where('effective_date', $request->effective_date)
                     ->where('termination_date', $request->termination_date)
-                   ->update(
+                    ->update(
                     [
                         'max_price_patient' => $request->max_price_patient,
                         'effective_date' => date('Ymd', strtotime($request->effective_date)),
@@ -968,11 +868,296 @@ class DrugClassController extends Controller
                         'BGA_INC_EXC_IND' => $request->bga_inc_exc_ind,
                         'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
                         'MESSAGE_STOP_DATE' => $request->message_stop_date,
-                    ]
-                    );
+                    ]);
                     $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->where('plan_id', 'like', '%' . $request->plan_id . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_names);
+
+                }elseif($request->update_new == 1){
+                    $checkGPI =  DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
+                        ->where('SCATEGORY', $request->scategory)
+                        ->where('STYPE', $request->stype)
+                        ->where('effective_date', $request->effective_date)
+                        // ->where('termination_date', date('Ymd', strtotime($request->termination_date)))
+                        ->get();
+
+                       
+                    if(count($checkGPI >= 1)){
+                        return $this->respondWithToken($this->token(), [["Drug ID  already exists"]], '', 'false');
+                    }else{
+                        $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
+                        ->insert(
+                            [
+                                'max_price_patient' => $request->max_price_patient,
+                                'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                                'termination_date' => date('Ymd', strtotime($request->termination_date)),
+                                'PLAN_ID' => $request->plan_id,
+                                'SCATEGORY' => $request->scategory,
+                                'STYPE' => $request->stype,
+                                'NEW_DRUG_STATUS' => $request->new_drug_status,
+                                'PROCESS_RULE' => $request->process_rule,
+                                'MAXIMUM_ALLOWABLE_COST' => $request->maximum_allowable_cost,
+                                'PHYSICIAN_LIST' => $request->physician_list,
+                                'PHYSICIAN_SPECIALTY_LIST' => $request->physician_specialty_list,
+                                'PHARMACY_LIST' => $request->pharmacy_list,
+                                'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                'PREFERRED_PRODUCT_NDC' => $request->preferred_product_ndc,
+                                'CONVERSION_PRODUCT_NDC' => $request->conversion_product_ndc,
+                                'ALTERNATE_PRICE_SCHEDULE' => $request->alternate_price_schedule,
+                                'ALTERNATE_COPAY_SCHED' => $request->alternate_copay_sched,
+                                'MESSAGE' => $request->message,
+                                'MESSAGE_STOP_DATE' => date('Ymd', strtotime($request->message_stop_date)),
+                                'MIN_RX_QTY' => $request->min_rx_qty,
+                                'MAX_RX_QTY' => $request->max_rx_qty,
+                                'MIN_RX_DAYS' => $request->min_rx_days,
+                                'MAX_RX_DAYS' => $request->max_rx_days,
+                                'MIN_CTL_DAYS' => $request->min_ctl_days,
+                                'MAX_CTL_DAYS' => $request->max_ctl_days,
+                                'MAX_REFILLS' => $request->max_refills,
+                                'MAX_DAYS_PER_FILL' => $request->max_days_per_fill,
+                                'MAX_DOSE' => $request->max_dose,
+                                'MIN_AGE' => $request->min_age,
+                                'MAX_AGE' => $request->max_age,
+                                'MIN_PRICE' => $request->min_price,
+                                'MAX_PRICE' => $request->max_price,
+                                'MAX_RXS_PATIENT' => $request->max_rxs_patient,
+                                'GENERIC_COPAY_AMT' => $request->generic_copay_amt,
+                                'BRAND_COPAY_AMT' => $request->brand_copay_amt,
+                                'MAINT_DOSE_UNITS_DAY' => $request->maint_dose_units_day,
+                                'ACUTE_DOSING_DAYS' => $request->acute_dosing_days,
+                                'DENIAL_OVERRIDE' => $request->denial_override,
+                                'MAINTENANCE_DRUG' => $request->maintenance_drug,
+                                'SEX_RESTRICTION' => $request->sex_restriction,
+                                'MERGE_DEFAULTS' => $request->merge_defaults,
+                                'MAIL_ORDER_MIN_RX_DAYS' => $request->mail_order_min_rx_days,
+                                'MAIL_ORDER_MAX_RX_DAYS' => $request->mail_order_max_rx_days,
+                                'MAIL_ORDER_MAX_REFILLS' => $request->mail_order_max_refills,
+                                'MODULE_EXIT' => $request->module_exit,
+                                'MAX_RXS_TIME_FLAG' => $request->max_rxs_time_flag,
+                                'MAX_PRICE_TIME_FLAG' => $request->max_price_time_flag,
+                                'QTY_DSUP_COMPARE_RULE' => $request->qty_dsup_compare_rule,
+                                'COPAY_NETWORK_OVRD' => $request->copay_network_ovrd,
+                                'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_list,
+                                'MAX_DAYS_SUPPLY_OPT' => $request->max_days_supply_opt,
+                                'MAIL_ORD_MAX_DAYS_SUPPLY_OPT' => $request->mail_ord_max_days_supply_opt,
+                                'RETAIL_MAX_FILLS_OPT' => $request->retail_max_fills_opt,
+                                'MAIL_ORD_MAX_FILLS_OPT' => $request->mail_ord_max_fills_opt,
+                                'MIN_PRICE_OPT' => $request->min_price_opt,
+                                'MAX_PRICE_OPT' => $request->macx_price_opt,
+                                'VALID_RELATION_CODE' => $request->valid_relation_code,
+                                'STARTER_DOSE_DAYS' => $request->starter_dose_days,
+                                'STARTER_DOSE_BYPASS_DAYS' => $request->starter_dose_bypass_days,
+                                'DRUG_COV_START_DAYS' => $request->drug_cov_start_days,
+                                'PKG_DETERMINE_ID' => $request->pkg_determine_id,
+                                'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
+                                'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
+                                'MAX_DAYS_OVER_TIME' => $request->max_days_over_time,
+                                'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
+                                'STARTER_DOSE_MAINT_BYPASS_DAYS' => $request->starter_dose_maint_bypass_days,
+                                'MAX_QTY_PER_FILL' => $request->max_qty_per_fill,
+                                'BNG_SNGL_INC_EXC_IND' => $request->bng_sngl_inc_exc_ind,
+                                'BNG_MULTI_INC_EXC_IND' => $request->bng_multi_inc_exc_ind,
+                                'BGA_INC_EXC_IND' => $request->bga_inc_exc_ind,
+                                'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
+            
+                            ]);
+    
+                        $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->where('plan_id', 'like', '%' . $request->plan_id . '%')->first();
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                    }
                 }
+               
+                // $update_names = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+                // ->where('drug_catgy_exception_list', $request->drug_catgy_exception_list )
+                // ->update(
+                //     [
+                //         'drug_catgy_exception_name'=>$request->drug_catgy_exception_name,
+                        
+                //     ]
+                // );
+
+              
+                    
+    
+                // $checkGPI =  DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
+                // ->where('SCATEGORY', $request->scategory)
+                // ->where('STYPE', $request->stype)
+                // ->where('effective_date', date('Ymd', strtotime($request->effective_date)))
+                // ->where('termination_date', date('Ymd', strtotime($request->termination_date)))
+                // ->get()
+                // ->count();
+                //     // dd($checkGPI);
+                // // if result >=1 then update NDC_EXCEPTION_LISTS table record
+                // //if result 0 then add NDC_EXCEPTION_LISTS record
+
+    
+                // if ($checkGPI <= "0") {
+                //     $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
+                //     ->insert(
+                //         [
+                //             'max_price_patient' => $request->max_price_patient,
+                //             'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                //             'termination_date' => date('Ymd', strtotime($request->termination_date)),
+                //             'PLAN_ID' => $request->plan_id,
+                //             'SCATEGORY' => $request->scategory,
+                //             'STYPE' => $request->stype,
+                //             'NEW_DRUG_STATUS' => $request->new_drug_status,
+                //             'PROCESS_RULE' => $request->process_rule,
+                //             'MAXIMUM_ALLOWABLE_COST' => $request->maximum_allowable_cost,
+                //             'PHYSICIAN_LIST' => $request->physician_list,
+                //             'PHYSICIAN_SPECIALTY_LIST' => $request->physician_specialty_list,
+                //             'PHARMACY_LIST' => $request->pharmacy_list,
+                //             'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                //             'PREFERRED_PRODUCT_NDC' => $request->preferred_product_ndc,
+                //             'CONVERSION_PRODUCT_NDC' => $request->conversion_product_ndc,
+                //             'ALTERNATE_PRICE_SCHEDULE' => $request->alternate_price_schedule,
+                //             'ALTERNATE_COPAY_SCHED' => $request->alternate_copay_sched,
+                //             'MESSAGE' => $request->message,
+                //             'MESSAGE_STOP_DATE' => date('Ymd', strtotime($request->message_stop_date)),
+                //             'MIN_RX_QTY' => $request->min_rx_qty,
+                //             'MAX_RX_QTY' => $request->max_rx_qty,
+                //             'MIN_RX_DAYS' => $request->min_rx_days,
+                //             'MAX_RX_DAYS' => $request->max_rx_days,
+                //             'MIN_CTL_DAYS' => $request->min_ctl_days,
+                //             'MAX_CTL_DAYS' => $request->max_ctl_days,
+                //             'MAX_REFILLS' => $request->max_refills,
+                //             'MAX_DAYS_PER_FILL' => $request->max_days_per_fill,
+                //             'MAX_DOSE' => $request->max_dose,
+                //             'MIN_AGE' => $request->min_age,
+                //             'MAX_AGE' => $request->max_age,
+                //             'MIN_PRICE' => $request->min_price,
+                //             'MAX_PRICE' => $request->max_price,
+                //             'MAX_RXS_PATIENT' => $request->max_rxs_patient,
+                //             'GENERIC_COPAY_AMT' => $request->generic_copay_amt,
+                //             'BRAND_COPAY_AMT' => $request->brand_copay_amt,
+                //             'MAINT_DOSE_UNITS_DAY' => $request->maint_dose_units_day,
+                //             'ACUTE_DOSING_DAYS' => $request->acute_dosing_days,
+                //             'DENIAL_OVERRIDE' => $request->denial_override,
+                //             'MAINTENANCE_DRUG' => $request->maintenance_drug,
+                //             'SEX_RESTRICTION' => $request->sex_restriction,
+                //             'MERGE_DEFAULTS' => $request->merge_defaults,
+                //             'MAIL_ORDER_MIN_RX_DAYS' => $request->mail_order_min_rx_days,
+                //             'MAIL_ORDER_MAX_RX_DAYS' => $request->mail_order_max_rx_days,
+                //             'MAIL_ORDER_MAX_REFILLS' => $request->mail_order_max_refills,
+                //             'MODULE_EXIT' => $request->module_exit,
+                //             'MAX_RXS_TIME_FLAG' => $request->max_rxs_time_flag,
+                //             'MAX_PRICE_TIME_FLAG' => $request->max_price_time_flag,
+                //             'QTY_DSUP_COMPARE_RULE' => $request->qty_dsup_compare_rule,
+                //             'COPAY_NETWORK_OVRD' => $request->copay_network_ovrd,
+                //             'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_list,
+                //             'MAX_DAYS_SUPPLY_OPT' => $request->max_days_supply_opt,
+                //             'MAIL_ORD_MAX_DAYS_SUPPLY_OPT' => $request->mail_ord_max_days_supply_opt,
+                //             'RETAIL_MAX_FILLS_OPT' => $request->retail_max_fills_opt,
+                //             'MAIL_ORD_MAX_FILLS_OPT' => $request->mail_ord_max_fills_opt,
+                //             'MIN_PRICE_OPT' => $request->min_price_opt,
+                //             'MAX_PRICE_OPT' => $request->macx_price_opt,
+                //             'VALID_RELATION_CODE' => $request->valid_relation_code,
+                //             'STARTER_DOSE_DAYS' => $request->starter_dose_days,
+                //             'STARTER_DOSE_BYPASS_DAYS' => $request->starter_dose_bypass_days,
+                //             'DRUG_COV_START_DAYS' => $request->drug_cov_start_days,
+                //             'PKG_DETERMINE_ID' => $request->pkg_determine_id,
+                //             'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
+                //             'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
+                //             'MAX_DAYS_OVER_TIME' => $request->max_days_over_time,
+                //             'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
+                //             'STARTER_DOSE_MAINT_BYPASS_DAYS' => $request->starter_dose_maint_bypass_days,
+                //             'MAX_QTY_PER_FILL' => $request->max_qty_per_fill,
+                //             'BNG_SNGL_INC_EXC_IND' => $request->bng_sngl_inc_exc_ind,
+                //             'BNG_MULTI_INC_EXC_IND' => $request->bng_multi_inc_exc_ind,
+                //             'BGA_INC_EXC_IND' => $request->bga_inc_exc_ind,
+                //             'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
+        
+                //         ]);
+
+                // $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->where('plan_id', 'like', '%' . $request->plan_id . '%')->first();
+                // return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+                // } else {
+
+ 
+                  
+
+                //     $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS' )
+                //     ->where('SCATEGORY', $request->scategory)
+                //     ->where('STYPE', $request->stype)
+                //     ->where('effective_date', $request->effective_date)
+                //     ->where('termination_date', $request->termination_date)
+                //     ->update(
+                //     [
+                //         'max_price_patient' => $request->max_price_patient,
+                //         'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                //         'termination_date' => date('Ymd', strtotime($request->termination_date)),
+                //         'PLAN_ID' => $request->plan_id,
+                //         // 'SCATEGORY' => $request->scategory,
+                //         // 'STYPE' => $request->stype,
+                //         'NEW_DRUG_STATUS' => $request->new_drug_status,
+                //         'PROCESS_RULE' => $request->process_rule,
+                //         'MAXIMUM_ALLOWABLE_COST' => $request->maximum_allowable_cost,
+                //         'PHYSICIAN_LIST' => $request->physician_list,
+                //         'PHYSICIAN_SPECIALTY_LIST' => $request->physician_specialty_list,
+                //         'PHARMACY_LIST' => $request->pharmacy_list,
+                //         'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                //         'PREFERRED_PRODUCT_NDC' => $request->preferred_product_ndc,
+                //         'CONVERSION_PRODUCT_NDC' => $request->conversion_product_ndc,
+                //         'ALTERNATE_PRICE_SCHEDULE' => $request->alternate_price_schedule,
+                //         'ALTERNATE_COPAY_SCHED' => $request->alternate_copay_sched,
+                //         'MESSAGE' => $request->message,
+                //         'MIN_RX_QTY' => $request->min_rx_qty,
+                //         'MAX_RX_QTY' => $request->max_rx_qty,
+                //         'MIN_RX_DAYS' => $request->min_rx_days,
+                //         'MAX_RX_DAYS' => $request->max_rx_days,
+                //         'MIN_CTL_DAYS' => $request->min_ctl_days,
+                //         'MAX_CTL_DAYS' => $request->max_ctl_days,
+                //         'MAX_REFILLS' => $request->max_refills,
+                //         'MAX_DAYS_PER_FILL' => $request->max_days_per_fill,
+                //         'MAX_DOSE' => $request->max_dose,
+                //         'MIN_AGE' => $request->min_age,
+                //         'MAX_AGE' => $request->max_age,
+                //         'MIN_PRICE' => $request->min_price,
+                //         'MAX_PRICE' => $request->max_price,
+                //         'MAX_RXS_PATIENT' => $request->max_rxs_patient,
+                //         'GENERIC_COPAY_AMT' => $request->generic_copay_amt,
+                //         'BRAND_COPAY_AMT' => $request->brand_copay_amt,
+                //         'MAINT_DOSE_UNITS_DAY' => $request->maint_dose_units_day,
+                //         'ACUTE_DOSING_DAYS' => $request->acute_dosing_days,
+                //         'DENIAL_OVERRIDE' => $request->denial_override,
+                //         'MAINTENANCE_DRUG' => $request->maintenance_drug,
+                //         'SEX_RESTRICTION' => $request->sex_restriction,
+                //         'MERGE_DEFAULTS' => $request->merge_defaults,
+                //         'MAIL_ORDER_MIN_RX_DAYS' => $request->mail_order_min_rx_days,
+                //         'MAIL_ORDER_MAX_RX_DAYS' => $request->mail_order_max_rx_days,
+                //         'MAIL_ORDER_MAX_REFILLS' => $request->mail_order_max_refills,
+                //         'MODULE_EXIT' => $request->module_exit,
+                //         'MAX_RXS_TIME_FLAG' => $request->max_rxs_time_flag,
+                //         'MAX_PRICE_TIME_FLAG' => $request->max_price_time_flag,
+                //         'QTY_DSUP_COMPARE_RULE' => $request->qty_dsup_compare_rule,
+                //         'COPAY_NETWORK_OVRD' => $request->copay_network_ovrd,
+                //         'DRUG_CATGY_EXCEPTION_LIST' => $request->drug_catgy_exception_list,
+                //         'MAX_DAYS_SUPPLY_OPT' => $request->max_days_supply_opt,
+                //         'MAIL_ORD_MAX_DAYS_SUPPLY_OPT' => $request->mail_ord_max_days_supply_opt,
+                //         'RETAIL_MAX_FILLS_OPT' => $request->retail_max_fills_opt,
+                //         'MAIL_ORD_MAX_FILLS_OPT' => $request->mail_ord_max_fills_opt,
+                //         'MIN_PRICE_OPT' => $request->min_price_opt,
+                //         'MAX_PRICE_OPT' => $request->macx_price_opt,
+                //         'VALID_RELATION_CODE' => $request->valid_relation_code,
+                //         'STARTER_DOSE_DAYS' => $request->starter_dose_days,
+                //         'STARTER_DOSE_BYPASS_DAYS' => $request->starter_dose_bypass_days,
+                //         'DRUG_COV_START_DAYS' => $request->drug_cov_start_days,
+                //         'PKG_DETERMINE_ID' => $request->pkg_determine_id,
+                //         'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
+                //         'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
+                //         'MAX_DAYS_OVER_TIME' => $request->max_days_over_time,
+                //         'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
+                //         'STARTER_DOSE_MAINT_BYPASS_DAYS' => $request->starter_dose_maint_bypass_days,
+                //         'MAX_QTY_PER_FILL' => $request->max_qty_per_fill,
+                //         'BNG_SNGL_INC_EXC_IND' => $request->bng_sngl_inc_exc_ind,
+                //         'BNG_MULTI_INC_EXC_IND' => $request->bng_multi_inc_exc_ind,
+                //         'BGA_INC_EXC_IND' => $request->bga_inc_exc_ind,
+                //         'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
+                //         'MESSAGE_STOP_DATE' => $request->message_stop_date,
+                //     ]);
+                //     $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->where('plan_id', 'like', '%' . $request->plan_id . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_names);
+                // }
     
                
 
