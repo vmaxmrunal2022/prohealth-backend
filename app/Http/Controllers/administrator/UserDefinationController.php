@@ -32,8 +32,6 @@ class UserDefinationController extends Controller
 
                 return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getusersData);
             } else {
-
-
                 $addData = DB::table('FE_USERS')
                     ->insert([
                         'user_id' => $request->user_id,
@@ -333,8 +331,8 @@ class UserDefinationController extends Controller
                     ->where('group_id', $request->group_id)
                     ->get()
                     ->count();
-                if ($check_group == 0) {
-                    return $this->respondWithToken($this->token(), "Please select valid group", "Please select valid group", false);
+                if ($request->group_id && $check_group == 0) {
+                    return $this->respondWithToken($this->token(), "Please select valid group", [["Please select valid group"]], false);
                 }
                 $coun = "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDADDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDAAAAAAAAADDDDDDDDDDDDDDDDDDDDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
                 $A = [];
@@ -423,11 +421,11 @@ class UserDefinationController extends Controller
                 return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
             } else {
                 $check_group = DB::table('fe_user_groups')
-                ->where('group_id', $request->group_id)
+                    ->where('group_id', $request->group_id)
                     ->get()
                     ->count();
-                if ($check_group == 0) {
-                    return $this->respondWithToken($this->token(), "Please select valid group", "Please select valid group", false);
+                if ($request->group_id && $check_group == 0) {
+                    return $this->respondWithToken($this->token(), "Please select valid group", [["Please select valid group"]], false);
                 }
                 $user_data = DB::table('fe_users')
                     ->where('user_id', $request->user_id)
@@ -761,7 +759,6 @@ class UserDefinationController extends Controller
         //     ->update([
         //         'user_profile' => $updated_user_profile,
         //     ]);
-        // dd($user_profile);
         return $this->respondWithToken($this->token(), '', $user_profile);
     }
 
@@ -798,5 +795,12 @@ class UserDefinationController extends Controller
         //     ]);
         // dd($user_profile);
         return $this->respondWithToken($this->token(), '', $user_profile[$position]);
+    }
+
+    public function getUserProfile($user_id)
+    {
+        $user_data = DB::table('fe_users')->where('user_id', $user_id)->first();
+        $user_profile = str_split($user_data->user_profile);
+        return $this->respondWithToken($this->token(), $user_profile, $user_profile);
     }
 }
