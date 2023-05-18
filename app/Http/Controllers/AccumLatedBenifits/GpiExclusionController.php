@@ -56,7 +56,6 @@ class GpiExclusionController extends Controller
                 return $this->respondWithToken($this->token(), 'Recored Added Successfully', $insert);
             }
         } else {
-
             if ($recordCheckGpiList) {
                 $update = DB::table('GPI_EXCLUSIONS')
                     ->where('gpi_exclusion_list', $request->gpi_exclusion_list)

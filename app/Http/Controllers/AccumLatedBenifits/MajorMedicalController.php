@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 
 class MajorMedicalController extends Controller
 {
@@ -18,8 +19,8 @@ class MajorMedicalController extends Controller
             "customer_id" => ['required'],
             "client_id" => ['required'],
             "client_group_id" => ['required'],
-            'mm_claim_max' => ['max:16'],
-            'mm_life_maximum' => ['max:16'],
+            'mm_claim_max' => ['max:10'],
+            'mm_life_maximum' => ['max:10'],
         ]);
         if ($validator->fails()) {
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -33,12 +34,16 @@ class MajorMedicalController extends Controller
                     'mm_life_maximum' => $request->mm_life_maximum,
                     'grouping_type' => $request->grouping_type,
                     'mm_claim_max' => $request->mm_claim_max,
-                    'effective_date' => '19950701',
-                    'termination_date' => '19950701'
+                    'effective_date' => $request->effective_date,
+                    'termination_date' => $request->termination_date,
+                    'DATE_TIME_CREATED' => date('Ymd'),
+                    'DATE_TIME_MODIFIED' => date('Ymd'),
+                    'USER_ID_CREATED' => Cache::get('userId'),
                 ]
             );
-            // $benefitcode = DB::table('TEMP_MM_LIFE_MAX')->where('customer_id',$request->customer_id)->first();
-            $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%' . $request->mm_life_maximum . '%')->first();
+            if ($insert) {
+                return $this->respondWithToken($this->token(), 'Recored Added Successfully', $insert);
+            }
         } else {
             $update = DB::table('MM_LIFE_MAX')
                 ->where('customer_id', $request->customer_id)
@@ -91,15 +96,12 @@ class MajorMedicalController extends Controller
                     ->where('client_group_id', strtoupper($request->client_group_id))
                     ->update(
                         [
-
                             'mm_life_maximum' => $request->mm_life_maximum,
                             'grouping_type' => $request->grouping_type,
                             'mm_claim_max' => $request->mm_claim_max,
                             'effective_date' => $request->effective_date,
                             'termination_date' => $request->termination_date,
                             'mm_claim_max_group_type' => strtoupper($request->mm_claim_max_group_type),
-
-
                         ]
                     );
                 $benefitcode = DB::table('MM_LIFE_MAX')
@@ -131,8 +133,6 @@ class MajorMedicalController extends Controller
             return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
-
-
 
     public function search(Request $request)
 
