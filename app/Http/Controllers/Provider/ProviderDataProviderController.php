@@ -199,15 +199,9 @@ class ProviderDataProviderController extends Controller
                             ]
                         );
 
-                        $rx_networksnames = DB::table('RX_NETWORK_NAMES')->insert(
-                            [
-                                'NETWORK_ID' => $traditional_list->network_id,
-                                'NETWORK_NAME' => $traditional_list->network_name,
-                                
-            
-                            ]
-                        );
 
+
+                       
 
                             
         
@@ -256,7 +250,7 @@ class ProviderDataProviderController extends Controller
             }
 
             if ($addData) {
-                return $this->respondWithToken($this->token(), 'Added Successfully...!!!', $addData);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
             }
         } else if ($request->add_new == 0) {
             $updateData = DB::table('PHARMACY_TABLE')
@@ -362,19 +356,19 @@ class ProviderDataProviderController extends Controller
                         );
 
 
-                $data = DB::table('RX_NETWORK_NAMES')
-                ->where('network_id', $traditional_list->network_id)
-                ->delete();
-                if($data){
+                // $data = DB::table('RX_NETWORK_NAMES')
+                // ->where('network_id', $traditional_list->network_id)
+                // ->delete();
+                // if($data){
 
-                     $rx_networksnames = DB::table('RX_NETWORK_NAMES')->insert(
-                    [
-                        'NETWORK_ID' => $traditional_list->network_id,
-                        'NETWORK_NAME' => $traditional_list->network_name,
+                //      $rx_networksnames = DB::table('RX_NETWORK_NAMES')->insert(
+                //     [
+                //         'NETWORK_ID' => $traditional_list->network_id,
+                //         'NETWORK_NAME' => $traditional_list->network_name,
                         
     
-                    ]
-                );
+                //     ]
+                // );
 
 
                 }
@@ -428,8 +422,8 @@ class ProviderDataProviderController extends Controller
 
     
 
-        }
-    }
+        
+    }                                                                                                                                                                                                                                                               
 
     public function TraditionalIdsearch(Request $request)
     {
@@ -580,6 +574,7 @@ class ProviderDataProviderController extends Controller
                ->join('RX_NETWORK_NAMES','RX_NETWORK_NAMES.NETWORK_ID','=','RX_NETWORKS.NETWORK_ID')
               
                ->where('RX_NETWORKS.pharmacy_nabp',$request->pharmacy_nabp)
+            //    ->groupby('pharmacy_nabp')->distinct()
                ->get();
             //    ->pluck('pharmacy_nabp');
                
