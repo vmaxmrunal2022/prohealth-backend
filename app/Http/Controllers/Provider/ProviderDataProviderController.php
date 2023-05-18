@@ -178,8 +178,7 @@ class ProviderDataProviderController extends Controller
                     if (!empty($request->traditional_form)) {
                         $traditional_list = $traditional_list_obj[0];
         
-                        foreach ($traditional_list_obj as $key => $traditional_list) {
-        
+                        foreach ($traditional_list_obj as $key => $traditional_list) {       
         
                         $rx_networks = DB::table('RX_NETWORKS')->insert(
                             [

@@ -13,7 +13,6 @@ class NdcExlusionController extends Controller
 
     public function add(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             "ndc_exclusion_list" => ['required', 'max:10'],
             "exclusion_name" => ['required', 'max:35'],
@@ -23,10 +22,12 @@ class NdcExlusionController extends Controller
         if ($validator->fails()) {
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         }
+
         $createddate = date('y-m-d');
         $recordcheck = DB::table('NDC_EXCLUSION_LISTS')
             ->where('ndc_exclusion_list', strtoupper($request->ndc_exclusion_list))
             ->first();
+
         if ($request->has('new')) {
             if ($recordcheck) {
                 return $this->respondWithToken($this->token(), 'Ndc Exclusion List Id already exists in the system..!!!', $recordcheck);
@@ -136,10 +137,9 @@ class NdcExlusionController extends Controller
     public function search(Request $request)
 
     {
-        $ndc = DB::table('NDC_EXCLUSION_LISTS')
-            ->join('NDC_EXCLUSIONS', 'NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', '=', 'NDC_EXCLUSIONS.NDC_EXCLUSION_LIST')
-            ->where('NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', 'like', '%' . $request->search . '%')
-            ->orWhere('NDC_EXCLUSIONS.EXCLUSION_NAME', 'like', '%' . $request->search . '%')
+        $ndc = DB::table('NDC_EXCLUSIONS')
+            ->where(DB::raw('UPPER(NDC_EXCLUSIONS.NDC_EXCLUSION_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(NDC_EXCLUSIONS.EXCLUSION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
