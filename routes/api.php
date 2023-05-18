@@ -477,8 +477,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('supernetwork/dropdown', [SuperProviderNetworkController::class, 'dropDown']);
         Route::get('supernetwork/getDetails/{ndcid}/{ndcid2}', [SuperProviderNetworkController::class, 'getDetails']);
 
-        // Route::get('supernetwork/getDetails/{ndcid}', [SuperProviderNetworkController::class, 'getDetails']);
-
         //TRADITIONAL NETWORK
 
         Route::get('traditionalnetwork/search', [TraditionalNetworkController::class, 'search']);
