@@ -201,6 +201,7 @@ class ProviderController extends Controller
                         ->where(DB::raw('UPPER(PHARMACY_LIST)'), strtoupper($request->pharmacy_list))
                         ->get()
                         ->count();
+
                     //if exception is not existing
                     if ($count <= 0) {
                         $addException = DB::table('PHARMACY_EXCEPTIONS')
@@ -235,7 +236,7 @@ class ProviderController extends Controller
                         );
                     } else {
                         $updateProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
-                            ->where('PHARMACY_LIST', $request->pharmacy_list)
+                            ->where(DB::raw('UPPER(PHARMACY_LIST)'), strtoupper($request->pharmacy_list))
                             ->update([
                                 'exception_name' => $request->exception_name,
                                 'user_id' => Cache::get('userId'),
@@ -249,6 +250,7 @@ class ProviderController extends Controller
                             // ->where('pharmacy_status', $request->pharmacy_status)
                             ->get()
                             ->count();
+                        return $countValidation;
 
                         //if exception exist but validation not exist
                         if ($countValidation >= 1) {

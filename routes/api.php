@@ -475,7 +475,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
         Route::post('superprovider/add', [SuperProviderNetworkController::class, 'add']);
         Route::get('supernetwork/dropdown', [SuperProviderNetworkController::class, 'dropDown']);
-        Route::get('supernetwork/getDetails/{ndcid}/{ndcid2}', [SuperProviderNetworkController::class, 'getDetails']);
+        Route::get('supernetwork/getDetails/{ndcid}/{provider_network_id}', [SuperProviderNetworkController::class, 'getDetails']);
 
         //TRADITIONAL NETWORK
 
@@ -1292,6 +1292,7 @@ Route::group(['prefix' => 'administrator/'], function () {
     Route::get('user-defination/get-all-access', [UserDefinationController::class, 'getAllAccess']);
     Route::get('user-defination/get-group-all-access', [UserDefinationController::class, 'getGroupAllAccess']);
     Route::get('user-defination/get-group-access-details', [UserDefinationController::class, 'getGroupAccessDetails']);
+    Route::get('user-defination/get-profile/{user_id}', [UserDefinationController::class, 'getUserProfile']);
 
     //Search Audit Trail
     Route::get('search-audit-trial/get-tables', [AuditTrailController::class, 'getTables'])->name('getAllTables');

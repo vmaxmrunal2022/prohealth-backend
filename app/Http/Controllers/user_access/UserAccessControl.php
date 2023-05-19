@@ -119,7 +119,16 @@ class UserAccessControl extends Controller
             ['117' => 'UCR lists'],
             ['21' => 'User definition'],
             ['63' => 'Zip codes'],
-            ['37' => 'Zone and NDC']
+            ['37' => 'Zone and NDC'],
+            ['91' => ''],
+            ['92' => ''],
+            ['93' => ''],
+            ['94' => ''],
+            ['95' => ''],
+            ['96' => ''],
+            ['97' => ''],
+            ['98' => ''],
+            ['99' => '']
         ];
 
         // $menus = [
