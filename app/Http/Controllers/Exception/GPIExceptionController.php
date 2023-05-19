@@ -7,15 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use \Cache;
-
 
 class GPIExceptionController extends Controller
 {
 
 
 
-    public function add_old(Request $request)
+    public function add(Request $request)
     {
         $createddate = date('y-m-d');
 
@@ -32,7 +30,7 @@ class GPIExceptionController extends Controller
                         $q->whereNotNull('gpi_exception_list');
                     })
                 ],
-                // 'gpi' => ['required', 'max:11', Rule::unique('GPI_EXCEPTION_LISTS')->where(function ($q) {
+                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
                 //     $q->whereNotNull('NDC');
                 // })],
 
@@ -49,8 +47,8 @@ class GPIExceptionController extends Controller
                 "generic_product_id" => ['required'],
                 // "new_drug_status" => ['max:1'],
                 // "process_rule" => ['max:1'],
-                // 'preferred_product_gpi' => ['max:15', 'min:5'],
-                // 'conversion_product_gpi' => ['max:10'],
+                // 'preferred_product_ndc' => ['max:15', 'min:5'],
+                // 'conversion_product_ndc' => ['max:10'],
                 // 'message_stop_date' => ['max:10'],
                 'min_rx_qty'=>['nullable'],
                 'max_rx_qty'=>['nullable','gt:min_rx_qty'],
@@ -153,8 +151,8 @@ class GPIExceptionController extends Controller
                         'PHYSICIAN_SPECIALTY_LIST' => $request->physician_specialty_list,
                         'PHARMACY_LIST' => $request->pharmacy_list,
                         'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                        'PREFERRED_PRODUCT_NDC' => $request->preferred_product_gpi,
-                        'CONVERSION_PRODUCT_NDC' => $request->conversion_product_gpi,
+                        'PREFERRED_PRODUCT_NDC' => $request->preferred_product_ndc,
+                        'CONVERSION_PRODUCT_NDC' => $request->conversion_product_ndc,
                         'ALTERNATE_PRICE_SCHEDULE' => $request->alternate_price_schedule,
                         'ALTERNATE_COPAY_SCHED' => $request->alternate_copay_sched,
                         'MESSAGE' => $request->message,
@@ -243,8 +241,8 @@ class GPIExceptionController extends Controller
                 "generic_product_id" => ['required', 'max:14'],
                 // "new_drug_status" => ['max:1'],
                 // "process_rule" => ['max:1'],
-                // 'preferred_product_gpi' => ['max:15', 'min:5'],
-                // 'conversion_product_gpi' => ['max:10'],
+                // 'preferred_product_ndc' => ['max:15', 'min:5'],
+                // 'conversion_product_ndc' => ['max:10'],
                 // 'message_stop_date' => ['max:10'],
                 'min_rx_qty'=>['nullable'],
                 'max_rx_qty'=>['nullable','gt:min_rx_qty'],
@@ -743,345 +741,6 @@ class GPIExceptionController extends Controller
         }
     }
 
-    public function add(Request $request)
-    {
-        $createddate = date('d-M-y');
-        $validation = DB::table('GPI_EXCEPTIONS')
-            ->where('gpi_exception_list', $request->gpi_exception_list)
-            ->get();
-
-        if ($request->new) {
-            $validator = Validator::make($request->all(), [
-                // 'physician_list' => ['required', 'max:10', Rule::unique('GPI_EXCEPTIONS')->where(function ($q) {
-                //     $q->whereNotNull('physician_list');
-                // })],
-                // 'gpi' => ['required', 'max:11', Rule::unique('GPI_EXCEPTION_LISTS')->where(function ($q) {
-                //     $q->whereNotNull('NDC');
-                // })],
-
-                // 'effective_date' => ['required', 'max:10', Rule::unique('GPI_EXCEPTION_LISTS')->where(function ($q) {
-                //     $q->whereNotNull('effective_date');
-                // })],
-
-                // 'gpi_exception_list' => ['required', 'max:10', Rule::unique('GPI_EXCEPTIONS')->where(function ($q) {
-                //     $q->whereNotNull('gpi_exception_list');
-                // })],
-
-                "exception_name" => ['required', 'max:36'],
-                // "physician_id" => ['required', 'max:10'],
-                // // "PHARMACY_NABP"=>['max:10'],
-                // "physician_status" => ['max:10'],
-                // "DATE_TIME_CREATED" => ['max:10'],
-                // "DATE_TIME_MODIFIED" => ['max:10']
-
-
-
-            ]);
-
-            if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            } else {
-                if (!$request->updateForm) {
-
-                    $ifExist = DB::table('GPI_EXCEPTIONS')
-                        ->where(DB::raw('UPPER(gpi_exception_list)'), strtoupper($request->gpi_exception_list))
-                        ->get();
-                    if (count($ifExist) >= 1) {
-                        return $this->respondWithToken($this->token(), [["GPI ID already exists"]], '', false);
-                    }
-                } else {
-                }
-                if ($request->gpi_exception_list && $request->generic_product_id) {
-                    $count = DB::table('GPI_EXCEPTIONS')
-                        ->where(DB::raw('UPPER(gpi_exception_list)'), strtoupper($request->gpi_exception_list))
-                        // ->where(DB::raw('UPPER(gpi)'), strtoupper($request->gpi))
-
-                        ->get()
-                        ->count();
-
-                        // dd($count);
-
-
-
-                    if ($count <= 0) {
-                        $add_names = DB::table('GPI_EXCEPTIONS')
-                        ->insert(
-                            [
-                                'gpi_exception_list' => $request->gpi_exception_list,
-                                'exception_name'=>$request->exception_name,
-                                
-                            ]
-                        );
-                        $add = DB::table('GPI_EXCEPTION_LISTS')
-                        ->insert([
-
-
-                            'GPI_EXCEPTION_LIST' => $request->gpi_exception_list,
-                            'GENERIC_PRODUCT_ID' => $request->generic_product_id,
-                            'NEW_DRUG_STATUS' => $request->new_drug_status,
-                            'PROCESS_RULE' => $request->process_rule,
-                            'MAXIMUM_ALLOWABLE_COST' => $request->maximum_allowable_cost,
-                            'PHYSICIAN_LIST' => $request->physician_list,
-                            'PHYSICIAN_SPECIALTY_LIST' => $request->physician_specialty_list,
-                            'PHARMACY_LIST' => $request->pharmacy_list,
-                            'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                            'PREFERRED_PRODUCT_NDC' => $request->preferred_product_gpi,
-                            'CONVERSION_PRODUCT_NDC' => $request->conversion_product_gpi,
-                            'ALTERNATE_PRICE_SCHEDULE' => $request->alternate_price_schedule,
-                            'ALTERNATE_COPAY_SCHED' => $request->alternate_copay_sched,
-                            'MESSAGE' => $request->message,
-                            'MESSAGE_STOP_DATE' => $request->message_stop_date,
-                            'MIN_RX_QTY' => $request->min_rx_qty,
-                            'MAX_RX_QTY' => $request->max_rx_qty,
-                            'MIN_RX_DAYS' => $request->min_rx_days,
-                            'MAX_RX_DAYS' => $request->max_rx_days,
-                            'MIN_CTL_DAYS' => $request->min_ctl_days,
-                            'MAX_CTL_DAYS' => $request->max_ctl_days,
-                            'MAX_REFILLS' => $request->max_refills,
-                            'MAX_DAYS_PER_FILL' => $request->max_days_per_fill,
-                            'MAX_DOSE' => $request->max_dose,
-                            'MIN_AGE' => $request->min_age,
-                            'MAX_AGE' => $request->max_age,
-                            'MIN_PRICE' => $request->min_price,
-                            'MAX_PRICE' => $request->max_price,
-                            'MAX_RXS_PATIENT' => $request->max_rxs_patient,
-                            'MAX_PRICE_PATIENT' => $request->max_price_patient,
-                            'GENERIC_COPAY_AMT' => $request->generic_copay_amt,
-                            'BRAND_COPAY_AMT' => $request->brand_copay_amt,
-                            'MAINT_DOSE_UNITS_DAY' => $request->maint_dose_units_day,
-                            'ACUTE_DOSING_DAYS' => $request->acute_dosing_days,
-                            'DENIAL_OVERRIDE' => $request->denial_override,
-                            'MAINTENANCE_DRUG' => $request->maintenance_drug,
-                            'MERGE_DEFAULTS' => $request->merge_defaults,
-                            'SEX_RESTRICTION' => $request->sex_restriction,
-                            'MAIL_ORDER_MIN_RX_DAYS' => $request->mail_order_min_rx_days,
-                            'MAIL_ORDER_MAX_RX_DAYS' => $request->mail_order_max_rx_days,
-                            'MAIL_ORDER_MAX_REFILLS' => $request->mail_order_max_refills,
-                            'MAX_RXS_TIME_FLAG' => $request->max_rxs_time_flag,
-                            'MAX_PRICE_TIME_FLAG' => $request->max_price_time_flag,
-                            'QTY_DSUP_COMPARE_RULE' => $request->qty_dsup_compare_rule,
-                            'DATE_TIME_CREATED' => $createddate,
-                            'USER_ID' => '',
-                            'DATE_TIME_MODIFIED' => $createddate,
-                            'COPAY_NETWORK_OVRD' => $request->copay_network_ovrd,
-                            'MAX_DAYS_SUPPLY_OPT' => $request->max_days_supply_opt,
-                            'MAIL_ORD_MAX_DAYS_SUPPLY_OPT' => $request->mail_ord_max_days_supply_opt,
-                            'RETAIL_MAX_FILLS_OPT' => $request->retail_max_fills_opt,
-                            'MAIL_ORD_MAX_FILLS_OPT' => $request->mail_ord_max_fills_opt,
-                            'MIN_PRICE_OPT' => $request->min_price_opt,
-                            'MAX_PRICE_OPT' => $request->max_price_opt,
-                            'VALID_RELATION_CODE' => $request->valid_relation_code,
-                            'STARTER_DOSE_DAYS' => $request->starter_dose_days,
-                            'STARTER_DOSE_BYPASS_DAYS' => $request->starter_dose_bypass_days,
-                            'DRUG_COV_START_DAYS' => $request->drug_cov_start_days,
-                            'PKG_DETERMINE_ID' => $request->pkg_determine_id,
-                            'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
-                            'EFFECTIVE_DATE' => $request->effective_date,
-                            'TERMINATION_DATE' => $request->termination_date,
-                            'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
-                            'MAX_DAYS_OVER_TIME' => $request->max_days_over_time,
-                            'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
-                            'USER_ID_CREATED' => '',
-                            'STARTER_DOSE_MAINT_BYPASS_DAYS' => $request->starter_dose_maint_bypass_days,
-                            'MAX_QTY_PER_FILL' => $request->max_qty_per_fill,
-                            'BNG_SNGL_INC_EXC_IND' => $request->bng_sngl_inc_exc_ind,
-                            'BNG_MULTI_INC_EXC_IND' => $request->bng_multi_inc_exc_ind,
-                            'BGA_INC_EXC_IND' => $request->bga_inc_exc_ind,
-                            'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
-                            'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
-                            'DAYS_SUPPLY_OPT_MULTIPLIER' => $request->days_supply_opt_multiplier,
-                            'MODULE_EXIT' => $request->module_exit,
-    
-    
-    
-    
-                        ]);
-                      
-                        $add = DB::table('GPI_EXCEPTION_LISTS')->where('gpi_exception_list', 'like', '%' . $request->gpi_exception_list . '%')->first();
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
-                    } else {
-                        $updateProviderExceptionData = DB::table('GPI_EXCEPTIONS')
-                            ->where('gpi_exception_list', $request->gpi_exception_list)
-                            ->update([
-                                'exception_name' => $request->exception_name,
-                                'user_id' => Cache::get('userId'),
-                                'date_time_modified' => date('d-M-y'),
-                                'form_id' => ''
-                            ]);
-                        $countValidation = DB::table('GPI_EXCEPTION_LISTS')
-                            ->where(DB::raw('UPPER(gpi_exception_list)'), strtoupper($request->gpi_exception_list))
-                            ->where(DB::raw('UPPER(generic_product_id)'), strtoupper($request->generic_product_id))
-                            ->where(DB::raw('UPPER(effective_date)'), strtoupper($request->effective_date))
-
-                            ->get();
-
-                        if (count($countValidation) >= 1) {
-                            return $this->respondWithToken(
-                                $this->token(),
-                                [['Effective date  already exists']],
-                                [['GPI ID  already exists']],
-                                false
-                            );
-                        } else {
-
-
-                            $termination_date = DB::table('GPI_EXCEPTION_LISTS')
-                            ->where(DB::raw('UPPER(gpi_exception_list)'), strtoupper($request->gpi_exception_list))
-                            ->where(DB::raw('UPPER(generic_product_id)'), strtoupper($request->generic_product_id))
-
-                            ->pluck('termination_date')->toArray();
-
-
-
-                            if(!empty($termination_date ) && $request->effective_date >max($termination_date)){
-
-                                $addProviderValidationData = DB::table('GPI_EXCEPTION_LISTS')
-                                ->insert([
-
-
-                                    'GPI_EXCEPTION_LIST' => $request->gpi_exception_list,
-                                    'GENERIC_PRODUCT_ID' => $request->generic_product_id,
-                                    'NEW_DRUG_STATUS' => $request->new_drug_status,
-                                    'PROCESS_RULE' => $request->process_rule,
-                                    'MAXIMUM_ALLOWABLE_COST' => $request->maximum_allowable_cost,
-                                    'PHYSICIAN_LIST' => $request->physician_list,
-                                    'PHYSICIAN_SPECIALTY_LIST' => $request->physician_specialty_list,
-                                    'PHARMACY_LIST' => $request->pharmacy_list,
-                                    'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                                    'PREFERRED_PRODUCT_NDC' => $request->preferred_product_gpi,
-                                    'CONVERSION_PRODUCT_NDC' => $request->conversion_product_gpi,
-                                    'ALTERNATE_PRICE_SCHEDULE' => $request->alternate_price_schedule,
-                                    'ALTERNATE_COPAY_SCHED' => $request->alternate_copay_sched,
-                                    'MESSAGE' => $request->message,
-                                    'MESSAGE_STOP_DATE' => $request->message_stop_date,
-                                    'MIN_RX_QTY' => $request->min_rx_qty,
-                                    'MAX_RX_QTY' => $request->max_rx_qty,
-                                    'MIN_RX_DAYS' => $request->min_rx_days,
-                                    'MAX_RX_DAYS' => $request->max_rx_days,
-                                    'MIN_CTL_DAYS' => $request->min_ctl_days,
-                                    'MAX_CTL_DAYS' => $request->max_ctl_days,
-                                    'MAX_REFILLS' => $request->max_refills,
-                                    'MAX_DAYS_PER_FILL' => $request->max_days_per_fill,
-                                    'MAX_DOSE' => $request->max_dose,
-                                    'MIN_AGE' => $request->min_age,
-                                    'MAX_AGE' => $request->max_age,
-                                    'MIN_PRICE' => $request->min_price,
-                                    'MAX_PRICE' => $request->max_price,
-                                    'MAX_RXS_PATIENT' => $request->max_rxs_patient,
-                                    'MAX_PRICE_PATIENT' => $request->max_price_patient,
-                                    'GENERIC_COPAY_AMT' => $request->generic_copay_amt,
-                                    'BRAND_COPAY_AMT' => $request->brand_copay_amt,
-                                    'MAINT_DOSE_UNITS_DAY' => $request->maint_dose_units_day,
-                                    'ACUTE_DOSING_DAYS' => $request->acute_dosing_days,
-                                    'DENIAL_OVERRIDE' => $request->denial_override,
-                                    'MAINTENANCE_DRUG' => $request->maintenance_drug,
-                                    'MERGE_DEFAULTS' => $request->merge_defaults,
-                                    'SEX_RESTRICTION' => $request->sex_restriction,
-                                    'MAIL_ORDER_MIN_RX_DAYS' => $request->mail_order_min_rx_days,
-                                    'MAIL_ORDER_MAX_RX_DAYS' => $request->mail_order_max_rx_days,
-                                    'MAIL_ORDER_MAX_REFILLS' => $request->mail_order_max_refills,
-                                    'MAX_RXS_TIME_FLAG' => $request->max_rxs_time_flag,
-                                    'MAX_PRICE_TIME_FLAG' => $request->max_price_time_flag,
-                                    'QTY_DSUP_COMPARE_RULE' => $request->qty_dsup_compare_rule,
-                                    'DATE_TIME_CREATED' => $createddate,
-                                    'USER_ID' => '',
-                                    'DATE_TIME_MODIFIED' => $createddate,
-                                    'COPAY_NETWORK_OVRD' => $request->copay_network_ovrd,
-                                    'MAX_DAYS_SUPPLY_OPT' => $request->max_days_supply_opt,
-                                    'MAIL_ORD_MAX_DAYS_SUPPLY_OPT' => $request->mail_ord_max_days_supply_opt,
-                                    'RETAIL_MAX_FILLS_OPT' => $request->retail_max_fills_opt,
-                                    'MAIL_ORD_MAX_FILLS_OPT' => $request->mail_ord_max_fills_opt,
-                                    'MIN_PRICE_OPT' => $request->min_price_opt,
-                                    'MAX_PRICE_OPT' => $request->max_price_opt,
-                                    'VALID_RELATION_CODE' => $request->valid_relation_code,
-                                    'STARTER_DOSE_DAYS' => $request->starter_dose_days,
-                                    'STARTER_DOSE_BYPASS_DAYS' => $request->starter_dose_bypass_days,
-                                    'DRUG_COV_START_DAYS' => $request->drug_cov_start_days,
-                                    'PKG_DETERMINE_ID' => $request->pkg_determine_id,
-                                    'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
-                                    'EFFECTIVE_DATE' => $request->effective_date,
-                                    'TERMINATION_DATE' => $request->termination_date,
-                                    'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
-                                    'MAX_DAYS_OVER_TIME' => $request->max_days_over_time,
-                                    'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
-                                    'USER_ID_CREATED' => '',
-                                    'STARTER_DOSE_MAINT_BYPASS_DAYS' => $request->starter_dose_maint_bypass_days,
-                                    'MAX_QTY_PER_FILL' => $request->max_qty_per_fill,
-                                    'BNG_SNGL_INC_EXC_IND' => $request->bng_sngl_inc_exc_ind,
-                                    'BNG_MULTI_INC_EXC_IND' => $request->bng_multi_inc_exc_ind,
-                                    'BGA_INC_EXC_IND' => $request->bga_inc_exc_ind,
-                                    'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
-                                    'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
-                                    'DAYS_SUPPLY_OPT_MULTIPLIER' => $request->days_supply_opt_multiplier,
-                                    'MODULE_EXIT' => $request->module_exit,
-            
-            
-            
-            
-                                ]);
-                                $reecord = DB::table('GPI_EXCEPTIONS')
-                                    ->join('GPI_EXCEPTION_LISTS', 'GPI_EXCEPTIONS.gpi_exception_list', '=', 'GPI_EXCEPTION_LISTS.gpi_exception_list')
-                                    ->where('GPI_EXCEPTION_LISTS.gpi_exception_list', $request->physician_list)
-                                    // ->where('GPI_EXCEPTION_LISTS.physician_id', $request->physician_id)
-                                    ->first();
-                                return $this->respondWithToken(
-                                    $this->token(),
-                                    'Record Added successfully',
-                                    $reecord,
-                                );
-
-                            }
-
-                            else{
-
-
-                                return $this->respondWithToken(
-                                    $this->token(),
-                                    [['Please Give Proper Effective Date']],
-                                    [['Effective Date Must Be greater than Previous Termination Date']],
-                                    false
-                                );
-
-                            }
-
-
-
-                            
-
-                            
-                         
-                        }
-                    }
-                }
-            }
-        } else {
-            $updateProviderExceptionData = DB::table('GPI_EXCEPTIONS')
-                ->where('gpi_exception_list', $request->gpi_exception_list)
-                ->update([
-                    'exception_name' => $request->exception_name,
-                    'user_id' => Cache::get('userId'),
-                    'date_time_modified' => date('d-M-y'),
-                    'form_id' => ''
-                ]);
-
-            $countValidation = DB::table('GPI_EXCEPTION_LISTS')
-                ->where(DB::raw('UPPER(gpi_exception_list)'), strtoupper($request->gpi_exception_list))
-                ->where(DB::raw('UPPER(generic_product_id)'), strtoupper($request->generic_product_id))
-                ->where('effective_date', $request->effective_date)
-                ->update([
-                    'termination_date' => $request->termination_date,
-                    'date_time_modified' => date('d-M-y'),
-                    'form_id' => ''
-                ]);
-
-            return $this->respondWithToken(
-                $this->token(),
-                'Record Updated successfully',
-                $countValidation,
-            );
-        }
-    }
-
 
     public function GpiList(Request $request)
     {
@@ -1094,36 +753,36 @@ class GPIExceptionController extends Controller
 
     public function search(Request $request)
     {
-        $gpi = DB::table('GPI_EXCEPTIONS')
+        $ndc = DB::table('GPI_EXCEPTIONS')
             ->select('GPI_EXCEPTION_LIST', 'EXCEPTION_NAME')
             ->where('GPI_EXCEPTION_LIST', 'like', '%' . $request->search . '%')
             ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
             ->get();
 
-        return $this->respondWithToken($this->token(), '', $gpi);
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function getNDCList($gpiid)
+    public function getNDCList($ndcid)
     {
-        $gpilist = DB::table('GPI_EXCEPTION_LISTS')
+        $ndclist = DB::table('GPI_EXCEPTION_LISTS')
             ->join('GPI_EXCEPTIONS', 'GPI_EXCEPTIONS.GPI_EXCEPTION_LIST', '=', 'GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST')
             // ->select('gpi_exception_list', 'EXCEPTION_NAME')
-            ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST', 'like', '%' . $gpiid . '%')
-            // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($gpiid) . '%')
+            ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST', 'like', '%' . $ndcid . '%')
+            // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
             ->get();
 
 
-        return $this->respondWithToken($this->token(), '', $gpilist);
+        return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
 
-    public function getNDCItemDetails($gpiid, $ncdid2)
+    public function getNDCItemDetails($ndcid, $ncdid2)
     {
-        $gpi = DB::table('GPI_EXCEPTION_LISTS')
+        $ndc = DB::table('GPI_EXCEPTION_LISTS')
             ->select(
                 'GPI_EXCEPTION_LISTS.*',
-                'DRUG_MASTER1.LABEL_NAME as preferd_gpi_description',
-                'DRUG_MASTER2.LABEL_NAME as conversion_gpi_description',
+                'DRUG_MASTER1.LABEL_NAME as preferd_ndc_description',
+                'DRUG_MASTER2.LABEL_NAME as conversion_ndc_description',
                 'DRUG_MASTER3.LABEL_NAME as gpi_exception_description',
                 'GPI_EXCEPTIONS.EXCEPTION_NAME'
             )
@@ -1134,10 +793,10 @@ class GPIExceptionController extends Controller
             ->leftjoin('DRUG_MASTER as DRUG_MASTER3', 'DRUG_MASTER3.GENERIC_PRODUCT_ID', '=', 'GPI_EXCEPTION_LISTS.GENERIC_PRODUCT_ID')
             ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST', $ncdid2)
 
-            ->where('GPI_EXCEPTION_LISTS.generic_product_id', $gpiid)
+            ->where('GPI_EXCEPTION_LISTS.generic_product_id', $ndcid)
             ->first();
 
-        return $this->respondWithToken($this->token(), '', $gpi);
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 
     public function getGpiDropDown()

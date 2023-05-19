@@ -7,8 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
-use \Cache;
-
 
 class TherapyClassController extends Controller
 {
@@ -250,30 +248,30 @@ class TherapyClassController extends Controller
     }
 
 
-   
-
     public function add(Request $request)
     {
-        $createddate = date('d-M-y');
-        $validation = DB::table('TC_EXCEPTIONS')
-            ->where('ther_class_exception_list', $request->ther_class_exception_list)
-            ->get();
+        $createddate = date( 'y-m-d' );
 
-        if ($request->new) {
+        $validation = DB::table('TC_EXCEPTIONS')
+        ->where('ther_class_exception_list',$request->ther_class_exception_list)
+        ->get();
+
+        if ($request->add_new == 1) {
+
             $validator = Validator::make($request->all(), [
-                // 'physician_list' => ['required', 'max:10', Rule::unique('TC_EXCEPTIONS')->where(function ($q) {
-                //     $q->whereNotNull('physician_list');
-                // })],
-                // 'ndc' => ['required', 'max:11', Rule::unique('TC_EXCEPTION_LISTS')->where(function ($q) {
+                'ther_class_exception_list' => ['required', 'max:10', Rule::unique('TC_EXCEPTION_LISTS')->where(function ($q) {
+                    $q->whereNotNull('ther_class_exception_list');
+                })],
+                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
                 //     $q->whereNotNull('NDC');
                 // })],
 
-                // 'effective_date' => ['required', 'max:10', Rule::unique('TC_EXCEPTION_LISTS')->where(function ($q) {
+                // 'effective_date' => ['required', 'max:10', Rule::unique('GPI_EXCEPTION_LISTS')->where(function ($q) {
                 //     $q->whereNotNull('effective_date');
                 // })],
 
-                // 'ther_class_exception_list' => ['required', 'max:10', Rule::unique('TC_EXCEPTIONS')->where(function ($q) {
-                //     $q->whereNotNull('ther_class_exception_list');
+                // 'gpi_exception_list' => ['required', 'max:10', Rule::unique('TC_EXCEPTIONS')->where(function ($q) {
+                //     $q->whereNotNull('gpi_exception_list');
                 // })],
                 "exception_name" => ['required', 'max:11'],
                 "effective_date" => ['required'],
@@ -343,17 +341,11 @@ class TherapyClassController extends Controller
 
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            } else {
-                if (!$request->updateForm) {
+            }
 
-                    $ifExist = DB::table('TC_EXCEPTIONS')
-                        ->where(DB::raw('UPPER(ther_class_exception_list)'), strtoupper($request->ther_class_exception_list))
-                        ->get();
-                    if (count($ifExist) >= 1) {
-                        return $this->respondWithToken($this->token(), [["TC Exception  ID already exists"]], '', false);
-                    }
-                    // dd($ifExist);
-                } else {
+            else{
+                if ($validation->count() > 0) {
+                    return $this->respondWithToken($this->token(), 'GPI Exception Already Exists', $validation, true, 200, 1);
                 }
                 
                 $effectiveDate=$request->effective_date;
@@ -931,21 +923,7 @@ class TherapyClassController extends Controller
 
             }
 
-            $countValidation = DB::table('TC_EXCEPTION_LISTS')
-                ->where(DB::raw('UPPER(ther_class_exception_list)'), strtoupper($request->ther_class_exception_list))
-                ->where(DB::raw('UPPER(THERAPY_CLASS)'), strtoupper($request->therapy_class))
-                ->where('effective_date', $request->effective_date)
-                ->update([
-                    'termination_date' => $request->termination_date,
-                    'date_time_modified' => date('d-M-y'),
-                    'form_id' => ''
-                ]);
-
-            return $this->respondWithToken(
-                $this->token(),
-                'Record Updated successfully',
-                $countValidation,
-            );
+           
         }
     }
 

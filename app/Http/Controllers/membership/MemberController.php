@@ -574,7 +574,39 @@ class MemberController extends Controller
 
             ]);
 
+
+
         // //Coverage Tab
+
+        $coverage_list_array = json_decode(json_encode($request->coverage_form, true));
+
+
+        if (!empty($request->coverage_form)) {
+            $flexible_list = $coverage_list_array[0];
+
+
+            foreach ($coverage_list_array as $key => $flexible_list) {
+
+                $add_member_coverage = DB::table('MEMBER_COVERAGE')
+                        ->insert([
+                        'customer_id' => $request->customer_id,
+                        'client_id' => $request->client_id,
+                        'client_group_id' => $request->client_group_id,
+                        'member_id' => $request->member_id,
+                        // 'EFFECTIVE_DATE' => $request->coverage_effective_date,
+                        // 'TERMINATION_DATE' => $request->coverage_termination_date,
+                        'plan_id' => $request->coverage_plan_id,
+                        'COPAY_STRATEGY_ID' => $request->coverage_copay_strategy_id,
+                        'ACCUM_BENEFIT_STRATEGY_ID' => $request->coverage_accum_benefit_strategy_id,
+                        'PRICING_STRATEGY_ID' => $request->coverage_pricing_strategy_id,
+            ]);
+           
+
+
+            }
+        }
+
+
         // $add_member_coverage = DB::table('MEMBER_COVERAGE')
         //     ->insert([
         //         'customer_id' => $request->customer_id,

@@ -112,7 +112,7 @@ class ProviderDataProviderController extends Controller
                         'PHONE' => $request->phone,
                         'FAX' => $request->fax,
                         'MAILING_ADDRESS_1' => $request->mailing_address_1,
-                        'MAILING_ADDRESS_2' => $request->mailing_address__2,
+                        'MAILING_ADDRESS_2' => $request->mailing_address_2,
                         'MAILING_CITY' => $request->mailing_city,
                         'MAILING_STATE' => $request->mailing_state,
                         'MAILING_ZIP_CODE' => $request->mailing_zip_code,
@@ -138,7 +138,7 @@ class ProviderDataProviderController extends Controller
                         'REIMB_PREFERENCE' => $request->reimb_preference,
                         'RECORD_USAGE' => $request->record_usage,
                         'BASE_PHARMACY_NABP' => $request->base_pharmacy_nabp,
-                        'COUNTY' => $request->country,
+                        'COUNTY' => $request->county,
                         'TAX_SCHEDULE_ID_1' => $request->tax_schedule_id_1,
                         'TAX_EFFECTIVE_DATE_1' => $request->tax_effective_date_1,
                         'TAX_TERMINATION_DATE_1' => $request->tax_termination_date_1,
@@ -158,11 +158,10 @@ class ProviderDataProviderController extends Controller
                         'WITHHOLD_ACTIVE_FLAG' => $request->withhold_active_flag,
                         'EFFECTIVE_DATE_1' => $request->effective_date_1,
                         'EFFECTIVE_DATE_2' => $request->effective_date_2,
+                        'EFFECTIVE_DATE_3' => $request->effective_date_3,
 
                         'TERMINATION_DATE_1' => $request->termination_date_1,
                         'TERMINATION_DATE_2' => $request->termination_date_2,
-
-                        'EFFECTIVE_DATE_3' => $request->effective_date_3,
                         'TERMINATION_DATE_3' => $request->termination_date_3,
                         'PHARMACY_STATUS' => $request->pharmacy_status,
                         'DISPENSER_CLASS' => $request->dispenser_class,
@@ -266,7 +265,7 @@ class ProviderDataProviderController extends Controller
                     'PHONE' => $request->phone,
                     'FAX' => $request->fax,
                     'MAILING_ADDRESS_1' => $request->mailing_address_1,
-                    'MAILING_ADDRESS_2' => $request->mailing_address__2,
+                    'MAILING_ADDRESS_2' => $request->mailing_address_2,
                     'MAILING_CITY' => $request->mailing_city,
                     'MAILING_STATE' => $request->mailing_state,
                     'MAILING_ZIP_CODE' => $request->mailing_zip_code,
@@ -356,20 +355,7 @@ class ProviderDataProviderController extends Controller
                         );
 
 
-                // $data = DB::table('RX_NETWORK_NAMES')
-                // ->where('network_id', $traditional_list->network_id)
-                // ->delete();
-                // if($data){
-
-                //      $rx_networksnames = DB::table('RX_NETWORK_NAMES')->insert(
-                //     [
-                //         'NETWORK_ID' => $traditional_list->network_id,
-                //         'NETWORK_NAME' => $traditional_list->network_name,
-                        
-    
-                //     ]
-                // );
-
+            
 
                 }
 

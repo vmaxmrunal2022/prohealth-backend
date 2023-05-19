@@ -23,10 +23,17 @@ class NdcExlusionController extends Controller
         if ($validator->fails()) {
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         }
+
         $createddate = date('y-m-d');
-        $recordcheck = DB::table('NDC_EXCLUSION_LISTS')
-            ->where('ndc_exclusion_list', strtoupper($request->ndc_exclusion_list))
+        $recordcheck = DB::table('NDC_EXCLUSIONS')
+            ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
             ->first();
+
+        $recordCheckNdcList = DB::table('NDC_EXCLUSION_LISTS')
+            ->where('NDC', $request->ndc)
+            ->where('NDC_EXCLUSION_LIST', $request->ndc_exclusion_list)
+            ->first();
+
         if ($request->has('new')) {
             if ($recordcheck) {
                 return $this->respondWithToken($this->token(), 'Ndc Exclusion List Id already exists in the system..!!!', $recordcheck);
@@ -50,27 +57,44 @@ class NdcExlusionController extends Controller
                 }
             }
         } else {
-            $createddate = DB::table('NDC_EXCLUSION_LISTS')
-                ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
-                ->update(
-                    [
-                        'ndc' => $request->ndc,
-                    ]
-                );
-            $update = DB::table('NDC_EXCLUSIONS')
-                ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
-                ->update(
-                    [
-                        'exclusion_name' => $request->exclusion_name,
-                    ]
-                );
+            if ($recordCheckNdcList) {
+                $update = DB::table('NDC_EXCLUSIONS')
+                    ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
+                    ->update(
+                        [
+                            'exclusion_name' => $request->exclusion_name,
+                        ]
+                    );
+                return $this->respondWithToken($this->token(), 'NDC ID already exists in the system..!!!', $update, false);
+            } else {
+                if ($request->ndc_exclusion_list) {
+                    $createdNdcList = DB::table('NDC_EXCLUSION_LISTS')->insert(
+                        [
+                            'ndc' => $request->ndc,
+                            'ndc_exclusion_list' => $request->ndc_exclusion_list,
+                            'DATE_TIME_CREATED' => $createddate,
+                        ]
+                    );
+
+                    $update = DB::table('NDC_EXCLUSIONS')
+                        ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
+                        ->update(
+                            [
+                                'exclusion_name' => $request->exclusion_name,
+                            ]
+                        );
+
+                    if ($createdNdcList) {
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                    }
+                }
+            }
+
             if ($update) {
                 return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
             }
         }
     }
-
-
 
     public function delete(Request $request)
     {
@@ -116,7 +140,6 @@ class NdcExlusionController extends Controller
         }
     }
 
-
     public function NdcExclusiondropdowns(Request $request)
     {
 
@@ -130,21 +153,15 @@ class NdcExlusionController extends Controller
         }
     }
 
-
-
-
     public function search(Request $request)
 
     {
-        $ndc = DB::table('NDC_EXCLUSION_LISTS')
-            ->join('NDC_EXCLUSIONS', 'NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', '=', 'NDC_EXCLUSIONS.NDC_EXCLUSION_LIST')
-            ->where('NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', 'like', '%' . $request->search . '%')
-            ->orWhere('NDC_EXCLUSIONS.EXCLUSION_NAME', 'like', '%' . $request->search . '%')
+        $ndc = DB::table('NDC_EXCLUSIONS')
+            ->where(DB::raw('UPPER(NDC_EXCLUSIONS.NDC_EXCLUSION_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(NDC_EXCLUSIONS.EXCLUSION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
-
         return $this->respondWithToken($this->token(), '', $ndc);
     }
-
 
     public function getList($ndcid)
     {
@@ -156,13 +173,13 @@ class NdcExlusionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-
-    public function getDetails($ndcid)
+    public function getDetails($ndcid, $ndc_exclusion_list)
     {
         $ndc = DB::table('NDC_EXCLUSION_LISTS')
             ->join('NDC_EXCLUSIONS', 'NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', '=', 'NDC_EXCLUSIONS.NDC_EXCLUSION_LIST')
-            ->join('DRUG_MASTER', 'NDC_EXCLUSION_LISTS.NDC', '=', 'DRUG_MASTER.NDC')
+            // ->join('DRUG_MASTER', 'NDC_EXCLUSION_LISTS.NDC', '=', 'DRUG_MASTER.NDC')
             ->where('NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', $ndcid)
+            ->where('NDC_EXCLUSION_LISTS.NDC', $ndc_exclusion_list)
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
