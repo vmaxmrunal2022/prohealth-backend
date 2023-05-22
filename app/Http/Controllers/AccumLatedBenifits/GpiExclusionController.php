@@ -29,7 +29,7 @@ class GpiExclusionController extends Controller
 
         if ($request->has('new')) {
             if ($recordcheck) {
-                return $this->respondWithToken($this->token(), 'GPI Exclusion ID already exists in the system..!!!', $recordcheck, false);
+                return $this->respondWithToken($this->token(), 'GPI Exclusion List ID already exists in the system..!!!', $recordcheck, false);
             } else {
                 $accum_benfit_stat = DB::table('GPI_EXCLUSION_LISTS')->insert(
                     [
@@ -64,7 +64,7 @@ class GpiExclusionController extends Controller
                             'exclusion_name' => $request->exclusion_name,
                         ]
                     );
-                return $this->respondWithToken($this->token(), 'GPI Exclusion List ID already exists in the system..!!!', $recordCheckGpiList, false);
+                return $this->respondWithToken($this->token(), 'GPI ID already exists in the system..!!!', $recordCheckGpiList, false);
             } else {
                 if ($request->generic_product_id) {
                     $createGpiList = DB::table('GPI_EXCLUSION_LISTS')->insert(
@@ -80,6 +80,9 @@ class GpiExclusionController extends Controller
                                 'exclusion_name' => $request->exclusion_name,
                             ]
                         );
+                    if ($createGpiList) {
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                    }
                 } else {
                     return $this->respondWithToken($this->token(), 'Please Select GPI List ID', $recordCheckGpiList, false);
                 }

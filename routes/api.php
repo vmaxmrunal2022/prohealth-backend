@@ -326,8 +326,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::post('/accumulated/benifit/delete', [AccumlatedBenifitController::class, 'delete'])->name('accumulated.benifit.delete'); // delete
 
-        Route::get('/accumulated/drop-down', [AccumlatedController::class, 'getAllAcuumlatedBenefits'])->name('accumulated.all'); // SEARCH
-
         Route::get('/gpiExclusion/search', [GpiExclusionController::class, 'search'])->name('gpiExclusion.search'); // SEARCH
         Route::get('/gpiExclusion/get/{ndcid}', [GpiExclusionController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
         Route::get('/gpiExclusion/details/{ndcid}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
@@ -901,15 +899,17 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::post('/diagnosisvalidation/submit-diagnosis-validation-form', [DiagnosisValidationListController::class, 'updatePriorityDiagnosisValidation']);
     Route::get('/pricingstrategy/search', [PricingStrategyController::class, 'search'])->name('pricingstrategy.search'); // SEARCH
     Route::get('/pricingstrategy/get/{ndcid}', [PricingStrategyController::class, 'getProviderList'])->name('pricingstrategy.list.get'); // LIST ITEMS
-    Route::get('/pricingstrategy/details/{ndcid}', [PricingStrategyController::class, 'getNDCItemDetails'])->name('pricingstrategy.details.get'); // DETAIL
+    Route::get('/pricingstrategy/details/{pricing_strategy_id}/{effective_date}/{price_schedule}', [PricingStrategyController::class, 'getNDCItemDetails'])->name('pricingstrategy.details.get'); // DETAIL
     Route::post('/pricingstrategy/add', [PricingStrategyController::class, 'add'])->name('pricingstrategy.add'); // SEARCH
+    Route::post('/pricingstrategy/delete', [PricingStrategyController::class, 'delete'])->name('pricingstrategy.delete'); // SEARCH
 
 
 
     Route::get('/copay/search', [CopayStrategyController::class, 'search'])->name('copay.search'); // SEARCH
     Route::get('/copay/get/{ndcid}', [CopayStrategyController::class, 'getList'])->name('copay.list.get'); // LIST ITEMS
-    Route::get('/copay/details/{ndcid}', [CopayStrategyController::class, 'getDetails'])->name('copay.details.get'); // DETAIL
+    Route::get('/copay/details/{copay_strategy_id}/{effective_date}/{copay_schedule}', [CopayStrategyController::class, 'getDetails'])->name('copay.details.get'); // DETAIL
     Route::post('/copay/add', [CopayStrategyController::class, 'add'])->name('copay.add'); // SEARCH
+    Route::post('/copay/delete', [CopayStrategyController::class, 'delete'])->name('copay.delete'); // delete
 
 
 

@@ -65,23 +65,29 @@ class NdcExlusionController extends Controller
                             'exclusion_name' => $request->exclusion_name,
                         ]
                     );
-                return $this->respondWithToken($this->token(), 'NDC Exclusion List ID already exists in the system..!!!', $update, false);
+                return $this->respondWithToken($this->token(), 'NDC ID already exists in the system..!!!', $update, false);
             } else {
-                $createdNdcList = DB::table('NDC_EXCLUSION_LISTS')->insert(
-                    [
-                        'ndc' => $request->ndc,
-                        'ndc_exclusion_list' => $request->ndc_exclusion_list,
-                        'DATE_TIME_CREATED' => $createddate,
-                    ]
-                );
-
-                $update = DB::table('NDC_EXCLUSIONS')
-                    ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
-                    ->update(
+                if ($request->ndc_exclusion_list) {
+                    $createdNdcList = DB::table('NDC_EXCLUSION_LISTS')->insert(
                         [
-                            'exclusion_name' => $request->exclusion_name,
+                            'ndc' => $request->ndc,
+                            'ndc_exclusion_list' => $request->ndc_exclusion_list,
+                            'DATE_TIME_CREATED' => $createddate,
                         ]
                     );
+
+                    $update = DB::table('NDC_EXCLUSIONS')
+                        ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
+                        ->update(
+                            [
+                                'exclusion_name' => $request->exclusion_name,
+                            ]
+                        );
+
+                    if ($createdNdcList) {
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                    }
+                }
             }
 
             if ($update) {
@@ -89,8 +95,6 @@ class NdcExlusionController extends Controller
             }
         }
     }
-
-
 
     public function delete(Request $request)
     {
@@ -136,7 +140,6 @@ class NdcExlusionController extends Controller
         }
     }
 
-
     public function NdcExclusiondropdowns(Request $request)
     {
 
@@ -149,9 +152,6 @@ class NdcExlusionController extends Controller
             return $this->respondWithToken($this->token(), 'Something went wrong', $data);
         }
     }
-
-
-
 
     public function search(Request $request)
 
@@ -172,7 +172,6 @@ class NdcExlusionController extends Controller
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
-
 
     public function getDetails($ndcid, $ndc_exclusion_list)
     {
