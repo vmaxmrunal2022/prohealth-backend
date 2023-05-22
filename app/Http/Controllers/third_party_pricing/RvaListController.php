@@ -151,6 +151,24 @@ class RvaListController extends Controller
                 if ($validation->count() > 0) {
                     return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
                 }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PROCEDURE_UCR_LIST')
+                ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    return $this->respondWithToken($this->token(), 'For MAC , dates cannot overlap.', $validation, true, 200, 1);
+                }
+
                 $add_names = DB::table('procedure_ucr_names')->insert(
                     [
                         'procedure_ucr_id' => $request->procedure_ucr_id,
@@ -194,74 +212,91 @@ class RvaListController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
-    
-                $procedure_ucr_names = DB::table('procedure_ucr_names')
-                ->where('procedure_ucr_id', $request->procedure_ucr_id )
-                ->first();
-                    
-    
-                $checkGPI = DB::table('PROCEDURE_UCR_LIST')
+
+
+
+                if($request->update_new == 0){
+                    $checkGPI = DB::table('PROCEDURE_UCR_LIST')
                     ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
                     ->where('PROCEDURE_CODE',$request->procedure_code)
-                    ->get()
-                    ->count();
+                    ->where('EFFECTIVE_DATE',$request->effective_date)
+                    ->first();
 
-                    // dd($checkGPI);
+                    if($checkGPI){
+                        $effectiveDate=$request->effective_date;
+                        $terminationDate=$request->termination_date;
+                        $overlapExists = DB::table('PROCEDURE_UCR_LIST')
+                        ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
+                        ->where('PROCEDURE_CODE','!=',$request->procedure_code)
+                        ->where('EFFECTIVE_DATE','!=',$request->effective_date)
+                        ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                    $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                        ->where('TERMINATION_DATE', '>=', $terminationDate);
+                                });
+                        })
+                        ->exists();
+                        if ($overlapExists) {
+                            return $this->respondWithToken($this->token(), 'For MAC , dates cannot overlap.', $validation, true, 200, 1);
+                        }
 
-
-                $effect_date_check = DB::table('PROCEDURE_UCR_LIST')
-                ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
-                ->where('PROCEDURE_CODE',$request->procedure_code)
-                ->where('EFFECTIVE_DATE',$request->effective_date)
-                ->where('TERMINATION_DATE',$request->termination_date)
-
-                    ->get()
-                    ->count();
-                    // dd($effective_date);
-                // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                //if result 0 then add NDC_EXCEPTION_LISTS record
-
-
-                if($effect_date_check == 1){
-
-                    $add_names = DB::table('procedure_ucr_names')
-                    ->where('procedure_ucr_id',$request->procedure_ucr_id)
-                    ->update(
-                        [
-                            'description'=>$request->description,
-                            
-                        ]
-                    );
-
-
-                    $update = DB::table('PROCEDURE_UCR_LIST' )
-                    ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
-                    ->where('PROCEDURE_CODE',$request->procedure_code)
-                    ->where('EFFECTIVE_DATE',$request->effective_date)    
-     
-                    ->update([
-                        // 'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
-                        // 'procedure_code' => $request->procedure_code,
-                        'effective_date' => $request->effective_date,
-                        'termination_date' => $request->termination_date,
-                        'unit_value' => $request->unit_value,
-                        'UCR_CURRENCY' => $request->ucr_currency,
-                    ]);
+                        $add_names = DB::table('procedure_ucr_names')
+                        ->where('procedure_ucr_id',$request->procedure_ucr_id)
+                        ->update(
+                            [
+                                'description'=>$request->description,
+                                
+                            ]
+                        );
+    
+    
+                        $update = DB::table('PROCEDURE_UCR_LIST' )
+                        ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
+                        ->where('PROCEDURE_CODE',$request->procedure_code)
+                        ->where('EFFECTIVE_DATE',$request->effective_date)   
+                        ->update([
+                            // 'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
+                            // 'procedure_code' => $request->procedure_code,
+                            'effective_date' => $request->effective_date,
+                            'termination_date' => $request->termination_date,
+                            'unit_value' => $request->unit_value,
+                            'UCR_CURRENCY' => $request->ucr_currency,
+                        ]);
                         $update = DB::table('PROCEDURE_UCR_LIST')->where('procedure_ucr_id', 'like', '%' . $request->procedure_ucr_id . '%')->first();
                         return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                    }else{
+                        return $this->respondWithToken($this->token(), [["Record Not found to update"]], '', 'false');
+                    }
 
-                   
+                }elseif($request->update_new == 1){
+                    $checkGPI = DB::table('PROCEDURE_UCR_LIST')
+                                    ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
+                                    ->where('PROCEDURE_CODE',$request->procedure_code)
+                                    ->where('EFFECTIVE_DATE',$request->effective_date)
+                                    ->get();
+                    if(count($checkGPI) >= 1){
+                        return $this->respondWithToken($this->token(), [["Record already exists"]], '', 'false');
+                    }else{
 
+                        $effectiveDate=$request->effective_date;
+                        $terminationDate=$request->termination_date;
+                        $overlapExists = DB::table('PROCEDURE_UCR_LIST')
+                        ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
+                        ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                    $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                        ->where('TERMINATION_DATE', '>=', $terminationDate);
+                                });
+                        })
+                        ->exists();
+                        if ($overlapExists) {
+                            return $this->respondWithToken($this->token(), 'For MAC , dates cannot overlap.', $validation, true, 200, 1);
+                        }
 
-                }else if($checkGPI == 1)
-                {
-
-                    return $this->respondWithToken($this->token(), 'Record already  exists',$checkGPI);
-
-
-                }
-                else{
-                    if ($checkGPI <= "0") {
                         $update = DB::table('PROCEDURE_UCR_LIST')
                         ->insert([
                             'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
@@ -273,21 +308,113 @@ class RvaListController extends Controller
                         ]);
                       
                        
-                    $add_names = DB::table('procedure_ucr_names')
-                    ->where('procedure_ucr_id',$request->procedure_ucr_id)
-                    ->update(
-                        [
-                            'description'=>$request->description,
-                            
-                        ]
-                    );
+                        $add_names = DB::table('procedure_ucr_names')
+                        ->where('procedure_ucr_id',$request->procedure_ucr_id)
+                        ->update(
+                            [
+                                'description'=>$request->description,
+                                
+                            ]
+                        );
     
-                    $update = DB::table('procedure_ucr_names')->where('procedure_ucr_id', 'like', '%' . $request->procedure_ucr_id . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-    
-                    } 
-
+                        $update = DB::table('procedure_ucr_names')->where('procedure_ucr_id', 'like', '%' . $request->procedure_ucr_id . '%')->first();
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                    }
                 }
+    
+                // $procedure_ucr_names = DB::table('procedure_ucr_names')
+                // ->where('procedure_ucr_id', $request->procedure_ucr_id )
+                // ->first();
+                    
+    
+                // $checkGPI = DB::table('PROCEDURE_UCR_LIST')
+                //     ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
+                //     ->where('PROCEDURE_CODE',$request->procedure_code)
+                //     ->get()
+                //     ->count();
+
+                //     // dd($checkGPI);
+
+
+                // $effect_date_check = DB::table('PROCEDURE_UCR_LIST')
+                // ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
+                // ->where('PROCEDURE_CODE',$request->procedure_code)
+                // ->where('EFFECTIVE_DATE',$request->effective_date)
+                // ->where('TERMINATION_DATE',$request->termination_date)
+
+                //     ->get()
+                //     ->count();
+                //     // dd($effective_date);
+                //     // if result >=1 then update NDC_EXCEPTION_LISTS table record
+                //     //if result 0 then add NDC_EXCEPTION_LISTS record
+
+
+                // if($effect_date_check == 1){
+
+                //     $add_names = DB::table('procedure_ucr_names')
+                //     ->where('procedure_ucr_id',$request->procedure_ucr_id)
+                //     ->update(
+                //         [
+                //             'description'=>$request->description,
+                            
+                //         ]
+                //     );
+
+
+                //     $update = DB::table('PROCEDURE_UCR_LIST' )
+                //     ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
+                //     ->where('PROCEDURE_CODE',$request->procedure_code)
+                //     ->where('EFFECTIVE_DATE',$request->effective_date)    
+     
+                //     ->update([
+                //         // 'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
+                //         // 'procedure_code' => $request->procedure_code,
+                //         'effective_date' => $request->effective_date,
+                //         'termination_date' => $request->termination_date,
+                //         'unit_value' => $request->unit_value,
+                //         'UCR_CURRENCY' => $request->ucr_currency,
+                //     ]);
+                //     $update = DB::table('PROCEDURE_UCR_LIST')->where('procedure_ucr_id', 'like', '%' . $request->procedure_ucr_id . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+
+                   
+
+
+                // }else if($checkGPI == 1)
+                // {
+
+                //     return $this->respondWithToken($this->token(), 'Record already  exists',$checkGPI);
+
+
+                // }
+                // else{
+                //     if ($checkGPI <= "0") {
+                //         $update = DB::table('PROCEDURE_UCR_LIST')
+                //         ->insert([
+                //             'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
+                //             'procedure_code'   => $request->procedure_code,
+                //             'effective_date'   => $request->effective_date,
+                //             'termination_date' => $request->termination_date,
+                //             'unit_value'       => $request->unit_value,
+                //             'UCR_CURRENCY'     => $request->ucr_currency,
+                //         ]);
+                      
+                       
+                //         $add_names = DB::table('procedure_ucr_names')
+                //         ->where('procedure_ucr_id',$request->procedure_ucr_id)
+                //         ->update(
+                //             [
+                //                 'description'=>$request->description,
+                                
+                //             ]
+                //         );
+    
+                //     $update = DB::table('procedure_ucr_names')->where('procedure_ucr_id', 'like', '%' . $request->procedure_ucr_id . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+    
+                //     } 
+
+                // }
                
                 
 
