@@ -416,7 +416,37 @@ class ProviderTypeProcController extends Controller
                     ->where('effective_date', $request->effective_date)
                         ->update(
                             [
-                                'TERMINATION_DATE'=>$request->termination_date,
+                                // 'TERMINATION_DATE'=>$request->termination_date,
+                                'PROV_TYPE_PROC_ASSOC_ID' => $request->prov_type_proc_assoc_id,
+                                'PROVIDER_TYPE' => $request->provider_type,
+                                'SERVICE_MODIFIER' => $request->service_modifier,
+                                'UCR' => $request->ucr,
+                                'EFFECTIVE_DATE' => $request->effective_date,
+                                'TERMINATION_DATE' => $request->termination_date,
+                                'DATE_TIME_CREATED' => '',
+                                'USER_ID_CREATED' => '',
+                                'USER_ID' => '',
+                                'DATE_TIME_MODIFIED' => '',
+                                'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
+                                'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                                'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
+                                'MESSAGE' => $request->message,
+                                'MESSAGE_STOP_DATE' => $request->message_stop_date,
+                                'MIN_AGE' => $request->min_age,
+                                'MAX_AGE' => $request->max_age,
+                                'MIN_PRICE' => $request->min_price,
+                                'MAX_PRICE' => $request->max_price,
+                                'MIN_PRICE_OPT' => $request->min_price_opt,
+                                'MAX_PRICE_OPT' => $request->max_price_opt,
+                                'VALID_RELATION_CODE' => $request->valid_relation_code,
+                                'SEX_RESTRICTION' => $request->sex_restriction,
+                                'MODULE_EXIT' => $request->module_exit,
+                                'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
+                                'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
+                                'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
+                                'COVERAGE_START_DAYS' => $request->coverage_start_days,
+                                'PROC_CODE_LIST_ID' => $request->proc_code_list_id,
+                                'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
 
                             ]
                         );

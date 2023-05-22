@@ -12,7 +12,8 @@ class MacListController extends Controller
     public function get(Request $request)
     {
         $macList = DB::table('MAC_LIST')
-            ->where('MAC_LIST', 'like', '%' . $request->search. '%')
+            ->where('MAC_LIST', 'like', '%' . strtoupper($request->search). '%')
+            ->orWhere('MAC_LIST', 'like', '%' . $request->search. '%')
             ->orWhere('MAC_DESC', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
@@ -192,7 +193,7 @@ class MacListController extends Controller
                         })
                         ->exists();
                         if ($overlapExists) {
-                            return $this->respondWithToken($this->token(), [["For MAC , dates cannot overlap."]], '', 'false');
+                            return $this->respondWithToken($this->token(), [["For Same Generic Product ID , dates cannot overlap."]], '', 'false');
                         }
 
                 $add_names = DB::table('mac_list')->insert(
@@ -257,7 +258,7 @@ class MacListController extends Controller
                         $terminationDate=$request->termination_date;
                         $overlapExists = DB::table('MAC_TABLE')
                         ->where('MAC_LIST', $request->mac_list)
-                        ->where('gpi','!=',$request->gpi)
+                        ->where('gpi',$request->gpi)
                         ->where('effective_date','!=',$request->effective_date)
                         ->where(function ($query) use ($effectiveDate, $terminationDate) {
                             $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
@@ -269,7 +270,7 @@ class MacListController extends Controller
                         })
                         ->exists();
                         if ($overlapExists) {
-                            return $this->respondWithToken($this->token(), [["For MAC , dates cannot overlap."]], '', 'false');
+                            return $this->respondWithToken($this->token(), [["For Same Generic Product ID , dates cannot overlap."]], '', 'false');
                         }
 
 
@@ -310,12 +311,13 @@ class MacListController extends Controller
                     ->get();
 
                     if(count($checkGPI) >= 1){
-                        return $this->respondWithToken($this->token(), [["GPI already exists"]], '', 'false');
+                        return $this->respondWithToken($this->token(), [["Generic Product ID already exists"]], '', 'false');
                     }else{
                         $effectiveDate=$request->effective_date;
                         $terminationDate=$request->termination_date;
                         $overlapExists = DB::table('MAC_TABLE')
                         ->where('MAC_LIST', $request->mac_list)
+                        ->where('gpi',$request->gpi)
                         ->where(function ($query) use ($effectiveDate, $terminationDate) {
                             $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
                                 ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
@@ -326,7 +328,7 @@ class MacListController extends Controller
                         })
                         ->exists();
                         if ($overlapExists) {
-                            return $this->respondWithToken($this->token(), [["For MAC , dates cannot overlap."]], '', 'false');
+                            return $this->respondWithToken($this->token(), [["For Same Generic Product ID , dates cannot overlap."]], '', 'false');
                             // return $this->respondWithToken($this->token(), 'For MAC , dates cannot overlap.', $validation, 'false', 200, 1);
                         }
 

@@ -14,7 +14,8 @@ class PriceScheduleController extends Controller
     public function get(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')
-            ->where('PRICE_SCHEDULE',  $request->search)
+            // ->where('PRICE_SCHEDULE',  $request->search)
+            ->whereRaw('LOWER(PRICE_SCHEDULE) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('COPAY_SCHEDULE', $request->search)
             ->orWhere('PRICE_SCHEDULE_NAME',$request->search)
             ->orWhere('PRICE_SCHEDULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
@@ -634,4 +635,6 @@ class PriceScheduleController extends Controller
             }
         }
     }
+
+
 }

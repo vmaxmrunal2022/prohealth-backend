@@ -15,8 +15,9 @@ class CopayScheduleController extends Controller
     public function get(Request $request)
     {
         $copayList = DB::table('COPAY_SCHEDULE')           
-             ->where('copay_schedule', 'like', '%' . $request->search. '%')
+            //  ->where('copay_schedule', 'like', '%' . $request->search. '%')
             // ->where('copay_schedule', 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('LOWER(copay_schedule) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('copay_schedule_name', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
@@ -92,7 +93,7 @@ class CopayScheduleController extends Controller
             ->first();
 
             if($check){
-            return $this->respondWithToken($this->token(), 'Copay Schedule ID Already Exists', $check);
+            return $this->respondWithToken($this->token(), [['Copay Schedule ID Already Exists']], $check,'false');
 
             }else{
 

@@ -82,7 +82,7 @@ class TaxScheduleController extends Controller
             $validator = Validator::make($request->all(), [
                 'tax_schedule_id' => ['required', 'max:10', Rule::unique('tax_schedule')->where(function ($q) use($request) {
                     $q->whereNotNull('tax_schedule_id');
-                    $q->where('tax_schedule','!=', $request->tax_schedule_id);
+                    $q->where('tax_schedule_id','!=', $request->tax_schedule_id);
                 })],
                 'tax_schedule_name' => ['required', 'max:36'],
                 

@@ -450,8 +450,7 @@ class TherapyClassController extends Controller
                         'BNG_MULTI_INC_EXC_IND'=>$request->bng_multi_inc_exc_ind,
                         'BGA_INC_EXC_IND'=>$request->bga_inc_exc_ind,
                         'GEN_INC_EXC_IND'=>$request->gen_inc_exc_ind,
-                        
-    
+                        'MODULE_EXIT'=>$request->module_exit,
                         
                            
                         
@@ -480,13 +479,13 @@ class TherapyClassController extends Controller
                 // 'message'=>['max:11'],
                 // 'message_stop_date'=>['max:11'],
                 // 'reject_only_msg_flag'=>['max:10'],
-                'min_rx_qty'=>['nullable','max:6'],
-                'max_rx_qty'=>['nullable','max:6','gt:min_rx_qty'],
+                'min_rx_qty'=>['nullable'],
+                'max_rx_qty'=>['nullable','gt:min_rx_qty'],
                 // 'max_rxs_patient'=>['max:10'],
                 // 'mail_order_min_rx_days'=>['max:6'],
                 // 'mail_ord_max_days_supply_opt'=>['max:6'],
-                'mail_order_min_rx_days'=>['nullable','max:6'],
-                'mail_ord_max_days_supply_opt'=>['nullable','max:6','gt:mail_order_min_rx_days'],
+                'mail_order_min_rx_days'=>['nullable'],
+                'mail_ord_max_days_supply_opt'=>['nullable','gt:mail_order_min_rx_days'],
                 // 'min_price'=>['max:6'],
                 // 'max_price'=>['max:6'],
                 // 'max_price_patient'=>['max:6'],
@@ -495,8 +494,8 @@ class TherapyClassController extends Controller
                 // 'max_rx_days'=>['max:6'],
                 // 'max_refills'=>['max:6'],
                 // 'valid_relation_code'=>['max:6'],
-                'min_ctl_days'=>['nullable','max:6'],
-                'max_ctl_days'=>['nullable','max:12','gt:min_ctl_days'],
+                'min_ctl_days'=>['nullable'],
+                'max_ctl_days'=>['nullable','gt:min_ctl_days'],
                 // 'max_rx_qty_opt'=>['min:2','max:12'],
                 // 'sex_restriction'=>['max:6'],
                 // 'max_days_per_fill'=>['max:12','min:2'],
@@ -508,8 +507,8 @@ class TherapyClassController extends Controller
                 // 'acute_dosing_days'=>['max:1'],
                 // 'starter_dose_maint_bypass_days'=>['max:1'],
                 // 'alternate_copay_sched'=>['max:1'],
-                'min_age'=>['nullable','max:6'],
-                'max_age'=>['nullable','max:6','gt:min_age'],
+                'min_age'=>['nullable'],
+                'max_age'=>['nullable','gt:min_age'],
                 // 'maint_dose_units_day'=>['numeric|max:6'],
                 // 'brand_copay_amt'=>['numeric|max:6'],
                 // 'merge_defaults'=>['max:1'],
@@ -545,25 +544,30 @@ class TherapyClassController extends Controller
                 // }
                 
 
-                // $effectiveDate=$request->effective_date;
-                // $terminationDate=$request->termination_date;
-                // $overlapExists = DB::table('TC_EXCEPTION_LISTS')
-                // ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
-                // ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
-                //         });
-                // })
-                // ->exists();
-                // if ($overlapExists) {
-                //     return $this->respondWithToken($this->token(), 'For same Therapy Class,dates cannot overlap', $validation, true, 200, 1);
-                // }
+               
 
 
                 if($request->update_new == 0){
+                    $effectiveDate=$request->effective_date;
+                    $terminationDate=$request->termination_date;
+                    $overlapExists = DB::table('TC_EXCEPTION_LISTS')
+                    ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
+                    ->where('therapy_class',$request->therapy_class)
+                    ->where('effective_date','!=',$request->effective_date)
+                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
+                            });
+                    })
+                    ->exists();
+                    if ($overlapExists) {
+                        return $this->respondWithToken($this->token(), [['For same Therapy Class,dates cannot overlap']], '', 'false');
+                    }
+
+
                     $update = DB::table('TC_EXCEPTION_LISTS' )
                     ->where('therapy_class',$request->therapy_class)
                     ->where('ther_class_exception_list',$request->ther_class_exception_list)
@@ -640,6 +644,7 @@ class TherapyClassController extends Controller
                             'BNG_MULTI_INC_EXC_IND'=>$request->bng_multi_inc_exc_ind,
                             'BGA_INC_EXC_IND'=>$request->bga_inc_exc_ind,
                             'GEN_INC_EXC_IND'=>$request->gen_inc_exc_ind,
+                            'MODULE_EXIT'=>$request->module_exit,
         
                             
                         ]
@@ -654,8 +659,29 @@ class TherapyClassController extends Controller
                     ->where('effective_date',$request->effective_date)
                     ->get();
                     if(count($checkGPI) >=1){
-                        return $this->respondWithToken($this->token(), [["Theraphy Class    Already Exists"]], '', 'false');
+                        return $this->respondWithToken($this->token(), [["For same Therapy Class,dates cannot overlap"]], '', 'false');
                     }else{
+
+
+                        $effectiveDate=$request->effective_date;
+                        $terminationDate=$request->termination_date;
+                        $overlapExists = DB::table('TC_EXCEPTION_LISTS')
+                        ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
+                        ->where('therapy_class',$request->therapy_class)
+                        // ->where('effective_date','!=',$request->effective_date)
+                        ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                    $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                        ->where('TERMINATION_DATE', '>=', $terminationDate);
+                                });
+                        })
+                        ->exists();
+                        if ($overlapExists) {
+                            return $this->respondWithToken($this->token(), [['For same Therapy Class,dates cannot overlap']], '', 'false');
+                        }
+
                         $update = DB::table('TC_EXCEPTION_LISTS')->insert(
                             [
                                 'THER_CLASS_EXCEPTION_LIST' => $request->ther_class_exception_list,
@@ -939,7 +965,8 @@ class TherapyClassController extends Controller
     {
         $ndc = DB::table('TC_EXCEPTIONS')
                 ->select('THER_CLASS_EXCEPTION_LIST', 'EXCEPTION_NAME')
-                ->where('THER_CLASS_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
+                ->whereRaw('LOWER(THER_CLASS_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                // ->where('THER_CLASS_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
