@@ -45,69 +45,7 @@ class RvaListController extends Controller
 
 
 
-    public function submitRva(Request $request)
-    {
-        $effective_date = date('Ymd', strtotime($request->effective_date));
-        $termination_date = date('Ymd', strtotime($request->termination_date));
-
-
-        $check_record = DB::table('RVA_LIST')->where('RVA_LIST_ID', $request->rva_list_id)->first();
-
-
-        if ($request->add_new == 1) {
-
-
-            if ($check_record) {
-                return $this->respondWithToken($this->token(), 'RVA List ID is Already Exists', $check_record, true, 200, 1);
-            }
-
-
-            $add = DB::table('RVA_LIST')
-                ->insert([
-                    'RVA_LIST_ID' => strtoupper($request->rva_list_id),
-                    'EFFECTIVE_DATE' => $effective_date,
-                    'TERMINATION_DATE' => $termination_date,
-                    'RVA_VALUE' => $request->rva_value,
-                    'USER_ID' => $request->user_id,
-                    'FORM_ID' => $request->form_id,
-                ]);
-
-            $add1 = DB::table('RVA_NAMES')
-                ->insert([
-                    'RVA_LIST_ID' => strtoupper($request->rva_list_id),
-                    'DESCRIPTION' => $request->description,
-                    'USER_ID' => $request->user_id,
-                    'FORM_ID' => $request->form_id,
-                ]);
-
-            // $add = DB::table('mac_table')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
-            return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
-        } else if ($request->add_new == 0) {
-            if (!$check_record) {
-                return $this->respondWithToken($this->token(), 'Record Not Found', $check_record, false, 404, 0);
-            }
-            $updatecode = DB::table('RVA_LIST')
-                ->where('RVA_LIST_ID', $request->rva_list_id)
-                ->update(
-                    [
-                        'EFFECTIVE_DATE' => $effective_date,
-                        'TERMINATION_DATE' => $termination_date,
-                        'RVA_VALUE' => $request->rva_value,
-                        'USER_ID' => $request->user_id,
-                        'FORM_ID' => $request->form_id,
-                    ]
-                );
-            $update1 = DB::table('RVA_NAMES')->where('RVA_LIST_ID', $request->rva_list_id)
-                ->update([
-                    'RVA_LIST_ID' => strtoupper($request->rva_list_id),
-                    'DESCRIPTION' => $request->description,
-                    'USER_ID' => $request->user_id,
-                    'FORM_ID' => $request->form_id,
-                ]);
-
-            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updatecode);
-        }
-    }
+   
 
      public function submitRvapast(Request $request)
     {
