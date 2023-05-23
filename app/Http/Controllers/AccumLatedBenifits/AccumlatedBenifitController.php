@@ -5,24 +5,20 @@ namespace App\Http\Controllers\AccumLatedBenifits;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use DB;
+use Illuminate\Support\Facades\Cache;
 
 class AccumlatedBenifitController extends Controller
 {
-
-
-
     public function add(Request $request)
     {
-
+        $createddate = date('Ymd');
         $recordcheck = DB::table('PLAN_ACCUM_DEDUCT_TABLE')
-            ->where('plan_accum_deduct_id', $request->plan_accum_deduct_id)
+            ->where(DB::raw('UPPER(plan_accum_deduct_id)'), strtoupper($request->plan_accum_deduct_id))
             ->first();
 
         if ($request->has('new')) {
-
             if ($recordcheck) {
-
-                return $this->respondWithToken($this->token(), 'Accumlated Benefit ID Already Exists', $recordcheck);
+                return $this->respondWithToken($this->token(), 'Plan ID already exists', $recordcheck, false);
             } else {
 
                 $accum_benfit_stat = DB::table('PLAN_ACCUM_DEDUCT_TABLE')->insert(
@@ -98,6 +94,10 @@ class AccumlatedBenifitController extends Controller
                         'max_rxs_per_ded_period' => $request->max_rxs_per_ded_period,
                         'ndc_exclusion_list_ded' => $request->ndc_exclusion_list_ded,
                         'ndc_exclusion_list_mop' => $request->ndc_exclusion_list_mop,
+                        'DATE_TIME_CREATED' => $createddate,
+                        'DATE_TIME_MODIFIED' => $createddate,
+                        'USER_ID' => Cache::get('userId'),
+                        'USER_ID_CREATED' => Cache::get('userId'),
 
 
                     ]
@@ -181,6 +181,8 @@ class AccumlatedBenifitController extends Controller
                         'max_rxs_per_ded_period' => $request->max_rxs_per_ded_period,
                         'ndc_exclusion_list_ded' => $request->ndc_exclusion_list_ded,
                         'ndc_exclusion_list_mop' => $request->ndc_exclusion_list_mop,
+                        'DATE_TIME_MODIFIED' => $createddate,
+                        'USER_ID' => Cache::get('userId'),
 
 
 
@@ -230,8 +232,8 @@ class AccumlatedBenifitController extends Controller
 
     {
         $ndc = DB::table('PLAN_ACCUM_DEDUCT_TABLE')
-            ->where('PLAN_ACCUM_DEDUCT_ID', 'like', '%' . $request->search . '%')
-            ->orWhere('PLAN_ACCUM_DEDUCT_NAME', 'like', '%' . $request->search . '%')
+            ->where(DB::raw('UPPER(PLAN_ACCUM_DEDUCT_ID)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(PLAN_ACCUM_DEDUCT_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

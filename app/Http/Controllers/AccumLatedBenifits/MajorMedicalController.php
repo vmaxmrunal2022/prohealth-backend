@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 
 class MajorMedicalController extends Controller
 {
@@ -18,28 +19,58 @@ class MajorMedicalController extends Controller
             "customer_id" => ['required'],
             "client_id" => ['required'],
             "client_group_id" => ['required'],
-            'mm_claim_max' => ['max:16'],
-            'mm_life_maximum' => ['max:16'],
+            'mm_claim_max' => ['max:10'],
+            'mm_life_maximum' => ['max:10'],
         ]);
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        }
+        if ($request->has('new')) {
+            $insert = DB::table('MM_LIFE_MAX')->insert(
+                [
+                    'customer_id' => $request->customer_id,
+                    'client_id' => $request->client_id,
+                    'client_group_id' => $request->client_group_id,
+                    'mm_life_maximum' => $request->mm_life_maximum,
+                    'grouping_type' => $request->grouping_type,
+                    'mm_claim_max' => $request->mm_claim_max,
+                    'effective_date' => $request->effective_date,
+                    'termination_date' => $request->termination_date,
+                    'DATE_TIME_CREATED' => date('Ymd'),
+                    'DATE_TIME_MODIFIED' => date('Ymd'),
+                    'USER_ID_CREATED' => Cache::get('userId'),
+                ]
+            );
+            if ($insert) {
+                return $this->respondWithToken($this->token(), 'Recored Added Successfully', $insert);
+            }
+        } else {
+            $update = DB::table('MM_LIFE_MAX')
+                ->where('customer_id', $request->customer_id)
+                ->where('client_id', $request->client_id)
+                ->where('client_group_id', $request->client_group_id)
+                ->update(
+                    [
+                        'mm_life_maximum' => $request->mm_life_maximum,
+                        'grouping_type' => $request->grouping_type,
+                        'mm_claim_max' => $request->mm_claim_max,
 
-  
-        $record_check=DB::table('MM_LIFE_MAX')
-        ->where('customer_id', $request->customer_id)
-        ->where('client_id', $request->client_id)
-        ->where('client_group_id', $request->client_group_id)
-        ->where('effective_date',$request->effective_date)
-        ->where('termination_date',$request->termination_date)
-        ->first();
+                    ]
+                );
 
-       
-        
+            $recordcheck = DB::table('MM_LIFE_MAX')
+                ->where('customer_id', strtoupper($request->customer_id))
+                ->where('client_id', strtoupper($request->client_id))
+                ->where('client_group_id', strtoupper($request->client_group_id))
+                ->first();
+
+
+            // dd($request->all());
+
             if ($request->new == 1) {
-
-
-                if ($record_check) {
-                    return $this->respondWithToken($this->token(), 'Record Already Exists', "false");
-                }else{
-
+                if ($recordcheck) {
+                    return $this->respondWithToken($this->token(), 'Record already exists in the system..!!!', $recordcheck, false);
+                } else {
                     $insert = DB::table('MM_LIFE_MAX')->insert(
                         [
                             'customer_id' => $request->customer_id,
@@ -56,9 +87,7 @@ class MajorMedicalController extends Controller
                     );
                     // $benefitcode = DB::table('TEMP_MM_LIFE_MAX')->where('customer_id',$request->customer_id)->first();    
                     return $this->respondWithToken($this->token(), 'Record added Successfully', $insert);
-
                 }
-                    
             } else {
 
                 $update = DB::table('MM_LIFE_MAX')
@@ -67,15 +96,12 @@ class MajorMedicalController extends Controller
                     ->where('client_group_id', strtoupper($request->client_group_id))
                     ->update(
                         [
-
                             'mm_life_maximum' => $request->mm_life_maximum,
                             'grouping_type' => $request->grouping_type,
                             'mm_claim_max' => $request->mm_claim_max,
                             'effective_date' => $request->effective_date,
                             'termination_date' => $request->termination_date,
                             'mm_claim_max_group_type' => strtoupper($request->mm_claim_max_group_type),
-
-
                         ]
                     );
                 $benefitcode = DB::table('MM_LIFE_MAX')
@@ -85,15 +111,10 @@ class MajorMedicalController extends Controller
                     ->first();
 
                 // $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%'.$request->mm_life_maximum .'%')->first();
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $recordcheck);
             }
-
         }
-            // dd($request->all());
-
-            
-        
-    
+    }
 
     public function delete(Request $request)
     {
@@ -112,8 +133,6 @@ class MajorMedicalController extends Controller
             return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
-
-
 
     public function search(Request $request)
 
@@ -139,8 +158,9 @@ class MajorMedicalController extends Controller
 
     public function getClientGroup($ndcid)
     {
+
         $ndc = DB::table('CLIENT_GROUP')
-            ->where(DB::raw('UPPER(CLIENT_GROUP_ID)'), 'like', '%' . strtoupper($ndcid) . '%')
+            ->where('CLIENT_ID', 'like', '%' . $ndcid . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Cache;
 
 class CopayStrategyController extends Controller
 {
@@ -14,148 +15,117 @@ class CopayStrategyController extends Controller
 
     public function add(Request $request)
     {
-        $createddate = date('y-m-d');
-
-
-        if ($request->add_new ==1) {
-
-
-            $validator = Validator::make($request->all(), [
-                "copay_strategy_id" => ['required', 'max:10', Rule::unique('COPAY_STRATEGY_NAMES')->where(function ($q) {
-                    $q->whereNotNull('copay_strategy_id');
-                })],
-                "copay_strategy_name" => ['required','max:35'],
-                "pharm_type_variation_ind" => ['max:1'],
-                "network_part_variation_ind" => ['max:10'],
-                "claim_type_variation_ind" => ['max:1'],
-                "formulary_variation_ind" => ['max:1'],
-                "effective_date" => ['required','max:10'],
-                "copay_schedule" => ['required','max:10'],
-                "module_exit" => ['max:10'],
-            ]);
-
-            if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        $createddate = date('Ymd');
+        $checkRecordExits = DB::table('COPAY_STRATEGY_NAMES')
+            ->where(DB::raw('UPPER(COPAY_STRATEGY_ID)'), strtoupper($request->copay_strategy_id))
+            ->count();
+        if ($request->has('new')) {
+            if ($checkRecordExits) {
+                return $this->respondWithToken($this->token(), 'Copay Strategy Id already exists', $checkRecordExits, false);
+            } else {
+                $create_copay_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
+                    ->insert(
+                        [
+                            'copay_strategy_id' => $request->copay_strategy_id,
+                            'copay_strategy_name' => $request->copay_strategy_name,
+                            'DATE_TIME_CREATED' => $createddate,
+                            'DATE_TIME_MODIFIED' => $createddate,
+                            'USER_ID' => Cache::get('userId'),
+                            'USER_ID_CREATED' => $request->copay_strategy_name,
+                        ]
+                    );
+                $create_copay_strategy = DB::table('COPAY_STRATEGY')->insert(
+                    [
+                        'copay_strategy_id' => $request->copay_strategy_id,
+                        'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
+                        'formulary_variation_ind' => $request->formulary_variation_ind,
+                        'network_part_variation_ind' => $request->network_part_variation_ind,
+                        'claim_type_variation_ind' => $request->claim_type_variation_ind,
+                        'date_time_created' => $createddate,
+                        'DATE_TIME_MODIFIED' => $createddate,
+                        'USER_ID' => Cache::get('userId'),
+                        'form_id' => '',
+                        'user_id_created' =>  Cache::get('userId'),
+                        'effective_date' => $request->effective_date,
+                        'copay_schedule' => $request->copay_schedule,
+                        'MODULE_EXIT' => $request->module_exit
+                    ]
+                );
+                if ($create_copay_strategy) {
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully',  $create_copay_strategy);
+                }
             }
+        } else {
 
-            $accum_benfit_stat_names = DB::table('COPAY_STRATEGY_NAMES')->insert(
-                [
-                    'copay_strategy_id' => $request->copay_strategy_id,
-                    'copay_strategy_name' => $request->copay_strategy_name,
+            $checkRecordListsExits = DB::table('COPAY_STRATEGY')
+                ->where(DB::raw('UPPER(COPAY_STRATEGY_ID)'), strtoupper($request->copay_strategy_id))
+                ->where('effective_date', date('Ymd', strtotime($request->effective_date)))
+                ->where('COPAY_SCHEDULE', $request->copay_schedule)
+                ->count();
+            if ($checkRecordListsExits) {
+                if ($request->addUpdate == 0) {
+                    return $this->respondWithToken($this->token(), 'Copay Schedule ID already exists', $checkRecordListsExits, false);
+                }
+                $update_copay_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
+                    ->where(DB::raw('UPPER(copay_strategy_id)'), strtoupper($request->copay_strategy_id))
+                    ->update(
+                        [
+                            'copay_strategy_name' => $request->copay_strategy_name,
+                        ]
+                    );
 
-                ]
-            );
+                $update_copay_strategy = DB::table('COPAY_STRATEGY')
+                    ->where(DB::raw('UPPER(copay_strategy_id)'), strtoupper($request->copay_strategy_id))
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->where('COPAY_SCHEDULE', $request->copay_schedule)
+                    ->update(
+                        [
+                            'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
+                            'formulary_variation_ind' => $request->formulary_variation_ind,
+                            'network_part_variation_ind' => $request->network_part_variation_ind,
+                            'claim_type_variation_ind' => $request->claim_type_variation_ind,
+                            'DATE_TIME_MODIFIED' => $createddate,
+                            'USER_ID' => Cache::get('userId'),
+                            'form_id' => '',
+                            'effective_date' => $request->effective_date,
+                            'copay_schedule' => $request->copay_schedule,
+                            'MODULE_EXIT' => $request->module_exit
+                        ]
+                    );
+                if ($update_copay_strategy) {
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully');
+                }
+            } else {
+                $update_copay_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
+                    ->where(DB::raw('UPPER(copay_strategy_id)'), strtoupper($request->copay_strategy_id))
+                    ->update(
+                        [
+                            'copay_strategy_name' => $request->copay_strategy_name,
+                        ]
+                    );
 
+                $create_copay_strategy = DB::table('COPAY_STRATEGY')->insert(
+                    [
+                        'copay_strategy_id' => $request->copay_strategy_id,
+                        'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
+                        'formulary_variation_ind' => $request->formulary_variation_ind,
+                        'network_part_variation_ind' => $request->network_part_variation_ind,
+                        'claim_type_variation_ind' => $request->claim_type_variation_ind,
+                        'date_time_created' => $createddate,
+                        'DATE_TIME_MODIFIED' => $createddate,
+                        'USER_ID' => Cache::get('userId'),
+                        'form_id' => '',
+                        'user_id_created' =>  Cache::get('userId'),
+                        'effective_date' => $request->effective_date,
+                        'copay_schedule' => $request->copay_schedule,
+                        'MODULE_EXIT' => $request->module_exit
+                    ]
+                );
 
-            $accum_benfit_stat = DB::table('COPAY_STRATEGY')->insert(
-                [
-                    'copay_strategy_id' => $request->copay_strategy_id,
-                    'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
-                    'formulary_variation_ind' => $request->formulary_variation_ind,
-                    'network_part_variation_ind' => $request->network_part_variation_ind,
-                    'claim_type_variation_ind' => $request->claim_type_variation_ind,
-                    'date_time_created' => $createddate,
-                    'user_id' => '',
-                    'date_time_modified' => '',
-                    'form_id' => '',
-                    'user_id_created' => '',
-                    'effective_date' => $request->effective_date,
-                    'copay_schedule'=>$request->copay_schedule
-
-                ]
-            );
-
-            return $this->respondWithToken($this->token(), 'Record Added Successfully', $accum_benfit_stat);
-
-
-        } else if($request->add_new == 0) {
-
-            $validator = Validator::make($request->all(), [
-                "copay_strategy_id" => ['required', 'max:10'],
-                "copay_strategy_name" => ['required','max:35'],
-                "pharm_type_variation_ind" => ['max:1'],
-                "network_part_variation_ind" => ['max:10'],
-                "claim_type_variation_ind" => ['max:1'],
-                "formulary_variation_ind" => ['max:1'],
-                "effective_date" => ['required','max:10'],
-                "copay_schedule" => ['required','max:10'],
-                "module_exit" => ['max:10'],
-            ]);
-
-            if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+                if ($create_copay_strategy) {
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully');
+                }
             }
-
-
-        
-
-                $checkGPI = DB::table('COPAY_STRATEGY')
-                    ->where('COPAY_STRATEGY_ID', $request->copay_strategy_id)
-                    ->where('effective_date',$request->effective_date)
-                    ->get()
-                    ->count();
-
-
-                    if ($checkGPI <= "0") {
-
-                        $accum_benfit_stat = DB::table('COPAY_STRATEGY')->insert(
-                            [
-                                'copay_strategy_id' => $request->copay_strategy_id,
-                                'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
-                                'formulary_variation_ind' => $request->formulary_variation_ind,
-                                'network_part_variation_ind' => $request->network_part_variation_ind,
-                                'claim_type_variation_ind' => $request->claim_type_variation_ind,
-                                'date_time_created' => $createddate,
-                                'user_id' => '',
-                                'date_time_modified' => '',
-                                'form_id' => '',
-                                'user_id_created' => '',
-                                'effective_date' => $request->effective_date,
-                                'copay_schedule'=>$request->copay_schedule
-                            ]
-                        );
-
-                      
-    
-                        $update = DB::table('COPAY_STRATEGY')->where('COPAY_STRATEGY_ID', 'like', '%' . $request->copay_strategy_id . '%')->first();
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-    
-                    } else {
-
-                        $benefitcode = DB::table('COPAY_STRATEGY_NAMES')
-                        ->where('copay_strategy_id', $request->copay_strategy_id)
-                        ->update(
-                            [
-                                'COPAY_STRATEGY_NAME' => $request->copy_strategy_name,
-                            ]
-                        );
-                    
-
-
-                        $update = DB::table('COPAY_STRATEGY')
-                            ->where('copay_strategy_id', $request->copay_strategy_id)
-                            ->where('effective_date', $request->effective_date)
-                            ->update(
-                                [
-                                    'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
-                                    'formulary_variation_ind' => $request->formulary_variation_ind,
-                                    'network_part_variation_ind' => $request->network_part_variation_ind,
-                                    'claim_type_variation_ind' => $request->claim_type_variation_ind,
-                                    'date_time_created' => $createddate,
-                                    'user_id' => '',
-                                    'date_time_modified' => '',
-                                    'form_id' => '',
-                                    'user_id_created' => '',
-                                    'effective_date' => $request->effective_date,
-                                    'copay_schedule'=>$request->copay_schedule
-                                ]
-                            );
-                            
-                        $update = DB::table('COPAY_STRATEGY')->where('copay_strategy_id', 'like', '%' . $request->copay_strategy_id . '%')->first();
-                        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-                    }
-
-
         }
     }
 
@@ -163,40 +133,32 @@ class CopayStrategyController extends Controller
 
     public function search(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "search" => ['required']
-        ]);
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        } else {
-            $ndc = DB::table('COPAY_STRATEGY')
-                ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
-                ->select('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name')
-                ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' .$request->search. '%')
-                ->orWhere('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME', 'like', '%' .$request->search. '%')
-                ->get();
 
-            return $this->respondWithToken($this->token(), '', $ndc);
-        }
+        $ndc = DB::table('COPAY_STRATEGY_NAMES')
+            ->select('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name')
+            ->where(DB::raw('UPPER(COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->get();
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function getList($ndcid)
+    public function getList($copay_strategy_id)
     {
         $ndclist = DB::table('COPAY_STRATEGY')
-        ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
-            // ->select( 'DIAGNOSIS_LIST', 'DIAGNOSIS_ID', 'PRIORITY' )
-            ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' .$ndcid . '%')
-            // ->orWhere( 'EXCEPTION_NAME', 'like', '%' . strtoupper( $ndcid ) . '%' )
+            ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
+            ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', $copay_strategy_id)
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
-    public function getDetails($ndcid)
+    public function getDetails($copay_strategy_id, $effective_date, $copay_schedule)
     {
         $ndc = DB::table('COPAY_STRATEGY')
             ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
-            ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', 'like', '%' . $ndcid . '%')
+            ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', $copay_strategy_id)
+            ->where('COPAY_SCHEDULE', $copay_schedule)
+            ->where('COPAY_STRATEGY.effective_date', date('Ymd', strtotime($effective_date)))
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -208,6 +170,42 @@ class CopayStrategyController extends Controller
         $ndc = DB::table('COPAY_STRATEGY_NAMES')
             ->get();
 
-        return $this->respondWithToken($this->token(), 'Data Fetched Suceefully', $ndc);
+        return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
+    }
+
+    public function delete(Request $request)
+    {
+        if (isset($request->copay_strategy_id) && isset($request->effective_date) && isset($request->copay_schedule)) {
+            $all_copay_strategy = DB::table('COPAY_STRATEGY')
+                ->where('COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                ->count();
+
+            if ($all_copay_strategy == 1) {
+                $copay_strategy = DB::table('COPAY_STRATEGY')
+                    ->where('COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->where('COPAY_SCHEDULE', $request->copay_schedule)
+                    ->delete();
+
+                $copay_strategy_name = DB::table('COPAY_STRATEGY_NAMES')
+                    ->where('COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                    ->delete();
+            } else {
+                $copay_strategy = DB::table('COPAY_STRATEGY')
+                    ->where('COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->where('COPAY_SCHEDULE', $request->copay_schedule)
+                    ->delete();
+            }
+
+            if ($copay_strategy) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            }
+            return $this->respondWithToken($this->token(), 'Record deleted Successfully', $copay_strategy);
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not found', 'false');
+        }
     }
 }

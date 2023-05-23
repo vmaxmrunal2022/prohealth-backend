@@ -329,7 +329,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::post('/accumulated/benifit/delete', [AccumlatedBenifitController::class, 'delete'])->name('accumulated.benifit.delete'); // delete
 
-        Route::get('/accumulated/drop-down', [AccumlatedController::class, 'getAllAcuumlatedBenefits'])->name('accumulated.all'); // SEARCH
+        // Route::get('/accumulated/drop-down', [AccumlatedController::class, 'getAllAcuumlatedBenefits'])->name('accumulated.all'); // SEARCH
 
         Route::get('/gpiExclusion/search', [GpiExclusionController::class, 'search'])->name('gpiExclusion.search'); // SEARCH
         Route::get('/gpiExclusion/get/{ndcid}', [GpiExclusionController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
@@ -939,7 +939,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
     Route::get('/accumulated/search', [AccumlatedController::class, 'search'])->name('accumulated.search'); // SEARCH
     Route::get('/accumulated/get/{ndcid}', [AccumlatedController::class, 'getList'])->name('accumulated.list.get'); // LIST ITEMS
-    Route::get('/accumulated/details/{ndcid}/{effective_date}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
+    Route::get('/accumulated/details/{ndcid}/{effective_date}/{id}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
     Route::post('/accumulated/add', [AccumlatedController::class, 'add'])->name('accumulated.add'); // SEARCH
 
     Route::get('/accumulated/all', [AccumlatedController::class, 'getAllAcuumlatedBenefits'])->name('accumulated.all'); // DETAIL
@@ -956,7 +956,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
     Route::get('/gpiExclusion/get/{ndcid}', [GpiExclusionController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
     Route::get('/gpi/dropdowns', [GpiExclusionController::class, 'GPIS'])->name('gpi.search'); // SEARCH
-    Route::get('/gpiExclusion/details/{ndcid}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
+    Route::get('/gpiExclusion/details/{ndcid}/{ndcid2}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
     Route::post('/gpiExclusion/add', [GpiExclusionController::class, 'add'])->name('gpiExclusion.add'); // ADD
     Route::get('/gpi/exclusions/dropdowns', [GpiExclusionController::class, 'allGpiExclusions'])->name('gpi.search'); // SEARCH
 
@@ -968,7 +968,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
     Route::get('/ndcExclusion/get/{ndcid}', [NdcExlusionController::class, 'getList'])->name('ndcExclusion.list.get'); // LIST ITEMS
 
-    Route::get('/ndcExclusion/details/{ndcid}', [NdcExlusionController::class, 'getDetails'])->name('ndcExclusion.get'); // DETAIL
+    Route::get('/ndcExclusion/details/{ndcid}/{ndcid2}', [NdcExlusionController::class, 'getDetails'])->name('ndcExclusion.get'); // DETAIL
     Route::post('/ndcExclusion/add', [NdcExlusionController::class, 'add'])->name('ndcExclusion.add'); // SEARCH
 
     Route::get('/ndcExclusion/all', [NdcExlusionController::class, 'AllNdcGpisExcusions'])->name('ndcExclusion.list.get'); // LIST ITEMS
