@@ -1164,6 +1164,10 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('mac-list/get-price-source', [MacListController::class, 'getPriceSource']);
     Route::get('mac-list/get-price-type', [MacListController::class, 'getPriceType']);
     Route::post('mac-list/submit', [MacListController::class, 'submit']);
+    Route::post('mac-list/delete', [MacListController::class, 'maclist_Delete'])->name('maclist_Delete');
+
+
+
 
     //Tax Schedule
     Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);

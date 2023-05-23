@@ -19,8 +19,8 @@ class CopayStepScheduleController extends Controller
             // ->get();
 
             $copayStepData = DB::table('COPAY_LIST')
-                ->where('COPAY_LIST', 'like', '%' . $request->copay_list . '%')
-
+                // ->where('COPAY_LIST', 'like', '%' . $request->copay_list . '%')
+                ->whereRaw('LOWER(COPAY_LIST) LIKE ?', ['%' . strtolower($request->copay_list) . '%'])
                 ->get();
             return $this->respondWithToken($this->token(), '', $copayStepData);
 
@@ -35,8 +35,8 @@ class CopayStepScheduleController extends Controller
             // ->get();
 
             $copayStepData = DB::table('COPAY_LIST')
-                ->where('COPAY_LIST', 'like', '%' . $request->copay_list . '%')
-
+                // ->where('COPAY_LIST', 'like', '%' . $request->copay_list . '%')
+                ->whereRaw('LOWER(COPAY_LIST) LIKE ?', ['%' . strtolower($request->copay_list) . '%'])
                 ->get();
             return $this->respondWithToken($this->token(), '', $copayStepData);
 
