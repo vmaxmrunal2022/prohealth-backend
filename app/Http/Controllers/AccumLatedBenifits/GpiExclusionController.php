@@ -18,6 +18,7 @@ class GpiExclusionController extends Controller
 
     public function add(Request $request)
     {
+        $createddate = date('Ymd');
         $recordcheck = DB::table('GPI_EXCLUSIONS')
             ->where(DB::raw('UPPER(GPI_EXCLUSION_LIST)'), strtoupper($request->gpi_exclusion_list))
             ->first();
@@ -29,15 +30,15 @@ class GpiExclusionController extends Controller
 
         if ($request->has('new')) {
             if ($recordcheck) {
-                return $this->respondWithToken($this->token(), 'GPI Exclusion List ID already exists in the system..!!!', $recordcheck, false);
+                return $this->respondWithToken($this->token(), 'GPI Exclusion List ID already exists', $recordcheck, false);
             } else {
                 $accum_benfit_stat = DB::table('GPI_EXCLUSION_LISTS')->insert(
                     [
                         'generic_product_id' => $request->generic_product_id,
                         'gpi_exclusion_list' => $request->gpi_exclusion_list,
+                        'DATE_TIME_CREATED' => $createddate,
+                        'DATE_TIME_MODIFIED' => $createddate,
                         'USER_ID' => Cache::get('userId'),
-                        'DATE_TIME_CREATED' => date('Ymd'),
-                        'DATE_TIME_MODIFIED' => date('Ymd'),
                     ]
                 );
 
@@ -57,20 +58,27 @@ class GpiExclusionController extends Controller
             }
         } else {
             if ($recordCheckGpiList) {
+                if ($request->addUpdate == 0) {
+                    return $this->respondWithToken($this->token(), 'GPI ID already exists', $recordCheckGpiList, false);
+                }
                 $update = DB::table('GPI_EXCLUSIONS')
                     ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
                     ->update(
                         [
                             'exclusion_name' => $request->exclusion_name,
+                            'DATE_TIME_MODIFIED' => date('Ymd'),
+                            'USER_ID' => Cache::get('userId'),
                         ]
                     );
-                return $this->respondWithToken($this->token(), 'GPI ID already exists in the system..!!!', $recordCheckGpiList, false);
             } else {
                 if ($request->generic_product_id) {
                     $createGpiList = DB::table('GPI_EXCLUSION_LISTS')->insert(
                         [
                             'generic_product_id' => $request->generic_product_id,
                             'gpi_exclusion_list' => $request->gpi_exclusion_list,
+                            'USER_ID' => Cache::get('userId'),
+                            'DATE_TIME_CREATED' => date('Ymd'),
+                            'DATE_TIME_MODIFIED' => date('Ymd'),
                         ]
                     );
                     $update = DB::table('GPI_EXCLUSIONS')
@@ -78,6 +86,8 @@ class GpiExclusionController extends Controller
                         ->update(
                             [
                                 'exclusion_name' => $request->exclusion_name,
+                                'DATE_TIME_MODIFIED' => date('Ymd'),
+                                'USER_ID' => Cache::get('userId'),
                             ]
                         );
                     if ($createGpiList) {
@@ -98,10 +108,23 @@ class GpiExclusionController extends Controller
     public function delete(Request $request)
     {
         if (isset($request->gpi_exclusion_list) && isset($request->generic_product_id)) {
-            $delete_gpi_exclusions_list =  DB::table('GPI_EXCLUSION_LISTS')
+            $all_gpi_exclusions_list =  DB::table('GPI_EXCLUSION_LISTS')
                 ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
-                ->where('generic_product_id', $request->generic_product_id)
-                ->delete();
+                ->count();
+            if ($all_gpi_exclusions_list == 1) {
+                $delete_gpi_exclusions =  DB::table('GPI_EXCLUSIONS')
+                    ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
+                    ->delete();
+
+                $delete_gpi_exclusions_list =  DB::table('GPI_EXCLUSION_LISTS')
+                    ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
+                    ->delete();
+            } else {
+                $delete_gpi_exclusions_list =  DB::table('GPI_EXCLUSION_LISTS')
+                    ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
+                    ->where('generic_product_id', $request->generic_product_id)
+                    ->delete();
+            }
             if ($delete_gpi_exclusions_list) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {

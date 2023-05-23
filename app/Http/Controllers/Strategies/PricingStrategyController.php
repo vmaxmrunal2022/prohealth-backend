@@ -87,7 +87,7 @@ class PricingStrategyController extends Controller
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 if ($checkPricingStrategyNamesRecord) {
-                    return $this->respondWithToken($this->token(), 'The Pricing Strategy Id already Exist..!!!', $checkPricingStrategyNamesRecord, false);
+                    return $this->respondWithToken($this->token(), 'Pricing Strategy ID already exists', $checkPricingStrategyNamesRecord, false);
                 } else {
                     $accum_benfit_stat_names = DB::table('PRICING_STRATEGY_NAMES')->insert(
                         [
@@ -147,7 +147,7 @@ class PricingStrategyController extends Controller
             } else {
                 if ($checkPricingStrategyRecord) {
                     if ($request->addUpdate == 0) {
-                        return $this->respondWithToken($this->token(), 'Duplicate Chid Record Found...!!!', $checkPricingStrategyRecord, false);
+                        return $this->respondWithToken($this->token(), 'Pricing Schedule ID already exists', $checkPricingStrategyRecord, false);
                     }
                     $benefitcode = DB::table('PRICING_STRATEGY_NAMES')
                         ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))
@@ -217,17 +217,31 @@ class PricingStrategyController extends Controller
     public function delete(Request $request)
     {
         if (isset($request->pricing_strategy_id) && isset($request->effective_date) && isset($request->price_schedule)) {
-            $accum_benfit_stat = DB::table('PRICING_STRATEGY')
+            $all_pricing_strategy = DB::table('PRICING_STRATEGY')
                 ->where('pricing_strategy_id', $request->pricing_strategy_id)
-                ->where('PRICE_SCHEDULE', $request->price_schedule)
-                ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
-                ->delete();
-            if ($accum_benfit_stat) {
+                ->count();
+            if ($all_pricing_strategy == 1) {
+                $pricing_strategy_names = DB::table('PRICING_STRATEGY_NAMES')
+                    ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                    ->delete();
+
+                $pricing_strategy = DB::table('PRICING_STRATEGY')
+                    ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                    ->delete();
+            } else {
+                $pricing_strategy = DB::table('PRICING_STRATEGY')
+                    ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                    ->where('PRICE_SCHEDULE', $request->price_schedule)
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->delete();
+            }
+
+            if ($pricing_strategy) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }
-            return $this->respondWithToken($this->token(), 'Record deleted Successfully', $accum_benfit_stat);
+            return $this->respondWithToken($this->token(), 'Record deleted Successfully', $pricing_strategy);
         } else {
             return $this->respondWithToken($this->token(), 'Record Not found', 'false');
         }

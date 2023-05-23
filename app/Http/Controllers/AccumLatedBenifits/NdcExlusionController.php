@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 
 class NdcExlusionController extends Controller
 {
@@ -26,53 +27,63 @@ class NdcExlusionController extends Controller
 
         $createddate = date('y-m-d');
         $recordcheck = DB::table('NDC_EXCLUSIONS')
-            ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
+            ->where(DB::raw('UPPER(ndc_exclusion_list)'), strtoupper($request->ndc_exclusion_list))
             ->first();
 
         $recordCheckNdcList = DB::table('NDC_EXCLUSION_LISTS')
             ->where('NDC', $request->ndc)
-            ->where('NDC_EXCLUSION_LIST', $request->ndc_exclusion_list)
+            ->where(DB::raw('UPPER(NDC_EXCLUSION_LIST)'), strtoupper($request->ndc_exclusion_list))
             ->first();
 
         if ($request->has('new')) {
             if ($recordcheck) {
-                return $this->respondWithToken($this->token(), 'Ndc Exclusion List Id already exists in the system..!!!', $recordcheck);
+                return $this->respondWithToken($this->token(), 'NDC Exclusion List ID already exists', $recordcheck, false);
             } else {
                 $accum_benfit_stat = DB::table('NDC_EXCLUSION_LISTS')->insert(
                     [
                         'ndc' => $request->ndc,
                         'ndc_exclusion_list' => $request->ndc_exclusion_list,
-                        'DATE_TIME_CREATED' => $createddate,
+                        'USER_ID' => Cache::get('userId'),
+                        'DATE_TIME_CREATED' => date('Ymd'),
+                        'DATE_TIME_MODIFIED' => date('Ymd'),
                     ]
                 );
                 $insert = DB::table('NDC_EXCLUSIONS')->insert(
                     [
                         'ndc_exclusion_list' => $request->ndc_exclusion_list,
                         'exclusion_name' => $request->exclusion_name,
-                        'DATE_TIME_CREATED' => $createddate,
+                        'USER_ID' => Cache::get('userId'),
+                        'DATE_TIME_CREATED' => date('Ymd'),
+                        'DATE_TIME_MODIFIED' => date('Ymd'),
                     ]
                 );
                 if ($insert) {
-                    return $this->respondWithToken($this->token(), 'Recored Added Successfully', $insert);
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $insert);
                 }
             }
         } else {
             if ($recordCheckNdcList) {
+                if ($request->addUpdate == 0) {
+                    return $this->respondWithToken($this->token(), 'NDC ID already exists', $recordCheckNdcList, false);
+                }
                 $update = DB::table('NDC_EXCLUSIONS')
                     ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
                     ->update(
                         [
                             'exclusion_name' => $request->exclusion_name,
+                            'DATE_TIME_MODIFIED' => date('Ymd'),
+                            'USER_ID' => Cache::get('userId'),
                         ]
                     );
-                return $this->respondWithToken($this->token(), 'NDC ID already exists in the system..!!!', $update, false);
             } else {
                 if ($request->ndc_exclusion_list) {
                     $createdNdcList = DB::table('NDC_EXCLUSION_LISTS')->insert(
                         [
                             'ndc' => $request->ndc,
                             'ndc_exclusion_list' => $request->ndc_exclusion_list,
-                            'DATE_TIME_CREATED' => $createddate,
+                            'USER_ID' => Cache::get('userId'),
+                            'DATE_TIME_CREATED' => date('Ymd'),
+                            'DATE_TIME_MODIFIED' => date('Ymd'),
                         ]
                     );
 
@@ -81,6 +92,8 @@ class NdcExlusionController extends Controller
                         ->update(
                             [
                                 'exclusion_name' => $request->exclusion_name,
+                                'DATE_TIME_MODIFIED' => date('Ymd'),
+                                'USER_ID' => Cache::get('userId'),
                             ]
                         );
 
@@ -99,10 +112,24 @@ class NdcExlusionController extends Controller
     public function delete(Request $request)
     {
         if (isset($request->ndc_exclusion_list) && isset($request->ndc)) {
-            $delete_ndc_exclusion_list =  DB::table('NDC_EXCLUSION_LISTS')
+            $all_ndc_exclusion_list =  DB::table('NDC_EXCLUSION_LISTS')
                 ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
-                ->where('ndc', $request->ndc)
-                ->delete();
+                ->count();
+
+            if ($all_ndc_exclusion_list == 1) {
+                $delete_ndc_exclusions =  DB::table('NDC_EXCLUSIONS')
+                    ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
+                    ->delete();
+
+                $delete_ndc_exclusion_list =  DB::table('NDC_EXCLUSION_LISTS')
+                    ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
+                    ->delete();
+            } else {
+                $delete_ndc_exclusion_list =  DB::table('NDC_EXCLUSION_LISTS')
+                    ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
+                    ->where('ndc', $request->ndc)
+                    ->delete();
+            }
             if ($delete_ndc_exclusion_list) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
