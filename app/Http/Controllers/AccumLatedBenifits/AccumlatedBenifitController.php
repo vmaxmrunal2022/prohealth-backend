@@ -209,8 +209,6 @@ class AccumlatedBenifitController extends Controller
     }
 
 
-
-
     public function get_all(Request $request)
 
     {
@@ -222,10 +220,6 @@ class AccumlatedBenifitController extends Controller
             return $this->respondWithToken($this->token(), 'Data Not Found', $accumlated_benefit_names);
         }
     }
-
-
-
-
 
 
     public function search(Request $request)

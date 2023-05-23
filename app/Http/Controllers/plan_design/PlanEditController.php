@@ -261,7 +261,6 @@ class PlanEditController extends Controller
                     'ER_LIMIT_1_MINIMUM_USE' => $request->er_limit_1_minimum_use, //LIMIT1  MINIMUM USE PERCENTAGE) 
                     'ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->er_limit_2_max_days_supply, //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
                     'ER_LIMIT_2_MINIMUM_USE' => $request->er_limit_2_minimum_use, //LIMIT 2 - ABOVE LIMIT 1 MINIMUM USE PERCENTAGE)
-                    'ER_LIMIT_2_MINIMUM_USE' => $request->er_limit_2_minimum_use, //LIMIT 2 - ABOVE LIMIT 1 MINIMUM USE PERCENTAGE)
                     'ER_LIMIT_X_MINIMUM_USE' => $request->er_limit_x_minimum_use, //ABOVE LIMIT2(MAXIMUM USE MAXIMUM
                     'ER_SEARCH_IND' => $request->er_search_ind, //ABOVE LIMIT2 SEARCH INDICATION)
                     'MO_ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->mo_er_limit_1_max_days_supply, //LIMIT1 (RX MAXIMUM DAYS SUPPLY
