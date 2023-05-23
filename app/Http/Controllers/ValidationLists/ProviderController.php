@@ -250,7 +250,7 @@ class ProviderController extends Controller
                             // ->where('pharmacy_status', $request->pharmacy_status)
                             ->get()
                             ->count();
-                        return $countValidation;
+                        // return $countValidation;
 
                         //if exception exist but validation not exist
                         if ($countValidation >= 1) {

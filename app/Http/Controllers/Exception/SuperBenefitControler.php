@@ -228,6 +228,26 @@ class SuperBenefitControler extends Controller
                 
               if($request->update_new == 0){
 
+                        $effectiveDate=$request->effective_date;
+                        $terminationDate=$request->termination_date;
+                        $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
+                        ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
+                        ->where('benefit_list_id',$request->benefit_list_id)
+                        ->where('effective_date','!=',$request->effective_date)
+                        ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                    $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                        ->where('TERMINATION_DATE', '>=', $terminationDate);
+                                });
+                        })
+                        ->exists();
+                        if ($overlapExists) {
+                            // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                            return $this->respondWithToken($this->token(), [['For Same Benefit List, dates cannot overlap.']], '', 'false');
+                        }
+
                         $add_names = DB::table('SUPER_BENEFIT_LIST_NAMES')
                         ->where('super_benefit_list_id',$request->super_benefit_list_id)
                         ->update(
@@ -271,6 +291,27 @@ class SuperBenefitControler extends Controller
                 if(count($checkGPI) >= 1){
                     return $this->respondWithToken($this->token(), [["Benefit List ID already exists"]], '', 'false');
                 }else{
+
+                    $effectiveDate=$request->effective_date;
+                    $terminationDate=$request->termination_date;
+                    $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
+                    ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
+                    ->where('benefit_list_id',$request->benefit_list_id)
+                    // ->where('effective_date','!=',$request->effective_date)
+                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
+                            });
+                    })
+                    ->exists();
+                    if ($overlapExists) {
+                        // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                        return $this->respondWithToken($this->token(), [['For same Benefit List, dates cannot overlap.']], '', 'false');
+                    }
+
                     $update = DB::table('SUPER_BENEFIT_LISTS')
                     ->insert(
                         [
@@ -418,7 +459,8 @@ class SuperBenefitControler extends Controller
     public function get(Request $request)
     {
         $superBenefitNames = DB::table('SUPER_BENEFIT_LIST_NAMES')
-                             ->where('SUPER_BENEFIT_LIST_ID','like','%'.strtoupper($request->search).'%')
+                             //  ->where('SUPER_BENEFIT_LIST_ID','like','%'.strtoupper($request->search).'%')
+                             ->whereRaw('LOWER(SUPER_BENEFIT_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
                              ->orWhere('DESCRIPTION','like','%'.strtoupper($request->search).'%')
                              ->get();
 

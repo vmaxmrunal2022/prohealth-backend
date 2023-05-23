@@ -14,7 +14,8 @@ class TaxScheduleController extends Controller
     public function get(Request $request)
     {
         $taxData = DB::table('tax_schedule')
-        ->where('tax_schedule_id', 'like', '%' . $request->search. '%')
+        // ->where('tax_schedule_id', 'like', '%' . $request->search. '%')
+        ->whereRaw('LOWER(tax_schedule_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
         ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->get();
 
         return $this->respondWithToken($this->token(), '', $taxData);
@@ -47,7 +48,7 @@ class TaxScheduleController extends Controller
         if ($request->add_new == 1) {
 
             if ($validation->count() > 0) {
-                return $this->respondWithToken($this->token(), 'Tax Schedule ID is Already Exists', $validation, true, 200, 1);
+                return $this->respondWithToken($this->token(), [['Tax Schedule ID is Already Exists']], $validation, 'false', 200, 1);
             }
             $validator = Validator::make($request->all(), [
                 'tax_schedule_id' => ['required', 'max:10', Rule::unique('tax_schedule')->where(function ($q) {

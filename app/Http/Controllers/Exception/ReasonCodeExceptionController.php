@@ -229,26 +229,29 @@ class ReasonCodeExceptionController extends Controller
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
 
-                // $effectiveDate=$request->effective_date;
-                // $terminationDate=$request->termination_date;
-                // $overlapExists = DB::table('REASON_CODE_LISTS')
-                // ->where('REASON_CODE_LIST_ID', $request->prov_type_proc_assoc_id)
-                // ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
-                //         });
-                // })
-                // ->exists();
-                // if ($overlapExists) {
-                //     return $this->respondWithToken($this->token(), 'For same Reason Code  dates range cannot overlap.', $validation, true, 200, 1);
-                // }
+               
 
 
                 if($request->update_new == 0){
-                    // return "test1";
+                    $effectiveDate=$request->effective_date;
+                    $terminationDate=$request->termination_date;
+                    $overlapExists = DB::table('REASON_CODE_LISTS')
+                    ->where('REASON_CODE_LIST_ID', $request->prov_type_proc_assoc_id)
+                    ->where('REJECT_CODE', $request->reject_code)
+                    ->where('REASON_CODE', $request->reason_code)
+                    ->where('EFFECTIVE_DATE','!=',$request->effective_date)
+                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
+                            });
+                    })
+                    ->exists();
+                    if ($overlapExists) {
+                        return $this->respondWithToken($this->token(), 'For same Reason Code  dates range cannot overlap.', $validation, true, 200, 1);
+                    }
 
                     $add_names = DB::table('REASON_CODE_LIST_NAMES')
                         ->where('reason_code_list_id', $request->reason_code_list_id)
@@ -275,31 +278,53 @@ class ReasonCodeExceptionController extends Controller
 
                 }elseif($request->update_new == 1){
                     
+                    
                     $checkGPI = DB::table('REASON_CODE_LISTS')
                     ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
                     ->where('REJECT_CODE', $request->reject_code)
                     ->where('REASON_CODE', $request->reason_code)
                     ->where('EFFECTIVE_DATE',$request->effective_date)
                     ->get();
-// return[$checkGPI,$request->all()];
+                    // return[$checkGPI,$request->all()];
                     if(count($checkGPI) >= 1){
                         return $this->respondWithToken($this->token(), [["Reason Code List ID already exists"]], '', 'false');
                     }else{
-                             $update = DB::table('REASON_CODE_LISTS')
-                            ->insert(
-                                [
-                                    'reason_code_list_id' => $request->reason_code_list_id,
-                                    'reject_code' => $request->reject_code,
-                                    'reason_code' => $request->reason_code,
-                                    'effective_date' => $request->effective_date,
-                                    'termination_date' => $request->termination_date,
-                                    'date_time_created' => $createddate,
-                                    'date_time_modified' => $createddate,
-                                ]
-                            );
-                               
-                            $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
-                            return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+                        $effectiveDate=$request->effective_date;
+                        $terminationDate=$request->termination_date;
+                        $overlapExists = DB::table('REASON_CODE_LISTS')
+                        ->where('REASON_CODE_LIST_ID', $request->prov_type_proc_assoc_id)
+                        ->where('REJECT_CODE', $request->reject_code)
+                        ->where('REASON_CODE', $request->reason_code)
+                        // ->where('EFFECTIVE_DATE','!=',$request->effective_date)
+                        ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                    $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                        ->where('TERMINATION_DATE', '>=', $terminationDate);
+                                });
+                        })
+                        ->exists();
+                        if ($overlapExists) {
+                            return $this->respondWithToken($this->token(), 'For same Reason Code  dates range cannot overlap.', $validation, true, 200, 1);
+                        }
+                        
+                        $update = DB::table('REASON_CODE_LISTS')
+                        ->insert(
+                            [
+                                'reason_code_list_id' => $request->reason_code_list_id,
+                                'reject_code' => $request->reject_code,
+                                'reason_code' => $request->reason_code,
+                                'effective_date' => $request->effective_date,
+                                'termination_date' => $request->termination_date,
+                                'date_time_created' => $createddate,
+                                'date_time_modified' => $createddate,
+                            ]
+                        );
+                            
+                        $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
         
                     }
 
@@ -379,7 +404,8 @@ class ReasonCodeExceptionController extends Controller
     {
         $ndc = DB::table('REASON_CODE_LIST_NAMES')
             // ->join('REASON_CODE_LIST_NAMES', 'REASON_CODE_LISTS.REASON_CODE_LIST_ID', '=', 'REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID')
-            ->where('REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID', 'like', '%' .$request->search. '%')
+            // ->where('REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID', 'like', '%' .$request->search. '%')
+            ->whereRaw('LOWER(REASON_CODE_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             // ->orWhere('REASON_CODE_LISTS.REASON_CODE_LIST_ID', 'like', '%' . $request->search. '%')
             ->get();
 
