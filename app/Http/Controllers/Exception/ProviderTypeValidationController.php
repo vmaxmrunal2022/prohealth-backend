@@ -217,24 +217,29 @@ public function add(Request $request)
             //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
             // }
 
-            // $effectiveDate=$request->effective_date;
-            // $terminationDate=$request->termination_date;
-            // $overlapExists = DB::table('PROVIDER_TYPE_VALIDATIONS')
-            // ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
-            // ->where(function ($query) use ($effectiveDate, $terminationDate) {
-            //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-            //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-            //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-            //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-            //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
-            //         });
-            // })
-            // ->exists();
-            // if ($overlapExists) {
-            //     return $this->respondWithToken($this->token(), 'For same Provider Type, Procedure Code List ID , dates cannot overlap.', $validation, true, 200, 1);
-            // }
+            
 
            if($request->update_new == 0){
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PROVIDER_TYPE_VALIDATIONS')
+                ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
+                ->where('proc_code_list_id', $request->proc_code_list_id)
+                ->where('provider_type',$request->provider_type)
+                ->where('effective_date','!=',$request->effective_date)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    return $this->respondWithToken($this->token(), [['For same Provider Type, Procedure Code List ID , dates cannot overlap.']], '', 'false');
+                }
 
                 $add_names = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
                 ->where('prov_type_list_id',$request->prov_type_list_id)
@@ -269,8 +274,29 @@ public function add(Request $request)
                 ->get();
 
                 if(count($checkGPI) >=1) {
-                    return $this->respondWithToken($this->token(), [["Provider Type  already exists"]], '', 'false');
+                    return $this->respondWithToken($this->token(), [['For same Provider Type, Procedure Code List ID , dates cannot overlap.']], '', 'false');
                 }else{
+
+                    $effectiveDate=$request->effective_date;
+                    $terminationDate=$request->termination_date;
+                    $overlapExists = DB::table('PROVIDER_TYPE_VALIDATIONS')
+                    ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
+                    ->where('proc_code_list_id', $request->proc_code_list_id)
+                    ->where('provider_type',$request->provider_type)
+                    // ->where('effective_date','!=',$request->effective_date)
+                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
+                            });
+                    })
+                    ->exists();
+                    if ($overlapExists) {
+                        return $this->respondWithToken($this->token(), [['For same Provider Type, Procedure Code List ID , dates cannot overlap.']], '', 'false');
+                    }
+
                     $update = DB::table('PROVIDER_TYPE_VALIDATIONS')
                     ->insert([
                         'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
@@ -375,7 +401,8 @@ public function add(Request $request)
         $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
             // $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATIONS')
             // ->where('effective_date', 'like', '%'.$request->search.'%')
-            ->Where('prov_type_list_id', 'like', '%' . $request->search . '%')
+            // ->Where('prov_type_list_id', 'like', '%' . $request->search . '%')
+            ->whereRaw('LOWER(prov_type_list_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
             // ->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
         // dd($request->all());

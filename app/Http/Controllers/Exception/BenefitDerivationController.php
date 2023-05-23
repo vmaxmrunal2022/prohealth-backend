@@ -245,24 +245,33 @@ class BenefitDerivationController extends Controller
 
                 
 
-                // $effectiveDate=$request->effective_date;
-                // $terminationDate=$request->termination_date;
-                // $overlapExists = DB::table('BENEFIT_DERIVATION')
-                // ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
-                // ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
-                //         });
-                // })
-                // ->exists();
-                // if ($overlapExists) {
-                //     return $this->respondWithToken($this->token(), 'For same Benefit Code , dates cannot overlap.', $validation, true, 200, 1);
-                // }
+               
 
                 if($request->update_new == 0){
+                    $effectiveDate=$request->effective_date;
+                    $terminationDate=$request->termination_date;
+                    $overlapExists = DB::table('BENEFIT_DERIVATION')
+                    ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                    // ->where('service_type',$request->service_type)
+                    // ->where('service_modifier',$request->service_modifier)
+                    // ->where('proc_code_list_id',$request->proc_code_list_id)
+                    ->where('benefit_code', $request->benefit_code)
+                    ->where('effective_date','!=',$request->effective_date)
+                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
+                            });
+                    })
+                    ->exists();
+                    if ($overlapExists) {
+                        return $this->respondWithToken($this->token(), [['For same Benefit Code , dates cannot overlap.']], '', 'false');
+                    }
+
+
+
                     $add_names = DB::table('BENEFIT_DERIVATION_NAMES')
                     ->where('benefit_derivation_id', $request->benefit_derivation_id)
                     ->update(
@@ -272,14 +281,13 @@ class BenefitDerivationController extends Controller
                         ]
                     );
 
-                $update = DB::table('BENEFIT_DERIVATION')
-                ->where('benefit_derivation_id', $request->benefit_derivation_id)
-                ->where('service_type',$request->service_type)
-                ->where('service_modifier',$request->service_modifier)
-                ->where('proc_code_list_id',$request->proc_code_list_id)
-                ->where('benefit_code', $request->benefit_code)
-                ->where('effective_date', $request->effective_date)
-
+                    $update = DB::table('BENEFIT_DERIVATION')
+                    ->where('benefit_derivation_id', $request->benefit_derivation_id)
+                    ->where('service_type',$request->service_type)
+                    ->where('service_modifier',$request->service_modifier)
+                    ->where('proc_code_list_id',$request->proc_code_list_id)
+                    ->where('benefit_code', $request->benefit_code)
+                    ->where('effective_date', $request->effective_date)
                     ->update(
                         [
                         
@@ -323,8 +331,31 @@ class BenefitDerivationController extends Controller
                     ->get();
 
                     if(count($checkGPI) >= 1 ){
-                        return $this->respondWithToken($this->token(), [["Benefit Code   already exists"]], '', 'false');
+                        return $this->respondWithToken($this->token(), [['For same Benefit Code , dates cannot overlap.']], '', 'false');
                     }else{
+                        $effectiveDate=$request->effective_date;
+                        $terminationDate=$request->termination_date;
+                        $overlapExists = DB::table('BENEFIT_DERIVATION')
+                        ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                        // ->where('service_type',$request->service_type)
+                        // ->where('service_modifier',$request->service_modifier)
+                        // ->where('proc_code_list_id',$request->proc_code_list_id)
+                        ->where('benefit_code', $request->benefit_code)
+                        // ->where('effective_date','!=',$request->effective_date)
+                        ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                    $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                        ->where('TERMINATION_DATE', '>=', $terminationDate);
+                                });
+                        })
+                        ->exists();
+                        if ($overlapExists) {
+                            return $this->respondWithToken($this->token(), [['For same Benefit Code , dates cannot overlap.']], '', 'false');
+                        }
+
+
                         $update = DB::table('BENEFIT_DERIVATION')
                         ->insert(
                             [
@@ -502,7 +533,8 @@ class BenefitDerivationController extends Controller
     {
         $ndc = DB::table('BENEFIT_DERIVATION_NAMES')
             ->select('BENEFIT_DERIVATION_ID', 'DESCRIPTION')
-            ->where('BENEFIT_DERIVATION_ID', 'like', '%' . $request->search. '%')
+            ->whereRaw('LOWER(BENEFIT_DERIVATION_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            // ->where('BENEFIT_DERIVATION_ID', 'like', '%' . $request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

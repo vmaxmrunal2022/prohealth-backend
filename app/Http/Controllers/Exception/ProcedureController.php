@@ -164,37 +164,37 @@ class ProcedureController extends Controller
                 // })],
 
                 "exception_name" => ['max:36'],
-                "new_claim_status"=>['max:2'],
-                "service_type"=>['max:1'],
+                // "new_claim_status"=>['max:2'],
+                // "service_type"=>['max:1'],
                 // 'process_rule'=>['max:15'],
-                'physician_list'=>['max:10'],
-                'physician_specialty_list'=>['max:10'],
-                'diagnosis_list'=>['max:10'],
-                'pricing_strategy_id'=>['max:11'],
-                'accum_bene_strategy_id'=>['max:11'],
-                'copay_strategy_id'=>['max:10'],
-                'message'=>['max:10'],
-                'message_stop_date'=>['max:10'],
-                'min_age'=>['nullable','max:6'],
-                'max_age'=>['nullable','max:6','gt:min_age'],
-                'min_price'=>['max:6'],
-                'max_price'=>['max:6'],
+                // 'physician_list'=>['max:10'],
+                // 'physician_specialty_list'=>['max:10'],
+                // 'diagnosis_list'=>['max:10'],
+                // 'pricing_strategy_id'=>['max:11'],
+                // 'accum_bene_strategy_id'=>['max:11'],
+                // 'copay_strategy_id'=>['max:10'],
+                // 'message'=>['max:10'],
+                // 'message_stop_date'=>['max:10'],
+                'min_age'=>['nullable'],
+                'max_age'=>['nullable','gt:min_age'],
+                // 'min_price'=>['max:6'],
+                // 'max_price'=>['max:6'],
                 // 'MIN_PRICE_OPT'=>['max:6'],
                 // 'MAX_PRICE_OPT'=>['max:6'],
-                'valid_relation_code'=>['max:6'],
-                'sex_restriction'=>['max:6'],
-                'module_exit'=>['max:6'],
+                // 'valid_relation_code'=>['max:6'],
+                // 'sex_restriction'=>['max:6'],
+                // 'module_exit'=>['max:6'],
                 // 'DATE_TIME_CREATED'=>['max:6'],
                 // 'USER_ID_CREATED'=>['max:6'],
                 // 'DATE_TIME_MODIFIED'=>['min:2','max:12'],
-                'USER_ID'=>['min:2','max:12'],
+                // 'USER_ID'=>['min:2','max:12'],
                 // 'effective_date'=>['max:6'],
                 'termination_date'=>['max:12','after:effective_date'],
-                'reject_only_msg_flag'=>['max:12',],
-                'max_qty_over_time'=>['max:12'],
-                'coverage_start_days'=>['max:6'],
+                // 'reject_only_msg_flag'=>['max:12',],
+                // 'max_qty_over_time'=>['max:12'],
+                // 'coverage_start_days'=>['max:6'],
                 // 'benefit_code'=>['max:6'],
-                'service_modifier'=>['max:2'],
+                // 'service_modifier'=>['max:2'],
                 // 'diagnosis_id'=>['max:1'],
                 // 'MAX_RX_QTY_OPT'=>['max:1'],
                 // 'provider_type'=>['max:1'],
@@ -294,37 +294,37 @@ class ProcedureController extends Controller
             $validator = Validator::make($request->all(), [
                 'procedure_exception_list' => ['required', 'max:10'],
                 "exception_name" => ['max:36'],
-                "new_claim_status"=>['max:2'],
-                "service_type"=>['max:1'],
+                // "new_claim_status"=>['max:2'],
+                // "service_type"=>['max:1'],
                 // 'process_rule'=>['max:15'],
-                'physician_list'=>['max:10'],
-                'physician_specialty_list'=>['max:10'],
-                'diagnosis_list'=>['max:10'],
-                'pricing_strategy_id'=>['max:11'],
-                'accum_bene_strategy_id'=>['max:11'],
-                'copay_strategy_id'=>['max:10'],
+                // 'physician_list'=>['max:10'],
+                // 'physician_specialty_list'=>['max:10'],
+                // 'diagnosis_list'=>['max:10'],
+                // 'pricing_strategy_id'=>['max:11'],
+                // 'accum_bene_strategy_id'=>['max:11'],
+                // 'copay_strategy_id'=>['max:10'],
                 // 'message'=>['max:10'],
                 // 'message_stop_date'=>['max:10'],
-                'min_age'=>['nullable','max:6'],
-                'max_age'=>['nullable','max:6','gt:min_age'],
+                'min_age'=>['nullable'],
+                'max_age'=>['nullable','gt:min_age'],
                 // 'min_price'=>['max:6'],
                 // 'max_price'=>['max:6'],
                 // 'MIN_PRICE_OPT'=>['max:6'],
                 // 'MAX_PRICE_OPT'=>['max:6'],
-                'valid_relation_code'=>['max:6'],
-                'sex_restriction'=>['max:6'],
-                'module_exit'=>['max:6'],
+                // 'valid_relation_code'=>['max:6'],
+                // 'sex_restriction'=>['max:6'],
+                // 'module_exit'=>['max:6'],
                 // 'DATE_TIME_CREATED'=>['max:6'],
                 // 'USER_ID_CREATED'=>['max:6'],
                 // 'DATE_TIME_MODIFIED'=>['min:2','max:12'],
-                'USER_ID'=>['min:2','max:12'],
+                // 'USER_ID'=>['min:2','max:12'],
                 // 'effective_date'=>['max:6'],
                 'termination_date'=>['max:12','after:effective_date'],
-                'reject_only_msg_flag'=>['max:12',],
-                'max_qty_over_time'=>['max:12'],
-                'coverage_start_days'=>['max:6'],
+                // 'reject_only_msg_flag'=>['max:12',],
+                // 'max_qty_over_time'=>['max:12'],
+                // 'coverage_start_days'=>['max:6'],
                 // 'benefit_code'=>['max:6'],
-                'service_modifier'=>['max:2'],
+                // 'service_modifier'=>['max:2'],
                 // 'diagnosis_id'=>['max:1'],
                 // 'MAX_RX_QTY_OPT'=>['max:1'],
                 // 'provider_type'=>['max:1'],
@@ -348,26 +348,37 @@ class ProcedureController extends Controller
                 // }
 
                 
-                // $effectiveDate=$request->effective_date;
-                // $terminationDate=$request->termination_date;
-                // $overlapExists = DB::table('PROCEDURE_EXCEPTION_LISTS')
-                // ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
-                // ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
-                //         });
-                // })
-                // ->exists();
-                // if ($overlapExists) {
-                //     return $this->respondWithToken($this->token(), 'For same Procedure Code, Benefit Code, Service Type, Service Modifier, Diagnosis ID and Provider Type, dates cannot overlap.', $validation, true, 200, 1);
-                // }
+                
 
 
 
                 if($request->update_new == 0){
+
+
+                    $effectiveDate=$request->effective_date;
+                    $terminationDate=$request->termination_date;
+                    $overlapExists = DB::table('PROCEDURE_EXCEPTION_LISTS')
+                    ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
+                    ->where('procedure_exception_list',$request->procedure_exception_list)
+                    ->where('proc_code_list_id',$request->proc_code_list_id)
+                    ->where('service_modifier',$request->service_modifier)
+                    ->where('benefit_code',$request->benefit_code)
+                    ->where('diagnosis_id',$request->diagnosis_id)
+                    ->where('provider_type',$request->provider_type)
+                    ->where('service_type',$request->service_type)
+                    ->where('effective_date','!=',$request->effective_date)
+                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
+                            });
+                    })
+                    ->exists();
+                    if ($overlapExists) {
+                        return $this->respondWithToken($this->token(), 'For same Procedure Code, Benefit Code, Service Type, Service Modifier, Diagnosis ID and Provider Type, dates cannot overlap.', $validation, true, 200, 1);
+                    }
 
                     $add_names = DB::table('PROCEDURE_EXCEPTION_NAMES')
                     ->where('procedure_exception_list',$request->procedure_exception_list)
@@ -433,10 +444,35 @@ class ProcedureController extends Controller
                     ->where('service_type',$request->service_type)
                     ->where('effective_date',$request->effective_date)
                     ->get();
-// return  $checkGPI;
+                  // return  $checkGPI;
                     if(count($checkGPI) >= 1){
-                        return $this->respondWithToken($this->token(), [["Procedure Code List ID already exists"]], '', 'false');
+                        return $this->respondWithToken($this->token(), [['For same Procedure Code, Benefit Code, Service Type, Service Modifier, Diagnosis ID and Provider Type, dates cannot overlap.']], '', 'false');
                     }else{
+
+                        $effectiveDate=$request->effective_date;
+                        $terminationDate=$request->termination_date;
+                        $overlapExists = DB::table('PROCEDURE_EXCEPTION_LISTS')
+                        ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
+                        ->where('procedure_exception_list',$request->procedure_exception_list)
+                        ->where('proc_code_list_id',$request->proc_code_list_id)
+                        ->where('service_modifier',$request->service_modifier)
+                        ->where('benefit_code',$request->benefit_code)
+                        ->where('diagnosis_id',$request->diagnosis_id)
+                        ->where('provider_type',$request->provider_type)
+                        ->where('service_type',$request->service_type)
+                        // ->where('effective_date','!=',$request->effective_date)
+                        ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                    $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                        ->where('TERMINATION_DATE', '>=', $terminationDate);
+                                });
+                        })
+                        ->exists();
+                        if ($overlapExists) {
+                            return $this->respondWithToken($this->token(), [['For same Procedure Code, Benefit Code, Service Type, Service Modifier, Diagnosis ID and Provider Type, dates cannot overlap.']], '', 'false');
+                        }
 
                         $update = DB::table('PROCEDURE_EXCEPTION_LISTS')
                         ->insert(
@@ -633,7 +669,8 @@ class ProcedureController extends Controller
     {
         $ndc = DB::table('PROCEDURE_EXCEPTION_NAMES')
                 ->select('PROCEDURE_EXCEPTION_LIST', 'EXCEPTION_NAME')
-                ->where('PROCEDURE_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
+                ->whereRaw('LOWER(PROCEDURE_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                // ->where('PROCEDURE_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 

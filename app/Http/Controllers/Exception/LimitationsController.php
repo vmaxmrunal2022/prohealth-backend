@@ -13,7 +13,8 @@ class LimitationsController extends Controller
     {
         $ndc = DB::table('LIMITATIONS_LIST')
                 ->select('LIMITATIONS_LIST', 'LIMITATIONS_LIST_NAME','EFFECTIVE_DATE')
-                ->where('LIMITATIONS_LIST', 'like', '%' . $request->search . '%')
+                // ->where('LIMITATIONS_LIST', 'like', '%' . $request->search . '%')
+                ->whereRaw('LOWER(LIMITATIONS_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere('LIMITATIONS_LIST_NAME', 'like', '%' . $request->search. '%')
                 ->get();
 
