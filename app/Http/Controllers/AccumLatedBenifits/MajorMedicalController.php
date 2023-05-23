@@ -22,38 +22,6 @@ class MajorMedicalController extends Controller
             'mm_claim_max' => ['max:10'],
             'mm_life_maximum' => ['max:10'],
         ]);
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        }
-        if ($request->has('new')) {
-            $insert = DB::table('MM_LIFE_MAX')->insert(
-                [
-                    'customer_id' => $request->customer_id,
-                    'client_id' => $request->client_id,
-                    'client_group_id' => $request->client_group_id,
-                    'mm_life_maximum' => $request->mm_life_maximum,
-                    'grouping_type' => $request->grouping_type,
-                    'mm_claim_max' => $request->mm_claim_max,
-                    'effective_date' => $request->effective_date,
-                    'termination_date' => $request->termination_date,
-                    'DATE_TIME_CREATED' => date('Ymd'),
-                    'DATE_TIME_MODIFIED' => date('Ymd'),
-                    'USER_ID_CREATED' => Cache::get('userId'),
-                ]
-            );
-            if ($insert) {
-                return $this->respondWithToken($this->token(), 'Recored Added Successfully', $insert);
-            }
-        } else {
-            $update = DB::table('MM_LIFE_MAX')
-                ->where('customer_id', $request->customer_id)
-                ->where('client_id', $request->client_id)
-                ->where('client_group_id', $request->client_group_id)
-                ->update(
-                    [
-                        'mm_life_maximum' => $request->mm_life_maximum,
-                        'grouping_type' => $request->grouping_type,
-                        'mm_claim_max' => $request->mm_claim_max,
 
   
         $record_check=DB::table('MM_LIFE_MAX')
