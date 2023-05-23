@@ -11,7 +11,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/main
 class MemberController extends Controller
 {
     public function get(Request $request)
@@ -204,18 +207,19 @@ class MemberController extends Controller
 
     public function getCoverageHistory(Request $request)
     {
-        // $coverageHistory = DB::table('MEMBER')
-        //                    ->join('MEMBER_COVERAGE', 'MEMBER.MEMBER_ID', '=', 'MEMBER_COVERAGE.MEMBER_ID')
-        //                    ->where('MEMBER_COVERAGE.MEMBER_ID', 'like', '%'. strtoupper($request->search) .'%')
-        //                    ->limit(100)
-        //                    ->get();
-
-        $coverageHistory = DB::table('MEMBER_COVERAGE')
-            ->where('MEMBER_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->limit(100)
+        $coverage_history = DB::table('MEMBER_HIST')
+            ->where('customer_id', $request->customer_id)
+            ->where('client_id', $request->client_id)
+            ->where('client_group_id', $request->client_group_id)
+            ->where('member_id', $request->member_id)
             ->get();
 
-        return $this->respondWithToken($this->token(), '', $coverageHistory);
+
+            // dd(count($coverage_history));
+
+            return $this->respondWithToken($this->token(), '', $coverage_history);
+
+        
     }
 
     public function getHealthCondition(Request $request)
@@ -406,8 +410,17 @@ class MemberController extends Controller
             ->where('customer_id', $request->customer_id)
             ->where('client_id', $request->client_id)
             ->where('client_group_id', $request->client_group_id)
+            ->where('member_id', $request->member_id)
             ->get();
-        return $this->respondWithToken($this->token(), '', $coverageInformationTable);
+
+        if ($coverageInformationTable) {
+            return $this->respondWithToken($this->token(), '', $coverageInformationTable);
+
+        } else {
+
+            return $this->respondWithToken($this->token(), 'No Data Found');
+
+        }
     }
 
     public function getDiagnosisTable(Request $request)
@@ -422,9 +435,11 @@ class MemberController extends Controller
 
     public function getDiagnosisDetailsTable(Request $request)
     {
-        $diagnosisDetailsTable = DB::table('MEMBER_DIAGNOSIS_HISTORY')
-            ->where('diagnosis_id', $request->diagnosis_id)
-            ->get();
+        $diagnosisDetailsTable = DB::table('MEMBER_DIAGNOSIS')
+            ->where('customer_id', $request->customer_id)
+            ->where('client_id', $request->client_id)
+            ->where('client_group_id', $request->client_group_id)
+            ->where('member_id', $request->member_id)->get();
         return $this->respondWithToken($this->token(), '', $diagnosisDetailsTable);
     }
 
@@ -458,6 +473,7 @@ class MemberController extends Controller
 
 
         if ($request->add_new == 1) {
+<<<<<<< HEAD
             $validator = Validator::make($request->all(), [
                 'member_id' => ['required', 'max:10', Rule::unique('MEMBER')->where(function ($q) {
                     $q->whereNotNull('member_id');
@@ -590,6 +606,264 @@ class MemberController extends Controller
                                 'DATE_TIME_MODIFIED' => date('Ymd'),
                                 'USER_ID_CREATED' => $request->session()->get('user'),
                             ]);
+=======
+
+
+            $validator = Validator::make($request->all(), [
+
+
+                'member_id' => [
+                    'required',
+                    'max:10', Rule::unique('MEMBER')->where(function ($q) {
+                        $q->whereNotNull('member_id');
+                    })
+                ],
+
+
+
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            } else {
+                //Member Tab and Override Tab
+
+                $createddate = date('y-m-d');
+
+                $add_member = DB::table('member')
+                    ->insert([
+                        //member tab
+                        'CUSTOMER_ID' => $request->customer_id,
+                        'CLIENT_ID' => $request->client_id,
+                        'CLIENT_GROUP_ID' => $request->client_group_id,
+                        'MEMBER_ID' => $request->member_id,
+                        'PERSON_CODE' => $request->person_code,
+                        'STATUS' => $request->status,
+                        'EFFECTIVE_DATE_OVERRIDE' => $request->effective_date_override,
+                        'MEMBER_LAST_NAME' => $request->member_last_name,
+                        'MEMBER_FIRST_NAME' => $request->member_first_name,
+                        'ADDRESS_1' => $request->address_1,
+                        'ADDRESS_2' => $request->address_2,
+
+                        'CITY' => $request->city,
+                        'STATE' => $request->state,
+                        'ZIP_CODE' => $request->zipcode,
+                        'PHONE' => $request->phone,
+                        'ANNIV_DATE' => $request->anniv_date,
+                        'DATE_OF_BIRTH' => $request->date_of_birth,
+                        'SEX_OF_PATIENT' => $request->sex_of_patient,
+                        'PATIENT_PIN_NUMBER' => $request->patient_pin_number,
+                        'RELATIONSHIP' => $request->relationship,
+                        'HEALTH_COND_1' => $request->health_cond_1,
+                        'HEALTH_COND_2' => $request->health_cond_2,
+                        'HEALTH_COND_3' => $request->health_cond_3,
+                        'HEALTH_COND_4' => $request->health_cond_4,
+                        'HEALTH_COND_5' => $request->health_cond_5,
+                        'HEALTH_COND_6' => $request->health_cond_6,
+
+
+                        'ALLERGY_COND_1' => $request->allergy_cond_1,
+                        'ALLERGY_COND_2' => $request->allergy_cond_2,
+                        'ALLERGY_COND_3' => $request->allergy_cond_3,
+                        'ALLERGY_COND_4' => $request->allergy_cond_4,
+                        'ALLERGY_COND_5' => $request->allergy_cond_5,
+                        'ALLERGY_COND_6' => $request->allergy_cond_6,
+
+
+                        'ACCUM_BENEFIT_PTD' => $request->accum_benefit_ptd,
+                        'ACCUM_DEDUCTIBLE_PTD' => $request->accum_deductible_ptd,
+                        'REMAIN_BENEFIT_PTD' => $request->remain_benefit_ptd,
+                        'ACCUM_BENEFIT_YTD' => $request->accum_benefit_ytd,
+                        'ACCUM_DEDUCTIBLE_YTD' => $request->accum_deductible_ytd,
+                        'REMAIN_BENEFIT_YTD' => $request->remain_benefit_ytd,
+                        'ELIGIBILITY_OVRD' => $request->eligibility_ovrd,
+                        'PLAN_OPTION' => $request->plan_option,
+                        'PRIMARY_PRESCRIBER' => $request->primary_prescriber,
+                        'DATE_TIME_CREATED' => $createddate,
+                        'ALT_MEMBER_ID' => $request->alt_member_id,
+                        'MISC_DATA' => $request->misc_data,
+                        'PRIM_COVERAGE_INS_CARRIER' => $request->prim_coverage_ins_carrier,
+                        'ELIG_LOCK_DATE' => $request->elig_lock_date,
+                        'LOAD_PROCESS_DATE' => $request->load_process_date,
+
+
+
+                        //Overrides
+                        'COPAY_SCHED_OVR_FLAG' => $request->copay_sched_ovr_flag,
+                        'COPAY_SCHED_OVR' => $request->copay_sched_ovr,
+                        'ACCUM_BENE_OVR_FLAG' => $request->accum_bene_ovr_flag,
+                        'ACCUM_BENE_PLAN_OVR' => $request->accum_bene_plan_ovr,
+                        'ACCUM_ADJMNT_MBR_PAID_AMT' => $request->accum_adjmnt_mbr_paid_amt,
+
+                        'WORK_COMP_REF_NUM' => $request->work_comp_ref_num,
+                        'INJURY_DATE' => $request->injury_date,
+                        'PHARMACY_NABP' => $request->pharmacy_nabp,
+                        'RX_NETWORK_ID' => $request->rx_network_id,
+
+                        'ACCUM_BENE_EFF_DATE_1' => $request->accum_bene_eff_date_1,
+                        'ACCUM_BENE_EFF_DATE_2' => $request->accum_bene_eff_date_2,
+                        'ACCUM_BENE_EFF_DATE_3' => $request->accum_bene_eff_date_3,
+                        'ACCUM_BENE_TERM_DATE_1' => $request->ACCUM_BENE_TERM_DATE_1,
+                        'ACCUM_BENE_TERM_DATE_2' => $request->ACCUM_BENE_TERM_DATE_2,
+                        'ACCUM_BENE_TERM_DATE_3' => $request->ACCUM_BENE_TERM_DATE_3,
+
+
+                        'ACCUM_ADJMNT_MBR_PAID_AMT_2' => $request->accum_adjmnt_mbr_paid_amt_2,
+                        'ACCUM_ADJMNT_PLAN_PAID_AMT_2' => $request->accum_adjmnt_plan_paid_amt_2,
+                        'ACCUM_ADJMNT_MBR_PAID_AMT_3' => $request->accum_adjmnt_mbr_paid_amt_3,
+                        'ACCUM_ADJMNT_PLAN_PAID_AMT_3' => $request->accum_adjmnt_plan_paid_amt_3,
+
+                        'ELIG_VALIDATION_ID' => $request->elig_validation_id,
+                        'ACCUM_ADJMNT_MBR_PAID_MOP_1' => $request->accum_adjmnt_mbr_paid_mop_1,
+                        'ACCUM_ADJMNT_MBR_PAID_MOP_2' => $request->accum_adjmnt_mbr_paid_mop_2,
+                        'ACCUM_ADJMNT_MBR_PAID_MOP_3' => $request->accum_adjmnt_mbr_paid_mop_3,
+
+                        'MISC_GROUPING_1' => $request->misc_grouping_1,
+                        'MISC_GROUPING_2' => $request->misc_grouping_2,
+                        'misc_id' => $request->misc_id,
+                        'USER_DEFINED_CODE_1' => $request->user_defined_code_1,
+                        'USER_DEFINED_CODE_2' => $request->user_defined_code_2,
+                        'COUNTRY' => $request->country,
+                        // 'COUNTRY_CODE'=>$request->country_code,
+
+                    ]);
+
+
+
+
+
+
+                // //Coverage Tab
+
+                $coverage_list_array = json_decode(json_encode($request->coverage_form, true));
+
+                if (!empty($request->coverage_form)) {
+                    $coverage_list = $coverage_list_array[0];
+
+
+                    foreach ($coverage_list_array as $key => $coverage_list) {
+
+                        $add_member_coverage = DB::table('MEMBER_COVERAGE')
+                            ->insert([
+                                'customer_id' => $coverage_list->customer_id,
+                                'client_id' => $coverage_list->client_id,
+                                'client_group_id' => $coverage_list->client_group_id,
+                                'member_id' => $coverage_list->member_id,
+                                'EFFECTIVE_DATE' => $coverage_list->effective_date,
+                                'TERMINATION_DATE' => $coverage_list->termination_date,
+                                'plan_id' => $coverage_list->plan_id,
+                                'COPAY_STRATEGY_ID' => $coverage_list->copay_strategy_id,
+                                'ACCUM_BENEFIT_STRATEGY_ID' => $coverage_list->accum_benefit_strategy_id,
+                                'PRICING_STRATEGY_ID' => $coverage_list->pricing_strategy_id,
+                            ]);
+
+
+
+
+
+                    }
+                }
+
+                //coverage-history
+
+                $coverage_Hist_array = json_decode(json_encode($request->coverage_form, true));
+
+                if (!empty($request->coverage_form)) {
+                    $coverage_history = $coverage_Hist_array[0];
+
+
+                    foreach ($coverage_Hist_array as $key => $coverage_history) {
+
+                        $add_hist = DB::table('MEMBER_HIST')
+                            ->insert([
+                                'CUSTOMER_ID' => $coverage_history->customer_id,
+                                'CLIENT_ID' => $coverage_history->client_id,
+                                'CLIENT_GROUP_ID' => $coverage_history->client_group_id,
+                                'MEMBER_ID' => $coverage_history->member_id,
+                                "DATE_TIME_MODIFIED" => date('Y-m-d H:i:s'),
+
+                                // 'PERSON_CODE'=>$coverage_history->person_code,
+                                // 'FROM_EFFECTIVE_DATE'=>$coverage_history->effective_date,
+                                // 'FROM_TERMINATION_DATE'=>$coverage_history->termination_date,
+                                // 'FROM_PLAN_ID'=>$coverage_history->from_plan_id,
+                                'TO_EFFECTIVE_DATE'=>$coverage_history->effective_date,
+                                'TO_TERMINATION_DATE'=>$coverage_history->termination_date,
+                                // 'TO_PLAN_ID'=>$coverage_history->to_plan_id,
+                                'CHG_TYPE_IND'=>'A',
+                                // 'FROM_COVERAGE_STRATEGY_ID'=>$coverage_history->from_coverage_strategy_id,
+                                // 'FROM_DRUG_COV_STRATEGY_ID'=>$coverage_history->from_drug_cov_strategy,
+
+                                // 'FROM_PREF_MAINT_DRUG_STRAT_ID'=>$coverage_history->from_pref_maint_drug_strat_id,
+                                // 'FROM_PRICING_STRATEGY_ID'=>$coverage_history->from_pricing_strategy_id,
+                                // 'FROM_COPAY_STRATEGY_ID'=>$coverage_history->from_copay_strategy_id,
+
+                                // 'FROM_ACCUM_BENEFIT_STRAT_ID'=>$coverage_history->from_accum_benefit_strat_id,
+                                // 'TO_COVERAGE_STRATEGY_ID'=>$coverage_history->to_coverage_strategy_id,
+                                // 'TO_DRUG_COV_STRATEGY_ID'=>$coverage_history->to_drug_cov_strategy_id,
+                                // 'TO_PREF_MAINT_DRUG_STRAT_ID'=>$coverage_history->to_pref_maint_drug_strat_id,
+                                // 'TO_PRICING_STRATEGY_ID'=>$coverage_history->to_pricing_strategy_id,
+
+                                // 'TO_COPAY_STRATEGY_ID'=>$coverage_history->to_copay_strategy_id,
+
+                            ]);
+
+
+
+
+
+                    }
+                }
+
+
+
+                //diagnosis-helath conditions add
+
+
+                //Diagnosis Tab
+
+                $diagnosis_list_array = json_decode(json_encode($request->diagnosis_form, true));
+
+                if (!empty($request->diagnosis_form)) {
+                    $diagnosis_list = $diagnosis_list_array[0];
+
+
+                    foreach ($diagnosis_list_array as $key => $diagnosis_list) {
+
+
+                        $add_diagnosis = DB::table('MEMBER_DIAGNOSIS')
+                            ->insert([
+                                'customer_id' => $diagnosis_list->customer_id,
+                                'client_id' => $diagnosis_list->client_id,
+                                'client_group_id' => $diagnosis_list->client_group_id,
+                                'member_id' => $diagnosis_list->member_id,
+                                'DIAGNOSIS_ID' => $diagnosis_list->diagnosis_id,
+                                "person_code" => "0",
+                                'EFFECTIVE_DATE' => $diagnosis_list->effective_date,
+                                'TERMINATION_DATE' => $diagnosis_list->termination_date,
+
+                            ]);
+
+
+                        $add_diagnosis_history=DB::table('MEMBER_DIAGNOSIS_HISTORY')
+                        ->insert([
+                            'CUSTOMER_ID' => $diagnosis_list->customer_id,
+                            'CLIENT_ID' => $diagnosis_list->client_id,
+                            'CLIENT_GROUP_ID' => $diagnosis_list->client_group_id,
+                            'MEMBER_ID' => $diagnosis_list->member_id,
+                            'DIAGNOSIS_ID' => $diagnosis_list->diagnosis_id,
+                            "PERSON_CODE" => "000",
+                            "CHG_TYPE_IND"=>"A",
+                            "BATCH_SEQUENCE_NUMBER"=>'0',
+                            'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
+                            'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
+                            "TO_EFFECTIVE_DATE"=>$diagnosis_list->effective_date,
+                            "TO_TERMINATION_DATE"=>$diagnosis_list->termination_date,
+                            "USER_ID_CREATED"=>"",
+
+                        ]);
+
+
+>>>>>>> origin/main
                     }
                 }
 
@@ -597,6 +871,7 @@ class MemberController extends Controller
 
 
 
+<<<<<<< HEAD
 
                 // //Diagnosis Tab
                 // $add_diagnosis = DB::table('MEMBER_DIAGNOSIS')
@@ -620,6 +895,15 @@ class MemberController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_member_coverage);
             }
         } else if ($request->add_new == 0) {
+=======
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_member);
+
+            }
+
+        } else if ($request->add_new == 0) {
+
+            //Member Tab Update
+>>>>>>> origin/main
             $update_member = DB::table('member')
                 ->where('customer_id', $request->customer_id)
                 ->where('client_id', $request->client_id)
@@ -671,33 +955,229 @@ class MemberController extends Controller
                 ]);
 
             //Coverage Tab
-            $update_member_coverage = DB::table('MEMBER_COVERAGE')
-                ->where('customer_id', $request->customer_id)
+
+
+            $delete_member_coverage = DB::table('MEMBER_COVERAGE')->where('customer_id', $request->customer_id)
                 ->where('client_id', $request->client_id)
                 ->where('client_group_id', $request->client_group_id)
-                ->where('member_id', $request->member_id)
-                ->update([
-                    // 'EFFECTIVE_DATE' => $request->coverage_effective_date,
-                    'TERMINATION_DATE' => $request->coverage_termination_date,
-                    'plan_id' => $request->coverage_plan_id,
-                    'COPAY_STRATEGY_ID' => $request->coverage_copay_strategy_id,
-                    'ACCUM_BENEFIT_STRATEGY_ID' => $request->coverage_accum_benefit_strategy_id,
-                    'PRICING_STRATEGY_ID' => $request->coverage_pricing_strategy_id,
-                ]);
+                ->where('member_id', $request->member_id)->delete();
+
+
+            $coverage_list_array = json_decode(json_encode($request->coverage_form, true));
+
+            if (!empty($request->coverage_form)) {
+                $coverage_list = $coverage_list_array[0];
+
+
+                foreach ($coverage_list_array as $key => $coverage_list) {
+
+                    $add_member_coverage = DB::table('MEMBER_COVERAGE')
+                        ->insert([
+                            'customer_id' => $coverage_list->customer_id,
+                            'client_id' => $coverage_list->client_id,
+                            'client_group_id' => $coverage_list->client_group_id,
+                            'member_id' => $coverage_list->member_id,
+                            'EFFECTIVE_DATE' => $coverage_list->effective_date,
+                            'TERMINATION_DATE' => $coverage_list->termination_date,
+                            'PLAN_ID' => $coverage_list->plan_id,
+                            'COPAY_STRATEGY_ID' => $coverage_list->copay_strategy_id,
+                            'ACCUM_BENEFIT_STRATEGY_ID' => $coverage_list->accum_benefit_strategy_id,
+                            'PRICING_STRATEGY_ID' => $coverage_list->pricing_strategy_id,
+                        ]);
+
+
+
+                    $add_member_coverage = DB::table('MEMBER_HIST')
+                    ->where('CUSTOMER_ID', $coverage_list->customer_id)
+                            ->where('CLIENT_ID', $coverage_list->client_id)
+                            ->where('CLIENT_GROUP_ID', $coverage_list->client_group_id)
+                            ->where('MEMBER_ID', $coverage_list->member_id)
+                            ->where('FROM_EFFECTIVE_DATE', $coverage_list->effective_date)->first();
+
+                    if ($add_member_coverage) {
+                        $new = $add_member_coverage;
+                        $new = DB::table('MEMBER_HIST')
+                            ->where('CUSTOMER_ID', $coverage_list->customer_id)
+                            ->where('CLIENT_ID', $coverage_list->client_id)
+                            ->where('CLIENT_GROUP_ID', $coverage_list->client_group_id)
+                            ->where('MEMBER_ID', $coverage_list->member_id)
+
+
+
+                            ->update([
+
+                                // 'MEMBER_ID' => $coverage_history->member_id,
+                                'PERSON_CODE' => $coverage_list->person_code,
+                                "DATE_TIME_MODIFIED" => date('Y-m-d H:i:s'),
+                                // 'FROM_EFFECTIVE_DATE'=>$coverage_history->from_effective_date,
+                                // 'FROM_TERMINATION_DATE'=>$coverage_list->from_termination_date,
+                                // 'FROM_PLAN_ID'=>$coverage_history->from_plan_id,
+                                // 'TO_EFFECTIVE_DATE'=>$coverage_list->to_effective_date,
+                                // 'TO_TERMINATION_DATE'=>$coverage_list->to_termination_date,
+                                // 'TO_PLAN_ID'=>$coverage_history->to_plan_id,
+                                'CHG_TYPE_IND'=>"A",
+                                // 'FROM_COVERAGE_STRATEGY_ID'=>$coverage_history->from_coverage_strategy_id,
+                                // 'FROM_DRUG_COV_STRATEGY_ID'=>$coverage_history->from_drug_cov_strategy,
+
+                                // 'FROM_PREF_MAINT_DRUG_STRAT_ID'=>$coverage_history->from_pref_maint_drug_strat_id,
+                                // 'FROM_PRICING_STRATEGY_ID'=>$coverage_history->from_pricing_strategy_id,
+                                // 'FROM_COPAY_STRATEGY_ID'=>$coverage_history->from_copay_strategy_id,
+
+                                // 'FROM_ACCUM_BENEFIT_STRAT_ID'=>$coverage_history->from_accum_benefit_strat_id,
+                                // 'TO_COVERAGE_STRATEGY_ID'=>$coverage_history->to_coverage_strategy_id,
+                                // 'TO_DRUG_COV_STRATEGY_ID'=>$coverage_history->to_drug_cov_strategy_id,
+                                // 'TO_PREF_MAINT_DRUG_STRAT_ID'=>$coverage_history->to_pref_maint_drug_strat_id,
+                                // 'TO_PRICING_STRATEGY_ID'=>$coverage_history->to_pricing_strategy_id,
+
+                                // 'TO_COPAY_STRATEGY_ID'=>$coverage_history->to_copay_strategy_id,
+
+                            ]);
+                    } else {
+
+                        $new = DB::table('MEMBER_HIST')
+                            ->insert([
+                                'CUSTOMER_ID' => $coverage_list->customer_id,
+                                'CLIENT_ID' => $coverage_list->client_id,
+                                'CLIENT_GROUP_ID' => $coverage_list->client_group_id,
+                                'MEMBER_ID' => $coverage_list->member_id,
+                                // 'PERSON_CODE'=>$coverage_history->person_code,
+                                // 'FROM_EFFECTIVE_DATE'=>$coverage_list->from_effective_date,
+                                // 'FROM_TERMINATION_DATE'=>$coverage_list->from_termination_date,
+                                // 'FROM_PLAN_ID'=>$coverage_history->from_plan_id,
+                                // 'TO_EFFECTIVE_DATE'=>$coverage_history->to_effective_date,
+                                // 'TO_TERMINATION_DATE'=>$coverage_history->to_termination_date,
+                                // 'TO_PLAN_ID'=>$coverage_history->to_plan_id,
+                                // 'CHG_TYPE_IND'=>$coverage_history->chg_type_ind,
+                                // 'FROM_COVERAGE_STRATEGY_ID'=>$coverage_history->from_coverage_strategy_id,
+                                // 'FROM_DRUG_COV_STRATEGY_ID'=>$coverage_history->from_drug_cov_strategy,
+
+                                // 'FROM_PREF_MAINT_DRUG_STRAT_ID'=>$coverage_history->from_pref_maint_drug_strat_id,
+                                // 'FROM_PRICING_STRATEGY_ID'=>$coverage_history->from_pricing_strategy_id,
+                                // 'FROM_COPAY_STRATEGY_ID'=>$coverage_history->from_copay_strategy_id,
+
+                                // 'FROM_ACCUM_BENEFIT_STRAT_ID'=>$coverage_history->from_accum_benefit_strat_id,
+                                // 'TO_COVERAGE_STRATEGY_ID'=>$coverage_history->to_coverage_strategy_id,
+                                // 'TO_DRUG_COV_STRATEGY_ID'=>$coverage_history->to_drug_cov_strategy_id,
+                                // 'TO_PREF_MAINT_DRUG_STRAT_ID'=>$coverage_history->to_pref_maint_drug_strat_id,
+                                // 'TO_PRICING_STRATEGY_ID'=>$coverage_history->to_pricing_strategy_id,
+
+                                // 'TO_COPAY_STRATEGY_ID'=>$coverage_history->to_copay_strategy_id,
+
+                            ]);
+
+
+                    }
+
+
+
+
+
+
+
+
+                }
+            }
 
             //Diagnosis Tab
-            $update_diagnosis = DB::table('MEMBER_DIAGNOSIS')
-                ->where('customer_id', $request->customer_id)
+
+            $delete_member_coverage = DB::table('MEMBER_DIAGNOSIS')->where('customer_id', $request->customer_id)
                 ->where('client_id', $request->client_id)
                 ->where('client_group_id', $request->client_group_id)
                 ->where('member_id', $request->member_id)
-                ->update([
-                    // 'PERSON_CODE' => $request->person_code,
-                    "person_code" => "0",
-                    'DIAGNOSIS_ID' => $request->diagnosis_id,
-                    'EFFECTIVE_DATE' => $request->effective_date,
-                    'termination_date' => $request->termination_date,
+                ->delete();
+
+
+            $diagnosis_list_array = json_decode(json_encode($request->diagnosis_form, true));
+
+            if (!empty($request->diagnosis_form)) {
+                $diagnosis_list = $diagnosis_list_array[0];
+
+
+                foreach ($diagnosis_list_array as $key => $diagnosis_list) {
+
+
+                    $add_diagnosis = DB::table('MEMBER_DIAGNOSIS')
+                        ->insert([
+                            'customer_id' => $diagnosis_list->customer_id,
+                            'client_id' => $diagnosis_list->client_id,
+                            'client_group_id' => $diagnosis_list->client_group_id,
+                            'member_id' => $diagnosis_list->member_id,
+                            'DIAGNOSIS_ID' => $diagnosis_list->diagnosis_id,
+                            "person_code" => "0",
+                            'EFFECTIVE_DATE' => $diagnosis_list->effective_date,
+                            'TERMINATION_DATE' => $diagnosis_list->termination_date,
+
+                        ]);
+
+
+
+
+                }
+
+
+                $add_diagnosis_history = DB::table('MEMBER_DIAGNOSIS_HISTORY')
+                ->where('CUSTOMER_ID', $diagnosis_list->customer_id)
+                        ->where('CLIENT_ID', $diagnosis_list->client_id)
+                        ->where('CLIENT_GROUP_ID', $diagnosis_list->client_group_id)
+                        ->where('MEMBER_ID', $diagnosis_list->member_id)
+                        ->where('FROM_EFFECTIVE_DATE', $diagnosis_list->effective_date)->first();
+
+                if ($add_diagnosis_history) {
+                    $new = $add_diagnosis_history;
+                    $new = DB::table('MEMBER_HIST')
+                        ->where('CUSTOMER_ID', $diagnosis_list->customer_id)
+                        ->where('CLIENT_ID', $diagnosis_list->client_id)
+                        ->where('CLIENT_GROUP_ID', $diagnosis_list->client_group_id)
+                        ->where('MEMBER_ID', $diagnosis_list->member_id)
+
+                        ->update([
+                            
+                            'DIAGNOSIS_ID' => $diagnosis_list->diagnosis_id,
+                            "PERSON_CODE" => "0",
+                            "CHG_TYPE_IND"=>"A",
+                            "BATCH_SEQUENCE_NUMBER"=>'',
+                            // 'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
+                            // 'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
+                            "TO_EFFECTIVE_DATE"=>$diagnosis_list->effective_date,
+                            "TO_TERMINATION_DATE"=>$diagnosis_list->termination_date,
+                            "USER_ID_CREATED"=>"",
+        
+                        ]);
+                } else {
+
+                    
+
+                     $new=DB::table('MEMBER_DIAGNOSIS_HISTORY')
+                ->insert([
+                    'CUSTOMER_ID' => $diagnosis_list->customer_id,
+                    'CLIENT_ID' => $diagnosis_list->client_id,
+                    'CLIENT_GROUP_ID' => $diagnosis_list->client_group_id,
+                    'MEMBER_ID' => $diagnosis_list->member_id,
+                    'DIAGNOSIS_ID' => $diagnosis_list->diagnosis_id,
+                    "PERSON_CODE" => "0",
+                    "CHG_TYPE_IND"=>"A",
+                    "BATCH_SEQUENCE_NUMBER"=>'',
+
+                    'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
+                    'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
+                    "TO_EFFECTIVE_DATE"=>$diagnosis_list->effective_date,
+                    "TO_TERMINATION_DATE"=>$diagnosis_list->termination_date,
+                    "USER_ID_CREATED"=>"",
+
                 ]);
+
+
+
+                }
+
+
+
+               
+
+            }
+
+
+
 
             $record_snapshot = json_encode($update_member);
             $save_audit = DB::table('FE_RECORD_LOG')

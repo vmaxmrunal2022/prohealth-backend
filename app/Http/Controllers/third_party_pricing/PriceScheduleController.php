@@ -14,7 +14,8 @@ class PriceScheduleController extends Controller
     public function get(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')
-            ->where('PRICE_SCHEDULE',  $request->search)
+            // ->where('PRICE_SCHEDULE',  $request->search)
+            ->whereRaw('LOWER(PRICE_SCHEDULE) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('COPAY_SCHEDULE', $request->search)
             ->orWhere('PRICE_SCHEDULE_NAME',$request->search)
             ->orWhere('PRICE_SCHEDULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
@@ -226,24 +227,24 @@ class PriceScheduleController extends Controller
                     $q->whereNotNull('price_schedule');
                 })],
                 'price_schedule_name' => ['required', 'max:35'],
-                'bng1_stdpkg' => ['required', 'max:1'],
-                'bng2_stdpkg' => ['required', 'max:1'],
-                'bng3_stdpkg' => ['required', 'max:1'],
-                'bng4_stdpkg' => ['required', 'max:1'],
-                'bng5_stdpkg' => ['required', 'max:1'],
-                'bng6_stdpkg' => ['required', 'max:1'],
-                'bga1_stdpkg' => ['required', 'max:1'],
-                'bga2_stdpkg' => ['required', 'max:1'],
-                'bga3_stdpkg' => ['required', 'max:1'],
-                'bga4_stdpkg' => ['required', 'max:1'],
-                'bga5_stdpkg' => ['required', 'max:1'],
-                'bga6_stdpkg' => ['required', 'max:1'],
-                'gen1_stdpkg' => ['required', 'max:1'],
-                'gen2_stdpkg' => ['required', 'max:1'],
-                'gen3_stdpkg' => ['required', 'max:1'],
-                'gen4_stdpkg' => ['required', 'max:1'],
-                'gen5_stdpkg' => ['required', 'max:1'],
-                'gen6_stdpkg' => ['required', 'max:1'],
+                // 'bng1_stdpkg' => ['required', 'max:1'],
+                // 'bng2_stdpkg' => ['required', 'max:1'],
+                // 'bng3_stdpkg' => ['required', 'max:1'],
+                // 'bng4_stdpkg' => ['required', 'max:1'],
+                // 'bng5_stdpkg' => ['required', 'max:1'],
+                // 'bng6_stdpkg' => ['required', 'max:1'],
+                // 'bga1_stdpkg' => ['required', 'max:1'],
+                // 'bga2_stdpkg' => ['required', 'max:1'],
+                // 'bga3_stdpkg' => ['required', 'max:1'],
+                // 'bga4_stdpkg' => ['required', 'max:1'],
+                // 'bga5_stdpkg' => ['required', 'max:1'],
+                // 'bga6_stdpkg' => ['required', 'max:1'],
+                // 'gen1_stdpkg' => ['required', 'max:1'],
+                // 'gen2_stdpkg' => ['required', 'max:1'],
+                // 'gen3_stdpkg' => ['required', 'max:1'],
+                // 'gen4_stdpkg' => ['required', 'max:1'],
+                // 'gen5_stdpkg' => ['required', 'max:1'],
+                // 'gen6_stdpkg' => ['required', 'max:1'],
                 // 'tax_flag' => ['required', 'max:1'],
             ]);
             if ($validator->fails()) {
@@ -433,14 +434,18 @@ class PriceScheduleController extends Controller
             }
         } else {
             $validator = Validator::make($request->all(), [
-                'price_schedule' => ['required', 'max:10'],
+                'price_schedule' => ['required', 'max:10', Rule::unique('price_schedule')->where(function ($q) use ($request) {
+                    $q->whereNotNull('price_schedule');
+                    $q->where('price_schedule', '!=', $request->price_schedule);
+                })],
+                // 'price_schedule' => ['required', 'max:10'],
                 'price_schedule_name' => ['required', 'max:35'],
-                'bng1_stdpkg' => ['required', 'max:1'],
-                'bng2_stdpkg' => ['required', 'max:1'],
-                'bng3_stdpkg' => ['required', 'max:1'],
-                'bng4_stdpkg' => ['required', 'max:1'],
-                'bng5_stdpkg' => ['required', 'max:1'],
-                'bng6_stdpkg' => ['required', 'max:1'],
+                // 'bng1_stdpkg' => ['required', 'max:1'],
+                // 'bng2_stdpkg' => ['required', 'max:1'],
+                // 'bng3_stdpkg' => ['required', 'max:1'],
+                // 'bng4_stdpkg' => ['required', 'max:1'],
+                // 'bng5_stdpkg' => ['required', 'max:1'],
+                // 'bng6_stdpkg' => ['required', 'max:1'],
                 // 'tax_flag' => ['required', 'max:1'],
             ]);
             if ($validator->fails()) {
@@ -630,4 +635,6 @@ class PriceScheduleController extends Controller
             }
         }
     }
+
+
 }

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use LDAP\Result;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class CopayScheduleController extends Controller
 {
@@ -13,8 +15,9 @@ class CopayScheduleController extends Controller
     public function get(Request $request)
     {
         $copayList = DB::table('COPAY_SCHEDULE')           
-             ->where('copay_schedule', 'like', '%' . $request->search. '%')
+            //  ->where('copay_schedule', 'like', '%' . $request->search. '%')
             // ->where('copay_schedule', 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('LOWER(copay_schedule) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('copay_schedule_name', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
@@ -90,9 +93,28 @@ class CopayScheduleController extends Controller
             ->first();
 
             if($check){
-            return $this->respondWithToken($this->token(), 'Copay Schedule ID Already Exists', $check);
+            return $this->respondWithToken($this->token(), [['Copay Schedule ID Already Exists']], $check,'false');
 
             }else{
+
+                $validator = Validator::make($request->all(), [
+                    'copay_schedule' => ['required', 'max:10', Rule::unique('copay_schedule')->where(function ($q) use ($request) {
+                        $q->whereNotNull('copay_schedule');
+                    })],
+                    // 'price_schedule' => ['required', 'max:10'],
+                    'copay_schedule_name' => ['required', 'max:36'],
+                    // 'bng1_stdpkg' => ['required', 'max:1'],
+                    // 'bng2_stdpkg' => ['required', 'max:1'],
+                    // 'bng3_stdpkg' => ['required', 'max:1'],
+                    // 'bng4_stdpkg' => ['required', 'max:1'],
+                    // 'bng5_stdpkg' => ['required', 'max:1'],
+                    // 'bng6_stdpkg' => ['required', 'max:1'],
+                    // 'tax_flag' => ['required', 'max:1'],
+                ]);
+                if ($validator->fails()) {
+                    return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+                } 
+
                 $add_copay_schedule = DB::table('copay_schedule')
                 ->insert([
                     'bga1_copay_amount'=> $request->bga1_copay_amount,
@@ -267,6 +289,17 @@ class CopayScheduleController extends Controller
             }
            
         } else if($request->add_new == 0) {
+            $validator = Validator::make($request->all(), [
+                'copay_schedule' => ['required', 'max:10', Rule::unique('copay_schedule')->where(function ($q) use ($request) {
+                    $q->whereNotNull('copay_schedule');
+                    $q->where('copay_schedule','!=',$request->copay_schedule);
+                })],
+                'copay_schedule_name' => ['required', 'max:36'],
+               
+            ]);
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            } 
             $update_copay_schedule = DB::table('copay_schedule')
                 ->where('copay_schedule', $request->copay_schedule)
                 ->update([

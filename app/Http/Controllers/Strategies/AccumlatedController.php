@@ -21,6 +21,7 @@ class AccumlatedController extends Controller
             ->first();
 
         if ($request->new) {
+<<<<<<< HEAD
             if ($existdata) {
                 return $this->respondWithToken($this->token(), "Accumulate Benefit Strategy ID exists", '', false);
             } else {
@@ -58,9 +59,56 @@ class AccumlatedController extends Controller
                 if ($add) {
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
                 }
+=======
+
+            if (!$request->updateForm) {
+
+                $ifExist = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                    ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
+                    ->get();
+                if (count($ifExist) >= 1) {
+                    return $this->respondWithToken($this->token(), [["Duplicate Parent Record"]], '', false);
+                }
+            } else {
+>>>>>>> origin/main
             }
 
+            if ($request->accum_bene_strategy_id && $request->effective_date) {
+                $count = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                    ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
+                    ->get()
+                    ->count();
+                if ($count <= 0) {
+                    // return date('d-M-y');
+                    $add_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                        ->insert(
+                            [
+                                'accum_bene_strategy_id' => strtoupper($request->accum_bene_strategy_id),
+                                'accum_bene_strategy_name' => $request->accum_bene_strategy_name,
+                                'DATE_TIME_CREATED' => date('d-M-y'),
+                                'user_id' => Cache::get('userId'),
+                                'DATE_TIME_MODIFIED' => date('d-M-y'),
+                                'form_id' => ''
+                            ]
+                        );
+                    $add = DB::table('ACCUM_BENEFIT_STRATEGY')
+                        ->insert([
+                            'accum_bene_strategy_id' => strtoupper($request->accum_bene_strategy_id),
+                            'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
+                            'formulary_variation_ind' => $request->formulary_variation_ind,
+                            'network_part_variation_ind' => $request->network_part_variation_ind,
+                            'claim_type_variation_ind' => $request->claim_type_variation_ind,
+                            'DATE_TIME_CREATED' => date('d-M-y'),
+                            'user_id' => Cache::get('userId'),
+                            'DATE_TIME_MODIFIED' => date('d-M-y'),
+                            'form_id' => '',
+                            'user_id_created' => '',
+                            'accum_exclusion_flag' => $request->accum_exclusion_flag,
+                            'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                            'module_exit' => $request->module_exit,
+                            'plan_accum_deduct_id' => $request->plan_accum_deduct_id,
 
+<<<<<<< HEAD
 
             // if ($request->accum_bene_strategy_id && $request->effective_date && $request->plan_accum_deduct_id) {
             //     $count = DB::table('ACCUM_BENE_STRATEGY_NAMES')
@@ -221,6 +269,104 @@ class AccumlatedController extends Controller
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
                 }
             }
+=======
+                        ]);
+
+                    $add = DB::table('ACCUM_BENEFIT_STRATEGY')->where('accum_bene_strategy_id', 'like', '%' . $request->accum_bene_strategy_id . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+                } else {
+                    $updateProviderExceptionData = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                        ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
+                        ->update([
+                            'accum_bene_strategy_name' => $request->accum_bene_strategy_name,
+                            'user_id' => Cache::get('userId'),
+                            'date_time_modified' => date('d-M-y'),
+                            'form_id' => ''
+                        ]);
+
+                    $eff_date = $request->effective_date;
+                    $countValidation = DB::table('ACCUM_BENEFIT_STRATEGY')
+                        // ->select('effective_date')
+                        ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
+                        ->whereBetween('effective_date', [$eff_date, $eff_date])
+                        ->get();
+
+                    if (count($countValidation) >= 1) {
+                        return $this->respondWithToken(
+                            $this->token(),
+                            [['Duplicate Child Record']],
+                            [['Duplicate Child Record']],
+                            false
+                        );
+                    } else {
+
+                        $addProviderValidationData = DB::table('ACCUM_BENEFIT_STRATEGY')
+                            ->insert([
+                                'accum_bene_strategy_id' => strtoupper($request->accum_bene_strategy_id),
+                                'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
+                                'formulary_variation_ind' => $request->formulary_variation_ind,
+                                'network_part_variation_ind' => $request->network_part_variation_ind,
+                                'claim_type_variation_ind' => $request->claim_type_variation_ind,
+                                'DATE_TIME_CREATED' => date('d-M-y'),
+                                'user_id' => Cache::get('userId'),
+                                'DATE_TIME_MODIFIED' => date('d-M-y'),
+                                'form_id' => '',
+                                'user_id_created' => '',
+                                'accum_exclusion_flag' => $request->accum_exclusion_flag,
+                                'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                                'module_exit' => $request->module_exit,
+                                'plan_accum_deduct_id' => $request->plan_accum_deduct_id,
+
+                            ]);
+                        $reecord = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                            ->join('ACCUM_BENEFIT_STRATEGY', 'ACCUM_BENE_STRATEGY_NAMES.accum_bene_strategy_id', '=', 'ACCUM_BENEFIT_STRATEGY.accum_bene_strategy_id')
+                            ->where('ACCUM_BENEFIT_STRATEGY.accum_bene_strategy_id', $request->accum_bene_strategy_id)
+                            ->where('ACCUM_BENEFIT_STRATEGY.plan_accum_deduct_id', $request->plan_accum_deduct_id)
+                            ->first();
+                        return $this->respondWithToken(
+                            $this->token(),
+                            'Record Added successfully',
+                            $reecord,
+                        );
+                    }
+                }
+            }
+        } else {
+            $updateProviderExceptionData = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                ->where('accum_bene_strategy_id', $request->accum_bene_strategy_id)
+                ->update([
+                    'accum_bene_strategy_name' => $request->accum_bene_strategy_name,
+                    'user_id' => Cache::get('userId'),
+                    'date_time_modified' => date('d-M-y'),
+                    'form_id' => ''
+                ]);
+
+            $countValidation = DB::table('ACCUM_BENEFIT_STRATEGY')
+                ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
+                ->where('effective_date', $request->effective_date)
+                // ->where('pharmacy_status', $request->pharmacy_status)
+                ->update([
+                    'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
+                    'formulary_variation_ind' => $request->formulary_variation_ind,
+                    'network_part_variation_ind' => $request->network_part_variation_ind,
+                    'claim_type_variation_ind' => $request->claim_type_variation_ind,
+                    'DATE_TIME_CREATED' => date('d-M-y'),
+                    'user_id' => Cache::get('userId'),
+                    'DATE_TIME_MODIFIED' => date('d-M-y'),
+                    'form_id' => '',
+                    'user_id_created' => '',
+                    'accum_exclusion_flag' => $request->accum_exclusion_flag,
+                    'effective_date' => date('Ymd', strtotime($request->effective_date)),
+                    'module_exit' => $request->module_exit,
+                    'plan_accum_deduct_id' => $request->plan_accum_deduct_id,
+                ]);
+
+            return $this->respondWithToken(
+                $this->token(),
+                'Record Updated successfully',
+                $countValidation,
+            );
+>>>>>>> origin/main
         }
     }
 
@@ -239,6 +385,13 @@ class AccumlatedController extends Controller
 
     public function getList($ndcid)
     {
+        // $ndclist = DB::table('ACCUM_BENEFIT_STRATEGY')
+        //     // ->select( 'DIAGNOSIS_LIST', 'DIAGNOSIS_ID', 'PRIORITY' )
+        //     // ->where('ACCUM_BENE_STRATEGY_ID', 'like', '%' . strtoupper($ndcid) . '%')
+        //     ->where('ACCUM_BENE_STRATEGY_ID', $ndcid)
+        //     // ->orWhere( 'accum_bene_strategy_name', 'like', '%' . strtoupper( $ndcid ) . '%' )
+        //     ->get();
+
         $ndclist = DB::table('ACCUM_BENEFIT_STRATEGY')
             ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
             ->where('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', $ndcid)
@@ -253,6 +406,7 @@ class AccumlatedController extends Controller
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
+<<<<<<< HEAD
     public function getDetails($accum_bene_strategy_id, $effective_date, $plan_accum_deduct_id)
     {
         $ndc = DB::table('ACCUM_BENEFIT_STRATEGY')
@@ -260,12 +414,20 @@ class AccumlatedController extends Controller
             ->where('ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', $accum_bene_strategy_id)
             ->where('effective_date', $effective_date)
             ->where('plan_accum_deduct_id', $plan_accum_deduct_id)
+=======
+    public function getDetails($ndcid, $effective_date)
+    {
+        $ndc = DB::table('ACCUM_BENEFIT_STRATEGY')
+            ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID')
+            ->where('ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', 'like', '%' . $ndcid . '%')
+            ->where('effective_date', $effective_date)
+>>>>>>> origin/main
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function AccumlatedDropDown(Request $request)
+    public function getAllAcuumlatedBenefits(Request $request)
     {
         $ndc = DB::table('ACCUM_BENE_STRATEGY_NAMES')
             ->get();

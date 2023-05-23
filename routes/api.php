@@ -160,7 +160,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/diagnosis', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
         Route::post('/diagnosis/submit', [DiagnosisController::class, 'add'])->name('diagnosis.submit'); // add
         Route::post('/diagnosis/delete', [DiagnosisController::class, 'delete'])->name('diagnosis.delete'); // DELETE
-        // Route::get('/diagnosis/all', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
+        Route::get('/diagnosis/all', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
         Route::get('/check-diagnosis-exist', [DiagnosisController::class, 'checkDiagnosisCodeExist']);
         Route::get('/diagnosis/all', [DiagnosisController::class, 'all'])->name('diagnosis.get'); // SEARCH
 
@@ -195,7 +195,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         // NDC
         Route::get('/ndc/search', [NDCExceptionController::class, 'search'])->name('ndsc.search'); // SEARCH
         Route::get('/ndc/get/{ndcid}', [NDCExceptionController::class, 'getNDCList'])->name('ndsc.list.get'); // LIST ITEMS
-        Route::get('/ndc/details/{ndcid}/{ndcid2}', [NDCExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
+        Route::get('/ndc/details/{ndcid}/{ndcid2}/{ndcid3}', [NDCExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
         Route::post('/ndc/add', [NDCExceptionController::class, 'add'])->name('ndsc.search'); // add
 
         Route::get('/ndc/list', [NDCExceptionController::class, 'ndcList'])->name('ndsc.search'); // SEARCH
@@ -211,7 +211,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/reason/exception/search', [ReasonCodeExceptionController::class, 'search'])->name('reason.exception.search'); // SEARCH
         Route::get('/reason/exception/details/{id}/{}', [ReasonCodeExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
         Route::post('/reason/exception/add', [ReasonCodeExceptionController::class, 'add'])->name('reason.exception.add'); // DETAILS
-
+        Route::post('/reason/exception/delete', [ReasonCodeExceptionController::class, 'delete'])->name('reason.delete');
 
         // NDC
         Route::get('/diagnosis/search', [ValidationListsController::class, 'search'])->name('diagnosis.search'); // SEARCH
@@ -222,6 +222,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/limitations/search', [LimitationsController::class, 'search'])->name('limitations.search'); // SEARCH
         Route::get('/limitations/details/{id}', [LimitationsController::class, 'getDetails'])->name('limitations.search'); // SEARCH
         Route::post('/limitations/add', [LimitationsController::class, 'add'])->name('limitations.add'); // SEARCH
+        Route::post('/limitations/delete', [LimitationsController::class, 'limitation_delete'])->name('limitation_delete');
 
         Route::get('/procedurecodes', [ProcedureCrossReferenceController::class, 'ProcedureCodes'])->name('diagnosis.get'); // SEARCH
 
@@ -231,6 +232,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/providertype-proc/add', [ProviderTypeProcController::class, 'add'])->name('provtype.add'); // SEARCH
         Route::get('/providertype-proc/getlist/{id}', [ProviderTypeProcController::class, 'getList'])->name('provtype.get'); // SEARCH
         Route::get('/get-all-ndc', [NDCExceptionController::class, 'getAllNDCS'])->name('getall.ndcs'); // SEARCH
+        Route::post('/providertype-proc/delete', [ProviderTypeProcController::class, 'providertype_proc_delete'])->name('providertype_proc_delete');
 
 
 
@@ -279,7 +281,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
 
         //DIAGNOSIS VALIDATION LIST
-        Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search'])->name('diagnosisvalidation.search'); // SEARCH
+
+        Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search']); // SEARCH
         Route::get('/diagnosisvalidation/get/{diagnosis_list}', [DiagnosisValidationListController::class, 'getPriorityDiagnosis'])->name('diagnosisvalidation.list.get'); // LIST ITEMS
         Route::get('diagnosisvalidation/diagnosis-code-list/{disgnosis_code?}', [DiagnosisValidationListController::class, 'getDiagnosisCodeList']); //diagnosis code drop down with search
         Route::get('diagnosisvalidation/limitation-code-list/{limitation_code?}', [DiagnosisValidationListController::class, 'getLimitationsCode']); //limitationid drop down
@@ -380,10 +383,14 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         //exception diagnosis list
         Route::get('/diagnosis/all', [DiagnosisController::class, 'all'])->name('exception.diagnosis.get');
 
-        Route::get('Procedure-cross-reference/search', [ProcedureCrossReferenceController::class, 'search'])->name('cross-reference.search');
-        Route::get('Procedure-cross-reference/list/{id}', [ProcedureCrossReferenceController::class, 'List'])->name('cross-reference.list');
-        Route::get('procedure-cross-reference/details/{id}/{id2}/{id3}/{id4}', [ProcedureCrossReferenceController::class, 'getDetails'])->name('cross-reference.details');
-        Route::post('procedure-cross-reference/add', [ProcedureCrossReferenceController::class, 'add'])->name('cross-reference.add');
+        Route::get('Procedure-cross-reference/search', [ProcedureCrossReferenceController::class, 'search'])->name('cross-reference.search'); 
+        Route::get('Procedure-cross-reference/list/{id}', [ProcedureCrossReferenceController::class, 'List'])->name('cross-reference.list'); 
+        Route::get('procedure-cross-reference/details/{id}/{id2}/{id3}/{id4}', [ProcedureCrossReferenceController::class, 'getDetails'])->name('cross-reference.details'); 
+        Route::post('procedure-cross-reference/add', [ProcedureCrossReferenceController::class, 'add'])->name('cross-reference.add'); 
+        Route::post('procedure-cross-reference/delete', [ProcedureCrossReferenceController::class, 'delete'])->name('cross-reference.delete');
+
+
+        
     });
 
     Route::group(['prefix' => 'prescriberdata'], function ($router) {
@@ -402,6 +409,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
     Route::post('customer/add', [CustomerController::class, 'add']);
     Route::post('customer/id/generate', [CustomerController::class, 'generateCustomerId']);
     Route::get('customer/get', [CustomerController::class, 'searchCutomer']);
+    Route::post('customer/delete', [CustomerController::class, 'deleteCutomer']);
 
     Route::get('plan/get/{planid}', [CustomerController::class, 'getPlanId']);
 
@@ -465,9 +473,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
         Route::post('superprovider/add', [SuperProviderNetworkController::class, 'add']);
         Route::get('supernetwork/dropdown', [SuperProviderNetworkController::class, 'dropDown']);
-
-        Route::get('supernetwork/getDetails/{ndcid}', [SuperProviderNetworkController::class, 'getDetails']);
-
+        Route::get('supernetwork/getDetails/{ndcid}/{provider_network_id}', [SuperProviderNetworkController::class, 'getDetails']);
 
         //TRADITIONAL NETWORK
 
@@ -489,6 +495,13 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('flexiblenetwork/add', [FlexibleNetworkController::class, 'add']);
         Route::get('flexiblenetwork/dropdown', [FlexibleNetworkController::class, 'flexibledropdown']);
 
+        Route::get('flexiblenetwork/getflixibleNetworks', [FlexibleNetworkController::class, 'getflixibleNetworks']);
+
+        Route::get('flexiblenetwork/ndcnames/dropdown', [FlexibleNetworkController::class, 'NdcExceptionNames']);
+        Route::get('flexiblenetwork/gpinames/dropdown', [FlexibleNetworkController::class, 'GpiExceptionNames']);
+
+
+        
 
 
         //Rule Id 
@@ -519,7 +532,10 @@ Route::group(['middleware' => 'apisession'], function ($router) {
     Route::get('/provider-type-validation', [ProviderTypeValidationController::class, 'test']);
     Route::get('/provider-type-validation/get', [ProviderTypeValidationController::class, 'get'])->name('provider-type-validation-get');
     Route::get('/provider-type-validation/getFormData', [ProviderTypeValidationController::class, 'getFormData'])->name('provider-type-validation-getFormData');
-
+    Route::post('/providertype/validation/delete', [ProviderTypeValidationController::class, 'provider_type_validation_delete'])->name('provider_type_validation_delete');
+    
+    
+    
 
     //Drug Information
     Route::group(['prefix' => "drug-information/"], function () {
@@ -774,6 +790,8 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::post('/drugcalss/add', [DrugClassController::class, 'add']); // add
     Route::get('/drugcategories', [DrugClassController::class, 'DrugCategoryList']); // SEARCH
     Route::get('/drugclass/dropdown', [DrugClassController::class, 'drugClassDropDown']); // SEARCH
+    Route::post('/drugclass/delete', [DrugClassController::class, 'drugclassDelete'])->name('drugclassDelete'); //
+
 
     // GPI
 
@@ -788,7 +806,6 @@ Route::group(['prefix' => 'exception'], function ($router) {
 
 
 
-
     // THERAPY CLASS
     Route::get('/therapy-class/search', [TherapyClassController::class, 'search'])->name('therapyclass.search'); // SEARCH
     Route::get('/therapy-class/get/{ndcid}', [TherapyClassController::class, 'getTCList'])->name('therapyclass.list.get'); // LIST ITEMS
@@ -796,7 +813,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::post('/therapy/add', [TherapyClassController::class, 'add'])->name('therapy.add'); // add
     Route::get('/therapy-class-list', [TherapyClassController::class, 'TherapyClassList'])->name('therapyclass.search'); // SEARCH
     Route::get('/therapy-class-with-desc', [TherapyClassController::class, 'exceptionswithDesc'])->name('therapyclass.exceptionswithDesc'); // SEARCH
-
+    Route::post('/therapy/delete', [TherapyClassController::class, 'delete_therapy'])->name('delete_therapy');
 
 
     // PROCEDURE EXCEPTION
@@ -805,6 +822,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/procedure/details', [ExceptionProcedureController::class, 'getPCItemDetails'])->name('procedure.details.get'); // DETAILS
     Route::post('/procedure/add', [ExceptionProcedureController::class, 'add'])->name('procedure.add'); // SEARCH
     Route::get('/allphysicain_lists', [ExceptionProcedureController::class, 'AllPhysicainLists'])->name('allphysicians'); // SEARCH
+    Route::post('/delete/procedure/code', [ExceptionProcedureController::class, 'delete_procedure_code'])->name('delete_procedure_code');
 
 
     // BENEFIT LIST EXCEPTION
@@ -819,8 +837,10 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/benefitderivation/details/{ndcid}/{ndcid2}', [BenefitDerivationController::class, 'getBLItemDetails'])->name('benefit.details.get'); // DETAILS
     Route::post('/benefitderivation/add', [BenefitDerivationController::class, 'add'])->name('benefit.search'); // SEARCH
     Route::get('/benifitcodes/all', [BenefitListController::class, 'index']);
+    Route::post('benefitlist/derivation/delete', [BenefitDerivationController::class, 'benefitderivationdelete'])->name('benefitderivationdelete');
 
     Route::get('/benifitcodes/list/all', [BenefitListController::class, 'BenefitLists']);
+    Route::post('/benefit/list/delete', [BenefitListController::class, 'benefit_list_delete'])->name('benefit_list_delete');
 
 
 
@@ -831,6 +851,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::post('/provider-type-validation/add', [ProviderTypeValidationController::class, 'add'])->name('provider-type-validation-get');
     Route::get('/provider-type-validation/getDetails/{ncdid}/{ndcid2}/{ncdid3}/{ncdid4}', [ProviderTypeValidationController::class, 'getNDCItemDetails'])->name('provider-type-validation-getFormData');
     Route::get('/provider-type-validation-association-names/list', [ProviderTypeValidationController::class, 'getAllNames'])->name('provider-type-validation-get');
+    Route::post('/providertype/validation/delete', [ProviderTypeValidationController::class, 'provider_type_validation_delete'])->name('provider_type_validation_delete');
 
 
 
@@ -844,12 +865,14 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/procedure-code-list/getAll', [PrcedureCodeListController::class, 'getAll'])->name('procedure-code-list-getAll');
 
     Route::get('/procedure-code-list/details', [PrcedureCodeListController::class, 'getDetails'])->name('procedure-code-details');
+    Route::post('/procedure-code-list/delete', [PrcedureCodeListController::class, 'produrecodelistdelete'])->name('produrecodelistdelete');
 
 
     //Super Benefit List
     Route::get('/super-benefit-list/get', [SuperBenefitControler::class, 'get']);
     Route::get('/super-benefit-list/get-super-benefit-code', [SuperBenefitControler::class, 'getBenefitCode']);
     Route::post('/super-benefit-list/add', [SuperBenefitControler::class, 'add']);
+    Route::post('/super-benefit-list/delete', [SuperBenefitControler::class, 'super_benefit_list_delete'])->name('super_benefit_list_delete');
 
     Route::get('/super-benefit-list/get/{listid}/{benefitcode}/{effe}', [SuperBenefitControler::class, 'getNDCItemDetails']);
 });
@@ -880,12 +903,13 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/provider/search', [ProviderController::class, 'search'])->name('provider.search'); // SEARCH
     Route::get('/provider/get-provider-options', [ProviderController::class, 'getProviderOptions']); // SEARCH
     Route::get('/provider/get/{provider_list}', [ProviderController::class, 'getProviderValidationList'])->name('provider.list.get'); // LIST ITEMS
-    Route::get('/provider/details/{provider_list}/{provider_nabp}/{status}', [ProviderController::class, 'getProviderDetails'])->name('ndsc.details.get'); // DETAIL
+    Route::get('/provider/details/{provider_list}/{provider_nabp}', [ProviderController::class, 'getProviderDetails'])->name('ndsc.details.get'); // DETAIL
     Route::post('/provider/submit-provider-form', [ProviderController::class, 'addProviderData']);
     Route::get('/provider/provider-list-drop-down/', [ProviderController::class, 'searchDropDownProviderList']);
 
 
     //DIAGNOSIS VALIDATION LIST
+    Route::post('/diagnosisvalidation/delete-limitation', [DiagnosisValidationListController::class, 'deleteLimitation']); //delete limitation
     Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search'])->name('diagnosisvalidation.search'); // SEARCH
     Route::get('/diagnosisvalidation/get/{diagnosis_list}', [DiagnosisValidationListController::class, 'getPriorityDiagnosis'])->name('diagnosisvalidation.list.get'); // LIST ITEMS
     Route::get('diagnosisvalidation/diagnosis-code-list/{disgnosis_code?}', [DiagnosisValidationListController::class, 'getDiagnosisCodeList']); //diagnosis code drop down with search
@@ -1141,6 +1165,10 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('mac-list/get-price-source', [MacListController::class, 'getPriceSource']);
     Route::get('mac-list/get-price-type', [MacListController::class, 'getPriceType']);
     Route::post('mac-list/submit', [MacListController::class, 'submit']);
+    Route::post('mac-list/delete', [MacListController::class, 'maclist_Delete'])->name('maclist_Delete');
+
+
+
 
     //Tax Schedule
     Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
@@ -1265,6 +1293,11 @@ Route::group(['prefix' => 'administrator/'], function () {
     Route::get('user-defination/get-customers-list', [UserDefinationController::class, 'getCustomersList']);
     Route::get('user-defination/get-clients', [UserDefinationController::class, 'getClients']);
     Route::get('user-defination/get-client-groups', [UserDefinationController::class, 'getClientGroups']);
+    Route::get('user-defination/get-access-detail', [UserDefinationController::class, 'getAccessData']);
+    Route::get('user-defination/get-all-access', [UserDefinationController::class, 'getAllAccess']);
+    Route::get('user-defination/get-group-all-access', [UserDefinationController::class, 'getGroupAllAccess']);
+    Route::get('user-defination/get-group-access-details', [UserDefinationController::class, 'getGroupAccessDetails']);
+    Route::get('user-defination/get-profile/{user_id}', [UserDefinationController::class, 'getUserProfile']);
 
     //Search Audit Trail
     Route::get('search-audit-trial/get-tables', [AuditTrailController::class, 'getTables'])->name('getAllTables');

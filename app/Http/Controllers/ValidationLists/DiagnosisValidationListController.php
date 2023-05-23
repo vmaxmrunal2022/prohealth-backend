@@ -4,6 +4,7 @@ namespace App\Http\Controllers\ValidationLists;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -13,15 +14,21 @@ class DiagnosisValidationListController extends Controller
     public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "search" => ['required']
+            // "search" => ['required']
         ]);
         if ($validator->fails()) {
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
-            $data = DB::table('DIAGNOSIS_EXCEPTIONS as a')
+            // $data = DB::table('DIAGNOSIS_EXCEPTIONS as a')
+            //     // ->join('DIAGNOSIS_VALIDATIONS as b','b.DIAGNOSIS_LIST','=','a.DIAGNOSIS_LIST')
+            //     ->where(DB::raw('UPPER(a.DIAGNOSIS_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
+            //     ->orWhere(DB::raw('UPPER(a.EXCEPTION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+            //     // ->groupBy('DIAGNOSIS_LIST')
+            //     ->get();
+            $data = DB::table('DIAGNOSIS_EXCEPTIONS')
                 // ->join('DIAGNOSIS_VALIDATIONS as b','b.DIAGNOSIS_LIST','=','a.DIAGNOSIS_LIST')
-                ->where(DB::raw('UPPER(a.DIAGNOSIS_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere(DB::raw('UPPER(a.EXCEPTION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->where(DB::raw('UPPER(DIAGNOSIS_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
                 // ->groupBy('DIAGNOSIS_LIST')
                 ->get();
 
@@ -68,19 +75,17 @@ class DiagnosisValidationListController extends Controller
             // ->join('DIAGNOSIS_EXCEPTIONS as c', 'c.DIAGNOSIS_LIST', '=', 'a.DIAGNOSIS_LIST')
 
 
-            ->where('DIAGNOSIS_LIST', '=', $diagnosis_list)
-            ->where('DIAGNOSIS_ID', '=', $diagnosis_id)
+            ->where(DB::raw('UPPER(DIAGNOSIS_LIST)'), strtoupper($diagnosis_list))
+            ->where(DB::raw('UPPER(DIAGNOSIS_ID)'), strtoupper($diagnosis_id))
             ->get();
-
-            // dd($data[0]->diagnosis_list);
+        // return $diagnosis_id;
+        // dd($data[0]->diagnosis_list);
         return $this->respondWithToken($this->token(), '', $data);
     }
 
     public function addDiagnosisValidationscopy(Request $request)
     {
-
-
-
+        // dd($request->all());
         if ($request->has('new')) {
             $validator = Validator::make($request->all(), [
                 "diagnosis_list" => ['required', 'max:10', Rule::unique('DIAGNOSIS_EXCEPTIONS')->where(function ($q) {
@@ -115,24 +120,24 @@ class DiagnosisValidationListController extends Controller
                     $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
 
 
-                    if(!empty($request->limitations_form)){
+                    if (!empty($request->limitations_form)) {
 
                         $limitation_list = $limitation_list_obj[0];
-                    // $effective_date   = $limitation_list->effective_date;
-                    // $termination_date = $limitation_list->termination_date;
-                    // $limitations_list = $limitation_list->limitations_list;
-                    foreach ($limitation_list_obj as $key => $limitation_list) {
-                        $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-                            ->insert([
-                                'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                                'DIAGNOSIS_ID'   => $request->diagnosis_id,
-                                'LIMITATIONS_LIST' => $limitation_list->limitations_list,
-                                'EFFECTIVE_DATE' => $limitation_list->effective_date,
-                                'TERMINATION_DATE' => $limitation_list->termination_date,
-                                'DATE_TIME_CREATED' => date('d-M-y'),
-                            ]);
+                        // $effective_date   = $limitation_list->effective_date;
+                        // $termination_date = $limitation_list->termination_date;
+                        // $limitations_list = $limitation_list->limitations_list;
+                        foreach ($limitation_list_obj as $key => $limitation_list) {
+                            $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                                ->insert([
+                                    'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                    'DIAGNOSIS_ID'   => $request->diagnosis_id,
+                                    'limitations_list' => $limitation_list->limitations_list,
+                                    'EFFECTIVE_DATE' => $limitation_list->effective_date,
+                                    'TERMINATION_DATE' => $limitation_list->termination_date,
+                                    'DATE_TIME_CREATED' => date('d-M-y'),
+                                ]);
+                        }
                     }
-                }
                 }
 
                 if ($exceptiondata) {
@@ -163,7 +168,7 @@ class DiagnosisValidationListController extends Controller
                             'DIAGNOSIS_LIST' => $request->diagnosis_list,
                             'DIAGNOSIS_ID' => $request->diagnosis_id,
                             'DIAGNOSIS_STATUS' => $request->diagnosis_status,
-                            'PRIORITY' => $request->priority,
+                            'PRIORITY' => $request->priority == null ? "1" : $request->priority,
                         ]);
                 }
                 return $this->respondWithToken($this->token(), 'Record  Added Successfully', $validationAddData);
@@ -201,7 +206,7 @@ class DiagnosisValidationListController extends Controller
                             ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
                             ->update([
                                 'DIAGNOSIS_STATUS' => $request->diagnosis_status,
-                                'PRIORITY' => $request->priority,
+                                'PRIORITY' => $request->priority == null ? "1" : $request->priority,
                                 'DATE_TIME_MODIFIED' => date('d-M-y'),
                                 'USER_ID_MODIFIED' => $request->user_name,
                                 'DIAGNOSIS_LIST' => $request->diagnosis_list,
@@ -212,228 +217,7 @@ class DiagnosisValidationListController extends Controller
 
 
 
-                    $data=DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')->where('diagnosis_list',strtoupper($request->diagnosis_list))->delete(); 
-
-
-
-                        $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
-                        // $effective_date   = $limitation_list->effective_date;
-                        // $termination_date = $limitation_list->termination_date;
-                        // $limitations_list = $limitation_list->limitations_list;
-                        if(!empty($request->limitations_form)){
-
-                            $limitation_list = $limitation_list_obj[0];
-
-
-                            foreach ($limitation_list_obj as $key => $limitation_list) {
-                                $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-                                    ->insert([
-                                        'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                                        'DIAGNOSIS_ID'   => $request->diagnosis_id,
-                                        'LIMITATIONS_LIST' => $limitation_list->limitations_list,
-                                        'EFFECTIVE_DATE' => $limitation_list->effective_date,
-                                        'TERMINATION_DATE' => $limitation_list->termination_date,
-                                        'DATE_TIME_CREATED' => date('d-M-y'),
-                                    ]);
-                            }
-
-                        }
-
-
-                       
-
-                    
-
-   
-            
-
-                }
-
-                if ($updateData) {
-                    return $this->respondWithToken($this->token(), 'Record  Updated Successfully', $updateData);
-                }
-            }
-        }
-    }
-
-    public function addDiagnosisValidations(Request $request)
-    {
-        $createddate = date( 'y-m-d' );
-
-        $validation = DB::table('DIAGNOSIS_EXCEPTIONS')
-        ->where('diagnosis_list',$request->diagnosis_list)
-        ->get();
-
-        if ($request->add_new == 1) {
-
-            $validator = Validator::make($request->all(), [
-                'diagnosis_list' => ['required', 'max:10', Rule::unique('DIAGNOSIS_EXCEPTIONS')->where(function ($q) {
-                    $q->whereNotNull('diagnosis_list');
-                })],
-                // 'ndc' => ['required', 'max:11', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                //     $q->whereNotNull('NDC');
-                // })],
-
-                // 'effective_date' => ['required', 'max:10', Rule::unique('NDC_EXCEPTION_LISTS')->where(function ($q) {
-                //     $q->whereNotNull('effective_date');
-                // })],
-
-                // 'ndc_exception_list' => ['required', 'max:10', Rule::unique('NDC_EXCEPTIONS')->where(function ($q) {
-                //     $q->whereNotNull('ndc_exception_list');
-                // })],
-
-                
-
-
-            ]);
-
-            if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            }
-
-            else{
-                if ($validation->count() > 0) {
-                    return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
-                }
-                $add_names = DB::table('DIAGNOSIS_EXCEPTIONS')->insert(
-                    [
-                        'diagnosis_list' => $request->diagnosis_list,
-                        'exception_name'=>$request->exception_name,
-                        
-                    ]
-                );
-    
-                $add = DB::table('DIAGNOSIS_VALIDATIONS')
-                    ->insert([
-    
-                        
-                            'DIAGNOSIS_LIST' =>$request->diagnosis_list,
-                            'DIAGNOSIS_ID'=>$request->diagnosis_id,
-                            'DIAGNOSIS_STATUS'=>$request->diagnosis_status,
-                            'DATE_TIME_CREATED'=>$createddate,
-                            'PRIORITY'=>$request->priority,
-                            'USER_ID'=>'',
-                            
-                        
-                        
-                    ]);
-
-
-                    $limitationsdata = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-                    ->where('DIAGNOSIS_LIST',$request->diagnosis_list)
-                    ->where('DIAGNOSIS_ID',$request->diagnosis_id)
-                    ->first();
-
-                if ($limitationsdata) {
-
-                    return $this->respondWithToken($this->token(), 'Limitation Data Already Exists', $limitationsdata);
-                } else {
-                    $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
-
-
-                    if(!empty($request->limitations_form)){
-
-                        $limitation_list = $limitation_list_obj[0];
-                    // $effective_date   = $limitation_list->effective_date;
-                    // $termination_date = $limitation_list->termination_date;
-                    // $limitations_list = $limitation_list->limitations_list;
-                    foreach ($limitation_list_obj as $key => $limitation_list) {
-                        $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-                            ->insert([
-                                'DIAGNOSIS_LIST' => $request->diagnosis_list,
-                                'DIAGNOSIS_ID'   => $request->diagnosis_id,
-                                'LIMITATIONS_LIST' => $limitation_list->limitations_list,
-                                'EFFECTIVE_DATE' => $limitation_list->effective_date,
-                                'TERMINATION_DATE' => $limitation_list->termination_date,
-                                'DATE_TIME_CREATED' => date('d-M-y'),
-                            ]);
-                    }
-                }
-                }
-    
-                $add = DB::table('DIAGNOSIS_VALIDATIONS')->where('DIAGNOSIS_LIST', 'like', '%' . $request->diagnosis_list . '%')->first();
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
-
-            }
-
-
-           
-        } else if ($request->add_new == 0) {
-
-            $validator = Validator::make($request->all(), [
-
-                'diagnosis_list' => ['required', 'max:10'],      
-                "exception_name" => ['max:36'],
-               
-
-
-
-            ]);
-
-            if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            }
-
-            else{
-
-                // if ($validation->count() < 1) {
-                //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
-                // }
-    
-                $update_names = DB::table('DIAGNOSIS_EXCEPTIONS')
-                ->where('diagnosis_list', $request->diagnosis_list )
-                ->first();
-                    
-    
-                $checkGPI = DB::table('DIAGNOSIS_VALIDATIONS')
-                    ->where('diagnosis_list', $request->diagnosis_list)
-                    ->where('diagnosis_id',$request->diagnosis_id)
-                    ->get()
-                    ->count();
-                    // dd($checkGPI);
-                // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                //if result 0 then add NDC_EXCEPTION_LISTS record
-
-    
-                if ($checkGPI <= "0") {
-                    $update = DB::table('DIAGNOSIS_VALIDATIONS')
-                    ->insert([
-                        'diagnosis_list' =>$request->diagnosis_list,
-                        'DIAGNOSIS_ID'=>$request->diagnosis_id,
-                        'DIAGNOSIS_STATUS'=>$request->diagnosis_status,
-                        'PRIORITY'=>$request->priority,
-                ]);
-
-                $update = DB::table('DIAGNOSIS_VALIDATIONS')->where('diagnosis_list', 'like', '%' . $request->diagnosis_list . '%')->first();
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-
-                } else {
-
-
-  
-
-                    $add_names = DB::table('DIAGNOSIS_EXCEPTIONS')
-                    ->where('diagnosis_list',$request->diagnosis_list)
-                    ->update(
-                        [
-                            'exception_name'=>$request->exception_name,
-                            
-                        ]
-                    );
-
-                    $update = DB::table('DIAGNOSIS_VALIDATIONS' )
-                    ->where('diagnosis_list', $request->diagnosis_list)
-                    ->where('diagnosis_id',$request->diagnosis_id)
-
-                    ->update(
-                        [
-                            'DIAGNOSIS_STATUS'=>$request->diagnosis_status,
-                            'PRIORITY'=>$request->priority,
-                            
-                        ]
-                    );
-
-                    $data=DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')->where('diagnosis_list',strtoupper($request->diagnosis_list))->delete(); 
+                    $data = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')->where('diagnosis_list', strtoupper($request->diagnosis_list))->delete();
 
 
 
@@ -441,7 +225,7 @@ class DiagnosisValidationListController extends Controller
                     // $effective_date   = $limitation_list->effective_date;
                     // $termination_date = $limitation_list->termination_date;
                     // $limitations_list = $limitation_list->limitations_list;
-                    if(!empty($request->limitations_form)){
+                    if (!empty($request->limitations_form)) {
 
                         $limitation_list = $limitation_list_obj[0];
 
@@ -457,22 +241,400 @@ class DiagnosisValidationListController extends Controller
                                     'DATE_TIME_CREATED' => date('d-M-y'),
                                 ]);
                         }
+                    }
+                }
 
+                if ($updateData) {
+                    return $this->respondWithToken($this->token(), 'Record  Updated Successfully', $updateData);
+                }
+            }
+        }
+    }
+
+    public function addDiagnosisValidations_old(Request $request)
+    {
+        // dd($request->all());
+        $createddate = date('d-M-y');
+        // $validation = DB::table('DIAGNOSIS_EXCEPTIONS')
+        //     ->where('diagnosis_list', $request->diagnosis_list)
+        //     ->get();
+        $validation = DB::table('DIAGNOSIS_VALIDATIONS')
+            ->where('diagnosis_list', $request->diagnosis_list)
+            ->where('diagnosis_id', $request->diagnosis_id)
+            ->get();
+        // dd($validation);
+
+        if ($request->new == 1) {
+            $validator = Validator::make($request->all(), [
+                'diagnosis_list' => ['required', 'max:10', Rule::unique('DIAGNOSIS_EXCEPTIONS')->where(function ($q) {
+                    $q->whereNotNull('diagnosis_list');
+                })],
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            } else {
+                // dd($validation);
+                if ($validation->count() >= 1) {
+                    return $this->respondWithToken($this->token(), 'Record Already Exists', $validation, false);
+                }
+                $add_names = DB::table('DIAGNOSIS_EXCEPTIONS')->insert(
+                    [
+                        'diagnosis_list' => $request->diagnosis_list,
+                        'exception_name' => $request->exception_name,
+                    ]
+                );
+
+                $add = DB::table('DIAGNOSIS_VALIDATIONS')
+                    ->insert([
+                        'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                        'DIAGNOSIS_ID' => $request->diagnosis_id,
+                        'DIAGNOSIS_STATUS' => $request->diagnosis_status,
+                        'DATE_TIME_CREATED' => $createddate,
+                        'PRIORITY' => $request->priority == null ? "1" : $request->priority,
+                        'USER_ID' => '',
+                    ]);
+
+                $limitationsdata = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                    ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
+                    ->where('DIAGNOSIS_ID', $request->diagnosis_id)
+                    ->first();
+
+                if ($limitationsdata) {
+
+                    return $this->respondWithToken($this->token(), 'Limitation Data Already Exists', $limitationsdata);
+                } else {
+                    $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
+
+
+                    if (!empty($request->limitations_form)) {
+
+                        $limitation_list = $limitation_list_obj[0];
+                        // $effective_date   = $limitation_list->effective_date;
+                        // $termination_date = $limitation_list->termination_date;
+                        // $limitations_list = $limitation_list->limitations_list;
+                        foreach ($limitation_list_obj as $key => $limitation_list) {
+                            $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                                ->insert([
+                                    'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                    'DIAGNOSIS_ID'   => $request->diagnosis_id,
+                                    'LIMITATIONS_LIST' => $limitation_list->limitations_list,
+                                    'EFFECTIVE_DATE' => $limitation_list->effective_date,
+                                    'TERMINATION_DATE' => $limitation_list->termination_date,
+                                    'DATE_TIME_CREATED' => date('d-M-y'),
+                                ]);
+                        }
+                    }
+                }
+
+                $add = DB::table('DIAGNOSIS_VALIDATIONS')->where('DIAGNOSIS_LIST', 'like', '%' . $request->diagnosis_list . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+            }
+        } else if ($request->add_new == 0) {
+
+            $validator = Validator::make($request->all(), [
+                'diagnosis_list' => ['required', 'max:10'],
+                "exception_name" => ['max:36'],
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            } else {
+
+                // if ($validation->count() < 1) {
+                //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
+                // }
+
+                $update_names = DB::table('DIAGNOSIS_EXCEPTIONS')
+                    ->where('diagnosis_list', $request->diagnosis_list)
+                    ->first();
+
+
+                $checkGPI = DB::table('DIAGNOSIS_VALIDATIONS')
+                    ->where('diagnosis_list', $request->diagnosis_list)
+                    ->where('diagnosis_id', $request->diagnosis_id)
+                    ->get()
+                    ->count();
+
+                if ($checkGPI <= "0") {
+                    $update = DB::table('DIAGNOSIS_VALIDATIONS')
+                        ->insert([
+                            'diagnosis_list' => $request->diagnosis_list,
+                            'DIAGNOSIS_ID' => $request->diagnosis_id,
+                            'DIAGNOSIS_STATUS' => $request->diagnosis_status,
+                            'PRIORITY' => $request->priority == null ? "1" : $request->priority,
+                        ]);
+
+                    $update = DB::table('DIAGNOSIS_VALIDATIONS')->where('diagnosis_list', 'like', '%' . $request->diagnosis_list . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                } else {
+
+
+
+
+                    $add_names = DB::table('DIAGNOSIS_EXCEPTIONS')
+                        ->where('diagnosis_list', $request->diagnosis_list)
+                        ->update(
+                            [
+                                'exception_name' => $request->exception_name,
+
+                            ]
+                        );
+
+                    $update = DB::table('DIAGNOSIS_VALIDATIONS')
+                        ->where('diagnosis_list', $request->diagnosis_list)
+                        ->where('diagnosis_id', $request->diagnosis_id)
+
+                        ->update(
+                            [
+                                'DIAGNOSIS_STATUS' => $request->diagnosis_status,
+                                'PRIORITY' => $request->priority == null ? "1" : $request->priority,
+
+                            ]
+                        );
+
+                    $data = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')->where('diagnosis_list', strtoupper($request->diagnosis_list))->delete();
+
+
+
+                    $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
+                    // $effective_date   = $limitation_list->effective_date;
+                    // $termination_date = $limitation_list->termination_date;
+                    // $limitations_list = $limitation_list->limitations_list;
+                    if (!empty($request->limitations_form)) {
+
+                        $limitation_list = $limitation_list_obj[0];
+
+
+                        // foreach ($limitation_list_obj as $key => $limitation_list) {
+                        //     $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                        //         ->insert([
+                        //             'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                        //             'DIAGNOSIS_ID'   => $request->diagnosis_id,
+                        //             // 'LIMITATIONS_LIST' => $limitation_list->limitations_list,
+                        //             'EFFECTIVE_DATE' => $limitation_list->effective_date,
+                        //             'TERMINATION_DATE' => $limitation_list->termination_date,
+                        //             'DATE_TIME_CREATED' => date('d-M-y'),
+                        //         ]);
+                        // }
                     }
 
                     $update = DB::table('DIAGNOSIS_VALIDATIONS')->where('diagnosis_list', 'like', '%' . $request->diagnosis_list . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                 }
-    
-               
-
             }
-
-           
         }
     }
 
-   
+    public function addDiagnosisValidations(Request $request)
+    {
+        // return $request->all();
+        $createddate = date('d-M-y');
+        if ($request->new) {
+
+            if (!$request->updateForm) {
+
+                $ifExist = DB::table('DIAGNOSIS_EXCEPTIONS')
+                    ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
+                    ->get();
+                if (count($ifExist) >= 1) {
+                    return $this->respondWithToken($this->token(), [["Diagnosis List ID already exists"]], '', false);
+                }
+            } else {
+            }
+
+            if ($request->diagnosis_list && $request->diagnosis_id) {
+                $count = DB::table('DIAGNOSIS_EXCEPTIONS')
+                    ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
+                    ->get()
+                    ->count();
+                if ($count <= 0) {
+                    $add_names = DB::table('DIAGNOSIS_EXCEPTIONS')->insert(
+                        [
+                            'diagnosis_list' => $request->diagnosis_list,
+                            'EXCEPTION_NAME' => $request->exception_name,
+                            'date_time_created' => date('d-M-y'),
+                            'user_id' => Cache::get('userId'),
+                            'date_time_modified' => date('d-M-y'),
+                            'form_id' => ''
+                        ]
+                    );
+                    $add = DB::table('DIAGNOSIS_VALIDATIONS')
+                        ->insert([
+                            'diagnosis_list' => $request->diagnosis_list,
+                            'diagnosis_id' => $request->diagnosis_id,
+                            'diagnosis_status' => $request->diagnosis_status,
+                            'date_time_created' => date('d-M-y'),
+                            'user_id' => Cache::get('userId'),
+                            'date_time_modified' => date('d-M-y'),
+                            'priority' => $request->priority == null ? "1" : $request->priority,
+                            'form_id' => ''
+                        ]);
+
+                    $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
+                    if (!empty($request->limitations_form)) {
+                        $limitation_list = $limitation_list_obj[0];
+                        foreach ($limitation_list_obj as $key => $limitation_list) {
+                            $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                                ->insert([
+                                    'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                    'DIAGNOSIS_ID'   => $request->diagnosis_id,
+                                    'LIMITATIONS_LIST' => $limitation_list->limitations_list,
+                                    'EFFECTIVE_DATE' => $limitation_list->effective_date,
+                                    'TERMINATION_DATE' => $limitation_list->termination_date,
+                                    'DATE_TIME_CREATED' => date('d-M-y'),
+                                ]);
+                        }
+                    }
+
+
+                    $add = DB::table('DIAGNOSIS_VALIDATIONS')->where('diagnosis_list', 'like', '%' . $request->diagnosis_list . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+                } else {
+                    $updateProviderExceptionData = DB::table('DIAGNOSIS_EXCEPTIONS')
+                        ->where('diagnosis_list', $request->diagnosis_list)
+                        ->update([
+                            'exception_name' => $request->exception_name,
+                            'user_id' => Cache::get('userId'),
+                            'date_time_modified' => date('d-M-y'),
+                            'form_id' => ''
+                        ]);
+                    $countValidation = DB::table('DIAGNOSIS_VALIDATIONS')
+                        ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
+                        ->where(DB::raw('UPPER(diagnosis_id)'), strtoupper($request->diagnosis_id))
+                        ->get();
+
+                    if (count($countValidation) >= 1) {
+                        return $this->respondWithToken(
+                            $this->token(),
+                            [['Diagnosis ID already exists']],
+                            [['Diagnosis ID already exists']],
+                            false
+                        );
+                    } else {
+                        $addProviderValidationData = DB::table('DIAGNOSIS_VALIDATIONS')
+                            ->insert([
+                                'diagnosis_list' => $request->diagnosis_list,
+                                'diagnosis_id' => $request->diagnosis_id,
+                                'diagnosis_status' => $request->diagnosis_status,
+                                'DATE_TIME_CREATED' => date('d-M-y'),
+                                'USER_ID' => Cache::get('userId'),
+                                'date_time_modified' => date('d-M-y'),
+                                'priority' => $request->priority == null ? "1" : $request->priority,
+                                'form_id' => ''
+                            ]);
+                        $reecord = DB::table('DIAGNOSIS_EXCEPTIONS')
+                            ->join('DIAGNOSIS_VALIDATIONS', 'DIAGNOSIS_EXCEPTIONS.diagnosis_list', '=', 'DIAGNOSIS_VALIDATIONS.diagnosis_list')
+                            ->where('DIAGNOSIS_VALIDATIONS.diagnosis_list', $request->diagnosis_list)
+                            ->where('DIAGNOSIS_VALIDATIONS.diagnosis_id', $request->diagnosis_id)
+                            ->first();
+
+                        $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
+                        if (!empty($request->limitations_form)) {
+                            $limitation_list = $limitation_list_obj[0];
+                            foreach ($limitation_list_obj as $key => $limitation_list) {
+                                $limitdataAddData = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                                    ->insert([
+                                        'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                                        'DIAGNOSIS_ID'   => $request->diagnosis_id,
+                                        'LIMITATIONS_LIST' => $limitation_list->limitations_list,
+                                        'EFFECTIVE_DATE' => $limitation_list->effective_date,
+                                        'TERMINATION_DATE' => $limitation_list->termination_date,
+                                        'DATE_TIME_CREATED' => date('d-M-y'),
+                                    ]);
+                            }
+                        }
+                        return $this->respondWithToken(
+                            $this->token(),
+                            'Record Added successfully',
+                            $reecord,
+                        );
+                    }
+                }
+            } else {
+                $updateProviderExceptionData = DB::table('DIAGNOSIS_EXCEPTIONS')
+                    ->where('diagnosis_list', $request->diagnosis_list)
+                    ->update([
+                        'exception_name' => $request->exception_name,
+                        'user_id' => Cache::get('userId'),
+                        'date_time_modified' => date('d-M-y'),
+                        'form_id' => ''
+                    ]);
+
+                $countValidation = DB::table('DIAGNOSIS_VALIDATIONS')
+                    ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
+                    ->where(DB::raw('UPPER(diagnosis_id)'), strtoupper($request->diagnosis_id))
+                    // ->where('pharmacy_status', $request->pharmacy_status)
+                    ->update([
+                        'diagnosis_list' => $request->diagnosis_list,
+                        'date_time_modified' => date('d-M-y'),
+                        'diagnosis_status' => $request->diagnosis_status,
+                        'form_id' => ''
+                    ]);
+
+                return $this->respondWithToken(
+                    $this->token(),
+                    'Record Updated successfully',
+                    $countValidation,
+                );
+            }
+        } else {
+            // return $request->all();
+            $updateProviderExceptionData = DB::table('DIAGNOSIS_EXCEPTIONS')
+                ->where('diagnosis_list', $request->diagnosis_list)
+                ->update([
+                    'exception_name' => $request->exception_name,
+                    'user_id' => Cache::get('userId'),
+                    'date_time_modified' => date('d-M-y'),
+                    'form_id' => ''
+                ]);
+
+            $countValidation = DB::table('DIAGNOSIS_VALIDATIONS')
+                ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
+                ->where(DB::raw('UPPER(diagnosis_id)'), strtoupper($request->diagnosis_id))
+                // ->where('pharmacy_status', $request->pharmacy_status)
+                ->update([
+                    'diagnosis_status' => $request->diagnosis_status,
+                    'diagnosis_list' => $request->diagnosis_list,
+                    'date_time_modified' => date('d-M-y'),
+                    'diagnosis_status' => $request->diagnosis_status,
+                    'form_id' => ''
+                ]);
+
+            $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
+            if (!empty($request->limitations_form)) {
+                $limitation_list = $limitation_list_obj[0];
+                foreach ($limitation_list_obj as $key => $limitation_list) {
+                    $values = [
+                        // 'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                        // 'diagnosis_id'  => $request->diagnosis_id,
+                        'limitations_list' => isset($limitation_list->limitations_list) ? $limitation_list->limitations_list : null,
+                        // 'EFFECTIVE_DATE' => $limitation_list->effective_date,
+                        'TERMINATION_DATE' => $limitation_list->termination_date,
+                        'DATE_TIME_CREATED' => date('d-M-y'),
+                    ];
+
+                    $searchAttributes = [
+                        'DIAGNOSIS_LIST' => $request->diagnosis_list,
+                        'diagnosis_id'  => $request->diagnosis_id,
+                        'EFFECTIVE_DATE' => $limitation_list->effective_date,
+                    ];
+                    $user = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')->updateOrInsert($searchAttributes, $values);
+                    $check = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                        ->where('DIAGNOSIS_LIST', '=', $request->diagnosis_list)
+                        ->where('diagnosis_id', '=', $request->diagnosis_id)
+                        ->where('EFFECTIVE_DATE', '!=', $limitation_list->effective_date)
+                        ->get();
+                }
+            }
+
+            return $this->respondWithToken(
+                $this->token(),
+                'Record Updated successfully',
+                $countValidation,
+            );
+        }
+    }
 
 
     public function DiagnosisLimitationAdd(Request $request)
@@ -554,7 +716,7 @@ class DiagnosisValidationListController extends Controller
             ->where('DIAGNOSIS_LIST', $request->diagnosis_list)
             ->where('DIAGNOSIS_ID', $request->diagnosis_id)
             ->update([
-                'PRIORITY' => $request->priority
+                'PRIORITY' => $request->priority == null ? "1" : $request->priority,
             ]);
         if ($data) {
             return $this->respondWithToken($this->token(), 'updatd successfully', $data);
@@ -566,5 +728,19 @@ class DiagnosisValidationListController extends Controller
             ->join('DIAGNOSIS_EXCEPTIONS as b', 'b.DIAGNOSIS_LIST', '=', 'a.DIAGNOSIS_LIST')
             ->get();
         return $this->respondWithToken($this->token(), '', $data);
+    }
+
+    /**  function will remove only limitation row */
+    public function deleteLimitation(Request $request)
+    {
+        $delete_limitation = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+            ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
+            ->where(DB::raw('UPPER(diagnosis_id)'), strtoupper($request->diagnosis_id))
+            ->where('effective_date', date('Ymd', strtotime($request->effective_date)))
+            ->get();
+
+        return $delete_limitation;
+
+        return $this->respondWithToken($this->token(), 'Limitation Deleted', $delete_limitation);
     }
 }

@@ -214,6 +214,7 @@ class PricingStrategyController extends Controller
         }
     }
 
+<<<<<<< HEAD
     public function delete(Request $request)
     {
         if (isset($request->pricing_strategy_id) && isset($request->effective_date) && isset($request->price_schedule)) {
@@ -246,4 +247,7 @@ class PricingStrategyController extends Controller
             return $this->respondWithToken($this->token(), 'Record Not found', 'false');
         }
     }
+=======
+   
+>>>>>>> origin/main
 }

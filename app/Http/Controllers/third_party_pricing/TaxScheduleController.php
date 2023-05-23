@@ -5,6 +5,8 @@ namespace App\Http\Controllers\third_party_pricing;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class TaxScheduleController extends Controller
 {
@@ -12,7 +14,8 @@ class TaxScheduleController extends Controller
     public function get(Request $request)
     {
         $taxData = DB::table('tax_schedule')
-        ->where('tax_schedule_id', 'like', '%' . $request->search. '%')
+        // ->where('tax_schedule_id', 'like', '%' . $request->search. '%')
+        ->whereRaw('LOWER(tax_schedule_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
         ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->get();
 
         return $this->respondWithToken($this->token(), '', $taxData);
@@ -45,7 +48,17 @@ class TaxScheduleController extends Controller
         if ($request->add_new == 1) {
 
             if ($validation->count() > 0) {
-                return $this->respondWithToken($this->token(), 'Tax Schedule ID is Already Exists', $validation, true, 200, 1);
+                return $this->respondWithToken($this->token(), [['Tax Schedule ID is Already Exists']], $validation, 'false', 200, 1);
+            }
+            $validator = Validator::make($request->all(), [
+                'tax_schedule_id' => ['required', 'max:10', Rule::unique('tax_schedule')->where(function ($q) {
+                    $q->whereNotNull('tax_schedule_id');
+                })],
+                'tax_schedule_name' => ['required', 'max:36'],
+                
+            ]);
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             }
             $add_tax_schedule = DB::table('tax_schedule')
                 ->insert([
@@ -62,8 +75,21 @@ class TaxScheduleController extends Controller
                 ]);
             return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_tax_schedule);
         } else if ($request->add_new == 0) {
+
+           
             if ($validation->count() < 1) {
                 return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
+            }
+            $validator = Validator::make($request->all(), [
+                'tax_schedule_id' => ['required', 'max:10', Rule::unique('tax_schedule')->where(function ($q) use($request) {
+                    $q->whereNotNull('tax_schedule_id');
+                    $q->where('tax_schedule_id','!=', $request->tax_schedule_id);
+                })],
+                'tax_schedule_name' => ['required', 'max:36'],
+                
+            ]);
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             }
             $update_tax_schedule = DB::table('tax_schedule')
                 ->where('tax_schedule_id', $request->tax_schedule_id)

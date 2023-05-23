@@ -13,7 +13,8 @@ class LimitationsController extends Controller
     {
         $ndc = DB::table('LIMITATIONS_LIST')
                 ->select('LIMITATIONS_LIST', 'LIMITATIONS_LIST_NAME','EFFECTIVE_DATE')
-                ->where('LIMITATIONS_LIST', 'like', '%' . $request->search . '%')
+                // ->where('LIMITATIONS_LIST', 'like', '%' . $request->search . '%')
+                ->whereRaw('LOWER(LIMITATIONS_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere('LIMITATIONS_LIST_NAME', 'like', '%' . $request->search. '%')
                 ->get();
 
@@ -37,8 +38,21 @@ class LimitationsController extends Controller
             "limitations_list" => ['required','max:36'],
             "limitations_list_name" => ['required','max:36'],
             'effective_date'=>['required'],
-            'termination_date'=>['required'],  
+            'termination_date'=>['required','after:effective_date'],  
+            'max_rx_qty'  => ['nullable ','gt:min_rx_qty'],
+            'max_days_supply_opt' => ['nullable ','gt:days_supply_opt_multiplier'],
+            'max_ctl_days'=> ['nullable ','gt:min_ctl_days'],
+            'mail_order_max_rx_days'=> ['nullable ','gt:mail_order_min_rx_days'],
+            'max_age'=> ['nullable ','gt:min_age'],
             
+        ],[
+            'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+            'max_rx_qty.gt' => 'Max Quantity must be Greater than Min Quantity',
+            'max_days_supply_opt.gt'=> 'Max Day must be greater than Min Day',
+            'max_ctl_days.gt'=> 'Max Ctl must be greater than Min Ctl',
+            'mail_order_max_rx_days.gt'=>'Max day Mail Service must be greater than Min day Mail Service',
+            'max_age.gt' => 'Max Age must be greater than Min Age',
+
         ]);
 
         if ($validator->fails()) {
@@ -46,7 +60,6 @@ class LimitationsController extends Controller
         }
 
         $createddate = date( 'y-m-d' );
-
         $recordcheck = DB::table('LIMITATIONS_LIST')
         ->where('limitations_list', $request->limitations_list)
         ->first();
@@ -135,9 +148,6 @@ class LimitationsController extends Controller
            
         } else {
 
-
-           
-
             $update = DB::table('LIMITATIONS_LIST' )
             ->where('limitations_list', $request->limitations_list )
             ->update(
@@ -206,5 +216,18 @@ class LimitationsController extends Controller
         }
 
 
+    }
+    public function limitation_delete(Request $request)
+    {
+
+        $all_exceptions_lists =  DB::table('LIMITATIONS_LIST')
+            ->where('LIMITATIONS_LIST', $request->limitations_list)
+            ->delete();
+
+        if ($all_exceptions_lists) {
+            return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
+        }
     }
 }

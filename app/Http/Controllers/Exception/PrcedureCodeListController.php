@@ -125,10 +125,12 @@ class PrcedureCodeListController extends Controller
 
                 "description"=>['required','max:36'],
                 "effective_date"=>['required','max:10'],
-                'termination_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10','after:effective_date'],
                 'procedure_code'=>['required','max:10'],
                 
 
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
 
             if ($validator->fails()) {
@@ -139,6 +141,25 @@ class PrcedureCodeListController extends Controller
                 if ($validation->count() > 0) {
                     return $this->respondWithToken($this->token(), 'Procedure Exception Already Exists', $validation, true, 200, 1);
                 }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PROC_CODE_LISTS')
+                ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    // return redirect()->back()->withErrors(['overlap' => 'Date overlap detected.']);
+                    return $this->respondWithToken($this->token(), 'For Same  Procedure Code ,dates cannot overlap.', $validation, true, 200, 1);
+                }
+
                 $add_names = DB::table('PROC_CODE_LIST_NAMES')->insert(
                     [
                         'proc_code_list_id' => $request->proc_code_list_id,
@@ -173,11 +194,13 @@ class PrcedureCodeListController extends Controller
                 "proc_code_list_id" => ['required','max:36'],
                 "description"=>['required','max:36'],
                 "effective_date"=>['required','max:10'],
-                'termination_date'=>['required','max:10'],
+                'termination_date'=>['required','max:10','after:effective_date'],
                 'procedure_code'=>['required','max:10'],
                 
                 
 
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
 
             if ($validator->fails()) {
@@ -189,75 +212,83 @@ class PrcedureCodeListController extends Controller
                 // if ($validation->count() < 1) {
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
-    
-                $update_names = DB::table('PROC_CODE_LIST_NAMES')
+
+
+                
+            if($request->update_new == 0){
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('PROC_CODE_LISTS')
+                ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+                ->where('procedure_code',$request->procedure_code)
+                ->where('effective_date','!=',$request->effective_date)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                    return $this->respondWithToken($this->token(), [['For Same  Procedure Code , dates cannot overlap.']], '', 'false');
+                }
+
+                $add_names = DB::table('PROC_CODE_LIST_NAMES')
+                ->where('proc_code_list_id',$request->proc_code_list_id)
+                ->update(
+                    [
+                        'description'=>$request->description,
+                        
+                    ]
+                );
+
+                $update = DB::table('PROC_CODE_LISTS' )
                 ->where('proc_code_list_id', $request->proc_code_list_id )
-                ->first();
-                    
+                ->where('procedure_code',$request->procedure_code)
+                ->where('effective_date',$request->effective_date)
+                ->update(
+                    [
+                        'TERMINATION_DATE'=>$request->termination_date,
+                        
     
+                    ]
+                );
+                $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+            }elseif($request->update_new == 1){
+
                 $checkGPI = DB::table('PROC_CODE_LISTS')
                 ->where('proc_code_list_id', $request->proc_code_list_id )
                 ->where('procedure_code',$request->procedure_code)
                 ->where('effective_date',$request->effective_date)
-                ->get()
-                ->count();
+                ->get();
+                if(count($checkGPI) >= 1){
+                    // return $this->respondWithToken($this->token(), 'Record Already  Exists',$checkGPI,'false');
+                    return $this->respondWithToken($this->token(), [['For Same  Procedure Code , dates cannot overlap.']], '', 'false');
+                }else{
 
-
-                $effective_date_check = DB::table('PROC_CODE_LISTS')
-                ->where('proc_code_list_id', $request->proc_code_list_id )
-                ->where('procedure_code',$request->procedure_code)
-                ->where('effective_date',$request->effective_date)
-                ->where('termination_date',$request->termination_date)
-                ->get()
-                ->count();
-
-
-                
-
-
-                
-                    // dd($checkGPI);
-                // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                //if result 0 then add NDC_EXCEPTION_LISTS record
-
-                if($effective_date_check == 1){
-
-                    $add_names = DB::table('PROC_CODE_LIST_NAMES')
-                    ->where('proc_code_list_id',$request->proc_code_list_id)
-                    ->update(
-                        [
-                            'description'=>$request->description,
-                            
-                        ]
-                    );
-
-                    $update = DB::table('PROC_CODE_LISTS' )
-                    ->where('proc_code_list_id', $request->proc_code_list_id )
+                    $effectiveDate=$request->effective_date;
+                    $terminationDate=$request->termination_date;
+                    $overlapExists = DB::table('PROC_CODE_LISTS')
+                    ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
                     ->where('procedure_code',$request->procedure_code)
-                    ->where('effective_date',$request->effective_date)
-                    ->update(
-                        [
-                            'TERMINATION_DATE'=>$request->termination_date,
-                            
-        
-                        ]
-                    );
-                    $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-                   
-
-
-                }else if($checkGPI == 1)
-                {
-
-                    return $this->respondWithToken($this->token(), 'Record Already  Exists',$checkGPI);
-
-
-                }
-                else{
-
-                    if ($checkGPI <= "0") {
-                        $update = DB::table('PROC_CODE_LISTS')
+                    // ->where('effective_date','!=',$request->effective_date)
+                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
+                            });
+                    })
+                    ->exists();
+                    if ($overlapExists) {
+                        return $this->respondWithToken($this->token(), [['For Same  Procedure Code , dates cannot overlap.']], '', 'false');
+                    }
+                    $update = DB::table('PROC_CODE_LISTS')
                         ->insert(
                             [
                                 'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
@@ -265,38 +296,114 @@ class PrcedureCodeListController extends Controller
                                 'EFFECTIVE_DATE'=>$request->effective_date,
                                 'TERMINATION_DATE'=>$request->termination_date,
                                 'DATE_TIME_CREATED'=>$createddate,
-                                
-                                
                             ]);
+                    $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update); 
+                }
+                
+            }
+
+
+                // $update_names = DB::table('PROC_CODE_LIST_NAMES')
+                // ->where('proc_code_list_id', $request->proc_code_list_id )
+                // ->first();
+                    
+    
+                // $checkGPI = DB::table('PROC_CODE_LISTS')
+                // ->where('proc_code_list_id', $request->proc_code_list_id )
+                // ->where('procedure_code',$request->procedure_code)
+                // ->where('effective_date',$request->effective_date)
+                // ->get()
+                // ->count();
+
+
+                // $effective_date_check = DB::table('PROC_CODE_LISTS')
+                // ->where('proc_code_list_id', $request->proc_code_list_id )
+                // ->where('procedure_code',$request->procedure_code)
+                // ->where('effective_date',$request->effective_date)
+                // ->where('termination_date',$request->termination_date)
+                // ->get()
+                // ->count();
+
+
+                
+
+
+                
+                //     // dd($checkGPI);
+                // // if result >=1 then update NDC_EXCEPTION_LISTS table record
+                // //if result 0 then add NDC_EXCEPTION_LISTS record
+
+                // if($effective_date_check == 1){
+
+                //     $add_names = DB::table('PROC_CODE_LIST_NAMES')
+                //     ->where('proc_code_list_id',$request->proc_code_list_id)
+                //     ->update(
+                //         [
+                //             'description'=>$request->description,
+                            
+                //         ]
+                //     );
+
+                //     $update = DB::table('PROC_CODE_LISTS' )
+                //     ->where('proc_code_list_id', $request->proc_code_list_id )
+                //     ->where('procedure_code',$request->procedure_code)
+                //     ->where('effective_date',$request->effective_date)
+                //     ->update(
+                //         [
+                //             'TERMINATION_DATE'=>$request->termination_date,
+                            
+        
+                //         ]
+                //     );
+                //     $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                   
+
+
+                // }else if($checkGPI == 1)
+                // {
+
+                //     return $this->respondWithToken($this->token(), 'Record Already  Exists',$checkGPI);
+
+
+                // }
+                // else{
+
+                //     if ($checkGPI <= "0") {
+                //         $update = DB::table('PROC_CODE_LISTS')
+                //         ->insert(
+                //             [
+                //                 'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
+                //                 'PROCEDURE_CODE'=>$request->procedure_code,
+                //                 'EFFECTIVE_DATE'=>$request->effective_date,
+                //                 'TERMINATION_DATE'=>$request->termination_date,
+                //                 'DATE_TIME_CREATED'=>$createddate,
+                                
+                                
+                //             ]);
                         
     
-                    $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                //     $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
     
       
     
                         
-                    }
-                   
+                //     }
 
-                }
-
-    
-               
-    
-               
+                // }
 
             }
-
            
         }
     }
 
     public function get( Request $request )
- {
-        ;
+   {
         $providerCodeList = DB::table( 'PROC_CODE_LIST_NAMES' )
-        ->where( 'PROC_CODE_LIST_ID', 'like', '%'.$request->search.'%' )
+        // ->where( 'PROC_CODE_LIST_ID', 'like', '%'.$request->search.'%' )
+        ->whereRaw('LOWER(PROC_CODE_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
         ->orWhere( 'DESCRIPTION', 'like', '%'.$request->search.'%' )
         ->get();
         return $this->respondWithToken( $this->token(), '', $providerCodeList );
@@ -349,6 +456,37 @@ class PrcedureCodeListController extends Controller
            ->first();
            return $this->respondWithToken( $this->token(), '', $providerCodeList );
        }
+
+
+       public function produrecodelistdelete(Request $request)
+    {
+        // return $request->all();
+        if (isset($request->proc_code_list_id) && ($request->procedure_code)) {
+            $all_exceptions_lists =  DB::table('PROC_CODE_LISTS')
+                ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+                ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->proc_code_list_id)) {
+
+            $exception_delete =  DB::table('PROC_CODE_LIST_NAMES')
+                ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
+    // dd($request->all());
+
+
 
 
     

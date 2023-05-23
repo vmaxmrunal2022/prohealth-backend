@@ -98,19 +98,28 @@ class EligibilityValidationListController extends Controller
     public function addEligiblityData(Request $request)
     {
         if ($request->new == 1) {
-            // $validator = Validator::make($request->all(), [
-            //     "elig_validation_id" => ['required', 'max:10', Rule::unique('ELIG_VALIDATION_LISTS')->where(function ($q) {
-            //         $q->whereNotNull('elig_validation_id');
-            //     })],
-            //     "elig_validation_name" => ['max:25'],
-            //     "agelimit_month" => ['required_if:age_limit_opt,1'],
-            //     "student_age_limit" => ['max:3', 'numeric'],
-            //     "child_age_limit" => ['max:3', 'numeric'],
-            //     "dis_dep_age_limit" => ['max:3', 'numeric'],
-            // ]);
-            // if ($validator->fails()) {
-            //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            // } else {
+                $validator = Validator::make($request->all(), [
+                    "elig_validation_id" => ['required', 'max:10', Rule::unique('ELIG_VALIDATION_LISTS')->where(function ($q) {
+                        $q->whereNotNull('elig_validation_id');
+                    })],
+                    // "elig_validation_name" => ['required','max:25'],
+                    // "age_limit_opt" => ['required_if:age_limit_opt,1'],
+                    // "agelimit_month" => ['max:12'],
+                    // "age_limit_day" => ['max:99'],
+                    // "cardholder_covd" => ['max:99'],
+                    // "spouse_covd" => ['max:3', 'numeric'],
+                    // "child_covd" => ['max:3', 'numeric'],
+                    // "student_covd" => ['max:3', 'numeric'],
+                    // "disabled_dep_covd" => ['max:3', 'numeric'],
+                    // "sig_other_covd" => ['max:3', 'numeric'],
+                    // "adult_dep_covd" => ['max:3', 'numeric'],
+                    // "child_age_limit" => ['max:3', 'numeric'],
+                    // "student_age_limit" => ['max:3', 'numeric'],
+                    // "dis_dep_age_limit" => ['max:3', 'numeric'],
+                ]);
+                if ($validator->fails()) {
+                    return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+                } 
                 $getEligibilityData = DB::table('ELIG_VALIDATION_LISTS')
                     ->where(DB::raw('UPPER(ELIG_VALIDATION_ID)'), strtoupper($request->elig_validation_id))
                     ->first();
@@ -141,17 +150,26 @@ class EligibilityValidationListController extends Controller
                 }
             // }
         } else if($request->new == 0) {
-            // $validator = Validator::make($request->all(), [
-            //     "elig_validation_id" => ['required', 'max:10'],
-            //     "elig_validation_name" => ['max:25'],
-            //     "agelimit_month" => ['required_if:age_limit_opt,1'],
-            //     "student_age_limit" => ['max:3', 'numeric'],
-            //     "child_age_limit" => ['max:3', 'numeric'],
-            //     "dis_dep_age_limit" => ['max:3', 'numeric'],
-            // ]);
-            // if ($validator->fails()) {
-            //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            // } else {
+            $validator = Validator::make($request->all(), [
+                // "elig_validation_id" => ['required', 'max:10'],
+                // "elig_validation_name" => ['required','max:25'],
+                // "age_limit_opt" => ['required_if:age_limit_opt,1'],
+                // "agelimit_month" => ['max:3', 'numeric'],
+                // "age_limit_day" => ['max:3', 'numeric'],
+                // "cardholder_covd" => ['max:3', 'numeric'],
+                // "spouse_covd" => ['max:3', 'numeric'],
+                // "child_covd" => ['max:3', 'numeric'],
+                // "student_covd" => ['max:3', 'numeric'],
+                // "disabled_dep_covd" => ['max:3', 'numeric'],
+                // "sig_other_covd" => ['max:3', 'numeric'],
+                // "adult_dep_covd" => ['max:3', 'numeric'],
+                // "child_age_limit" => ['max:3', 'numeric'],
+                // "student_age_limit" => ['max:3', 'numeric'],
+                // "dis_dep_age_limit" => ['max:3', 'numeric'],
+            ]);
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+            } 
                 $updateData = DB::table('ELIG_VALIDATION_LISTS')
                     ->where('ELIG_VALIDATION_ID', $request->elig_validation_id)
                     ->update([

@@ -168,8 +168,8 @@ class TraditionalNetworkController extends Controller
             }
 
 
-            if ($update_rx_networks) {
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_rx_networks);
+            if ($benefitcode) {
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
             }
         }
     }
@@ -198,7 +198,11 @@ class TraditionalNetworkController extends Controller
 
     public function search(Request $request)
     {
-        $ndc = DB::select("SELECT * FROM RX_NETWORK_NAMES");
+        $ndc =  DB::table('RX_NETWORK_NAMES')
+        ->where('NETWORK_ID', 'like', '%' . $request->search . '%')
+        ->orWhere('NETWORK_NAME', 'like', '%' . $request->search . '%')
+
+        ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -234,7 +238,7 @@ class TraditionalNetworkController extends Controller
     {
         $ndc = DB::table('RX_NETWORKS')
             ->join('RX_NETWORK_NAMES', 'RX_NETWORKS.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
-            // ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
+            ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
             // ->where('RX_NETWORK_NAMES.NETWORK_NAME', 'like', '%' . $ndcid . '%')
             ->orWhere('RX_NETWORKS.NETWORK_ID', $ndcid)
             ->get();

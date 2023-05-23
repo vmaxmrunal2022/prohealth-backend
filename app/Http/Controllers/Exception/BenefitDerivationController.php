@@ -110,7 +110,7 @@ class BenefitDerivationController extends Controller
             $validator = Validator::make($request->all(), [
                 'benefit_derivation_id' => [
                     'required',
-                    'max:10', Rule::unique(['BENEFIT_DERIVATION_NAMES','BENEFIT_DERIVATION'])->where(function ($q) {
+                    'max:10', Rule::unique('BENEFIT_DERIVATION_NAMES')->where(function ($q) {
                         $q->whereNotNull('benefit_derivation_id');
                     })
                 ],
@@ -122,23 +122,23 @@ class BenefitDerivationController extends Controller
                 //     $q->whereNotNull('effective_date');
                 // })],
 
-                // 'benefit_derivation_id' => [
-                //     'required',
-                //     'max:10', Rule::unique('BENEFIT_DERIVATION')->where(function ($q) {
-                //         $q->whereNotNull('benefit_derivation_id');
-                //     })
-                // ],
+                'benefit_derivation_id' => [
+                    'required',
+                    'max:10', Rule::unique('BENEFIT_DERIVATION')->where(function ($q) {
+                        $q->whereNotNull('benefit_derivation_id');
+                    })
+                ],
 
                 // "benefit_derivation_id" => ['required','max:36'],
-                "description"=>['required','max:2'],
-                "service_type"=>['required','max:1'],
+                "description"=>['required','max:35'],
+                "service_type"=>['required'],
                 'service_modifier'=>['required'],
-                'proc_code_list_id'=>['required','max:10'],
-                'benefit_code'=>['max:10'],
-                'effective_date'=>['required','max:10'],
-                'termination_date'=>['required','max:10'],
-
-
+                'proc_code_list_id'=>['required'],
+                // 'benefit_code'=>['max:10'],
+                'effective_date'=>['required'],
+                'termination_date'=>['required','after:effective_date'],
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
 
             if ($validator->fails()) {
@@ -147,6 +147,25 @@ class BenefitDerivationController extends Controller
                 if ($validation->count() > 0) {
                     return $this->respondWithToken($this->token(), 'Benefit List  Already Exists', $validation, true, 200, 1);
                 }
+
+                $effectiveDate=$request->effective_date;
+                $terminationDate=$request->termination_date;
+                $overlapExists = DB::table('BENEFIT_DERIVATION')
+                ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                ->where('TERMINATION_DATE', '>=', $terminationDate);
+                        });
+                })
+                ->exists();
+                if ($overlapExists) {
+                  
+                    return $this->respondWithToken($this->token(), 'For same Benefit Code , dates cannot overlap.', $validation, true, 200, 1);
+                }
+
                 $add_names = DB::table('BENEFIT_DERIVATION_NAMES')->insert(
                     [
                         'benefit_derivation_id' => $request->benefit_derivation_id,
@@ -203,15 +222,17 @@ class BenefitDerivationController extends Controller
             $validator = Validator::make($request->all(), [
 
                 "benefit_derivation_id" => ['required','max:36'],
-                "description"=>['required','max:2'],
-                "service_type"=>['required','max:1'],
+                "description"=>['required','max:35'],
+                "service_type"=>['required'],
                 'service_modifier'=>['required'],
-                'proc_code_list_id'=>['required','max:10'],
-                'benefit_code'=>['max:10'],
-                'effective_date'=>['required','max:10'],
-                'termination_date'=>['required','max:10'],
+                'proc_code_list_id'=>['required'],
+                // 'benefit_code'=>['max:10'],
+                'effective_date'=>['required'],
+                'termination_date'=>['required','after:effective_date'],
 
 
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
 
             if ($validator->fails()) {
@@ -222,27 +243,120 @@ class BenefitDerivationController extends Controller
                 //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
                 // }
 
-                $update_names = DB::table('BENEFIT_DERIVATION_NAMES')
+                
+
+               
+
+                if($request->update_new == 0){
+                    $effectiveDate=$request->effective_date;
+                    $terminationDate=$request->termination_date;
+                    $overlapExists = DB::table('BENEFIT_DERIVATION')
+                    ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                    // ->where('service_type',$request->service_type)
+                    // ->where('service_modifier',$request->service_modifier)
+                    // ->where('proc_code_list_id',$request->proc_code_list_id)
+                    ->where('benefit_code', $request->benefit_code)
+                    ->where('effective_date','!=',$request->effective_date)
+                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
+                            });
+                    })
+                    ->exists();
+                    if ($overlapExists) {
+                        return $this->respondWithToken($this->token(), [['For same Benefit Code , dates cannot overlap.']], '', 'false');
+                    }
+
+
+
+                    $add_names = DB::table('BENEFIT_DERIVATION_NAMES')
                     ->where('benefit_derivation_id', $request->benefit_derivation_id)
-                    ->first();
+                    ->update(
+                        [
+                            'description' => $request->description,
 
+                        ]
+                    );
 
-                $checkGPI = DB::table('BENEFIT_DERIVATION')
+                    $update = DB::table('BENEFIT_DERIVATION')
                     ->where('benefit_derivation_id', $request->benefit_derivation_id)
                     ->where('service_type',$request->service_type)
                     ->where('service_modifier',$request->service_modifier)
                     ->where('proc_code_list_id',$request->proc_code_list_id)
                     ->where('benefit_code', $request->benefit_code)
                     ->where('effective_date', $request->effective_date)
-                    ->get()
-                    ->count();
-                // dd($checkGPI);
-                // if result >=1 then update BENEFIT_DERIVATION table record
-                //if result 0 then add BENEFIT_DERIVATION record
+                    ->update(
+                        [
+                        
+                        'TERMINATION_DATE' => $request->termination_date,
+                        'DATE_TIME_CREATED' => $createddate,
+                        'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
+                        'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                        'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
+                        'MESSAGE' => $request->message,
+                        'MESSAGE_STOP_DATE' => $request->message_stop_date,
+                        'MIN_AGE' => $request->min_age,
+                        'MAX_AGE' => $request->max_age,
+                        'MIN_PRICE' => $request->min_price,
+                        'MAX_PRICE' => $request->max_price,
+                        'MIN_PRICE_OPT' => $request->max_price_opt,
+                        'MAX_PRICE_OPT' => $request->max_price_opt,
+                        'VALID_RELATION_CODE' => $request->valid_relation_code,
+                        'SEX_RESTRICTION' => $request->sex_restriction,
+                        'MODULE_EXIT' => $request->module_exit,
+                        'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
+                        'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
+                        'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
+                        'COVERAGE_START_DAYS' => $request->coverage_start_days,
+                        'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
+
+                        ]
 
 
-                if ($checkGPI <= "0") {
-                    $update = DB::table('BENEFIT_DERIVATION')
+                    );
+                $update = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+
+                }elseif($request->update_new == 1){
+                    $checkGPI = DB::table('BENEFIT_DERIVATION')
+                    ->where('benefit_derivation_id', $request->benefit_derivation_id)
+                    ->where('service_type',$request->service_type)
+                    ->where('service_modifier',$request->service_modifier)
+                    ->where('proc_code_list_id',$request->proc_code_list_id)
+                    ->where('benefit_code', $request->benefit_code)
+                    ->where('effective_date', $request->effective_date)
+                    ->get();
+
+                    if(count($checkGPI) >= 1 ){
+                        return $this->respondWithToken($this->token(), [['For same Benefit Code , dates cannot overlap.']], '', 'false');
+                    }else{
+                        $effectiveDate=$request->effective_date;
+                        $terminationDate=$request->termination_date;
+                        $overlapExists = DB::table('BENEFIT_DERIVATION')
+                        ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                        // ->where('service_type',$request->service_type)
+                        // ->where('service_modifier',$request->service_modifier)
+                        // ->where('proc_code_list_id',$request->proc_code_list_id)
+                        ->where('benefit_code', $request->benefit_code)
+                        // ->where('effective_date','!=',$request->effective_date)
+                        ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                    $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                        ->where('TERMINATION_DATE', '>=', $terminationDate);
+                                });
+                        })
+                        ->exists();
+                        if ($overlapExists) {
+                            return $this->respondWithToken($this->token(), [['For same Benefit Code , dates cannot overlap.']], '', 'false');
+                        }
+
+
+                        $update = DB::table('BENEFIT_DERIVATION')
                         ->insert(
                             [
                                 'BENEFIT_DERIVATION_ID' => $request->benefit_derivation_id,
@@ -277,61 +391,123 @@ class BenefitDerivationController extends Controller
                         );
 
 
-                    $update = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-
-                } else {
-
-
-                    $add_names = DB::table('BENEFIT_DERIVATION_NAMES')
-                        ->where('benefit_derivation_id', $request->benefit_derivation_id)
-                        ->update(
-                            [
-                                'description' => $request->description,
-
-                            ]
-                        );
-
-                    $update = DB::table('BENEFIT_DERIVATION')
-                    ->where('benefit_derivation_id', $request->benefit_derivation_id)
-                    ->where('service_type',$request->service_type)
-                    ->where('service_modifier',$request->service_modifier)
-                    ->where('proc_code_list_id',$request->proc_code_list_id)
-                    ->where('benefit_code', $request->benefit_code)
-                    ->where('effective_date', $request->effective_date)
-
-                        ->update(
-                            [
-                            
-                            'TERMINATION_DATE' => $request->termination_date,
-                            'DATE_TIME_CREATED' => $createddate,
-                            'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
-                            'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
-                            'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
-                            'MESSAGE' => $request->message,
-                            'MESSAGE_STOP_DATE' => $request->message_stop_date,
-                            'MIN_AGE' => $request->min_age,
-                            'MAX_AGE' => $request->max_age,
-                            'MIN_PRICE' => $request->min_price,
-                            'MAX_PRICE' => $request->max_price,
-                            'MIN_PRICE_OPT' => $request->max_price_opt,
-                            'MAX_PRICE_OPT' => $request->max_price_opt,
-                            'VALID_RELATION_CODE' => $request->valid_relation_code,
-                            'SEX_RESTRICTION' => $request->sex_restriction,
-                            'MODULE_EXIT' => $request->module_exit,
-                            'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
-                            'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
-                            'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
-                            'COVERAGE_START_DAYS' => $request->coverage_start_days,
-                            'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
-
-                            ]
-
-
-                        );
-                    $update = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                        $update = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update); 
+                    }
                 }
+
+
+
+                // $update_names = DB::table('BENEFIT_DERIVATION_NAMES')
+                //     ->where('benefit_derivation_id', $request->benefit_derivation_id)
+                //     ->first();
+
+
+                // $checkGPI = DB::table('BENEFIT_DERIVATION')
+                //     ->where('benefit_derivation_id', $request->benefit_derivation_id)
+                //     ->where('service_type',$request->service_type)
+                //     ->where('service_modifier',$request->service_modifier)
+                //     ->where('proc_code_list_id',$request->proc_code_list_id)
+                //     ->where('benefit_code', $request->benefit_code)
+                //     ->where('effective_date', $request->effective_date)
+                //     ->get()
+                //     ->count();
+                // dd($checkGPI);
+                // if result >=1 then update BENEFIT_DERIVATION table record
+                //if result 0 then add BENEFIT_DERIVATION record
+
+
+                // if ($checkGPI <= "0") {
+                //     $update = DB::table('BENEFIT_DERIVATION')
+                //         ->insert(
+                //             [
+                //                 'BENEFIT_DERIVATION_ID' => $request->benefit_derivation_id,
+                //                 'SERVICE_TYPE' => $request->service_type,
+                //                 'SERVICE_MODIFIER' => $request->service_modifier,
+                //                 'BENEFIT_CODE' => $request->benefit_code,
+                //                 'EFFECTIVE_DATE' => $request->effective_date,
+                //                 'TERMINATION_DATE' => $request->termination_date,
+                //                 'DATE_TIME_CREATED' => $createddate,
+                //                 'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
+                //                 'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                //                 'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
+                //                 'MESSAGE' => $request->message,
+                //                 'MESSAGE_STOP_DATE' => $request->message_stop_date,
+                //                 'MIN_AGE' => $request->min_age,
+                //                 'MAX_AGE' => $request->max_age,
+                //                 'MIN_PRICE' => $request->min_price,
+                //                 'MAX_PRICE' => $request->max_price,
+                //                 'MIN_PRICE_OPT' => $request->max_price_opt,
+                //                 'MAX_PRICE_OPT' => $request->max_price_opt,
+                //                 'VALID_RELATION_CODE' => $request->valid_relation_code,
+                //                 'SEX_RESTRICTION' => $request->sex_restriction,
+                //                 'MODULE_EXIT' => $request->module_exit,
+                //                 'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
+                //                 'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
+                //                 'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
+                //                 'COVERAGE_START_DAYS' => $request->coverage_start_days,
+                //                 'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
+                //                 'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
+
+                //             ]
+                //         );
+
+
+                //     $update = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+
+                // } else {
+
+
+                //     $add_names = DB::table('BENEFIT_DERIVATION_NAMES')
+                //         ->where('benefit_derivation_id', $request->benefit_derivation_id)
+                //         ->update(
+                //             [
+                //                 'description' => $request->description,
+
+                //             ]
+                //         );
+
+                //     $update = DB::table('BENEFIT_DERIVATION')
+                //     ->where('benefit_derivation_id', $request->benefit_derivation_id)
+                //     ->where('service_type',$request->service_type)
+                //     ->where('service_modifier',$request->service_modifier)
+                //     ->where('proc_code_list_id',$request->proc_code_list_id)
+                //     ->where('benefit_code', $request->benefit_code)
+                //     ->where('effective_date', $request->effective_date)
+
+                //         ->update(
+                //             [
+                            
+                //             'TERMINATION_DATE' => $request->termination_date,
+                //             'DATE_TIME_CREATED' => $createddate,
+                //             'PRICING_STRATEGY_ID' => $request->pricing_strategy_id,
+                //             'ACCUM_BENE_STRATEGY_ID' => $request->accum_bene_strategy_id,
+                //             'COPAY_STRATEGY_ID' => $request->copay_strategy_id,
+                //             'MESSAGE' => $request->message,
+                //             'MESSAGE_STOP_DATE' => $request->message_stop_date,
+                //             'MIN_AGE' => $request->min_age,
+                //             'MAX_AGE' => $request->max_age,
+                //             'MIN_PRICE' => $request->min_price,
+                //             'MAX_PRICE' => $request->max_price,
+                //             'MIN_PRICE_OPT' => $request->max_price_opt,
+                //             'MAX_PRICE_OPT' => $request->max_price_opt,
+                //             'VALID_RELATION_CODE' => $request->valid_relation_code,
+                //             'SEX_RESTRICTION' => $request->sex_restriction,
+                //             'MODULE_EXIT' => $request->module_exit,
+                //             'REJECT_ONLY_MSG_FLAG' => $request->reject_only_msg_flag,
+                //             'MAX_QTY_OVER_TIME' => $request->max_qty_over_time,
+                //             'MAX_RX_QTY_OPT' => $request->max_rx_qty_opt,
+                //             'COVERAGE_START_DAYS' => $request->coverage_start_days,
+                //             'RX_QTY_OPT_MULTIPLIER' => $request->rx_qty_opt_multiplier,
+
+                //             ]
+
+
+                //         );
+                //     $update = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
+                //     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                // }
 
 
 
@@ -357,7 +533,8 @@ class BenefitDerivationController extends Controller
     {
         $ndc = DB::table('BENEFIT_DERIVATION_NAMES')
             ->select('BENEFIT_DERIVATION_ID', 'DESCRIPTION')
-            ->where('BENEFIT_DERIVATION_ID', 'like', '%' . $request->search. '%')
+            ->whereRaw('LOWER(BENEFIT_DERIVATION_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            // ->where('BENEFIT_DERIVATION_ID', 'like', '%' . $request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -415,5 +592,30 @@ class BenefitDerivationController extends Controller
         return $this->respondWithToken($this->token(), '', $ndclist);
 
 
+    }
+    public function benefitderivationdelete(Request $request)
+    {
+        if (isset($request->benefit_derivation_id) && ($request->proc_code_list_id)) {
+            $all_exceptions_lists =  DB::table('BENEFIT_DERIVATION')
+                ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->benefit_derivation_id)) {
+
+            $exception_delete =  DB::table('BENEFIT_DERIVATION_NAMES')
+                ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                ->delete();
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
     }
 }
