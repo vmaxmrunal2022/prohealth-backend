@@ -54,6 +54,7 @@ class AuditTrailController extends Controller
         $member_id = isset(json_decode($request->record_snapshot)->member_id)  ? json_decode($request->record_snapshot)->member_id : null;
         $prior_auth_code_num = isset(json_decode($request->record_snapshot)->prior_auth_code_num)  ? json_decode($request->record_snapshot)->prior_auth_code_num : null;
         $plan_id = isset(json_decode($request->record_snapshot)->plan_id)  ? json_decode($request->record_snapshot)->plan_id : null;
+        $pharmacy_nabp = isset(json_decode($request->record_snapshot)->pharmacy_nabp)  ? json_decode($request->record_snapshot)->pharmacy_nabp : null;
         // return $member_id;
         $record = DB::table($request->table_name)
             ->when($customer_id, function ($query) use ($customer_id) {
@@ -86,6 +87,9 @@ class AuditTrailController extends Controller
 
             ->when($plan_id, function ($query) use ($plan_id) {
                 return $query->where('plan_id', 'like', '%' . $plan_id . '%');
+            })
+            ->when($pharmacy_nabp, function ($query) use ($pharmacy_nabp) {
+                return $query->where('pharmacy_nabp', 'like', '%' . $pharmacy_nabp . '%');
             })
 
 

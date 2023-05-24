@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Provider;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 class ProviderDataProviderController extends Controller
 {
 
-
+    use AuditTrait;
     public function add1(Request $request)
     {
 
@@ -78,9 +79,6 @@ class ProviderDataProviderController extends Controller
 
         return $this->respondWithToken($this->token(), 'Successfully added', $benefitcode);
     }
-
-
-
 
     public function add(Request $request)
     {
@@ -165,10 +163,14 @@ class ProviderDataProviderController extends Controller
                         'MAILING_COUNTRY' => $request->mailing_country,
                         'COUNTRY_CODE' => $request->country_code,
                         'MAILING_COUNTRY_CODE' => $request->mailing_country_code,
-
-
                     ]);
+                $provider = DB::table('PHARMACY_TABLE')
+                    ->where('pharmacy_nabp', strtoupper($request->pharmacy_nabp))
+                    ->first();
+                $record_snap = json_encode($provider);
+                $save_audit = $this->auditMethod('IN', $record_snap, 'PHARMACY_TABLE');
             }
+
 
             if ($addData) {
                 return $this->respondWithToken($this->token(), 'Added Successfully...!!!', $addData);
@@ -246,7 +248,94 @@ class ProviderDataProviderController extends Controller
                     'MAILING_COUNTRY_CODE' => $request->mailing_country_code,
 
                 ]);
+
+            $provider = DB::table('PHARMACY_TABLE')
+                ->where('pharmacy_nabp', strtoupper($request->pharmacy_nabp))
+                ->first();
+
+            $record_snap = json_encode($provider);
+            $save_audit = $this->auditMethod('UP', $record_snap, 'PHARMACY_TABLE');
             return $this->respondWithToken($this->token(), 'Updated Successfully...!!!', $updateData);
+        } else {
+            $updateData = DB::table('PHARMACY_TABLE')
+                ->where('pharmacy_nabp', strtoupper($request->pharmacy_nabp))
+                ->update([
+                    'PHARMACY_NAME' => ($request->pharmacy_name),
+                    'ADDRESS_1' => $request->address_1,
+                    'ADDRESS_2' => $request->address_2,
+                    'CITY' => $request->city,
+                    'STATE' => $request->state,
+                    'ZIP_CODE' => $request->zip_code,
+                    'ZIP_PLUS_2' => $request->zip_plus_2,
+                    'PHONE' => $request->phone,
+                    'FAX' => $request->fax,
+                    'MAILING_ADDRESS_1' => $request->mailing_address_1,
+                    'MAILING_ADDRESS_2' => $request->mailing_address__2,
+                    'MAILING_CITY' => $request->mailing_city,
+                    'MAILING_STATE' => $request->mailing_state,
+                    'MAILING_ZIP_CODE' => $request->mailing_zip_code,
+                    'MAILING_ZIP_PLUS_2' => $request->mailing_zip_plus_2,
+                    'EDI_ADDRESS' => $request->edi_address,
+                    'PHARMACY_CLASS' => $request->pharmacy_class,
+                    'ABA_RTN' => $request->aba_rtn,
+                    'CONTACT' => $request->contact,
+                    'STORE_NUMBER' => $request->store_number,
+                    'HEAD_OFFICE_IND' => $request->head_office_ind,
+                    'PHARMACY_CHAIN' => $request->pharmacy_chain,
+                    'MAIL_ORDER' => $request->mail_order,
+                    'REGION' => $request->region,
+                    'DISTRICT' => $request->district,
+                    'MARKET' => $request->market,
+                    'PRICE_ZONE' => $request->price_zone,
+                    'SCD_AGE_THRESHOLD' => $request->scd_age_threshold,
+                    'PAYMENT_CYCLE' => $request->payment_cycle,
+                    'PAYMENT_TYPE' => $request->payment_type,
+                    'CAP_AMOUNT' => $request->cap_amount,
+                    'COMM_CHARGE_PAID' => $request->comm_charge_paid,
+                    'COMM_CHARGE_REJECT' => $request->comm_charge_reject,
+                    'REIMB_PREFERENCE' => $request->reimb_preference,
+                    'RECORD_USAGE' => $request->record_usage,
+                    'BASE_PHARMACY_NABP' => $request->base_pharmacy_nabp,
+                    'COUNTY' => $request->country,
+                    'TAX_SCHEDULE_ID_1' => $request->tax_schedule_id_1,
+                    'TAX_EFFECTIVE_DATE_1' => $request->tax_effective_date_1,
+                    'TAX_TERMINATION_DATE_1' => $request->tax_termination_date_1,
+                    'TAX_SCHEDULE_ID_2' => $request->tax_schedule_id_2,
+                    'TAX_EFFECTIVE_DATE_2' => $request->tax_effective_date_2,
+                    'TAX_TERMINATION_DATE_2' => $request->tax_termination_date_2,
+                    'TAX_SCHEDULE_ID_3' => $request->tax_schedule_id_3,
+                    'TAX_EFFECTIVE_DATE_3' => $request->tax_effective_date_3,
+                    'TAX_TERMINATION_DATE_3' => $request->tax_termination_date_3,
+                    'WITHHOLD_PAID_AMOUNT' => $request->withhold_paid_amount,
+                    'WITHHOLD_PAID_PERCENT' => $request->withhold_paid_percent,
+                    'WITHHOLD_REJECT_AMOUNT' => $request->withhold_reject_amount,
+                    'WITHHOLD_REJECT_PERCENT' => $request->withhold_reject_percent,
+                    'WITHHOLD_REVERSED_AMOUNT' => $request->withhold_reversed_amount,
+                    'WITHHOLD_REVERSED_PERCENT' => $request->withhold_reversed_percent,
+                    'WITHHOLD_U_AND_C_FLAG' => $request->withhold_u_and_c_flag,
+                    'WITHHOLD_ACTIVE_FLAG' => $request->withhold_active_flag,
+                    'EFFECTIVE_DATE_1' => $request->effective_date_1,
+                    'EFFECTIVE_DATE_2' => $request->effective_date_2,
+                    'TERMINATION_DATE_2' => $request->termination_date_2,
+                    'EFFECTIVE_DATE_3' => $request->effective_date_3,
+                    'TERMINATION_DATE_3' => $request->termination_date_3,
+                    'PHARMACY_STATUS' => $request->pharmacy_status,
+                    'DISPENSER_CLASS' => $request->dispenser_class,
+                    'DISPENSER_TYPE' => $request->dispenser_type,
+                    'PROVIDER_FIRST_NAME' => $request->provider_first_name,
+                    'PROVIDER_LAST_NAME' => $request->provider_last_name,
+                    'MAILING_COUNTRY' => $request->mailing_country,
+                    'COUNTRY_CODE' => $request->country_code,
+                    'MAILING_COUNTRY_CODE' => $request->mailing_country_code,
+                ]);
+
+            $provider = DB::table('PHARMACY_TABLE')
+                ->where(DB::raw('UPPER(pharmacy_nabp)'), strtoupper($request->pharmacy_nabp))
+                ->first();
+
+            $record_snap = json_encode($provider);
+            $save_audit = $this->auditMethod('UP', $record_snap, 'PHARMACY_TABLE');
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully...!!!', $updateData);
         }
     }
 
@@ -319,8 +408,6 @@ class ProviderDataProviderController extends Controller
                         'PARTICIPATION_OVRD' => $request->participation_ovrd,
                         'EFFECTIVE_DATE' => $request->effective_date,
                         'TERMINATION_DATE' => $request->termination_date,
-
-
                     ]);
                 return $this->respondWithToken($this->token(), 'Added Successfully...!!!', $addData);
             } else {
