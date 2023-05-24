@@ -22,7 +22,7 @@ class AccumlatedController extends Controller
 
         if ($request->new) {
             if ($existdata) {
-                return $this->respondWithToken($this->token(), "Accumulate Benefit Strategy ID exists", '', false);
+                return $this->respondWithToken($this->token(), "Accumulate Benefit Strategy ID already exists", '', false);
             } else {
                 $add_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')
                     ->insert(
@@ -165,7 +165,7 @@ class AccumlatedController extends Controller
                 ->first();
             if ($existDataStrategy) {
                 if ($request->addUpdate == 0) {
-                    return $this->respondWithToken($this->token(), 'Accumulate Benefit Plan ID exists', $existDataStrategy, false);
+                    return $this->respondWithToken($this->token(), 'Accumulate Benefit Plan ID already exists', $existDataStrategy, false);
                 }
                 $updateAccstrategyName = DB::table('ACCUM_BENE_STRATEGY_NAMES')
                     ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
@@ -299,7 +299,7 @@ class AccumlatedController extends Controller
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }
-            return $this->respondWithToken($this->token(), 'Record deleted Successfully', $all_accum_bene_strategy);
+            // return $this->respondWithToken($this->token(), 'Record deleted Successfully', $all_accum_bene_strategy);
         } else {
             return $this->respondWithToken($this->token(), 'Record Not found', 'false');
         }
