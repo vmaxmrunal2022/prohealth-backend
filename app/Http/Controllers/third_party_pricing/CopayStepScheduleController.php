@@ -237,6 +237,15 @@ class CopayStepScheduleController extends Controller
             } else if ($request->add_new == 0) {
 
 
+                $addCopaylist1 = DB::table('COPAY_LIST')
+                ->where('COPAY_LIST',$request->copay_list)
+                ->update([
+                    'COPAY_DESC' => $request->copay_desc,
+                    'DATE_TIME_CREATED' => '',
+                    'DATE_TIME_MODIFIED' => ''
+                ]);
+
+
 
                 if (!empty($request->cost_max_form)) {
 
@@ -313,6 +322,13 @@ class CopayStepScheduleController extends Controller
 
 
                     }
+
+
+
+                   
+
+
+
 
 
                     if ($addCopaymatrix1) {
