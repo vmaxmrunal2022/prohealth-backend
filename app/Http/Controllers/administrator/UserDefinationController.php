@@ -15,9 +15,12 @@ use Symfony\Component\Console\Input\Input;
 use Throwable;
 use Auth;
 use Illuminate\Contracts\Session\Session;
+use App\traits\AuditTrait;
+use Illuminate\Support\Facades\Cache;
 
 class UserDefinationController extends Controller
 {
+    use AuditTrait;
 
     public function addUserDefinition(Request $request)
     {
@@ -84,9 +87,11 @@ class UserDefinationController extends Controller
                         'ENCRYPTION_TYPE' => $request->encryption_type,
                     ]);
 
-
-
-
+                $user = DB::table('fe_user')
+                    ->where(DB::raw('UPPER(user_id)'), strtoupper($request->user_id))
+                    ->first();
+                $record_snapshot = json_encode($user);
+                $this->auditMethod('UP', $record_snapshot, 'FE_USERS');
                 if ($updateUser) {
                     return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateUser);
                 }
@@ -406,7 +411,11 @@ class UserDefinationController extends Controller
                     'user_profile' => $updated_user_profile,
                 ]);
 
-
+                $user_data = DB::table('fe_users')
+                    ->where(DB::raw('UPPER(user_id)'), strtoupper($request->user_id))
+                    ->first();
+                $record_snapshot = json_encode($user_data);
+                $save_audit =  $this->auditMethod('UP', $record_snapshot, 'FE_USERS');
                 if ($addUser) {
                     return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addUser);
                 }
@@ -498,7 +507,8 @@ class UserDefinationController extends Controller
                         'user_profile' => $updated_user_profile,
                     ]);
 
-
+                $record_snapshot = json_encode($user_data);
+                $save_audit =  $this->auditMethod('UP', $record_snapshot, 'FE_USERS');
                 if ($updateUser) {
                     return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateUser);
                 }
@@ -650,6 +660,12 @@ class UserDefinationController extends Controller
                         'group_name' => $request->group_name,
                         'user_profile' => $updated_user_profile
                     ]);
+
+                $add_fe_group = DB::table('FE_USER_GROUPS')
+                    ->where('group_id', $request->group_id)
+                    ->first();
+                $record_snap_group = json_encode($add_fe_group);
+                $save_audit_group = $this->auditMethod('IN', $record_snap_group, 'FE_USER_GROUPS');
                 return $this->respondWithToken($this->token(), 'Added Successfully!', $add_fe_group);
             }
         } else {
@@ -719,6 +735,13 @@ class UserDefinationController extends Controller
                         'group_name' => $request->group_name,
                         'user_profile' => $updated_user_profile
                     ]);
+
+
+                $update_fe_group = DB::table('FE_USER_GROUPS')
+                    ->where(DB::raw('UPPER(group_id)'), strtoupper($request->group_id))
+                    ->first();
+                $record_snap_group = json_encode($update_fe_group);
+                $save_audit_group = $this->auditMethod('UP', $record_snap_group, 'FE_USER_GROUPS');
                 return $this->respondWithToken($this->token(), 'Updated Successfully!', $update_fe_group);
             }
         }
