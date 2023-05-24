@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\membership;
 
 use App\Http\Controllers\Controller;
-use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 // use DB;
@@ -14,8 +13,6 @@ use Illuminate\Validation\Rule;
 
 class MemberController extends Controller
 {
-
-    use AuditTrait;
     public function get(Request $request)
     {
         // $member = DB::table('MEMBER')
@@ -593,20 +590,19 @@ class MemberController extends Controller
 
                     ]);
 
-                $member = DB::table('member')
-                    ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
-                    ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
-                    ->where(DB::raw('UPPER(client_group_id)'), strtoupper($request->client_group_id))
-                    ->where(DB::raw('UPPER(member_id)'), strtoupper($request->member_id))
-                    ->first();
-                $record_snapshot_member = json_encode($member);
-                $save_member_audit = $this->auditMethod('IN', $record_snapshot_member, 'MEMBER');
+
+
+
+
+
                 // //Coverage Tab
 
                 $coverage_list_array = json_decode(json_encode($request->coverage_form, true));
 
                 if (!empty($request->coverage_form)) {
                     $coverage_list = $coverage_list_array[0];
+
+
                     foreach ($coverage_list_array as $key => $coverage_list) {
 
                         $add_member_coverage = DB::table('MEMBER_COVERAGE')
@@ -623,20 +619,10 @@ class MemberController extends Controller
                                 'PRICING_STRATEGY_ID' => $coverage_list->pricing_strategy_id,
                             ]);
 
-                        $member_coverage = DB::table('MEMBER_COVERAGE')
-                            ->where('customer_id', $coverage_list->customer_id)
-                            ->where('clinet_id', $coverage_list->client_id)
-                            ->where('client_group_id', $coverage_list->client_group_id)
-                            ->where('member_id', $coverage_list->member_id)
-                            ->where('EFFECTIVE_DATE', $coverage_list->effective_date)
-                            ->where('TERMINATION_DATE', $coverage_list->termination_date)
-                            ->where('plan_id', $coverage_list->plan_id)
-                            ->where('COPAY_STRATEGY_ID', $coverage_list->copay_strategy_id)
-                            ->where('ACCUM_BENEFIT_STRATEGY_ID', $coverage_list->accum_benefit_strategy_id)
-                            ->where('PRICING_STRATEGY_ID', $coverage_list->pricing_strategy_id)
-                            ->first();
-                        $record_snap_mem_coverage = json_encode($member_coverage);
-                        $save_audit_mem_cov = $this->auditMethod('IN', $record_snap_mem_coverage, 'MEMBER_COVERAGE');
+
+
+
+
                     }
                 }
 
@@ -662,10 +648,10 @@ class MemberController extends Controller
                                 // 'FROM_EFFECTIVE_DATE'=>$coverage_history->effective_date,
                                 // 'FROM_TERMINATION_DATE'=>$coverage_history->termination_date,
                                 // 'FROM_PLAN_ID'=>$coverage_history->from_plan_id,
-                                'TO_EFFECTIVE_DATE' => $coverage_history->effective_date,
-                                'TO_TERMINATION_DATE' => $coverage_history->termination_date,
+                                'TO_EFFECTIVE_DATE'=>$coverage_history->effective_date,
+                                'TO_TERMINATION_DATE'=>$coverage_history->termination_date,
                                 // 'TO_PLAN_ID'=>$coverage_history->to_plan_id,
-                                'CHG_TYPE_IND' => 'A',
+                                'CHG_TYPE_IND'=>'A',
                                 // 'FROM_COVERAGE_STRATEGY_ID'=>$coverage_history->from_coverage_strategy_id,
                                 // 'FROM_DRUG_COV_STRATEGY_ID'=>$coverage_history->from_drug_cov_strategy,
 
@@ -682,15 +668,11 @@ class MemberController extends Controller
                                 // 'TO_COPAY_STRATEGY_ID'=>$coverage_history->to_copay_strategy_id,
 
                             ]);
-                        $mem_hist = DB::table('MEMBER_HIST')
-                            ->where('CUSTOMER_ID', $coverage_history->customer_id)
-                            ->where('CLIENT_ID', $coverage_history->client_id)
-                            ->where('CLIENT_GROUP_ID', $coverage_history->client_group_id)
-                            ->where('MEMBER_ID', $coverage_history->member_id)
-                            ->first();
 
-                        $record_snap_mem_hist = json_encode($mem_hist);
-                        $save_audit_mem_hist = $this->auditMethod('IN', $record_snap_mem_hist, 'MEMBER_HIST');
+
+
+
+
                     }
                 }
 
@@ -723,48 +705,37 @@ class MemberController extends Controller
 
                             ]);
 
-                        $member_diag = DB::table('MEMBER_DIAGNOSIS')
-                            ->where('customer_id', $diagnosis_list->customer_id)
-                            ->where('client_id', $diagnosis_list->client_id)
-                            ->where('client_group_id', $diagnosis_list->client_group_id)
-                            ->where('member_id', $diagnosis_list->member_id)
-                            ->where('DIAGNOSIS_ID', $diagnosis_list->diagnosis_id)
-                            ->first();
 
-                        $record_snap_mem_diag = json_encode($member_diag);
-                        $save_audit_mem_diag = $this->auditMethod('IN', $member_diag, 'MEMBER_DIAGNOSIS');
+                        $add_diagnosis_history=DB::table('MEMBER_DIAGNOSIS_HISTORY')
+                        ->insert([
+                            'CUSTOMER_ID' => $diagnosis_list->customer_id,
+                            'CLIENT_ID' => $diagnosis_list->client_id,
+                            'CLIENT_GROUP_ID' => $diagnosis_list->client_group_id,
+                            'MEMBER_ID' => $diagnosis_list->member_id,
+                            'DIAGNOSIS_ID' => $diagnosis_list->diagnosis_id,
+                            "PERSON_CODE" => "000",
+                            "CHG_TYPE_IND"=>"A",
+                            "BATCH_SEQUENCE_NUMBER"=>'0',
+                            'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
+                            'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
+                            "TO_EFFECTIVE_DATE"=>$diagnosis_list->effective_date,
+                            "TO_TERMINATION_DATE"=>$diagnosis_list->termination_date,
+                            "USER_ID_CREATED"=>"",
+
+                        ]);
 
 
-                        $add_diagnosis_history = DB::table('MEMBER_DIAGNOSIS_HISTORY')
-                            ->insert([
-                                'CUSTOMER_ID' => $diagnosis_list->customer_id,
-                                'CLIENT_ID' => $diagnosis_list->client_id,
-                                'CLIENT_GROUP_ID' => $diagnosis_list->client_group_id,
-                                'MEMBER_ID' => $diagnosis_list->member_id,
-                                'DIAGNOSIS_ID' => $diagnosis_list->diagnosis_id,
-                                "PERSON_CODE" => "000",
-                                "CHG_TYPE_IND" => "A",
-                                "BATCH_SEQUENCE_NUMBER" => '0',
-                                'FROM_EFFECTIVE_DATE' => $diagnosis_list->effective_date,
-                                'FROM_TERMINATION_DATE' => $diagnosis_list->termination_date,
-                                "TO_EFFECTIVE_DATE" => $diagnosis_list->effective_date,
-                                "TO_TERMINATION_DATE" => $diagnosis_list->termination_date,
-                                "USER_ID_CREATED" => "",
-
-                            ]);
-                        $diagnosis_history = DB::table('MEMBER_DIAGNOSIS_HISTORY')
-                            ->where('CUSTOMER_ID', $diagnosis_list->customer_id)
-                            ->where('CLIENT_ID', $diagnosis_list->client_id)
-                            ->where('CLIENT_GROUP_ID', $diagnosis_list->client_group_id)
-                            ->where('MEMBER_ID', $diagnosis_list->member_id)
-                            ->where('FROM_EFFECTIVE_DATE', $diagnosis_list->effective_date)
-                            ->first();
-                        $record_snap = json_encode($diagnosis_history);
-                        $save_audit_diag_hist = $this->auditMethod('IN', $record_snap, 'MEMBER_DIAGNOSIS_HISTORY');
                     }
                 }
+
+
+
+
+
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_member);
+
             }
+
         } else if ($request->add_new == 0) {
 
             //Member Tab Update
@@ -818,27 +789,23 @@ class MemberController extends Controller
                     'USER_DEFINED_CODE_2' => $request->user_defined_code_2,
                 ]);
 
-            //Bellow code is for adding member in audit
-
-            $member = DB::table('member')
-                ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
-                ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
-                ->where(DB::raw('UPPER(client_group_id)'), strtoupper($request->client_group_id))
-                ->where(DB::raw('UPPER(member_id)'), strtoupper($request->member_id))
-                ->first();
-            $record_snapshot_member = json_encode($member);
-            $save_member_audit = $this->auditMethod('UP', $record_snapshot_member, 'MEMBER');
-
             //Coverage Tab
-            $delete_member_coverage = DB::table('MEMBER_COVERAGE')
-                ->where('customer_id', $request->customer_id)
+
+
+            $delete_member_coverage = DB::table('MEMBER_COVERAGE')->where('customer_id', $request->customer_id)
                 ->where('client_id', $request->client_id)
                 ->where('client_group_id', $request->client_group_id)
                 ->where('member_id', $request->member_id)->delete();
+
+
             $coverage_list_array = json_decode(json_encode($request->coverage_form, true));
+
             if (!empty($request->coverage_form)) {
                 $coverage_list = $coverage_list_array[0];
+
+
                 foreach ($coverage_list_array as $key => $coverage_list) {
+
                     $add_member_coverage = DB::table('MEMBER_COVERAGE')
                         ->insert([
                             'customer_id' => $coverage_list->customer_id,
@@ -852,25 +819,15 @@ class MemberController extends Controller
                             'ACCUM_BENEFIT_STRATEGY_ID' => $coverage_list->accum_benefit_strategy_id,
                             'PRICING_STRATEGY_ID' => $coverage_list->pricing_strategy_id,
                         ]);
-                    $member_coverage = DB::table('MEMBER_COVERAGE')
-                        ->where('customer_id', $request->customer_id)
-                        ->where('client_id', $request->client_id)
-                        ->where('client_group_id', $request->client_group_id)
-                        ->where('member_id', $request->member_id)
-                        ->first();
-
-                    $record_snap_mem_coverage = json_encode($member_coverage);
-                    $save_audit_mem_coverage = $this->auditMethod('UP', $record_snap_mem_coverage, 'MEMBER_COVERAGE');
 
 
 
                     $add_member_coverage = DB::table('MEMBER_HIST')
-                        ->where('CUSTOMER_ID', $coverage_list->customer_id)
-                        ->where('CLIENT_ID', $coverage_list->client_id)
-                        ->where('CLIENT_GROUP_ID', $coverage_list->client_group_id)
-                        ->where('MEMBER_ID', $coverage_list->member_id)
-                        ->where('FROM_EFFECTIVE_DATE', $coverage_list->effective_date)
-                        ->first();
+                    ->where('CUSTOMER_ID', $coverage_list->customer_id)
+                            ->where('CLIENT_ID', $coverage_list->client_id)
+                            ->where('CLIENT_GROUP_ID', $coverage_list->client_group_id)
+                            ->where('MEMBER_ID', $coverage_list->member_id)
+                            ->where('FROM_EFFECTIVE_DATE', $coverage_list->effective_date)->first();
 
                     if ($add_member_coverage) {
                         $new = $add_member_coverage;
@@ -879,6 +836,9 @@ class MemberController extends Controller
                             ->where('CLIENT_ID', $coverage_list->client_id)
                             ->where('CLIENT_GROUP_ID', $coverage_list->client_group_id)
                             ->where('MEMBER_ID', $coverage_list->member_id)
+
+
+
                             ->update([
 
                                 // 'MEMBER_ID' => $coverage_history->member_id,
@@ -890,7 +850,7 @@ class MemberController extends Controller
                                 // 'TO_EFFECTIVE_DATE'=>$coverage_list->to_effective_date,
                                 // 'TO_TERMINATION_DATE'=>$coverage_list->to_termination_date,
                                 // 'TO_PLAN_ID'=>$coverage_history->to_plan_id,
-                                'CHG_TYPE_IND' => "A",
+                                'CHG_TYPE_IND'=>"A",
                                 // 'FROM_COVERAGE_STRATEGY_ID'=>$coverage_history->from_coverage_strategy_id,
                                 // 'FROM_DRUG_COV_STRATEGY_ID'=>$coverage_history->from_drug_cov_strategy,
 
@@ -907,15 +867,6 @@ class MemberController extends Controller
                                 // 'TO_COPAY_STRATEGY_ID'=>$coverage_history->to_copay_strategy_id,
 
                             ]);
-
-                        $member_hist = DB::table('MEMBER_HIST')
-                            ->where('CUSTOMER_ID', $coverage_list->customer_id)
-                            ->where('CLIENT_ID', $coverage_list->client_id)
-                            ->where('CLIENT_GROUP_ID', $coverage_list->client_group_id)
-                            ->where('MEMBER_ID', $coverage_list->member_id)
-                            ->first();
-                        $record_snpa_mem_hist = json_encode($member_hist);
-                        $save_audit_mem_hist = $this->auditMethod('UP', $record_snpa_mem_hist, 'MEMBER_HIST');
                     } else {
 
                         $new = DB::table('MEMBER_HIST')
@@ -924,8 +875,7 @@ class MemberController extends Controller
                                 'CLIENT_ID' => $coverage_list->client_id,
                                 'CLIENT_GROUP_ID' => $coverage_list->client_group_id,
                                 'MEMBER_ID' => $coverage_list->member_id,
-                                // 'PERSON_CODE' => $coverage_history->person_code,
-                                'person_code' => "0",
+                                // 'PERSON_CODE'=>$coverage_history->person_code,
                                 // 'FROM_EFFECTIVE_DATE'=>$coverage_list->from_effective_date,
                                 // 'FROM_TERMINATION_DATE'=>$coverage_list->from_termination_date,
                                 // 'FROM_PLAN_ID'=>$coverage_history->from_plan_id,
@@ -949,15 +899,17 @@ class MemberController extends Controller
                                 // 'TO_COPAY_STRATEGY_ID'=>$coverage_history->to_copay_strategy_id,
 
                             ]);
-                        $member_hist = DB::table('MEMBER_HIST')
-                            ->where('CUSTOMER_ID', $coverage_list->customer_id)
-                            ->where('CLIENT_ID', $coverage_list->client_id)
-                            ->where('CLIENT_GROUP_ID', $coverage_list->client_group_id)
-                            ->where('MEMBER_ID', $coverage_list->member_id)
-                            ->first();
-                        $record_snpa_mem_hist = json_encode($member_hist);
-                        $save_audit_mem_hist = $this->auditMethod('IN', $record_snpa_mem_hist, 'MEMBER_HIST');
+
+
                     }
+
+
+
+
+
+
+
+
                 }
             }
 
@@ -989,27 +941,21 @@ class MemberController extends Controller
                             "person_code" => "0",
                             'EFFECTIVE_DATE' => $diagnosis_list->effective_date,
                             'TERMINATION_DATE' => $diagnosis_list->termination_date,
+
                         ]);
 
-                    $member_diag = DB::table('MEMBER_DIAGNOSIS')
-                        ->where('customer_id', $diagnosis_list->customer_id)
-                        ->where('client_id', $diagnosis_list->client_id)
-                        ->where('client_group_id', $diagnosis_list->client_group_id)
-                        ->where('member_id', $diagnosis_list->member_id)
-                        ->where('DIAGNOSIS_ID', $diagnosis_list->diagnosis_id)
-                        ->first();
 
-                    $record_snap_mem_diag = json_encode($member_diag);
-                    $save_audit_mem_diag = $this->auditMethod('UP', $member_diag, 'MEMBER_DIAGNOSIS');
+
+
                 }
 
 
                 $add_diagnosis_history = DB::table('MEMBER_DIAGNOSIS_HISTORY')
-                    ->where('CUSTOMER_ID', $diagnosis_list->customer_id)
-                    ->where('CLIENT_ID', $diagnosis_list->client_id)
-                    ->where('CLIENT_GROUP_ID', $diagnosis_list->client_group_id)
-                    ->where('MEMBER_ID', $diagnosis_list->member_id)
-                    ->where('FROM_EFFECTIVE_DATE', $diagnosis_list->effective_date)->first();
+                ->where('CUSTOMER_ID', $diagnosis_list->customer_id)
+                        ->where('CLIENT_ID', $diagnosis_list->client_id)
+                        ->where('CLIENT_GROUP_ID', $diagnosis_list->client_group_id)
+                        ->where('MEMBER_ID', $diagnosis_list->member_id)
+                        ->where('FROM_EFFECTIVE_DATE', $diagnosis_list->effective_date)->first();
 
                 if ($add_diagnosis_history) {
                     $new = $add_diagnosis_history;
@@ -1018,60 +964,67 @@ class MemberController extends Controller
                         ->where('CLIENT_ID', $diagnosis_list->client_id)
                         ->where('CLIENT_GROUP_ID', $diagnosis_list->client_group_id)
                         ->where('MEMBER_ID', $diagnosis_list->member_id)
+
                         ->update([
+                            
                             'DIAGNOSIS_ID' => $diagnosis_list->diagnosis_id,
                             "PERSON_CODE" => "0",
-                            "CHG_TYPE_IND" => "A",
-                            "BATCH_SEQUENCE_NUMBER" => '',
+                            "CHG_TYPE_IND"=>"A",
+                            "BATCH_SEQUENCE_NUMBER"=>'',
                             // 'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
                             // 'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
-                            "TO_EFFECTIVE_DATE" => $diagnosis_list->effective_date,
-                            "TO_TERMINATION_DATE" => $diagnosis_list->termination_date,
-                            "USER_ID_CREATED" => "",
-
+                            "TO_EFFECTIVE_DATE"=>$diagnosis_list->effective_date,
+                            "TO_TERMINATION_DATE"=>$diagnosis_list->termination_date,
+                            "USER_ID_CREATED"=>"",
+        
                         ]);
-
-                    $diagnosis_history = DB::table('MEMBER_DIAGNOSIS_HISTORY')
-                        ->where('CUSTOMER_ID', $diagnosis_list->customer_id)
-                        ->where('CLIENT_ID', $diagnosis_list->client_id)
-                        ->where('CLIENT_GROUP_ID', $diagnosis_list->client_group_id)
-                        ->where('MEMBER_ID', $diagnosis_list->member_id)
-                        ->where('FROM_EFFECTIVE_DATE', $diagnosis_list->effective_date)
-                        ->first();
-                    $record_snap = json_encode($diagnosis_history);
-                    $save_audit_diag_hist = $this->auditMethod('UP', $record_snap, 'MEMBER_DIAGNOSIS_HISTORY');
                 } else {
-                    $new = DB::table('MEMBER_DIAGNOSIS_HISTORY')
-                        ->insert([
-                            'CUSTOMER_ID' => $diagnosis_list->customer_id,
-                            'CLIENT_ID' => $diagnosis_list->client_id,
-                            'CLIENT_GROUP_ID' => $diagnosis_list->client_group_id,
-                            'MEMBER_ID' => $diagnosis_list->member_id,
-                            'DIAGNOSIS_ID' => $diagnosis_list->diagnosis_id,
-                            "PERSON_CODE" => "0",
-                            "CHG_TYPE_IND" => "A",
-                            "BATCH_SEQUENCE_NUMBER" => '',
 
-                            'FROM_EFFECTIVE_DATE' => $diagnosis_list->effective_date,
-                            'FROM_TERMINATION_DATE' => $diagnosis_list->termination_date,
-                            "TO_EFFECTIVE_DATE" => $diagnosis_list->effective_date,
-                            "TO_TERMINATION_DATE" => $diagnosis_list->termination_date,
-                            "USER_ID_CREATED" => "",
+                    
 
-                        ]);
-                    $diagnosis_history = DB::table('MEMBER_DIAGNOSIS_HISTORY')
-                        ->where('CUSTOMER_ID', $diagnosis_list->customer_id)
-                        ->where('CLIENT_ID', $diagnosis_list->client_id)
-                        ->where('CLIENT_GROUP_ID', $diagnosis_list->client_group_id)
-                        ->where('MEMBER_ID', $diagnosis_list->member_id)
-                        ->where('FROM_EFFECTIVE_DATE', $diagnosis_list->effective_date)
-                        ->first();
-                    $record_snap = json_encode($diagnosis_history);
-                    $save_audit_diag_hist = $this->auditMethod('UP', $record_snap, 'MEMBER_DIAGNOSIS_HISTORY');
+                     $new=DB::table('MEMBER_DIAGNOSIS_HISTORY')
+                ->insert([
+                    'CUSTOMER_ID' => $diagnosis_list->customer_id,
+                    'CLIENT_ID' => $diagnosis_list->client_id,
+                    'CLIENT_GROUP_ID' => $diagnosis_list->client_group_id,
+                    'MEMBER_ID' => $diagnosis_list->member_id,
+                    'DIAGNOSIS_ID' => $diagnosis_list->diagnosis_id,
+                    "PERSON_CODE" => "0",
+                    "CHG_TYPE_IND"=>"A",
+                    "BATCH_SEQUENCE_NUMBER"=>'',
+
+                    'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
+                    'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
+                    "TO_EFFECTIVE_DATE"=>$diagnosis_list->effective_date,
+                    "TO_TERMINATION_DATE"=>$diagnosis_list->termination_date,
+                    "USER_ID_CREATED"=>"",
+
+                ]);
+
+
+
                 }
+
+
+
+               
+
             }
 
 
+
+
+            $record_snapshot = json_encode($update_member);
+            $save_audit = DB::table('FE_RECORD_LOG')
+                ->insert([
+                    'user_id' => Cache::get('userId'),
+                    'date_created' => date('Ymd'),
+                    'time_created' => date('gisA'),
+                    'table_name' => 'CUSTOMER',
+                    'record_action' => 'UP',
+                    'application' => 'ProPBM',
+                    'record_snapshot' => $record_snapshot,
+                ]);
 
             return $this->respondWithToken($this->token(), 'Updated successfully!', $update_member);
         }

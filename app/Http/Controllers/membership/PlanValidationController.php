@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\membership;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PlanValidationController extends Controller
 {
+
+  use AuditTrait;
+
   public function get(Request $request)
   {
     $validator = Validator::make($request->all(), [
@@ -30,22 +34,22 @@ class PlanValidationController extends Controller
   public function getClientDetails(Request $request)
   {
     $clientList = DB::table('PLAN_VALIDATION_LISTS')
-    // ->join('CLIENT_GROUP','CLIENT_GROUP.CLIENT_GROUP_ID','=','PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID')
-    
-  //   ->join("CLIENT_GROUP",function($join){
-  //     $join->on("CLIENT_GROUP.CLIENT_GROUP_ID","=","PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID")
-  //         ->on("CLIENT_GROUP.CLIENT_GROUP_ID","=","PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID");
-  // })
-    
-    // ->join('CLIENT_GROUP','CLIENT_GROUP.CLIENT_GROUP_ID','=','PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID')
+      // ->join('CLIENT_GROUP','CLIENT_GROUP.CLIENT_GROUP_ID','=','PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID')
 
-    // ->leftjoin('CUSTOMER','CUSTOMER.CUSTOMER_ID','=','PLAN_VALIDATION_LISTS.CUSTOMER_ID')
-    // ->leftjoin('CLIENT','CLIENT.CLIENT_ID','=','PLAN_VALIDATION_LISTS.CLIENT_ID')
-    ->where('PLAN_VALIDATION_LISTS.plan_id',$request->customer_id)
+      //   ->join("CLIENT_GROUP",function($join){
+      //     $join->on("CLIENT_GROUP.CLIENT_GROUP_ID","=","PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID")
+      //         ->on("CLIENT_GROUP.CLIENT_GROUP_ID","=","PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID");
+      // })
 
-        // ->orWhere('PLAN_VALIDATION_LISTS.client_id', $request->client_id)              
-        // ->orWhere('PLAN_VALIDATION_LISTS.client_group_id', $request->client_group_id)  
-        // ->orwhere('PLAN_VALIDATION_LISTS.plan_id',$request->plan_id)                 
+      // ->join('CLIENT_GROUP','CLIENT_GROUP.CLIENT_GROUP_ID','=','PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID')
+
+      // ->leftjoin('CUSTOMER','CUSTOMER.CUSTOMER_ID','=','PLAN_VALIDATION_LISTS.CUSTOMER_ID')
+      // ->leftjoin('CLIENT','CLIENT.CLIENT_ID','=','PLAN_VALIDATION_LISTS.CLIENT_ID')
+      ->where('PLAN_VALIDATION_LISTS.plan_id', $request->customer_id)
+
+      // ->orWhere('PLAN_VALIDATION_LISTS.client_id', $request->client_id)              
+      // ->orWhere('PLAN_VALIDATION_LISTS.client_group_id', $request->client_group_id)  
+      // ->orwhere('PLAN_VALIDATION_LISTS.plan_id',$request->plan_id)                 
       ->get();
 
     return $this->respondWithToken($this->token(), '', $clientList);
@@ -55,13 +59,13 @@ class PlanValidationController extends Controller
   {
     $validator = Validator::make($request->all(), [
       'customer_id' => ['required', 'max:10'],
-      'client_id' => ['required','max:15'],
-      'client_group_id' => ['required','max:15'],
-      'plan_id' => ['required','max:15'],
-      
+      'client_id' => ['required', 'max:15'],
+      'client_group_id' => ['required', 'max:15'],
+      'plan_id' => ['required', 'max:15'],
+
     ]);
     if ($validator->fails()) {
-        return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+      return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
     }
 
     $getEligibilityData = DB::table('plan_validation_lists')
@@ -86,6 +90,14 @@ class PlanValidationController extends Controller
             'client_group_id' => $request->client_group_id,
             'plan_id' => $request->plan_id
           ]);
+        $getEligibilityData = DB::table('plan_validation_lists')
+          ->where('customer_id', strtoupper($request->customer_id))
+          ->where('client_id', strtoupper($request->client_id))
+          ->where('client_group_id', strtoupper($request->client_group_id))
+          ->where('plan_id', $request->plan_id)
+          ->first();
+        $record_snap = json_encode($getEligibilityData);
+        $save_audit = $this->auditMethod('IN', $record_snap, 'plan_validation_lists');
         return $this->respondWithToken($this->token(), 'Record Added Successfully', $planValidation);
       }
     } else if ($request->add_new == 0) {
@@ -101,6 +113,15 @@ class PlanValidationController extends Controller
         ]);
       // ->get();
       // dd($planValidation);
+
+      $getEligibilityData = DB::table('plan_validation_lists')
+        ->where('customer_id', strtoupper($request->customer_id))
+        ->where('client_id', strtoupper($request->client_id))
+        ->where('client_group_id', strtoupper($request->client_group_id))
+        ->where('plan_id', $request->plan_id)
+        ->first();
+      $record_snap = json_encode($getEligibilityData);
+      $save_audit = $this->auditMethod('UP', $record_snap, 'plan_validation_lists');
       return $this->respondWithToken($this->token(), 'Record Updated Successfully', $planValidation);
     }
   }
@@ -108,7 +129,7 @@ class PlanValidationController extends Controller
   public function getPlanId(Request $request)
   {
     $plan_ids = DB::table('PLAN_TABLE_EXTENSIONS')
-    ->join('PLAN_BENEFIT_TABLE','PLAN_TABLE_EXTENSIONS.PLAN_ID','=','PLAN_BENEFIT_TABLE.PLAN_ID')
+      ->join('PLAN_BENEFIT_TABLE', 'PLAN_TABLE_EXTENSIONS.PLAN_ID', '=', 'PLAN_BENEFIT_TABLE.PLAN_ID')
       // ->select('id')
       ->get();
     return $this->respondWithToken($this->token(), '', $plan_ids);

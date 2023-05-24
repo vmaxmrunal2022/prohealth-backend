@@ -50,6 +50,11 @@ class AuditTrailController extends Controller
         $customer_id = isset(json_decode($request->record_snapshot)->customer_id) ? json_decode($request->record_snapshot)->customer_id : null;
         $client_id = isset(json_decode($request->record_snapshot)->client_id)  ? json_decode($request->record_snapshot)->client_id : null;
         $client_group_id = isset(json_decode($request->record_snapshot)->client_group_id)  ? json_decode($request->record_snapshot)->client_group_id : null;
+        $user_id = isset(json_decode($request->record_snapshot)->user_id)  ? json_decode($request->record_snapshot)->user_id : null;
+        $member_id = isset(json_decode($request->record_snapshot)->member_id)  ? json_decode($request->record_snapshot)->member_id : null;
+        $prior_auth_code_num = isset(json_decode($request->record_snapshot)->prior_auth_code_num)  ? json_decode($request->record_snapshot)->prior_auth_code_num : null;
+        $plan_id = isset(json_decode($request->record_snapshot)->plan_id)  ? json_decode($request->record_snapshot)->plan_id : null;
+        // return $member_id;
         $record = DB::table($request->table_name)
             ->when($customer_id, function ($query) use ($customer_id) {
                 return $query->where('customer_id', 'like', '%' . $customer_id . '%');
@@ -60,6 +65,30 @@ class AuditTrailController extends Controller
             ->when($client_group_id, function ($query) use ($client_group_id) {
                 return $query->where('client_group_id', 'like', '%' . $client_group_id . '%');
             })
+            ->when($user_id, function ($query) use ($user_id) {
+                return $query->where('user_id', 'like', '%' . $user_id . '%');
+            })
+            ->when($member_id, function ($query) use (
+                $customer_id,
+                $client_id,
+                $client_group_id,
+                $member_id
+            ) {
+                $result = $query->where('customer_id', 'like', '%' . $customer_id . '%');
+                $query->where('client_id', 'like', '%' . $client_id . '%');
+                $query->where('client_group_id', 'like', '%' . $client_group_id . '%');
+                $query->where('member_id', 'like', '%' . $member_id . '%');
+                return $result;
+            })
+            ->when($prior_auth_code_num, function ($query) use ($prior_auth_code_num) {
+                return $query->where('prior_auth_code_num', 'like', '%' . $prior_auth_code_num . '%');
+            })
+
+            ->when($plan_id, function ($query) use ($plan_id) {
+                return $query->where('plan_id', 'like', '%' . $plan_id . '%');
+            })
+
+
             ->get();
 
         $old_column_arr = [];
