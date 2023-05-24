@@ -854,8 +854,9 @@ class MemberController extends Controller
                         ->where('client_group_id', $request->client_group_id)
                         ->where('member_id', $request->member_id)
                         ->first();
+
                     $record_snap_mem_coverage = json_encode($member_coverage);
-                    $save_audit_mem_coverage = $this->auditMethod('UP', $member_coverage, 'MEMBER_COVERAGE');
+                    $save_audit_mem_coverage = $this->auditMethod('UP', $record_snap_mem_coverage, 'MEMBER_COVERAGE');
 
 
 
@@ -919,7 +920,8 @@ class MemberController extends Controller
                                 'CLIENT_ID' => $coverage_list->client_id,
                                 'CLIENT_GROUP_ID' => $coverage_list->client_group_id,
                                 'MEMBER_ID' => $coverage_list->member_id,
-                                // 'PERSON_CODE'=>$coverage_history->person_code,
+                                // 'PERSON_CODE' => $coverage_history->person_code,
+                                'person_code' => "0",
                                 // 'FROM_EFFECTIVE_DATE'=>$coverage_list->from_effective_date,
                                 // 'FROM_TERMINATION_DATE'=>$coverage_list->from_termination_date,
                                 // 'FROM_PLAN_ID'=>$coverage_history->from_plan_id,

@@ -66,6 +66,20 @@ class AuditTrailController extends Controller
             ->when($user_id, function ($query) use ($user_id) {
                 return $query->where('user_id', 'like', '%' . $user_id . '%');
             })
+            ->when($member_id, function ($query) use (
+                $customer_id,
+                $client_id,
+                $client_group_id,
+                $member_id
+            ) {
+                $result = $query->where('customer_id', 'like', '%' . $customer_id . '%');
+                $query->where('client_id', 'like', '%' . $client_id . '%');
+                $query->where('client_group_id', 'like', '%' . $client_group_id . '%');
+                $query->where('member_id', 'like', '%' . $member_id . '%');
+                return $result;
+            })
+
+
             ->get();
 
         $old_column_arr = [];
