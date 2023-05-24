@@ -63,9 +63,9 @@ class PlanEditController extends Controller
 
         if ($request->add_new == "1") {
 
-            if ($getData) {
-                return $this->respondWithToken($this->token(), 'Plan ID is Already Exists', $getData, false);
-            }
+            // if ($getData) {
+            //     return $this->respondWithToken($this->token(), ['Plan ID is Already Exists','kjyutdfs'], $getData, false);
+            // }
 
             $validator = Validator::make($request->all(), [
                 'plan_id' => ['required', 'max:15', Rule::unique('PLAN_BENEFIT_TABLE')->where(function ($q) {
