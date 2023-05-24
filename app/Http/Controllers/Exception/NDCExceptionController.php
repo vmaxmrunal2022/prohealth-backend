@@ -1517,7 +1517,7 @@ class NDCExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
-    public function getNDCItemDetails($ndcid,$ndcid2,$ndcid3)
+    public function getNDCItemDetails(Request $request)
 
     {
 
@@ -1538,9 +1538,9 @@ class NDCExceptionController extends Controller
                     ->leftjoin('NDC_EXCEPTIONS', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST', '=', 'NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST')
 
 
-                    ->where('NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST',$ndcid)
-                    ->where('NDC_EXCEPTION_LISTS.NDC',$ndcid2)
-                    ->where('NDC_EXCEPTION_LISTS.EFFECTIVE_DATE',$ndcid3)
+                    ->where('NDC_EXCEPTION_LISTS.NDC_EXCEPTION_LIST',$request->ndc_exception_list)
+                    ->where('NDC_EXCEPTION_LISTS.NDC',$request->ndc)
+                    ->where('NDC_EXCEPTION_LISTS.EFFECTIVE_DATE',$request->effective_date)
                     ->first();
 
              return $this->respondWithToken($this->token(), '', $ifset);

@@ -103,7 +103,7 @@ class DrugClassController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function getNDCItemDetails($DRUG_CATGY_EXCEPTION_LIST,$scategory,$stype,$new_drug_status,$process_rule,$effective_date)
+    public function getNDCItemDetails(Request $request)
     {
 
         // $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
@@ -132,6 +132,7 @@ class DrugClassController extends Controller
 
 
             $ndc = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
+
             // ->select(
             //     'DRUG_CATGY_EXCEPTION_NAMES.*',
             //     'PLAN_DRUG_CATGY_EXCEPTIONS.*',
@@ -145,12 +146,22 @@ class DrugClassController extends Controller
             // ->leftjoin('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
 
             // ->where('DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST',$DRUG_CATGY_EXCEPTION_LIST)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST',$DRUG_CATGY_EXCEPTION_LIST)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY',$scategory)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.STYPE',$stype)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.NEW_DRUG_STATUS',$new_drug_status)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.process_rule',$process_rule)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.EFFECTIVE_DATE',$effective_date)
+
+
+            ->select('PLAN_DRUG_CATGY_EXCEPTIONS.*','FE_SYSTEM_CATEGORIES.SDESCRIPTION', 'DRUG_MASTER1.LABEL_NAME as preferd_ndc_description',
+            'DRUG_MASTER2.LABEL_NAME as conversion_ndc_description',)
+            ->leftjoin('FE_SYSTEM_CATEGORIES', function ($join) {
+                $join->on('FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
+                     ->on('FE_SYSTEM_CATEGORIES.SQUAL', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.STYPE');
+            })
+            ->leftjoin('DRUG_MASTER as DRUG_MASTER1', 'DRUG_MASTER1.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.PREFERRED_PRODUCT_NDC')
+            ->leftjoin('DRUG_MASTER as DRUG_MASTER2', 'DRUG_MASTER2.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.CONVERSION_PRODUCT_NDC')
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST',$request->drug_ctgy_exception_list)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY',$request->scategory)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.STYPE',$request->stype)
+            // ->where('PLAN_DRUG_CATGY_EXCEPTIONS.NEW_DRUG_STATUS',$new_drug_status)
+            // ->where('PLAN_DRUG_CATGY_EXCEPTIONS.process_rule',$process_rule)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.EFFECTIVE_DATE',$request->effective_date)
             // ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DIAGNOSIS_LIST',$diagnosis_list)
 
             ->first();
@@ -1197,8 +1208,13 @@ class DrugClassController extends Controller
     public function getDetailsList($id)
     {
         $data_list = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+            ->select('PLAN_DRUG_CATGY_EXCEPTIONS.*','DRUG_CATGY_EXCEPTION_NAMES.*','FE_SYSTEM_CATEGORIES.SDESCRIPTION')
             ->join('PLAN_DRUG_CATGY_EXCEPTIONS','DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST','=','PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST')
-            // ->join('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
+            // ->leftjoin('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
+            ->leftjoin('FE_SYSTEM_CATEGORIES', function ($join) {
+                $join->on('FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
+                     ->on('FE_SYSTEM_CATEGORIES.SQUAL', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.STYPE');
+            })
             ->where('DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST', $id)
             ->get();
         return $this->respondWithToken($this->token(), '', $data_list);

@@ -451,8 +451,6 @@ class PrcedureCodeListController extends Controller
            ->where( 'PROC_CODE_LISTS.PROC_CODE_LIST_ID', $request->proc_code_list_id)
            ->where( 'PROC_CODE_LISTS.procedure_code', $request->procedure_code)
            ->where( 'PROC_CODE_LISTS.effective_date', $request->effective_date)
-
-          
            ->first();
            return $this->respondWithToken( $this->token(), '', $providerCodeList );
        }

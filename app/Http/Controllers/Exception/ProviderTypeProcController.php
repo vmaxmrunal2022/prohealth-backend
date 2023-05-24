@@ -37,7 +37,7 @@ class ProviderTypeProcController extends Controller
 
     }
 
-    public function getDetails($id,$provider_type,$procedure_code,$servive_modifier,$effe)
+    public function getDetails(Request $request)
     {
 
         $Details = DB::table('PROV_TYPE_PROC_ASSOC')
@@ -62,11 +62,11 @@ class ProviderTypeProcController extends Controller
             ->leftjoin('PROVIDER_TYPES', 'PROVIDER_TYPES.PROVIDER_TYPE', '=', 'PROV_TYPE_PROC_ASSOC.PROVIDER_TYPE')
 
 
-            ->where('PROV_TYPE_PROC_ASSOC.PROV_TYPE_PROC_ASSOC_ID', $id)
-            ->where('PROV_TYPE_PROC_ASSOC.PROVIDER_TYPE', $provider_type)
-            ->where('PROV_TYPE_PROC_ASSOC.PROC_CODE_LIST_ID', $procedure_code)
-            ->where('PROV_TYPE_PROC_ASSOC.SERVICE_MODIFIER', $servive_modifier)
-            ->where('PROV_TYPE_PROC_ASSOC.EFFECTIVE_DATE', $effe)
+            ->where('PROV_TYPE_PROC_ASSOC.PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_pro_ass_id)
+            ->where('PROV_TYPE_PROC_ASSOC.PROVIDER_TYPE', $request->provider_type)
+            ->where('PROV_TYPE_PROC_ASSOC.PROC_CODE_LIST_ID', $request->procedure_code)
+            ->where('PROV_TYPE_PROC_ASSOC.SERVICE_MODIFIER', $request->servive_modifier)
+            ->where('PROV_TYPE_PROC_ASSOC.EFFECTIVE_DATE', $request->effective_date)
             ->first();
             
         return $this->respondWithToken($this->token(), '', $Details);
@@ -275,7 +275,7 @@ class ProviderTypeProcController extends Controller
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 if ($validation->count() > 0) {
-                    return $this->respondWithToken($this->token(), 'Reason Code  Exception Already Exists', $validation, true, 200, 1);
+                    return $this->respondWithToken($this->token(), [['Reason Code  Exception Already Exists']], $validation, 'false', 200, 1);
                 }
                 $effectiveDate=$request->effective_date;
                 $terminationDate=$request->termination_date;

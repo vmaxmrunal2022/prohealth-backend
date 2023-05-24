@@ -620,4 +620,38 @@ class RvaListController extends Controller
             
         }
     }
+
+
+
+    public function delete_rav(Request $request)
+    {
+        if (isset($request->rva_list_id) && isset($request->effective_date)) {
+            $all_exceptions_lists =  DB::table('RVA_LIST')
+                ->where('RVA_LIST_ID', $request->rva_list_id)
+                ->where('EFFECTIVE_DATE', $request->effective_date)
+                ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else if (isset($request->rva_list_id)) {
+
+            $exception_delete =  DB::table('RVA_NAMES')
+                                    ->where('RVA_LIST_ID', $request->rva_list_id)
+                                    ->delete();
+
+            $all_exceptions_lists =  DB::table('RVA_LIST')
+                                    ->where('RVA_LIST_ID', $request->rva_list_id)
+                                    // ->where('EFFECTIVE_DATE', $request->effective_date)
+                                    ->delete();                        
+
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
 }

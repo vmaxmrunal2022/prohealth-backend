@@ -155,7 +155,7 @@ class ReasonCodeExceptionController extends Controller
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 if ($validation->count() > 0) {
-                    return $this->respondWithToken($this->token(), 'Reason Code  Exception Already Exists', $validation, true, 200, 1);
+                    return $this->respondWithToken($this->token(),[['Reason Code  Exception Already Exists']] , $validation, 'false', 200, 1);
                 }
 
                 $effectiveDate=$request->effective_date;
@@ -309,6 +309,15 @@ class ReasonCodeExceptionController extends Controller
                         if ($overlapExists) {
                             return $this->respondWithToken($this->token(), 'For same Reason Code  dates range cannot overlap.', $validation, true, 200, 1);
                         }
+
+                        $add_names = DB::table('REASON_CODE_LIST_NAMES')
+                        ->where('reason_code_list_id', $request->reason_code_list_id)
+                        ->update(
+                            [
+                                'reason_code_name' => $request->reason_code_name,
+
+                            ]
+                        );
                         
                         $update = DB::table('REASON_CODE_LISTS')
                         ->insert(
@@ -412,15 +421,15 @@ class ReasonCodeExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function getNDCItemDetails($list_id,$reject_code,$reason_code,$efff)
+    public function getNDCItemDetails(Request $request)
     {
         $ndc = DB::table('REASON_CODE_LISTS')
             // ->select('NDC_EXCEPTION_LISTS.*', 'REASON_CODE_LIST_NAMES.NDC_EXCEPTION_LIST as exception_list', 'REASON_CODE_LIST_NAMES.EXCEPTION_NAME as exception_name')
             ->join('REASON_CODE_LIST_NAMES', 'REASON_CODE_LISTS.REASON_CODE_LIST_ID', '=', 'REASON_CODE_LIST_NAMES.REASON_CODE_LIST_ID')
-            ->where('REASON_CODE_LISTS.REASON_CODE_LIST_ID', $list_id)
-            ->where('REASON_CODE_LISTS.REJECT_CODE', $reject_code)
-            ->where('REASON_CODE_LISTS.REASON_CODE', $reason_code)
-            ->where('REASON_CODE_LISTS.EFFECTIVE_DATE', $efff)
+            ->where('REASON_CODE_LISTS.REASON_CODE_LIST_ID', $request->reason_code_list_id)
+            ->where('REASON_CODE_LISTS.REJECT_CODE', $request->reject_code)
+            ->where('REASON_CODE_LISTS.REASON_CODE', $request->reason_code)
+            ->where('REASON_CODE_LISTS.EFFECTIVE_DATE', $request->effective_date)
 
             ->first();
 

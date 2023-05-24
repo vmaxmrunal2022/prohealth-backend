@@ -723,8 +723,8 @@ class ProcedureController extends Controller
                     ->leftjoin('SPECIALTY_EXCEPTIONS','SPECIALTY_EXCEPTIONS.SPECIALTY_LIST','=','PROCEDURE_EXCEPTION_LISTS.physician_specialty_list')
                     ->leftjoin('SERVICE_MODIFIERS','SERVICE_MODIFIERS.SERVICE_MODIFIER','=','PROCEDURE_EXCEPTION_LISTS.SERVICE_MODIFIER')
                     ->leftjoin('PHYSICIAN_EXCEPTIONS','PHYSICIAN_EXCEPTIONS.PHYSICIAN_LIST','=','PROCEDURE_EXCEPTION_LISTS.PHYSICIAN_LIST')
-                    ->where('PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST', $request->id1)  
-                    ->where('PROCEDURE_EXCEPTION_LISTS.PROC_CODE_LIST_ID', $request->id2)  
+                    ->where('PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)  
+                    ->where('PROCEDURE_EXCEPTION_LISTS.PROC_CODE_LIST_ID', $request->procedure_code_list_id)  
 
                     // ->where('PROCEDURE_EXCEPTION_LISTS.PROC_CODE_LIST_ID', 'like', '%' . strtoupper($ndcid2). '%')
                     // ->Where('PROCEDURE_EXCEPTION_LISTS.','like','%'.$ndcid2)
