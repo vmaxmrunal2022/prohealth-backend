@@ -452,25 +452,30 @@ class ReasonCodeExceptionController extends Controller
 
     public function delete(Request $request)
     {
-        if (isset($request->reason_code_list_id) && ($request->reason_code)) {
+        if (isset($request->reason_code_list_id) && isset($request->reason_code) && isset($request->reject_code) && isset($request->effective_date)) {
             $all_exceptions_lists =  DB::table('REASON_CODE_LISTS')
-                ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
-                ->delete();
+                                        ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
+                                        ->where('REJECT_CODE', $request->reject_code)
+                                        ->where('REASON_CODE', $request->reason_code)
+                                        ->where('EFFECTIVE_DATE',$request->effective_date)
+                                        ->delete();
 
             if ($all_exceptions_lists) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
+            }else{
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else if (isset($request->reason_code_list_id)) {
+        }elseif (isset($request->reason_code_list_id)) {
 
             $exception_delete =  DB::table('REASON_CODE_LIST_NAMES')
-                ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
-                ->delete();
-
+                                    ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
+                                    ->delete();
+            $all_exceptions_lists =  DB::table('REASON_CODE_LISTS')
+                                        ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
+                                        ->delete();
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
+            }else{
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         }

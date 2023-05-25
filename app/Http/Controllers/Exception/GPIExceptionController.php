@@ -806,29 +806,34 @@ class GPIExceptionController extends Controller
     public function gpi_delete(Request $request)
     {
 
-        if (isset($request->gpi_exception_list) && ($request->generic_product_id)) {
+        if(isset($request->gpi_exception_list) && ($request->generic_product_id) && ($request->effective_date)) {
 
             $exception_delete = DB::table('GPI_EXCEPTION_LISTS')
-
-                ->where('GENERIC_PRODUCT_ID', $request->generic_product_id)
-
-                ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
-
-                ->delete();
-
-
-
-
+                                ->where('GENERIC_PRODUCT_ID', $request->generic_product_id)
+                                ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
+                                ->where('effective_date', $request->effective_date)
+                                ->delete();
             if ($exception_delete) {
-
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-
             } else {
-
                 return $this->respondWithToken($this->token(), 'Record Not Found');
-
             }
 
+        }
+        elseif(isset($request->gpi_exception_list)){
+
+            $Exception = DB::table('GPI_EXCEPTIONS')
+                            ->where('gpi_exception_list', $request->gpi_exception_list)
+                            ->delete();
+
+            $exception_delete = DB::table('GPI_EXCEPTION_LISTS')
+                                ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
+                                ->delete();
+            if ($Exception) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
         }
 
     }

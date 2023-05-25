@@ -288,15 +288,19 @@ class PrcedureCodeListController extends Controller
                     if ($overlapExists) {
                         return $this->respondWithToken($this->token(), [['For Same  Procedure Code , dates cannot overlap.']], '', 'false');
                     }
+                    $add_names = DB::table('PROC_CODE_LIST_NAMES')
+                                    ->where('proc_code_list_id',$request->proc_code_list_id)
+                                    ->update([
+                                        'description'=>$request->description,
+                                    ]);
                     $update = DB::table('PROC_CODE_LISTS')
-                        ->insert(
-                            [
-                                'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
-                                'PROCEDURE_CODE'=>$request->procedure_code,
-                                'EFFECTIVE_DATE'=>$request->effective_date,
-                                'TERMINATION_DATE'=>$request->termination_date,
-                                'DATE_TIME_CREATED'=>$createddate,
-                            ]);
+                                    ->insert([
+                                            'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
+                                            'PROCEDURE_CODE'=>$request->procedure_code,
+                                            'EFFECTIVE_DATE'=>$request->effective_date,
+                                            'TERMINATION_DATE'=>$request->termination_date,
+                                            'DATE_TIME_CREATED'=>$createddate,
+                                        ]);
                     $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update); 
                 }
@@ -400,7 +404,7 @@ class PrcedureCodeListController extends Controller
     }
 
     public function get( Request $request )
-   {
+    {
         $providerCodeList = DB::table( 'PROC_CODE_LIST_NAMES' )
         // ->where( 'PROC_CODE_LIST_ID', 'like', '%'.$request->search.'%' )
         ->whereRaw('LOWER(PROC_CODE_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
@@ -416,9 +420,9 @@ class PrcedureCodeListController extends Controller
     }
 
     public function getProcCodeList( Request $request )
- {
+    {
 
-    // dd($request->procedure_code);
+       // dd($request->procedure_code);
         $providerCodeList = DB::table( 'PROC_CODE_LISTS' )
         ->join( 'PROC_CODE_LIST_NAMES', 'PROC_CODE_LIST_NAMES.PROC_CODE_LIST_ID', '=', 'PROC_CODE_LISTS.PROC_CODE_LIST_ID' )
         // ->join('PROCEDURE_CODES','PROCEDURE_CODES.PROCEDURE_CODE','=','PROC_CODE_LISTS.PROCEDURE_CODE')
@@ -453,27 +457,32 @@ class PrcedureCodeListController extends Controller
            ->where( 'PROC_CODE_LISTS.effective_date', $request->effective_date)
            ->first();
            return $this->respondWithToken( $this->token(), '', $providerCodeList );
-       }
+    }
 
 
-       public function produrecodelistdelete(Request $request)
+    public function produrecodelistdelete(Request $request)
     {
         // return $request->all();
-        if (isset($request->proc_code_list_id) && ($request->procedure_code)) {
+        if (isset($request->proc_code_list_id) && isset($request->procedure_code)  && isset($request->effective_date) ) {
             $all_exceptions_lists =  DB::table('PROC_CODE_LISTS')
-                ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
-                ->delete();
+                                        ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+                                        ->where('procedure_code',$request->procedure_code)
+                                        ->where('effective_date',$request->effective_date)
+                                        ->delete();
 
             if ($all_exceptions_lists) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else if (isset($request->proc_code_list_id)) {
+        } elseif(isset($request->proc_code_list_id)) {
 
             $exception_delete =  DB::table('PROC_CODE_LIST_NAMES')
-                ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
-                ->delete();
+                                    ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+                                    ->delete();
+            $all_exceptions_lists =  DB::table('PROC_CODE_LISTS')
+                                    ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+                                    ->delete();
 
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
@@ -482,10 +491,5 @@ class PrcedureCodeListController extends Controller
             }
         }
     }
-    // dd($request->all());
-
-
-
-
     
 }

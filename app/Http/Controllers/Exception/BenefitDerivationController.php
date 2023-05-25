@@ -595,21 +595,31 @@ class BenefitDerivationController extends Controller
     }
     public function benefitderivationdelete(Request $request)
     {
-        if (isset($request->benefit_derivation_id) && ($request->proc_code_list_id)) {
+        if (isset($request->benefit_derivation_id) && isset($request->proc_code_list_id) && isset($request->service_type) && isset($request->service_modifier) && isset($request->benefit_code) && isset($request->effective_date)) {
+          
             $all_exceptions_lists =  DB::table('BENEFIT_DERIVATION')
-                ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
-                ->delete();
+                                        ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                                        ->where('service_type',$request->service_type)
+                                        ->where('service_modifier',$request->service_modifier)
+                                        ->where('proc_code_list_id',$request->proc_code_list_id)
+                                        ->where('benefit_code', $request->benefit_code)
+                                        ->where('effective_date', $request->effective_date)
+                                        ->delete();
 
             if ($all_exceptions_lists) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else if (isset($request->benefit_derivation_id)) {
+        } elseif(isset($request->benefit_derivation_id)) {
 
             $exception_delete =  DB::table('BENEFIT_DERIVATION_NAMES')
                 ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
                 ->delete();
+
+            $all_exceptions_lists =  DB::table('BENEFIT_DERIVATION')
+                                    ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                                    ->delete();    
 
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');

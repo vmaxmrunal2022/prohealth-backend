@@ -308,4 +308,35 @@ class PrescriberValidationController extends Controller
 
         return $this->respondWithToken($this->token(), '', $data);
     }
+
+    // delete functionality
+    public function deletePrescriberData(Request $request)
+    {
+
+        if (isset($request->physician_list) && isset($request->physician_id)) {
+            $PHYSICIAN_VALIDATIONS = DB::table('PHYSICIAN_VALIDATIONS')
+                ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
+                ->where(DB::raw('UPPER(physician_id)'), strtoupper($request->physician_id))
+                ->delete();
+
+            if ($PHYSICIAN_VALIDATIONS) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } elseif (isset($request->physician_list)) {
+            $PHYSICIAN_EXCEPTIONS = DB::table('PHYSICIAN_EXCEPTIONS')
+                ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
+                ->delete();
+            $PHYSICIAN_VALIDATIONS = DB::table('PHYSICIAN_VALIDATIONS')
+                ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
+                ->delete();
+
+            if ($PHYSICIAN_EXCEPTIONS) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
 }

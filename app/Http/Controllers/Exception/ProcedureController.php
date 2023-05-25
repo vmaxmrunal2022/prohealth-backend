@@ -215,7 +215,7 @@ class ProcedureController extends Controller
 
             else{
                 if ($validation->count() > 0) {
-                    return $this->respondWithToken($this->token(), 'Procedure Exception Already Exists', $validation, true, 200, 1);
+                    return $this->respondWithToken($this->token(), [['Procedure Exception Already Exists']], $validation, 'false', 200, 1);
                 }
 
                 $effectiveDate=$request->effective_date;
@@ -735,43 +735,44 @@ class ProcedureController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
+
     public function delete_procedure_code(Request $request)
     {
-      
-        if (isset($request->procedure_exception_list) && ($request->proc_code_list_id)) {
-           return "1";
-            $all_exceptions_lists = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('PROCEDURE_EXCEPTION_LIST', strtoupper($request->procedure_exception_list))->delete();
+        if (isset($request->procedure_exception_list) && isset($request->proc_code_list_id) && isset($request->service_modifier) && isset($request->benefit_code) && isset($request->diagnosis_id) && isset($request->provider_type) && isset($request->service_type) && isset($request->effective_date)) {
+            $all_exceptions_lists = DB::table('PROCEDURE_EXCEPTION_LISTS')
+                                        ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
+                                        ->where('proc_code_list_id',$request->proc_code_list_id)
+                                        ->where('service_modifier',$request->service_modifier)
+                                        ->where('benefit_code',$request->benefit_code)
+                                        ->where('diagnosis_id',$request->diagnosis_id)
+                                        ->where('provider_type',$request->provider_type)
+                                        ->where('service_type',$request->service_type)
+                                        ->where('effective_date',$request->effective_date)
+                                        ->delete();
             
             if ($all_exceptions_lists) {
                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            
-            } else {
-            
-             return $this->respondWithToken($this->token(), 'Record Not Found');
-            
+            }else{
+               return $this->respondWithToken($this->token(), 'Record Not Found');
             }
             
-            } else if (isset($request->procedure_exception_list)) {
+        }elseif(isset($request->procedure_exception_list)) {
               
                 $exception_delete = DB::table('PROCEDURE_EXCEPTION_NAMES')
-                
-                ->where('PROCEDURE_EXCEPTION_LIST', strtoupper($request->procedure_exception_list))
-                
-                ->delete();
+                                        ->where('PROCEDURE_EXCEPTION_LIST', strtoupper($request->procedure_exception_list))
+                                        ->delete();
             
-            
+                $all_exceptions_lists = DB::table('PROCEDURE_EXCEPTION_LISTS')
+                                            ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
+                                            ->delete();
             
             
             if ($exception_delete) {
-            
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            
             } else {
-            
                 return $this->respondWithToken($this->token(), 'Record Not Found');
-            
              }
             
-            }
         }
+    }
 }

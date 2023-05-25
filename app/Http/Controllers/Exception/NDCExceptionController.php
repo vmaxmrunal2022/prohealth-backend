@@ -781,7 +781,7 @@ class NDCExceptionController extends Controller
 
 
            
-        } else if ($request->add_new == 0) {
+        } elseif($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
 
@@ -1400,54 +1400,42 @@ class NDCExceptionController extends Controller
     public function ndcdelete(Request $request){
         
 
-        if(isset($request->ndc_exception_list) && ($request->ndc )){
+        if(isset($request->ndc_exception_list) && isset($request->ndc) && isset($request->effective_date)){
 
             $all_exceptions_lists=  DB::table('NDC_EXCEPTION_LISTS')
-            ->where('ndc_exception_list',$request->ndc_exception_list)
-            ->where('ndc',$request->ndc)
-            ->delete();
+                                        ->where('ndc_exception_list',$request->ndc_exception_list)
+                                        ->where('ndc',$request->ndc)
+                                        ->where('effective_date',$request->effective_date)
+                                        ->delete();
             if($all_exceptions_lists){
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-
-
             }else{
                 return $this->respondWithToken($this->token(), 'Record Not Found');
-
             }
 
         }
 
-        else if(isset($request->ndc_exception_list)){
+        elseif(isset($request->ndc_exception_list)){
 
         
             $exception_delete=  DB::table('NDC_EXCEPTIONS')
-            ->where('ndc_exception_list',$request->ndc_exception_list)
-            ->delete();
+                                    ->where('ndc_exception_list',$request->ndc_exception_list)
+                                    ->delete();
 
             $all_exceptions_lists=  DB::table('NDC_EXCEPTION_LISTS')
-            ->where('ndc_exception_list',$request->ndc_exception_list)
-            ->delete();
+                                        ->where('ndc_exception_list',$request->ndc_exception_list)
+                                        ->delete();
 
             if($exception_delete){
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-
-
             }else{
                 return $this->respondWithToken($this->token(), 'Record Not Found');
-
-
             }
 
     
 
 
         }
-        
-
-
-     
-
-
     }
 
 

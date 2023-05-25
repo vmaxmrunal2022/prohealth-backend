@@ -222,7 +222,6 @@ class ProviderTypeProcController extends Controller
 
     public function add(Request $request)
     {
-    //    return 'hii';
         $createddate = date('y-m-d');
 
         $validation = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
@@ -635,23 +634,28 @@ class ProviderTypeProcController extends Controller
     }
     public function providertype_proc_delete(Request $request)
     {
-        if (isset($request->prov_type_proc_assoc_id) && ($request->provider_type)) {
+        if (isset($request->prov_type_proc_assoc_id) && isset($request->provider_type) && isset($request->service_modifier)&& isset($request->proc_code_list_id) && isset($request->effective_date)) {
             $all_exceptions_lists =  DB::table('PROV_TYPE_PROC_ASSOC')
-                ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
-                ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
-                ->delete();
+                                        ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
+                                        ->where('provider_type', $request->provider_type)
+                                        ->where('service_modifier', $request->service_modifier)
+                                        ->where('proc_code_list_id', $request->proc_code_list_id)
+                                        ->where('effective_date', $request->effective_date)
+                                        ->delete();
 
             if ($all_exceptions_lists) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else if (isset($request->prov_type_proc_assoc_id)) {
+        }elseif(isset($request->prov_type_proc_assoc_id)) {
 
             $exception_delete =  DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
-                ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
-                ->delete();
-
+                                    ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
+                                    ->delete();
+            $all_exceptions_lists =  DB::table('PROV_TYPE_PROC_ASSOC')
+                                        ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
+                                        ->delete();
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {

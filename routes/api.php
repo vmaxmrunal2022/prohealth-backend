@@ -625,7 +625,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //Plan Validation
         Route::get('plan-validation/get', [PlanValidationController::class, 'get']);
-        Route::get('plan-validation/get-client-details', [PlanValidationController::class, 'getClientDetails']);
+        Route::get('plan-validation/get-plan-ids', [PlanValidationController::class, 'getplanIds']);
+        Route::get('plan-validation/get-details', [PlanValidationController::class, 'getpgetDetailslanIds']);
         Route::get('plan-validation/get-plan-id', [PlanValidationController::class, 'getPlanId']);
         Route::post('plan-validation/add-plan-validaion', [PlanValidationController::class, 'addPlanValidation']);
     });
@@ -996,6 +997,10 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/prescriber/details/{physicain_list}/{physicain_id}', [PrescriberValidationController::class, 'getProviderDetails'])->name('prescriber.details.get'); // DETAIL
     Route::get('prescriber/prescriber-list-drop-down', [PrescriberValidationController::class, 'searchDropDownPrescriberList']);
     Route::post('/prescriber/submit-prescriber-form', [PrescriberValidationController::class, 'addPrescriberData']);
+    Route::post('/prescriber/delete', [PrescriberValidationController::class, 'deletePrescriberData']);
+
+
+
 });
 
 

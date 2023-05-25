@@ -206,7 +206,6 @@ class LimitationsController extends Controller
                     'MAX_PRICE_PER_DIAG_PERIOD'=>$request->max_price_per_diag_period,
                     'MAX_PRICE_PER_DIAG_MULT'=>$request->max_price_per_diag_mult,
                     'DATE_TIME_CREATED'=>$createddate,
-                    
                 ]
             );
 
@@ -219,15 +218,15 @@ class LimitationsController extends Controller
     }
     public function limitation_delete(Request $request)
     {
-
-        $all_exceptions_lists =  DB::table('LIMITATIONS_LIST')
-            ->where('LIMITATIONS_LIST', $request->limitations_list)
-            ->delete();
-
-        if ($all_exceptions_lists) {
-            return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-        } else {
-            return $this->respondWithToken($this->token(), 'Record Not Found');
-        }
+        if(isset($request->limitations_list)){
+            $all_exceptions_lists =  DB::table('LIMITATIONS_LIST')
+                                        ->where('LIMITATIONS_LIST', $request->limitations_list)
+                                        ->delete();
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } 
     }
 }
