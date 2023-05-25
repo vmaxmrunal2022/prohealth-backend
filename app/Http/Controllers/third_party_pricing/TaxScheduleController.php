@@ -108,4 +108,21 @@ class TaxScheduleController extends Controller
             return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_tax_schedule);
         }
     }
+
+
+    public function tax_schedule_delete(Request $request)
+    {
+        if(isset($request->tax_schedule_id)){
+            $all_exceptions_lists =  DB::table('tax_schedule')
+                                        ->where('TAX_SCHEDULE_ID', $request->tax_schedule_id)
+                                        ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+        
+    }
 }

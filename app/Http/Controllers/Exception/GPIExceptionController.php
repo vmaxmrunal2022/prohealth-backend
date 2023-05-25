@@ -325,6 +325,12 @@ class GPIExceptionController extends Controller
                         return $this->respondWithToken($this->token(),  [['For same GPI, dates cannot overlap.']], '', 'false');
                     }
 
+                    $add_names = DB::table('GPI_EXCEPTIONS')
+                                 ->where('gpi_exception_list', $request->gpi_exception_list)
+                                 ->update([
+                                        'exception_name' => $request->exception_name,
+                                        ]);
+
 
                     $update = DB::table('GPI_EXCEPTION_LISTS')
                     ->where('generic_product_id', $request->generic_product_id)
@@ -441,7 +447,11 @@ class GPIExceptionController extends Controller
                             return $this->respondWithToken($this->token(),  [['For same GPI Exception, dates cannot overlap.']], '', 'false');
                         }
 
-
+                        $add_names = DB::table('GPI_EXCEPTIONS')
+                        ->where('gpi_exception_list', $request->gpi_exception_list)
+                        ->update([
+                               'exception_name' => $request->exception_name,
+                               ]);
 
                         $update = DB::table('GPI_EXCEPTION_LISTS')->insert([
                             'GPI_EXCEPTION_LIST' => $request->gpi_exception_list,
@@ -761,7 +771,7 @@ class GPIExceptionController extends Controller
     }
 
 
-    public function getNDCItemDetails($ndcid, $ncdid2)
+    public function getNDCItemDetails(Request $request)
     {
         $ndc = DB::table('GPI_EXCEPTION_LISTS')
             ->select(
@@ -776,9 +786,9 @@ class GPIExceptionController extends Controller
             ->leftjoin('DRUG_MASTER as DRUG_MASTER1', 'DRUG_MASTER1.NDC', '=', 'GPI_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
             ->leftjoin('DRUG_MASTER as DRUG_MASTER2', 'DRUG_MASTER2.NDC', '=', 'GPI_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
             ->leftjoin('DRUG_MASTER as DRUG_MASTER3', 'DRUG_MASTER3.GENERIC_PRODUCT_ID', '=', 'GPI_EXCEPTION_LISTS.GENERIC_PRODUCT_ID')
-            ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST', $ncdid2)
+            ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST', $request->gpi_exception_list)
 
-            ->where('GPI_EXCEPTION_LISTS.generic_product_id', $ndcid)
+            ->where('GPI_EXCEPTION_LISTS.generic_product_id', $request->generic_product_id)
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

@@ -567,6 +567,12 @@ class TherapyClassController extends Controller
                         return $this->respondWithToken($this->token(), [['For same Therapy Class,dates cannot overlap']], '', 'false');
                     }
 
+                    $add_names = DB::table('TC_EXCEPTIONS')
+                                ->where('ther_class_exception_list',$request->ther_class_exception_list)
+                                ->update([
+                                        'exception_name'=>$request->exception_name,
+                                        ]);
+
 
                     $update = DB::table('TC_EXCEPTION_LISTS' )
                     ->where('therapy_class',$request->therapy_class)
@@ -681,6 +687,12 @@ class TherapyClassController extends Controller
                         if ($overlapExists) {
                             return $this->respondWithToken($this->token(), [['For same Therapy Class,dates cannot overlap']], '', 'false');
                         }
+
+                        $add_names = DB::table('TC_EXCEPTIONS')
+                        ->where('ther_class_exception_list',$request->ther_class_exception_list)
+                        ->update([
+                                'exception_name'=>$request->exception_name,
+                                ]);
 
                         $update = DB::table('TC_EXCEPTION_LISTS')->insert(
                             [
@@ -985,7 +997,7 @@ class TherapyClassController extends Controller
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
-    public function getTCItemDetails($ndcid,$ncdid2)
+    public function getTCItemDetails(Request $request)
     {
         $ndc = DB::table('TC_EXCEPTION_LISTS')
         ->select('TC_EXCEPTION_LISTS.*', 'TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST as exception_list', 'TC_EXCEPTIONS.EXCEPTION_NAME as exception_name',
@@ -998,8 +1010,8 @@ class TherapyClassController extends Controller
         ->leftjoin('DRUG_MASTER as DRUG_MASTER2','DRUG_MASTER2.NDC','=','TC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
         ->leftjoin('TC_EXCEPTIONS','TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
 
-        ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST',strtoupper($ndcid))
-        ->where('TC_EXCEPTION_LISTS.THERAPY_CLASS',strtoupper($ncdid2))
+        ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST',$request->ther_class_exception_list)
+        ->where('TC_EXCEPTION_LISTS.THERAPY_CLASS',$request->therapy_class)
         ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

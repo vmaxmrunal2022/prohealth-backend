@@ -560,7 +560,7 @@ class BenefitDerivationController extends Controller
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
-    public function getBLItemDetails($ndcid, $ndcid2)
+    public function getBLItemDetails(Request $request)
     {
         $ndclist = DB::table('BENEFIT_DERIVATION')
             ->join('BENEFIT_DERIVATION_NAMES as benefitnames', 'benefitnames.BENEFIT_DERIVATION_ID', '=', 'BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID')
@@ -583,8 +583,8 @@ class BenefitDerivationController extends Controller
                 'benefitnames.description as description'
             )
 
-            ->where('BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID', $ndcid)
-            ->where('BENEFIT_DERIVATION.BENEFIT_CODE', $ndcid2)
+            ->where('BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID', $request->ben_deriv_id)
+            ->where('BENEFIT_DERIVATION.BENEFIT_CODE', $request->ben_code)
 
             // ->orWhere( 'EXCEPTION_NAME', 'like', '%' . strtoupper( $ndcid ) . '%' )
             ->first();

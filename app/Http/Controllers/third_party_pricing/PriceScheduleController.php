@@ -637,4 +637,18 @@ class PriceScheduleController extends Controller
     }
 
 
+    public function priceschedultdelete(Request $request)
+    {
+        $all_exceptions_lists =  DB::table('PRICE_SCHEDULE')
+                                ->where('PRICE_SCHEDULE', $request->price_schedule)
+                                ->delete();
+
+        if ($all_exceptions_lists) {
+            return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
+        }
+    }
+
+
 }

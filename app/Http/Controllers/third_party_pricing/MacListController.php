@@ -468,12 +468,11 @@ class MacListController extends Controller
     {
         
         if (isset($request->mac_list) && isset($request->gpi) && isset($request->effective_date)) {
-            return "test1";
             $all_exceptions_lists =  DB::table('MAC_TABLE')
-                ->where('MAC_LIST', $request->mac_list)
-                ->where('EFFECTIVE_DATE',$request->effective_date)
-                ->where('GPI',$request->gpi)
-                ->delete();
+                                        ->where('MAC_LIST', $request->mac_list)
+                                        ->where('EFFECTIVE_DATE',$request->effective_date)
+                                        ->where('GPI',$request->gpi)
+                                        ->delete();
 
             if ($all_exceptions_lists) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
@@ -481,14 +480,13 @@ class MacListController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         } elseif(isset($request->mac_list)) {
-            return "test2";
             $exception_delete =  DB::table('mac_list')
-                ->where('MAC_LIST', $request->mac_list)
-                ->delete();
+                                    ->where('MAC_LIST', $request->mac_list)
+                                    ->delete();
 
             $all_exceptions_lists =  DB::table('MAC_TABLE')
-            ->where('MAC_LIST', $request->mac_list)
-            ->delete();
+                                        ->where('MAC_LIST', $request->mac_list)
+                                        ->delete();
     
 
             if ($exception_delete) {

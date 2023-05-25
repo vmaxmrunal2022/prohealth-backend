@@ -69,7 +69,7 @@ class LimitationsController extends Controller
 
 
             if($recordcheck){
-                return $this->respondWithToken($this->token(), 'Limitation List ID Already Exists', $recordcheck);
+                return $this->respondWithToken($this->token(), [['Limitation List ID Already Exists']], $recordcheck,'false');
 
             }
 

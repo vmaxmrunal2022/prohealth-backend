@@ -440,14 +440,14 @@ class SuperBenefitControler extends Controller
     }
 
 
-    public function getNDCItemDetails($listid,$beneid,$effe)
+    public function getNDCItemDetails(Request $request)
     {
-      
+    //   return $request->all();
          $benefitLists = DB::table('SUPER_BENEFIT_LISTS')
          ->join('SUPER_BENEFIT_LIST_NAMES', 'SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID', '=', 'SUPER_BENEFIT_LIST_NAMES.SUPER_BENEFIT_LIST_ID')
-         ->where('SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID',$listid) 
-         ->where('SUPER_BENEFIT_LISTS.BENEFIT_LIST_ID',$beneid)
-         ->where('SUPER_BENEFIT_LISTS.EFFECTIVE_DATE',$effe)
+         ->where('SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID',$request->spr_ben_list_id) 
+         ->where('SUPER_BENEFIT_LISTS.BENEFIT_LIST_ID',$request->ben_list_id)
+         ->where('SUPER_BENEFIT_LISTS.EFFECTIVE_DATE',$request->effective_date)
          ->first();
 
         return $this->respondWithToken($this->token(), '', $benefitLists);
@@ -458,11 +458,14 @@ class SuperBenefitControler extends Controller
 
     public function get(Request $request)
     {
+        
         $superBenefitNames = DB::table('SUPER_BENEFIT_LIST_NAMES')
-                             //  ->where('SUPER_BENEFIT_LIST_ID','like','%'.strtoupper($request->search).'%')
+                            //   ->where('SUPER_BENEFIT_LIST_ID','like','%'.strtoupper($request->search).'%')
                              ->whereRaw('LOWER(SUPER_BENEFIT_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
                              ->orWhere('DESCRIPTION','like','%'.strtoupper($request->search).'%')
                              ->get();
+
+                            //  return $superBenefitNames;
 
         return $this->respondWithToken($this->token(),'',$superBenefitNames);
     }

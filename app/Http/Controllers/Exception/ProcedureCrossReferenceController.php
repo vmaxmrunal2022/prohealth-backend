@@ -49,17 +49,17 @@ class ProcedureCrossReferenceController extends Controller
 
     }
 
-    public function getDetails($PROCEDURE_XREF_ID,$SUB_PROCEDURE_CODE,$HIST_PROCEDURE_CODE,$EFFECTIVE_DATE){
+    public function getDetails(Request $request){
 
         $details=DB::table('PROCEDURE_XREF')
         ->select('PROCEDURE_XREF.*','PROCEDURE_CODES1.DESCRIPTION as sub_procedure_code_description','PROCEDURE_CODES2.DESCRIPTION as hist_procedure_code_description','ENTITY_NAMES.ENTITY_USER_NAME')
         ->join('ENTITY_NAMES','ENTITY_NAMES.ENTITY_USER_ID','=','PROCEDURE_XREF.PROCEDURE_XREF_ID')
         ->join('PROCEDURE_CODES as PROCEDURE_CODES1','PROCEDURE_CODES1.PROCEDURE_CODE','=','PROCEDURE_XREF.sub_procedure_code')
         ->join('PROCEDURE_CODES as PROCEDURE_CODES2','PROCEDURE_CODES2.PROCEDURE_CODE','=','PROCEDURE_XREF.hist_procedure_code')
-        ->where('PROCEDURE_XREF.EFFECTIVE_DATE',$EFFECTIVE_DATE)
-        ->where('PROCEDURE_XREF.SUB_PROCEDURE_CODE',$SUB_PROCEDURE_CODE)
-        ->where('PROCEDURE_XREF.HIST_PROCEDURE_CODE',$HIST_PROCEDURE_CODE)
-        ->where('PROCEDURE_XREF.PROCEDURE_XREF_ID',$PROCEDURE_XREF_ID)
+        ->where('PROCEDURE_XREF.EFFECTIVE_DATE',$request->effective_date)
+        ->where('PROCEDURE_XREF.SUB_PROCEDURE_CODE',$request->sub_procedure_code)
+        ->where('PROCEDURE_XREF.HIST_PROCEDURE_CODE',$request->hist_procedure_code)
+        ->where('PROCEDURE_XREF.PROCEDURE_XREF_ID',$request->procedure_xref_id)
 
          ->first();
 
@@ -341,6 +341,20 @@ class ProcedureCrossReferenceController extends Controller
                         return $this->respondWithToken($this->token(), [['For Same Submitted Procedure Code And History Procedure Code,dates cannot overlap.']], '', 'false');
                     }
 
+                    $add_names = DB::table('ENTITY_NAMES')
+                    ->where('ENTITY_USER_ID', $request->procedure_xref_id)
+                    ->update(
+                        [
+                            'ENTITY_TYPE' => 'PROCEDURE_XREF',
+                            // 'ENTITY_USER_ID'=>$request->procedure_xref_id,
+                            'ENTITY_USER_NAME'=>$request->entity_user_name,
+                            // 'DATE_TIME_CREATED'=>$createddate,
+                            'USER_ID_CREATED'=>'',
+                            'DATE_TIME_MODIFIED'=>$createddate,
+                            
+                        ]
+                    );
+
                     $update = DB::table('PROCEDURE_XREF' )
                     ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
                     ->where('SUB_PROCEDURE_CODE',$request->sub_procedure_code)
@@ -395,6 +409,20 @@ class ProcedureCrossReferenceController extends Controller
                         if ($overlapExists) {
                             return $this->respondWithToken($this->token(), [['For Same Submitted Procedure Code And History Procedure Code,dates cannot overlap.']], '', 'false');
                         }
+
+                        $add_names = DB::table('ENTITY_NAMES')
+                        ->where('ENTITY_USER_ID', $request->procedure_xref_id)
+                        ->update(
+                            [
+                                'ENTITY_TYPE' => 'PROCEDURE_XREF',
+                                // 'ENTITY_USER_ID'=>$request->procedure_xref_id,
+                                'ENTITY_USER_NAME'=>$request->entity_user_name,
+                                // 'DATE_TIME_CREATED'=>$createddate,
+                                'USER_ID_CREATED'=>'',
+                                'DATE_TIME_MODIFIED'=>$createddate,
+                                
+                            ]
+                        );
 
                         $update = DB::table('PROCEDURE_XREF')
                         ->insert(
