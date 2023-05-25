@@ -3,13 +3,55 @@
 namespace App\Http\Controllers\administrator;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+
 
 class SystemParameterController extends Controller
 {
+    use AuditTrait;
     public function updateSystemParameter(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'num_routers' => ['required', 'max:2'],
+            'router_priority' => ['max:2'],
+            'sleep_mins' => ['max:2'],
+            'preadj_msg_priority' => ['max:2'],
+            'tpa_msg_priority' => ['max:2'],
+            'post_msg_priority' => ['max:2'],
+            'gen_priority' => ['max:2'],
+            'num_gens' => ['max:2'],
+            'version_number' => ['max:2'],
+            'retain_perf_stats_days' => ['max:4'],
+            'retain_transaction_days' => ['max:4'],
+            'retain_log_days' => ['max:4'],
+            'maintenance_time' => ['max:4'],
+            'processor_number' => ['max:4'],
+            'processor_name' => ['max:10'],
+            'processor_address' => ['max:30'],
+            'processor_city' => ['max:20'],
+            'processor_zip' => ['max:9'],
+            'processor_phone' => ['max:13'],
+
+            'sys_date_written_to_first_fill' => ['max:4'],
+            'sys_date_filled_to_sub_online' => ['max:4'],
+            'sys_date_filled_to_sub_dmr' => ['max:4'],
+            'sys_date_sub_to_filled_future' => ['max:4'],
+            'sys_days_for_reversals' => ['max:3'],
+            'qty_num_of_pkg_limit' => ['max:2'],
+            'elig_load_pend_days' => ['max:3'],
+            'elig_load_reject_days' => ['max:3'],
+            'tba_percent' => ['max:3'],
+            'processor_cntl_num_cust_length' => ['max:2'],
+            'max_ucr' => ['numeric'],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        }
 
         // $getusersData = DB::table('GLOBAL_PARAMS')
         //     ->where('user_id', $request->user_id)
@@ -116,7 +158,7 @@ class SystemParameterController extends Controller
                 'DATE_TIME_MODIFIED' => date('d-M-y'),
                 'NUM_GENS' => $request->num_gens,
                 'GEN_PRIORITY' => $request->gen_priority,
-                'GEN_PRIORITY' => $request->processor_number,
+                'PROCESSOR_NUMBER' => $request->processor_number,
                 'PROCESSOR_NAME' => $request->processor_name,
                 'PROCESSOR_ADDRESS' => $request->processor_address,
                 'PROCESSOR_CITY' => $request->processor_city,
@@ -126,9 +168,42 @@ class SystemParameterController extends Controller
                 'THIRD_PARTY_TYPE' => $request->third_party_type,
                 'VERSION_NUMBER' => $request->version_number,
                 'FRONT_END_RECORD_AUDIT' => $request->front_end_record_audit,
+                'reqd_u_and_c_flag' => $request->reqd_u_and_c_flag,
+                'rva_list_id' => $request->rva_list_id,
+                'dmr_preview_flag' => $request->dmr_preview_flag,
+                'sys_date_filled_to_sub_dmr' => $request->sys_date_filled_to_sub_dmr,
+                'ap_from_date' => $request->ap_from_date,
+                'ap_to_date' => $request->ap_to_date,
+                'confidentiality_flag_1' => $request->confidentiality_flag_1,
+                'elig_load_pend_days' => $request->elig_load_pend_days,
+                'elig_load_reject_days' => $request->elig_load_reject_days,
+                'tba_percent' => $request->tba_percent,
+                'case_sensitive_flag' => $request->case_sensitive_flag,
+                'processor_cntl_num_cust_length' => $request->processor_cntl_num_cust_length,
+                'allow_fe_cob_reversal' => $request->allow_fe_cob_reversal,
+                'ap_run_flag' => $request->ap_run_flag,
+                'auto_term_level' => $request->auto_term_level,
+                'country' => $request->country,
+                'default_locale_id' => $request->default_locale_id,
+                'front_end_version_number' => $request->front_end_version_number,
+                'max_ucr' => $request->max_ucr,
+                'mbr_search_grp_key' => $request->mbr_search_grp_key,
+                'member_change_log_opt' => $request->member_change_log_opt,
+                'member_search_opt' => $request->member_search_opt,
+                'non_profit_tax_exempt_flag' => $request->non_profit_tax_exempt_flag,
+                'overlap_coverage_tie_breaker' => $request->overlap_coverage_tie_breaker,
+                'plan_assoc_required_flag' => $request->plan_assoc_required_flag,
+
+
+
             ]);
 
-        return $this->respondWithToken($this->token(), 'System Parameters Updated Successfully!', $update_system_parameter);
+        $system_parameters = DB::table('GLOBAL_PARAMS')
+            ->first();
+        $record_snapshot = json_encode($system_parameters);
+        $save_audit = $this->auditMethod('UP', $record_snapshot, 'GLOBAL_PARAMS');
+
+        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_system_parameter);
     }
 
     public function getSystemParameters(Request $request)

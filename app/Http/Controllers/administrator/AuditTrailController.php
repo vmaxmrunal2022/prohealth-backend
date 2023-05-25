@@ -55,6 +55,18 @@ class AuditTrailController extends Controller
         $prior_auth_code_num = isset(json_decode($request->record_snapshot)->prior_auth_code_num)  ? json_decode($request->record_snapshot)->prior_auth_code_num : null;
         $plan_id = isset(json_decode($request->record_snapshot)->plan_id)  ? json_decode($request->record_snapshot)->plan_id : null;
         $pharmacy_nabp = isset(json_decode($request->record_snapshot)->pharmacy_nabp)  ? json_decode($request->record_snapshot)->pharmacy_nabp : null;
+        $benefit_derivation_id = isset(json_decode($request->record_snapshot)->benefit_derivation_id)  ? json_decode($request->record_snapshot)->benefit_derivation_id : null;
+        $proc_code_list_id = isset(json_decode($request->record_snapshot)->proc_code_list_id)  ? json_decode($request->record_snapshot)->proc_code_list_id : null;
+        $benefit_list_id = isset(json_decode($request->record_snapshot)->benefit_list_id)  ? json_decode($request->record_snapshot)->benefit_list_id : null;
+        $super_benefit_list_id = isset(json_decode($request->record_snapshot)->super_benefit_list_id)  ? json_decode($request->record_snapshot)->super_benefit_list_id : null;
+        $ndc_exception_list = isset(json_decode($request->record_snapshot)->ndc_exception_list)  ? json_decode($request->record_snapshot)->ndc_exception_list : null;
+        $accum_bene_strategy_id = isset(json_decode($request->record_snapshot)->accum_bene_strategy_id)  ? json_decode($request->record_snapshot)->accum_bene_strategy_id : null;
+        $plan_accum_deduct_id = isset(json_decode($request->record_snapshot)->plan_accum_deduct_id)  ? json_decode($request->record_snapshot)->plan_accum_deduct_id : null;
+        $prov_type_list_id = isset(json_decode($request->record_snapshot)->prov_type_list_id)  ? json_decode($request->record_snapshot)->prov_type_list_id : null;
+
+
+
+
         // return $member_id;
         $record = DB::table($request->table_name)
             ->when($customer_id, function ($query) use ($customer_id) {
@@ -91,6 +103,31 @@ class AuditTrailController extends Controller
             ->when($pharmacy_nabp, function ($query) use ($pharmacy_nabp) {
                 return $query->where('pharmacy_nabp', 'like', '%' . $pharmacy_nabp . '%');
             })
+            ->when($benefit_derivation_id, function ($query) use ($benefit_derivation_id) {
+                return $query->where('benefit_derivation_id', 'like', '%' . $benefit_derivation_id . '%');
+            })
+            ->when($proc_code_list_id, function ($query) use ($proc_code_list_id) {
+                return $query->where('proc_code_list_id', 'like', '%' . $proc_code_list_id . '%');
+            })
+            ->when($benefit_list_id, function ($query) use ($benefit_list_id) {
+                return $query->where('benefit_list_id', 'like', '%' . $benefit_list_id . '%');
+            })
+            ->when($super_benefit_list_id, function ($query) use ($super_benefit_list_id) {
+                return $query->where('super_benefit_list_id', 'like', '%' . $super_benefit_list_id . '%');
+            })
+            ->when($ndc_exception_list, function ($query) use ($ndc_exception_list) {
+                return $query->where('ndc_exception_list', 'like', '%' . $ndc_exception_list . '%');
+            })
+            ->when($accum_bene_strategy_id, function ($query) use ($accum_bene_strategy_id) {
+                return $query->where('accum_bene_strategy_id', 'like', '%' . $accum_bene_strategy_id . '%');
+            })
+            ->when($plan_accum_deduct_id, function ($query) use ($plan_accum_deduct_id) {
+                return $query->where('plan_accum_deduct_id', 'like', '%' . $plan_accum_deduct_id . '%');
+            })
+            ->when($prov_type_list_id, function ($query) use ($prov_type_list_id) {
+                return $query->where('prov_type_list_id', 'like', '%' . $prov_type_list_id . '%');
+            })
+
 
 
             ->get();
