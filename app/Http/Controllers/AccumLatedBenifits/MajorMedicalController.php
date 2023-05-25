@@ -4,8 +4,9 @@ namespace App\Http\Controllers\AccumLatedBenifits;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
 class MajorMedicalController extends Controller
@@ -16,6 +17,9 @@ class MajorMedicalController extends Controller
     public function add(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'effective_date' => ['required', 'max:10', Rule::unique('MM_LIFE_MAX')->where(function ($q) {
+                $q->whereNotNull('effective_date');
+            })],
             "customer_id" => ['required'],
             "client_id" => ['required'],
             "client_group_id" => ['required'],
@@ -28,17 +32,21 @@ class MajorMedicalController extends Controller
         if ($request->has('new')) {
             $insert = DB::table('MM_LIFE_MAX')->insert(
                 [
-                    'customer_id' => $request->customer_id,
-                    'client_id' => $request->client_id,
-                    'client_group_id' => $request->client_group_id,
-                    'mm_life_maximum' => $request->mm_life_maximum,
-                    'grouping_type' => $request->grouping_type,
-                    'mm_claim_max' => $request->mm_claim_max,
-                    'effective_date' => $request->effective_date,
-                    'termination_date' => $request->termination_date,
-                    'DATE_TIME_CREATED' => date('Ymd'),
-                    'DATE_TIME_MODIFIED' => date('Ymd'),
-                    'USER_ID_CREATED' => Cache::get('userId'),
+                    'CUSTOMER_ID' => $request->customer_id,
+                    'CLIENT_ID' => $request->client_id,
+                    'CLIENT_GROUP_ID' => $request->client_group_id,
+                    'MM_LIFE_MAXIMUM' => $request->mm_life_maximum,
+                    'EFFECTIVE_DATE' => $request->effective_date,
+                    'TERMINATION_DATE' => $request->termination_date,
+                    'GROUPING_TYPE' => $request->grouping_type,
+                    'USER_ID_CREATED'=>Cache::get('userId'),
+                    'DATE_TIME_CREATED'=>date('Ymd'),
+                    'USER_ID_MODIFIED'=>date('Ymd'),
+                    'MM_CLAIM_MAX'=>$request->mm_claim_max,
+                    'MM_CLAIM_MAX_PERIOD'=>$request->mm_claim_max_period,
+                    'MM_CLAIM_MAX_MULT'=>$request->mm_claim_max_mult,
+                    'MM_CLAIM_MAX_GROUP_TYPE'=>$request->mm_claim_max_group_type,
+                 
                 ]
             );
             if ($insert) {
@@ -49,19 +57,27 @@ class MajorMedicalController extends Controller
                 ->where('customer_id', $request->customer_id)
                 ->where('client_id', $request->client_id)
                 ->where('client_group_id', $request->client_group_id)
+                ->where('effective_date',$request->effective_date)
                 ->update(
                     [
-                        'mm_life_maximum' => $request->mm_life_maximum,
-                        'grouping_type' => $request->grouping_type,
-                        'mm_claim_max' => $request->mm_claim_max,
-
+                        'MM_LIFE_MAXIMUM' => $request->mm_life_maximum,
+                        'TERMINATION_DATE' => $request->termination_date,
+                        'GROUPING_TYPE' => $request->grouping_type,
+                        'USER_ID_CREATED'=>Cache::get('userId'),
+                        'DATE_TIME_CREATED'=>date('Ymd'),
+                        'USER_ID_MODIFIED'=>date('Ymd'),
+                        'MM_CLAIM_MAX'=>$request->mm_claim_max,
+                        'MM_CLAIM_MAX_PERIOD'=>$request->mm_claim_max_period,
+                        'MM_CLAIM_MAX_MULT'=>$request->mm_claim_max_mult,
+                        'MM_CLAIM_MAX_GROUP_TYPE'=>$request->mm_claim_max_group_type,
+                     
                     ]
                 );
 
             $recordcheck = DB::table('MM_LIFE_MAX')
-                ->where('customer_id', strtoupper($request->customer_id))
-                ->where('client_id', strtoupper($request->client_id))
-                ->where('client_group_id', strtoupper($request->client_group_id))
+                ->where('customer_id',$request->customer_id)
+                ->where('client_id', $request->client_id)
+                ->where('client_group_id', $request->client_group_id)
                 ->first();
 
 
@@ -81,7 +97,7 @@ class MajorMedicalController extends Controller
                             'mm_claim_max' => $request->mm_claim_max,
                             'effective_date' => $request->effective_date,
                             'termination_date' => $request->termination_date,
-                            'mm_claim_max_group_type' => strtoupper($request->mm_claim_max_group_type),
+                            'mm_claim_max_group_type' =>$request->mm_claim_max_group_type,
 
                         ]
                     );
@@ -91,9 +107,11 @@ class MajorMedicalController extends Controller
             } else {
 
                 $update = DB::table('MM_LIFE_MAX')
-                    ->where('customer_id', strtoupper($request->customer_id))
-                    ->where('client_id', strtoupper($request->client_id))
-                    ->where('client_group_id', strtoupper($request->client_group_id))
+                    ->where('customer_id', $request->customer_id)
+                    ->where('client_id',$request->client_id)
+                    ->where('client_group_id',$request->client_group_id)
+                    ->where('effective_date',$request->effective_date)
+
                     ->update(
                         [
                             'mm_life_maximum' => $request->mm_life_maximum,
@@ -101,13 +119,13 @@ class MajorMedicalController extends Controller
                             'mm_claim_max' => $request->mm_claim_max,
                             'effective_date' => $request->effective_date,
                             'termination_date' => $request->termination_date,
-                            'mm_claim_max_group_type' => strtoupper($request->mm_claim_max_group_type),
+                            'mm_claim_max_group_type' => $request->mm_claim_max_group_type,
                         ]
                     );
                 $benefitcode = DB::table('MM_LIFE_MAX')
-                    ->where('customer_id', strtoupper($request->customer_id))
-                    ->where('client_id', strtoupper($request->client_id))
-                    ->where('client_group_id', strtoupper($request->client_group_id))
+                    ->where('customer_id', $request->customer_id)
+                    ->where('client_id', $request->client_id)
+                    ->where('client_group_id', $request->client_group_id)
                     ->first();
 
                 // $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%'.$request->mm_life_maximum .'%')->first();
@@ -138,8 +156,8 @@ class MajorMedicalController extends Controller
 
     {
         $ndc = DB::table('CUSTOMER')
-            ->where('CUSTOMER_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('CUSTOMER_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->where('CUSTOMER_ID', 'like', '%' . $request->search. '%')
+            ->orWhere('CUSTOMER_NAME', 'like', '%' .$request->search. '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -159,8 +177,8 @@ class MajorMedicalController extends Controller
     public function getClientGroup($ndcid)
     {
 
-        $ndc = DB::table('CLIENT_GROUP')
-            ->where('CLIENT_ID', 'like', '%' . $ndcid . '%')
+        $ndc = DB::table('MM_LIFE_MAX')
+            ->where('CLIENT_ID', $ndcid)
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -168,18 +186,20 @@ class MajorMedicalController extends Controller
 
 
 
-    public function getDetails($ndcid)
+    public function getDetails(Request $request)
     {
 
-        $ndc = DB::table('MM_LIFE_MAX')
-            ->where('client_group_id', 'like', '%' . $ndcid . '%')
-            ->first();
+       
         $ndc = DB::table('MM_LIFE_MAX')
             ->select('MM_LIFE_MAX.CUSTOMER_ID', 'MM_LIFE_MAX.CLIENT_ID', 'MM_LIFE_MAX.CLIENT_GROUP_ID', 'MM_LIFE_MAX.EFFECTIVE_DATE', 'MM_LIFE_MAX.TERMINATION_DATE', 'MM_LIFE_MAX.MM_LIFE_MAXIMUM', 'MM_LIFE_MAX.MM_CLAIM_MAX', 'MM_LIFE_MAX.GROUPING_TYPE', 'MM_LIFE_MAX.MM_CLAIM_MAX_GROUP_TYPE', 'MM_LIFE_MAX.MM_CLAIM_MAX_PERIOD', 'CUSTOMER.CUSTOMER_NAME', 'CLIENT.CLIENT_NAME', 'CLIENT_GROUP.GROUP_NAME')
             ->join('CUSTOMER', 'CUSTOMER.CUSTOMER_ID', '=', 'MM_LIFE_MAX.CUSTOMER_ID')
             ->join('CLIENT', 'CLIENT.CLIENT_ID', '=', 'MM_LIFE_MAX.CLIENT_ID')
             ->join('CLIENT_GROUP', 'CLIENT_GROUP.CLIENT_GROUP_ID', '=', 'MM_LIFE_MAX.CLIENT_GROUP_ID')
-            ->where('MM_LIFE_MAX.client_group_id', $ndcid)
+            ->where('MM_LIFE_MAX.CUSTOMER_ID', $request->customer_id)
+            ->where('MM_LIFE_MAX.CLIENT_ID', $request->client_id)
+            ->where('MM_LIFE_MAX.CLIENT_GROUP_ID', $request->client_group_id)
+            ->where('MM_LIFE_MAX.EFFECTIVE_DATE',$request->effective_date)
+
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

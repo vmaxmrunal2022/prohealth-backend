@@ -351,7 +351,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('customer/search', [MajorMedicalController::class, 'search']);
         Route::get('client/get/{customerid}', [MajorMedicalController::class, 'getClient']);
         Route::get('clientgroup/get/{client}', [MajorMedicalController::class, 'getClientGroup']);
-        Route::get('clientgroup/details/{client}', [MajorMedicalController::class, 'getDetails']);
+        Route::get('clientgroup/details', [MajorMedicalController::class, 'getDetails']);
         Route::post('major/medical/add', [MajorMedicalController::class, 'add']);
         Route::post('clientgroup/add', [ClientGroupController::class, 'add']);
         Route::post('/major-medical/delete', [MajorMedicalController::class, 'delete'])->name('major.medical.delete'); // delete
@@ -981,7 +981,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
     Route::get('clientgroup/get/{client}', [MajorMedicalController::class, 'getClientGroup']);
 
-    Route::get('clientgroup/details/{client}', [MajorMedicalController::class, 'getDetails']);
+    Route::get('clientgroup/details', [MajorMedicalController::class, 'getDetails']);
     Route::post('major/medical/add', [MajorMedicalController::class, 'add']);
 
     Route::post('clientgroup/add', [ClientGroupController::class, 'add']);
@@ -1135,6 +1135,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('price-schedule/get-brand-source', [PriceScheduleController::class, 'getBrandSource']);
     Route::post('price-schedule/submit', [PriceScheduleController::class, 'submitPriceSchedule']);
     Route::get('price-schedule/get-all', [PriceScheduleController::class, 'getAll']);
+    Route::post('price-schedule/delete', [PriceScheduleController::class, 'priceschedultdelete'])->name('priceschedultdelete');
 
     //Copay Schedule
     Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
@@ -1145,6 +1146,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('copay-schedule/get-daw-options', [CopayScheduleController::class, 'getDawOptions']);
     Route::get('copay-schedule/get-coinsurance-calculation-option', [CopayScheduleController::class, 'getConinsuranceCalculationOption']);
     Route::post('copay-schedule/submit', [CopayScheduleController::class, 'submitCopaySchedule']);
+    Route::post('copay-schedule/delete', [CopayScheduleController::class, 'deleteCopaySchedule'])->name('delete.copay');
 
     //Copay Step Schedule
     Route::get('copay-step-schedule/get', [CopayStepScheduleController::class, 'get'])->name('get.copay-step');
@@ -1174,18 +1176,21 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('tax-schedule/get-calculations', [TaxScheduleController::class, 'getCalculations']);
     Route::get('tax-schedule/get-base-prices', [TaxScheduleController::class, 'getBasePrices']);
     Route::post('tax-schedule/submit', [TaxScheduleController::class, 'submitTaxSchedule']);
+    Route::post('tax-schedule/delete', [TaxScheduleController::class, 'tax_schedule_delete'])->name('tax_schedule_delete');
 
     //Procedure UCR list
     Route::get('procedure-ucr-list/get', [ProcedureUcrList::class, 'get']);
     Route::get('procedure-ucr-list/get-procedure-list-data', [ProcedureUcrList::class, 'getProcedureListData']);
     Route::get('procedure-ucr-list/get-procedure-code', [ProcedureUcrList::class, 'getProcedureCode']);
     Route::post('procedure-ucr-list/submit', [ProcedureUcrList::class, 'submitProcedureList']);
+    Route::post('procedure-ucr-list/delete', [ProcedureUcrList::class, 'procedure_delete'])->name('procedure_delete');
 
     //RVA List
     Route::get('rva-list/get', [RvaListController::class, 'get']);
     Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
     Route::post('rva-list/submit', [RvaListController::class, 'submitRva']);
     Route::get('rva-list/dropdown', [RvaListController::class, 'RvaListDropdown']);
+    Route::post('rva-list/delete', [RvaListController::class, 'delete_rav'])->name('delete_rav');
 });
 
 

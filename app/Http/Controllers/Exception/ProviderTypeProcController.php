@@ -275,7 +275,7 @@ class ProviderTypeProcController extends Controller
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 if ($validation->count() > 0) {
-                    return $this->respondWithToken($this->token(), [['Reason Code  Exception Already Exists']], $validation, 'false', 200, 1);
+                    return $this->respondWithToken($this->token(), [['Provider Type Procedure Association Already Exists']], $validation, 'false', 200, 1);
                 }
                 $effectiveDate=$request->effective_date;
                 $terminationDate=$request->termination_date;

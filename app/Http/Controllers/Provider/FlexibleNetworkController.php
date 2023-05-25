@@ -304,10 +304,21 @@ class FlexibleNetworkController extends Controller
  
     public function getflixibleNetworks(Request $request)
     {
-        $data = DB::table('RX_NETWORK_RULES')
+        $flexible_network_data = DB::table('RX_NETWORK_RULES')
             ->where('RX_NETWORK_RULE_ID', $request->rx_network_rule_id)
             ->get();
-        return $this->respondWithToken($this->token(), '', $data);
+
+        $form_data=DB::table('RX_NETWORK_RULE_NAMES')
+        ->where('RX_NETWORK_RULE_ID', $request->rx_network_rule_id)
+        ->get();
+
+
+
+        $merged = [
+            'form_data' => $form_data,
+            'flexible_network_data' => $flexible_network_data
+          ];
+   return $this->respondWithToken($this->token(), '', $merged);
     }
 
 

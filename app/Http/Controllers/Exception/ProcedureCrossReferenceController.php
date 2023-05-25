@@ -219,7 +219,7 @@ class ProcedureCrossReferenceController extends Controller
 
             else{
                 if ($validation->count() > 0) {
-                    return $this->respondWithToken($this->token(), 'Procedure Cross Reference List Id Already Exists', $validation, true, 200, 1);
+                    return $this->respondWithToken($this->token(), [['Procedure Cross Reference List Id Already Exists']], $validation, 'false', 200, 1);
                 }
                 $effectiveDate=$request->effective_date;
                 $terminationDate=$request->termination_date;
