@@ -63,6 +63,7 @@ class AuditTrailController extends Controller
         $accum_bene_strategy_id = isset(json_decode($request->record_snapshot)->accum_bene_strategy_id)  ? json_decode($request->record_snapshot)->accum_bene_strategy_id : null;
         $plan_accum_deduct_id = isset(json_decode($request->record_snapshot)->plan_accum_deduct_id)  ? json_decode($request->record_snapshot)->plan_accum_deduct_id : null;
         $prov_type_list_id = isset(json_decode($request->record_snapshot)->prov_type_list_id)  ? json_decode($request->record_snapshot)->prov_type_list_id : null;
+        $prov_type_proc_assoc_id = isset(json_decode($request->record_snapshot)->prov_type_proc_assoc_id)  ? json_decode($request->record_snapshot)->prov_type_proc_assoc_id : null;
 
 
 
@@ -126,6 +127,9 @@ class AuditTrailController extends Controller
             })
             ->when($prov_type_list_id, function ($query) use ($prov_type_list_id) {
                 return $query->where('prov_type_list_id', 'like', '%' . $prov_type_list_id . '%');
+            })
+            ->when($prov_type_proc_assoc_id, function ($query) use ($prov_type_proc_assoc_id) {
+                return $query->where('prov_type_proc_assoc_id', 'like', '%' . $prov_type_proc_assoc_id . '%');
             })
 
 
