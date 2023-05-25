@@ -219,7 +219,7 @@ class ProcedureCrossReferenceController extends Controller
 
             else{
                 if ($validation->count() > 0) {
-                    return $this->respondWithToken($this->token(), 'Procedure Cross Reference List Id Already Exists', $validation, true, 200, 1);
+                    return $this->respondWithToken($this->token(), [['Procedure Cross Reference List Id Already Exists']], $validation, 'false', 200, 1);
                 }
                 $effectiveDate=$request->effective_date;
                 $terminationDate=$request->termination_date;
@@ -536,31 +536,30 @@ class ProcedureCrossReferenceController extends Controller
         if (isset($request->procedure_xref_id) && isset($request->sub_procedure_code) && isset($request->hist_procedure_code) && isset($request->termination_date) && isset($request->effective_date)) {
      
             $all_exceptions_lists =  DB::table('PROCEDURE_XREF')
-                ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
-                ->where('SUB_PROCEDURE_CODE', $request->sub_procedure_code)
-                ->where('HIST_PROCEDURE_CODE', $request->hist_procedure_code)
-                ->where('EFFECTIVE_DATE', str_replace('-', '', $request->effective_date))
-                ->where('TERMINATION_DATE',str_replace('-', '', $request->termination_date))
-                ->delete();
-              
+                                        ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
+                                        ->where('SUB_PROCEDURE_CODE', $request->sub_procedure_code)
+                                        ->where('HIST_PROCEDURE_CODE', $request->hist_procedure_code)
+                                        ->where('EFFECTIVE_DATE', str_replace('-', '', $request->effective_date))
+                                        ->where('TERMINATION_DATE',str_replace('-', '', $request->termination_date))
+                                        ->delete();
            
             if ($all_exceptions_lists) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else if (isset($request->procedure_xref_id)) {
+        } elseif(isset($request->procedure_xref_id)) {
            
             $exception_delete =  DB::table('ENTITY_NAMES')
-                ->where('ENTITY_USER_ID', $request->procedure_xref_id)
-                ->delete();
+                                    ->where('ENTITY_USER_ID', $request->procedure_xref_id)
+                                    ->delete();
             $all_exceptions_lists =  DB::table('PROCEDURE_XREF')
-            ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
-            ->delete();
+                                        ->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)
+                                        ->delete();
 
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
+            }else{
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         }

@@ -898,7 +898,7 @@ class DrugClassController extends Controller
                                 ->where('EFFECTIVE_DATE', $request->effective_date)
                                 // ->where('termination_date', date('Ymd', strtotime($request->termination_date)))
                                 ->get();
-// return $checkGPI;
+             // return $checkGPI;
                        
                     if(count($checkGPI) >= 1){
                         return $this->respondWithToken($this->token(), [["For same Drug Class, dates cannot overlap."]], '', 'false');
@@ -1224,18 +1224,18 @@ class DrugClassController extends Controller
     public function drugclassDelete(Request $request)
     {
         // return $request->all();
-        if (isset($request->drug_catgy_exception_list) && isset($request->scategory) && isset($request->drug_catgy_exception_list) && isset($request->stype) && isset($request->new_drug_status) && isset($request->process_rule) && isset($request->effective_date)) {
+        if (isset($request->drug_catgy_exception_list) && isset($request->scategory) && isset($request->stype) && isset($request->new_drug_status) && isset($request->process_rule) && isset($request->effective_date)) {
 
        
 
              $exception_delete =  DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
-                    ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
-                    ->where('SCATEGORY', $request->scategory)
-                    ->where('STYPE', $request->stype)
-                    ->where('NEW_DRUG_STATUS', $request->new_drug_status)
-                    ->where('PROCESS_RULE', $request->process_rule)
-                    // ->where('EFFECTIVE_DATE', $request->effective_date)
-                    ->delete();
+                                        ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
+                                        ->where('SCATEGORY', $request->scategory)
+                                        ->where('STYPE', $request->stype)
+                                        // ->where('NEW_DRUG_STATUS', $request->new_drug_status)
+                                        // ->where('PROCESS_RULE', $request->process_rule)
+                                        ->where('EFFECTIVE_DATE', $request->effective_date)
+                                        ->delete();
                     
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
@@ -1246,12 +1246,12 @@ class DrugClassController extends Controller
            
 
                 $all_exceptions_lists =  DB::table('DRUG_CATGY_EXCEPTION_NAMES')
-                ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
-                ->delete();
+                                            ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
+                                            ->delete();
 
                 $exception_delete =  DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
-                    ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
-                    ->delete();
+                                        ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
+                                        ->delete();
 
             if ($all_exceptions_lists) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');

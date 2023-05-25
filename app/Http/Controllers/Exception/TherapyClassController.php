@@ -1019,21 +1019,24 @@ class TherapyClassController extends Controller
     }
     public function delete_therapy(Request $request)
     {
-        if (isset($request->ther_class_exception_list) && ($request->therapy_class)) {
+        if (isset($request->ther_class_exception_list) && isset($request->therapy_class)&& isset($request->effective_date)) {
             $all_exceptions_lists =  DB::table('TC_EXCEPTION_LISTS')
-                ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
-                ->delete();
-
+                                        ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
+                                        ->where('therapy_class',$request->therapy_class)
+                                        ->where('effective_date',$request->effective_date)
+                                        ->delete();
             if ($all_exceptions_lists) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else if (isset($request->ther_class_exception_list)) {
+        }elseif (isset($request->ther_class_exception_list)) {
             $exception_delete =  DB::table('TC_EXCEPTIONS')
-                ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
-                ->delete();
-
+                                    ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
+                                    ->delete();
+            $all_exceptions_lists =  DB::table('TC_EXCEPTION_LISTS')
+                                        ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
+                                        ->delete(); 
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
