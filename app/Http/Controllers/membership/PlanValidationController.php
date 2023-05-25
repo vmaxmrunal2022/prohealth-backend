@@ -23,7 +23,9 @@ class PlanValidationController extends Controller
     } else {
       $planValidation = DB::table('PLAN_VALIDATION_LISTS')
         ->join('CUSTOMER', 'CUSTOMER.customer_id', '=', 'PLAN_VALIDATION_LISTS.customer_id')
-        ->where('CUSTOMER.customer_id', 'like', '%' . $request->search. '%')
+        // ->where('CUSTOMER.customer_id', 'like', '%' . $request->search. '%')
+        ->whereRaw('LOWER(CUSTOMER.CUSTOMER_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+
         //   ->orWhere('PLAN_VALIDATION_LISTS.client_id', 'like', '%'. strtoupper($request->search) .'%')
         ->orWhere('CUSTOMER.customer_name', 'like', '%' .$request->search. '%')
         ->get();

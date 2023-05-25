@@ -139,8 +139,13 @@ else{
 
     {
         $ndc = DB::table('CUSTOMER')
-            ->where('CUSTOMER_ID', 'like', '%' . $request->search. '%')
+            // ->where('CUSTOMER_ID', 'like', '%' . $request->search. '%')
+            ->whereRaw('LOWER(CUSTOMER_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('CUSTOMER_NAME', 'like', '%' .$request->search. '%')
+
+
+
+
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

@@ -292,11 +292,12 @@ class PlanEditController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
             }
             // }
-        } else { {
+        } else { 
+            
             $validator = Validator::make($request->all(), [
                 'plan_id' => ['required', 'max:15', Rule::unique('PLAN_BENEFIT_TABLE')->where(function ($q) use($request){
                     $q->whereNotNull('plan_id');
-                    $q->whereNotNull('plan_id','!=',$request->plan_id);
+                    $q->where('plan_id','!=',$request->plan_id);
                 })],
                 'effective_date' => ['required', 'max:10'],
                 'termination_date' => ['required', 'after:effective_date'],
@@ -498,7 +499,7 @@ class PlanEditController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
                 // }
             }
-        }
+        
     }
 
 
