@@ -207,6 +207,18 @@ class TraditionalNetworkController extends Controller
     }
 
 
+    public function dropdown (Request $request){
+
+        $data=DB::table('RX_NETWORK_NAMES')
+        ->select('NETWORK_ID','NETWORK_NAME')
+        ->get();
+
+        return $this->respondWithToken($this->token(), 'Data fetched successfully', $data);
+
+
+    }
+
+
     public function all(Request $request)
     {
 

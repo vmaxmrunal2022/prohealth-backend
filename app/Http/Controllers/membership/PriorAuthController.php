@@ -15,7 +15,8 @@ class PriorAuthController extends Controller
     public function get(Request $request)
     {
         $priorAuthList = DB::table('PRIOR_AUTHORIZATIONS')
-            ->where('member_id', 'like', '%' . $request->search . '%')
+            // ->where('member_id', 'like', '%' . $request->search . '%')
+            ->whereRaw('LOWER(member_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('person_code', 'like', '%' . $request->search . '%')
             ->orWhere('customer_id', 'like', '%' . $request->search . '%')
             ->orWhere('client_id', 'like', '%' . $request->search . '%')
@@ -136,6 +137,8 @@ class PriorAuthController extends Controller
                 'service_type' => ['max:2'],
                 'provider_type' => ['max:2'],
                 'diagnosis_id' => ['max:8'],
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
@@ -275,6 +278,8 @@ class PriorAuthController extends Controller
                 'service_type' => ['max:2'],
                 'provider_type' => ['max:2'],
                 'diagnosis_id' => ['max:8'],
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);

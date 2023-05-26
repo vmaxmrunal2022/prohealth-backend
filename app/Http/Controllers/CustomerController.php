@@ -498,12 +498,12 @@ class CustomerController extends Controller
 
     public function ALLSuperProviderNetworkIdS(Request $request)
     {
-        $customer = DB::table('super_rx_network_names')->get();
+        $customer = DB::table('RX_NETWORK_NAMES')->get();
         $newarray = [];
         foreach ($customer as $row) {
 
-            $new['value'] = $row->super_rx_network_id;
-            $new['label'] = $row->super_rx_network_id_name;
+            $new['value'] = $row->network_id;
+            $new['label'] = $row->network_name;
             array_push($newarray, $new);
         }
 

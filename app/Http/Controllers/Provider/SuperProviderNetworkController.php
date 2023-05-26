@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class SuperProviderNetworkController extends Controller
 {
@@ -169,36 +170,38 @@ class SuperProviderNetworkController extends Controller
     public function add(Request $request)
     {
 
-
-
-
         $createddate = date('y-m-d');
-
         $recordcheck = DB::table('SUPER_RX_NETWORKS')->where('super_rx_network_id', $request->super_rx_network_id)->first();
-
-
-
         if ($request->add_new) {
 
             $validator = Validator::make($request->all(), [
+                'super_rx_network_id' => ['required', 'max:10', Rule::unique('SUPER_RX_NETWORKS')->where(function ($q) {
+                    $q->whereNotNull('SUPER_RX_NETWORK_ID');
+                })],
                 // "super_rx_network_id" => ['required', 'max:10'],
-                // "super_rx_network_id_name" => ['required', 'max:35'],
+                "super_rx_network_id_name" => ['required', 'max:35'],
+                "effective_date"=>['required','max:10'],
+                'termination_date'=>['required','after:effective_date'],
                 // "min_rx_qty" => ['max:6'],
                 // "max_rx_qty" => ['max:6'],
+                "min_rx_qty" => ['nullable'],
+                "max_rx_qty" => ['nullable','gt:min_rx_qty'],
                 // "rx_network_id" => ['required'],
                 // "rx_network_type" => ['max:6'],
-                // "min_rx_days" => ['max:1'],
-                // "max_rx_days" => ['max:1'],
-                // "effective_date" => ['max:10'],
+                "min_rx_days" => ['nullable'],
+                "max_rx_days" => ['nullable','gt:min_rx_days'],
                 // "max_retail_fills" => ['max:6'],
                 // "max_fills_opt" => ['max:1'],
                 // "starter_dose_days" => ['max:3'],
                 // "price_schedule_ovrd" => ['max:6'],
                 // "starter_dose_bypass_days" => ['max:3'],
                 // "starter_dose_maint_bypass_days" => ['max:3'],
-                // "termination_date" => ['max:10'],
                 // "comm_charge_paid" => ['max:10'],
                 // "comm_charge_reject" => ['max:10'],
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_rx_qty.gt' => 'Max Qty must be greater than Min Qty',
+                'max_rx_days.gt' => 'Max Day must be greater than Min Day',
             ]);
 
             if ($validator->fails()) {
@@ -245,13 +248,13 @@ class SuperProviderNetworkController extends Controller
                                 'comm_charge_paid' => $request->comm_charge_paid,
                                 'comm_charge_reject' => $request->comm_charge_reject,
                                 'days_supply_opt' => $request->days_supply_opt,
-                                'effective_date' => $request->effective_date,
+                                // 'effective_date' => $request->effective_date,
                                 'max_fills_opt' => $request->max_fills_opt,
                                 'max_retail_fills' => $request->max_retail_fills,
                                 'max_rx_qty' => $request->max_rx_qty,
                                 'min_rx_qty' => $request->min_rx_qty,
                                 'price_schedule_ovrd' => $request->price_schedule_ovrd,
-                                'rx_network_id' => $request->rx_network_id,
+                                // 'rx_network_id' => $request->rx_network_id,
                                 'rx_network_type' => $request->rx_network_type,
                                 'starter_dose_bypass_days' => $request->starter_dose_bypass_days,
                                 'starter_dose_days' => $request->starter_dose_days,
@@ -299,13 +302,13 @@ class SuperProviderNetworkController extends Controller
                                     'comm_charge_paid' => $request->comm_charge_paid,
                                     'comm_charge_reject' => $request->comm_charge_reject,
                                     'days_supply_opt' => $request->days_supply_opt,
-                                    'effective_date' => $request->effective_date,
+                                    // 'effective_date' => $request->effective_date,
                                     'max_fills_opt' => $request->max_fills_opt,
                                     'max_retail_fills' => $request->max_retail_fills,
                                     'max_rx_qty' => $request->max_rx_qty,
                                     'min_rx_qty' => $request->min_rx_qty,
                                     'price_schedule_ovrd' => $request->price_schedule_ovrd,
-                                    'rx_network_id' => $request->rx_network_id,
+                                    // 'rx_network_id' => $request->rx_network_id,
                                     'rx_network_type' => $request->rx_network_type,
                                     'starter_dose_bypass_days' => $request->starter_dose_bypass_days,
                                     'starter_dose_days' => $request->starter_dose_days,
@@ -330,6 +333,40 @@ class SuperProviderNetworkController extends Controller
                 }
             }
         } else {
+            $validator = Validator::make($request->all(), [
+                'super_rx_network_id' => ['required', 'max:10', Rule::unique('SUPER_RX_NETWORKS')->where(function ($q) use($request){
+                    $q->whereNotNull('SUPER_RX_NETWORK_ID');
+                    $q->where('SUPER_RX_NETWORK_ID',$request->super_rx_network_id);
+                })],
+                // "super_rx_network_id" => ['required', 'max:10'],
+                "super_rx_network_id_name" => ['required', 'max:35'],
+                "effective_date"=>['required','max:10'],
+                'termination_date'=>['required','after:effective_date'],
+                // "min_rx_qty" => ['max:6'],
+                // "max_rx_qty" => ['max:6'],
+                "min_rx_qty" => ['nullable'],
+                "max_rx_qty" => ['nullable','gt:min_rx_qty'],
+                // "rx_network_id" => ['required'],
+                // "rx_network_type" => ['max:6'],
+                "min_rx_days" => ['nullable'],
+                "max_rx_days" => ['nullable','gt:min_rx_days'],
+                // "max_retail_fills" => ['max:6'],
+                // "max_fills_opt" => ['max:1'],
+                // "starter_dose_days" => ['max:3'],
+                // "price_schedule_ovrd" => ['max:6'],
+                // "starter_dose_bypass_days" => ['max:3'],
+                // "starter_dose_maint_bypass_days" => ['max:3'],
+                // "comm_charge_paid" => ['max:10'],
+                // "comm_charge_reject" => ['max:10'],
+            ],[
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_rx_qty.gt' => 'Max Qty must be greater than Min Qty',
+                'max_rx_days.gt' => 'Max Day must be greater than Min Day',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+            }
             $updateProviderExceptionData = DB::table('SUPER_RX_NETWORK_NAMES')
                 ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
                 ->update([
@@ -351,7 +388,7 @@ class SuperProviderNetworkController extends Controller
                     'comm_charge_paid' => $request->comm_charge_paid,
                     'comm_charge_reject' => $request->comm_charge_reject,
                     'days_supply_opt' => $request->days_supply_opt,
-                    'effective_date' => $request->effective_date,
+                    // 'effective_date' => $request->effective_date,
                     'max_fills_opt' => $request->max_fills_opt,
                     'max_retail_fills' => $request->max_retail_fills,
                     'max_rx_qty' => $request->max_rx_qty,

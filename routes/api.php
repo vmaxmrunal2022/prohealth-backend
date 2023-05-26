@@ -486,6 +486,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::post('traditionalnetwork/add', [TraditionalNetworkController::class, 'add']);
 
+        Route::get('traditionalnetwork/dropdown', [TraditionalNetworkController::class, 'dropdown']);
+
 
         //Flexible Network
 
