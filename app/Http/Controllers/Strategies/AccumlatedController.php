@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Strategies;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,7 @@ use Illuminate\Validation\Rule;
 class AccumlatedController extends Controller
 {
 
+    use AuditTrait;
     public function add(Request $request)
     {
         $createddate = date('Ymd');
@@ -55,6 +57,13 @@ class AccumlatedController extends Controller
                         'plan_accum_deduct_id' => $request->plan_accum_deduct_id,
                     ]);
 
+                $acc_beneffit = DB::table('ACCUM_BENEFIT_STRATEGY')
+                    ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
+                    ->where('effective_date', $request->effective_date)
+                    ->where('PLAN_ACCUM_DEDUCT_ID', $request->plan_accum_deduct_id)
+                    ->first();
+                $record_snap = json_encode($acc_beneffit);
+                $save_audit = $this->auditMethod('IN', $record_snap, 'ACCUM_BENEFIT_STRATEGY');
                 if ($add) {
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
                 }
@@ -195,6 +204,14 @@ class AccumlatedController extends Controller
                         'plan_accum_deduct_id' => $request->plan_accum_deduct_id,
                     ]);
 
+                $acc_beneffit = DB::table('ACCUM_BENEFIT_STRATEGY')
+                    ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
+                    ->where('effective_date', $request->effective_date)
+                    ->where('PLAN_ACCUM_DEDUCT_ID', $request->plan_accum_deduct_id)
+                    ->first();
+                $record_snap = json_encode($acc_beneffit);
+                $save_audit = $this->auditMethod('UP', $record_snap, 'ACCUM_BENEFIT_STRATEGY');
+
                 if ($updateAccstrategy) {
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateAccstrategy);
                 }
@@ -217,6 +234,13 @@ class AccumlatedController extends Controller
                         'plan_accum_deduct_id' => $request->plan_accum_deduct_id,
                     ]);
 
+                $acc_beneffit = DB::table('ACCUM_BENEFIT_STRATEGY')
+                    ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
+                    ->where('effective_date', $request->effective_date)
+                    ->where('PLAN_ACCUM_DEDUCT_ID', $request->plan_accum_deduct_id)
+                    ->first();
+                $record_snap = json_encode($acc_beneffit);
+                $save_audit = $this->auditMethod('UP', $record_snap, 'ACCUM_BENEFIT_STRATEGY');
                 if ($add) {
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
                 }

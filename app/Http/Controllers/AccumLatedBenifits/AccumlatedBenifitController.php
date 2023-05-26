@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\AccumLatedBenifits;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
-use DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class AccumlatedBenifitController extends Controller
 {
+    use AuditTrait;
     public function add(Request $request)
     {
         $createddate = date('Ymd');
@@ -103,6 +105,11 @@ class AccumlatedBenifitController extends Controller
                     ]
                 );
 
+                $accum_bene  = DB::table('PLAN_ACCUM_DEDUCT_TABLE')
+                    ->where('plan_accum_deduct_id', $request->plan_accum_deduct_id)
+                    ->first();
+                $record_snap = json_encode($accum_bene);
+                $save_audit = $this->auditMethod('IN', $record_snap, 'PLAN_ACCUM_DEDUCT_TABLE');
                 return $this->respondWithToken($this->token(), 'Record Added Succesfully', $accum_benfit_stat);
             }
         } else {
@@ -188,6 +195,11 @@ class AccumlatedBenifitController extends Controller
 
                     ]
                 );
+            $accum_bene  = DB::table('PLAN_ACCUM_DEDUCT_TABLE')
+                ->where('plan_accum_deduct_id', $request->plan_accum_deduct_id)
+                ->first();
+            $record_snap = json_encode($accum_bene);
+            $save_audit = $this->auditMethod('UP', $record_snap, 'PLAN_ACCUM_DEDUCT_TABLE');
             return $this->respondWithToken($this->token(), 'Record Updated Succesfully', $createddate);
         }
     }

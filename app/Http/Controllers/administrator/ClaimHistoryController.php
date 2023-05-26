@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\administrator;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ClaimHistoryController extends Controller
 {
+    use AuditTrait;
     public function searchHistory(Request $request)
     {
         if ($request->data_type == 'date_filled') {
@@ -76,12 +78,14 @@ class ClaimHistoryController extends Controller
         return $this->respondWithToken($this->token(), '', $search_result);
     }
 
-    public function claimReferenceDetails(Request $request){
-
+    public function claimReferenceDetails(Request $request)
+    {
         $data = DB::table('rx_transaction_detail')
-        ->where('claim_reference_number',$request->claim_reference_number)->first();
+            ->where('claim_reference_number', $request->claim_reference_number)
+            ->first();
+        $record_snap = json_encode($data);
+        $save_audit = $this->auditMethod('UP', $record_snap, 'rx_transaction_detail');
         return $this->respondWithToken($this->token(), '', $data);
-
     }
 
     public function getNDCDropdown(Request $request)

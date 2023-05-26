@@ -10,7 +10,7 @@ trait AuditTrait
     public function auditMethod($record_action, $record_snapshot, $table_name)
     {
         // Method implementation
-        return $record_action;
+        // return $record_action;
         $save_audit = DB::table('FE_RECORD_LOG')
             ->insert([
                 'user_id' => Cache::get('userId'),
