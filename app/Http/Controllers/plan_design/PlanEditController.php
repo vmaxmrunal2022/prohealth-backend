@@ -14,7 +14,6 @@ class PlanEditController extends Controller
 {
 
     public function getCopaydropDown()
-
     {
 
         $PolicyAnnualMonth = [
@@ -63,89 +62,98 @@ class PlanEditController extends Controller
 
         if ($request->add_new == "1") {
 
-            if ($getData) {
-                return $this->respondWithToken($this->token(), 'Plan ID is Already Exists', $getData, false);
-            }
+            // if ($getData) {
+            //     return $this->respondWithToken($this->token(), ['Plan ID is Already Exists','kjyutdfs'], $getData, false);
+            // }
 
             $validator = Validator::make($request->all(), [
-                'plan_id' => ['required', 'max:15', Rule::unique('PLAN_BENEFIT_TABLE')->where(function ($q) {
-                    $q->whereNotNull('plan_id');
-                })],
+                'plan_id' => [
+                    'required',
+                    'max:15', Rule::unique('PLAN_BENEFIT_TABLE')->where(function ($q) {
+                        $q->whereNotNull('plan_id');
+                    })
+                ],
                 'effective_date' => ['required', 'max:10'],
                 'termination_date' => ['required', 'after:effective_date'],
                 'plan_name' => ['max:35'],
-                'default_drug_status' => ['max:2'],
-                'default_price_schedule' => ['max:10'],
-                'mac_list' => ['max:10'],
-                'pharmacy_exceptions_flag' => ['max:1'],
-                'eligibility_exceptions_flag' => ['max:1'],
-                'prescriber_exceptions_flag' => ['max:1'],
-                'drug_catgy_excpt_flag' => ['max:1'],
-                'ndc_exception_list' => ['max:10'],
-                'gpi_exception_list' => ['max:10'],
-                'ther_class_exception_list' => ['max:10'],
-                'min_rx_qty' => ['max:6'],
-                'max_rx_qty' => ['max:6'],
-                'min_rx_days' => ['max:6'],
-                'max_rx_days' => ['max:6'],
-                'min_ctl_days' => ['max:6'],
-                'max_ctl_days' => ['max:6'],
-                'max_refills' => ['max:6'],
-                'max_days_per_fill' => ['max:6'],
-                'max_dose' => ['max:6'],
-                'min_age' => ['max:6'],
-                'max_age' => ['max:6'],
-                'min_price' => ['max:12'],
-                'max_price' => ['max:12'],
-                'max_rxs_patient' => ['max:6'],
-                'max_price_patiennt' => ['max:12'],
-                'generic_copay_amt' => ['max:12'],
-                'brand_copay_amt' => ['max:12'],
-                'max_rxs_time_flag' => ['max:6'],
-                'max_price_time_flag' => ['max:6'],
-                'qty_dsup_compare_rule' => ['max:6'],
-                'plan_classification' => ['max:1'],
-                'dmr_price_schedule' => ['max:10'],
-                'max_days_supply_opt' => ['max:1'],
-                'retail_max_fills_opt' => ['max:1'],
-                'mail_ord_max_fills_opt' => ['max:1'],
-                'min_price_opt' => ['max:1'],
-                'max_price_opt' => ['max:1'],
-                'min_brand_copay_amt' => ['max:12'],
-                'max_brand_copay_amt' => ['max:12'],
-                'max_brand_copay_opt' => ['max:1'],
-                'min_generic_copay_amt' => ['max:12'],
-                'max_generic_copay_amt' => ['max:12'],
-                'drug_catgy_exception_list' => ['max:10'],
-                'starter_dose_days' => ['max:3'],
-                'starter_dose_bypass_days' => ['max:3'],
-                'drug_cov_start_days' => ['max:3'],
-                'super_rx_network_id' => ['max:10'],
-                'max_rx_qty_opt' => ['max:1'],
-                'max_qty_over_time' => ['max:6'],
-                'max_days_over_time' => ['max:6'],
-                'starter_dose_maint_bypass_days' => ['max:3'],
-                'max_qty_per_fill' => ['max:8'],
-                'age_limit_opt' => ['max:1'],
-                'age_limit_mmdd' => ['max:4'],
-                'pricing_strategy_id' => ['max:10'],
-                'accume_bene_strategy_id' => ['max:10'],
-                'copay_strategy_id' => ['max:10'],
-                'exhausted_benefit_opt' => ['max:10'],
-                'exhausted_benefit_plan_id' => ['max:15'],
-                'coverage_start_days' => ['max:6'],
-                'benefit_derivation_id' => ['max:10'],
-                'prov_type_proc_assoc_id' => ['max:10'],
-                'prov_type_list_id' => ['max:10'],
-                'super_benefit_list_id' => ['max:10'],
-                'super_benefit_list_id_2' => ['max:10'],
-                'procedure_ucr_id' => ['max:10'],
-                'procedure_xref_id' => ['max:10'],
-            ]);
+                // 'default_drug_status' => ['max:2'],
+                // 'default_price_schedule' => ['max:10'],
+                // 'mac_list' => ['max:10'],
+                // 'pharmacy_exceptions_flag' => ['max:1'],
+                // 'eligibility_exceptions_flag' => ['max:1'],
+                // 'prescriber_exceptions_flag' => ['max:1'],
+                // 'drug_catgy_excpt_flag' => ['max:1'],
+                // 'ndc_exception_list' => ['max:10'],
+                // 'gpi_exception_list' => ['max:10'],
+                // 'ther_class_exception_list' => ['max:10'],
+                'min_rx_qty' => ['nullable'],
+                'max_rx_qty' => ['nullable', 'gt:min_rx_qty'],
+                'min_rx_days' => ['nullable'],
+                'max_rx_days' => ['nullable', 'gt:min_rx_days'],
+                'min_ctl_days' => ['nullable'],
+                'max_ctl_days' => ['nullable', 'gt:min_ctl_days'],
+                // 'max_refills' => ['max:6'],
+                // 'max_days_per_fill' => ['max:6'],
+                // 'max_dose' => ['max:6'],
+                'min_age' => ['nullable'],
+                'max_age' => ['nullable', 'gt:min_age'],
+                // 'min_price' => ['max:12'],
+                // 'max_price' => ['max:12'],
+                // 'max_rxs_patient' => ['max:6'],
+                // 'max_price_patiennt' => ['max:12'],
+                // 'generic_copay_amt' => ['max:12'],
+                // 'brand_copay_amt' => ['max:12'],
+                // 'max_rxs_time_flag' => ['max:6'],
+                // 'max_price_time_flag' => ['max:6'],
+                // 'qty_dsup_compare_rule' => ['max:6'],
+                // 'plan_classification' => ['max:1'],
+                // 'dmr_price_schedule' => ['max:10'],
+                // 'max_days_supply_opt' => ['max:1'],
+                // 'retail_max_fills_opt' => ['max:1'],
+                // 'mail_ord_max_fills_opt' => ['max:1'],
+                // 'min_price_opt' => ['max:1'],
+                // 'max_price_opt' => ['max:1'],
+                // 'min_brand_copay_amt' => ['max:12'],
+                // 'max_brand_copay_amt' => ['max:12'],
+                // 'max_brand_copay_opt' => ['max:1'],
+                // 'min_generic_copay_amt' => ['max:12'],
+                // 'max_generic_copay_amt' => ['max:12'],
+                // 'drug_catgy_exception_list' => ['max:10'],
+                // 'starter_dose_days' => ['max:3'],
+                // 'starter_dose_bypass_days' => ['max:3'],
+                // 'drug_cov_start_days' => ['max:3'],
+                // 'super_rx_network_id' => ['max:10'],
+                // 'max_rx_qty_opt' => ['max:1'],
+                // 'max_qty_over_time' => ['max:6'],
+                // 'max_days_over_time' => ['max:6'],
+                // 'starter_dose_maint_bypass_days' => ['max:3'],
+                // 'max_qty_per_fill' => ['max:8'],
+                // 'age_limit_opt' => ['max:1'],
+                // 'age_limit_mmdd' => ['max:4'],
+                // 'pricing_strategy_id' => ['max:10'],
+                // 'accume_bene_strategy_id' => ['max:10'],
+                // 'copay_strategy_id' => ['max:10'],
+                // 'exhausted_benefit_opt' => ['max:10'],
+                // 'exhausted_benefit_plan_id' => ['max:15'],
+                // 'coverage_start_days' => ['max:6'],
+                // 'benefit_derivation_id' => ['max:10'],
+                // 'prov_type_proc_assoc_id' => ['max:10'],
+                // 'prov_type_list_id' => ['max:10'],
+                // 'super_benefit_list_id' => ['max:10'],
+                // 'super_benefit_list_id_2' => ['max:10'],
+                // 'procedure_ucr_id' => ['max:10'],
+                // 'procedure_xref_id' => ['max:10'],
+            ], [
+                    'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                    'max_age.gt' => 'Max Age must be greater than Min Age',
+                    'max_rx_qty.gt' => 'Max Qty must be greater than Min Qty',
+                    'max_rx_days.gt' => 'Max Day must be greater than Min Day',
+                    'max_ctl_days.gt' => 'Max Ctl must be greater than Min Ctl',
+                ]);
 
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
-            } 
+            }
             // else {
 
             $plan_benifit = new PlanBenefitTable;
@@ -251,22 +259,35 @@ class PlanEditController extends Controller
                     'DATE_FILLED_TO_SUB_DMR' => $request->date_filled_to_sub_dmr,
                     'DATE_SUB_TO_FILLED_FUTURE' => $request->date_sub_to_filled_future,
                     'DAYS_FOR_REVERSALS' => $request->days_for_reversals,
-                    'MISC_FLAG_3' => $request->misc_flag_3, //tax status
-                    'MISC_FLAG_4' => $request->misc_flag_4, //mandatory u & c
-                    'MISC_FLAG_1' => $request->misc_flag_1, //SYRINGES WITH ISSUING SAME DAY
-                    'MISC_FLAG_5' => $request->misc_flag_5, //EXCLUDE SYSTEM NDC/GPI FORMULARY EDITS FOR OUT OF NETWORK CLAIM
-                    'MISC_FLAG_6' => $request->misc_flag_6, //EXCLUDE PLAN NDC/GPI FORMULARY EDITS FOR OUT OF NETWORK CLAIM
-                    'MISC_FLAG_7' => $request->misc_flag_7, //REJECT CLAIM FOR MISSING CARDHOLDER ID
+                    'MISC_FLAG_3' => $request->misc_flag_3,
+                    //tax status
+                    'MISC_FLAG_4' => $request->misc_flag_4,
+                    //mandatory u & c
+                    'MISC_FLAG_1' => $request->misc_flag_1,
+                    //SYRINGES WITH ISSUING SAME DAY
+                    'MISC_FLAG_5' => $request->misc_flag_5,
+                    //EXCLUDE SYSTEM NDC/GPI FORMULARY EDITS FOR OUT OF NETWORK CLAIM
+                    'MISC_FLAG_6' => $request->misc_flag_6,
+                    //EXCLUDE PLAN NDC/GPI FORMULARY EDITS FOR OUT OF NETWORK CLAIM
+                    'MISC_FLAG_7' => $request->misc_flag_7,
+                    //REJECT CLAIM FOR MISSING CARDHOLDER ID
                     // 'ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->er_limit_max_days_supply, //LIMIT1 (RX MAXIMUM DAYS SUPPLY
-                    'ER_LIMIT_1_MINIMUM_USE' => $request->er_limit_1_minimum_use, //LIMIT1  MINIMUM USE PERCENTAGE) 
-                    'ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->er_limit_2_max_days_supply, //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
-                    'ER_LIMIT_2_MINIMUM_USE' => $request->er_limit_2_minimum_use, //LIMIT 2 - ABOVE LIMIT 1 MINIMUM USE PERCENTAGE)
-                    'ER_LIMIT_2_MINIMUM_USE' => $request->er_limit_2_minimum_use, //LIMIT 2 - ABOVE LIMIT 1 MINIMUM USE PERCENTAGE)
-                    'ER_LIMIT_X_MINIMUM_USE' => $request->er_limit_x_minimum_use, //ABOVE LIMIT2(MAXIMUM USE MAXIMUM
-                    'ER_SEARCH_IND' => $request->er_search_ind, //ABOVE LIMIT2 SEARCH INDICATION)
-                    'MO_ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->mo_er_limit_1_max_days_supply, //LIMIT1 (RX MAXIMUM DAYS SUPPLY
-                    'MO_ER_LIMIT_1_MINIMUM_USE' => $request->mo_er_limit_1_minimum_use, //LIMIT1  MINIMUM USE PERCENTAGE) 
-                    'MO_ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->mo_er_limit_2_max_days_supply, //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
+                    'ER_LIMIT_1_MINIMUM_USE' => $request->er_limit_1_minimum_use,
+                    //LIMIT1  MINIMUM USE PERCENTAGE) 
+                    'ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->er_limit_2_max_days_supply,
+                    //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
+                    'ER_LIMIT_2_MINIMUM_USE' => $request->er_limit_2_minimum_use,
+                    //LIMIT 2 - ABOVE LIMIT 1 MINIMUM USE PERCENTAGE)
+                    'ER_LIMIT_X_MINIMUM_USE' => $request->er_limit_x_minimum_use,
+                    //ABOVE LIMIT2(MAXIMUM USE MAXIMUM
+                    'ER_SEARCH_IND' => $request->er_search_ind,
+                    //ABOVE LIMIT2 SEARCH INDICATION)
+                    'MO_ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->mo_er_limit_1_max_days_supply,
+                    //LIMIT1 (RX MAXIMUM DAYS SUPPLY
+                    'MO_ER_LIMIT_1_MINIMUM_USE' => $request->mo_er_limit_1_minimum_use,
+                    //LIMIT1  MINIMUM USE PERCENTAGE) 
+                    'MO_ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->mo_er_limit_2_max_days_supply,
+                    //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
                     'MO_ER_LIMIT_X_MINIMUM_USE' => $request->mo_er_limit_x_minimum_use,
                     // 'mo_er_limit_x_max_days_supply' => $request->mo_er_limit_x_max_days_supply,
                     'plan_notes' => $request->plan_notes,
@@ -287,86 +308,97 @@ class PlanEditController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
             }
             // }
-        } else { {
-                // dd($request->all());
+        } else {
+             
+                $validator = Validator::make($request->all(), [
+                    'plan_id' => [
+                        'required',
+                        'max:15', Rule::unique('PLAN_BENEFIT_TABLE')->where(function ($q) use ($request) {
+                            $q->whereNotNull('plan_id');
+                            $q->whereNotNull('plan_id', '!=', $request->plan_id);
+                        })
+                    ],
+                    'effective_date' => ['required', 'max:10'],
+                    'termination_date' => ['required', 'after:effective_date'],
+                    'plan_name' => ['max:35'],
+                    // 'default_drug_status' => ['max:2'],
+                    // 'default_price_schedule' => ['max:10'],
+                    // 'mac_list' => ['max:10'],
+                    // 'pharmacy_exceptions_flag' => ['max:1'],
+                    // 'eligibility_exceptions_flag' => ['max:1'],
+                    // 'prescriber_exceptions_flag' => ['max:1'],
+                    // 'drug_catgy_excpt_flag' => ['max:1'],
+                    // 'ndc_exception_list' => ['max:10'],
+                    // 'gpi_exception_list' => ['max:10'],
+                    // 'ther_class_exception_list' => ['max:10'],
+                    'min_rx_qty' => ['nullable'],
+                    'max_rx_qty' => ['nullable', 'gt:min_rx_qty'],
+                    'min_rx_days' => ['nullable'],
+                    'max_rx_days' => ['nullable', 'gt:min_rx_days'],
+                    'min_ctl_days' => ['nullable'],
+                    'max_ctl_days' => ['nullable', 'gt:min_ctl_days'],
+                    // 'max_refills' => ['max:6'],
+                    // 'max_days_per_fill' => ['max:6'],
+                    // 'max_dose' => ['max:6'],
+                    'min_age' => ['nullable'],
+                    'max_age' => ['nullable', 'gt:min_age'],
+                    // 'min_price' => ['max:12'],
+                    // 'max_price' => ['max:12'],
+                    // 'max_rxs_patient' => ['max:6'],
+                    // 'max_price_patiennt' => ['max:12'],
+                    // 'generic_copay_amt' => ['max:12'],
+                    // 'brand_copay_amt' => ['max:12'],
+                    // 'max_rxs_time_flag' => ['max:6'],
+                    // 'max_price_time_flag' => ['max:6'],
+                    // 'qty_dsup_compare_rule' => ['max:6'],
+                    // 'plan_classification' => ['max:1'],
+                    // 'dmr_price_schedule' => ['max:10'],
+                    // 'max_days_supply_opt' => ['max:1'],
+                    // 'retail_max_fills_opt' => ['max:1'],
+                    // 'mail_ord_max_fills_opt' => ['max:1'],
+                    // 'min_price_opt' => ['max:1'],
+                    // 'max_price_opt' => ['max:1'],
+                    // 'min_brand_copay_amt' => ['max:12'],
+                    // 'max_brand_copay_amt' => ['max:12'],
+                    // 'max_brand_copay_opt' => ['max:1'],
+                    // 'min_generic_copay_amt' => ['max:12'],
+                    // 'max_generic_copay_amt' => ['max:12'],
+                    // 'drug_catgy_exception_list' => ['max:10'],
+                    // 'starter_dose_days' => ['max:3'],
+                    // 'starter_dose_bypass_days' => ['max:3'],
+                    // 'drug_cov_start_days' => ['max:3'],
+                    // 'super_rx_network_id' => ['max:10'],
+                    // 'max_rx_qty_opt' => ['max:1'],
+                    // 'max_qty_over_time' => ['max:6'],
+                    // 'max_days_over_time' => ['max:6'],
+                    // 'starter_dose_maint_bypass_days' => ['max:3'],
+                    // 'max_qty_per_fill' => ['max:8'],
+                    // 'age_limit_opt' => ['max:1'],
+                    // 'age_limit_mmdd' => ['max:4'],
+                    // 'pricing_strategy_id' => ['max:10'],
+                    // 'accume_bene_strategy_id' => ['max:10'],
+                    // 'copay_strategy_id' => ['max:10'],
+                    // 'exhausted_benefit_opt' => ['max:10'],
+                    // 'exhausted_benefit_plan_id' => ['max:15'],
+                    // 'coverage_start_days' => ['max:6'],
+                    // 'benefit_derivation_id' => ['max:10'],
+                    // 'prov_type_proc_assoc_id' => ['max:10'],
+                    // 'prov_type_list_id' => ['max:10'],
+                    // 'super_benefit_list_id' => ['max:10'],
+                    // 'super_benefit_list_id_2' => ['max:10'],
+                    // 'procedure_ucr_id' => ['max:10'],
+                    // 'procedure_xref_id' => ['max:10'],
+                ], [
+                        'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                        'max_age.gt' => 'Max Age must be greater than Min Age',
+                        'max_rx_qty.gt' => 'Max Qty must be greater than Min Qty',
+                        'max_rx_days.gt' => 'Max Day must be greater than Min Day',
+                        'max_ctl_days.gt' => 'Max Ctl must be greater than Min Ctl',
+                    ]);
 
-                // $validator = validator::make($request->all(), [
-                //     'plan_id' => ['required', 'max:15'],
-                //     'effective_date' => ['required', 'max:10'],
-                //     'termination_date' => ['required', 'after:effective_date'],
-                //     'plan_name' => ['max:35'],
-                //     'default_drug_status' => ['max:2'],
-                //     'default_price_schedule' => ['max:10'],
-                //     'mac_list' => ['max:10'],
-                //     'pharmacy_exceptions_flag' => ['max:1'],
-                //     'eligibility_exceptions_flag' => ['max:1'],
-                //     'prescriber_exceptions_flag' => ['max:1'],
-                //     'drug_catgy_excpt_flag' => ['max:1'],
-                //     'ndc_exception_list' => ['max:10'],
-                //     'gpi_exception_list' => ['max:10'],
-                //     'ther_class_exception_list' => ['max:10'],
-                //     'min_rx_qty' => ['max:6'],
-                //     'max_rx_qty' => ['max:6'],
-                //     'min_rx_days' => ['max:6'],
-                //     'max_rx_days' => ['max:6'],
-                //     'min_ctl_days' => ['max:6'],
-                //     'max_ctl_days' => ['max:6'],
-                //     'max_refills' => ['max:6'],
-                //     'max_days_per_fill' => ['max:6'],
-                //     'max_dose' => ['max:6'],
-                //     'min_age' => ['max:6'],
-                //     'max_age' => ['max:6'],
-                //     'min_price' => ['max:12'],
-                //     'max_price' => ['max:12'],
-                //     'max_rxs_patient' => ['max:6'],
-                //     'max_price_patiennt' => ['max:12'],
-                //     'generic_copay_amt' => ['max:12'],
-                //     'brand_copay_amt' => ['max:12'],
-                //     'max_rxs_time_flag' => ['max:6'],
-                //     'max_price_time_flag' => ['max:6'],
-                //     'qty_dsup_compare_rule' => ['max:6'],
-                //     'plan_classification' => ['max:1'],
-                //     'dmr_price_schedule' => ['max:10'],
-                //     'max_days_supply_opt' => ['max:1'],
-                //     'retail_max_fills_opt' => ['max:1'],
-                //     'mail_ord_max_fills_opt' => ['max:1'],
-                //     'min_price_opt' => ['max:1'],
-                //     'max_price_opt' => ['max:1'],
-                //     'min_brand_copay_amt' => ['max:12'],
-                //     'max_brand_copay_amt' => ['max:12'],
-                //     'max_brand_copay_opt' => ['max:1'],
-                //     'min_generic_copay_amt' => ['max:12'],
-                //     'max_generic_copay_amt' => ['max:12'],
-                //     'drug_catgy_exception_list' => ['max:10'],
-                //     'starter_dose_days' => ['max:3'],
-                //     'starter_dose_bypass_days' => ['max:3'],
-                //     'drug_cov_start_days' => ['max:3'],
-                //     'super_rx_network_id' => ['max:10'],
-                //     'max_rx_qty_opt' => ['max:1'],
-                //     'max_qty_over_time' => ['max:6'],
-                //     'max_days_over_time' => ['max:6'],
-                //     'starter_dose_maint_bypass_days' => ['max:3'],
-                //     'max_qty_per_fill' => ['max:8'],
-                //     'age_limit_opt' => ['max:1'],
-                //     'age_limit_mmdd' => ['max:4'],
-                //     'pricing_strategy_id' => ['max:10'],
-                //     'accume_bene_strategy_id' => ['max:10'],
-                //     'copay_strategy_id' => ['max:10'],
-                //     'exhausted_benefit_opt' => ['max:10'],
-                //     'exhausted_benefit_plan_id' => ['max:15'],
-                //     'coverage_start_days' => ['max:6'],
-                //     'benefit_derivation_id' => ['max:10'],
-                //     'prov_type_proc_assoc_id' => ['max:10'],
-                //     'prov_type_list_id' => ['max:10'],
-                //     'super_benefit_list_id' => ['max:10'],
-                //     'super_benefit_list_id_2' => ['max:10'],
-                //     'procedure_ucr_id' => ['max:10'],
-                //     'procedure_xref_id' => ['max:10'],
-                // ]);
-
-                // if ($validator->fails()) {
-                //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
-                // } else {
+                if ($validator->fails()) {
+                    return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+                }
                 $updateData = DB::table('PLAN_BENEFIT_TABLE')
                     ->where('PLAN_ID', $request->plan_id)
                     ->update([
@@ -455,21 +487,36 @@ class PlanEditController extends Controller
                         'DATE_FILLED_TO_SUB_DMR' => $request->date_filled_to_sub_dmr,
                         'DATE_SUB_TO_FILLED_FUTURE' => $request->date_sub_to_filled_future,
                         'DAYS_FOR_REVERSALS' => $request->days_for_reversals,
-                        'MISC_FLAG_3' => $request->misc_flag_3, //tax status
-                        'MISC_FLAG_4' => $request->misc_flag_4, //mandatory u & c
-                        'MISC_FLAG_1' => $request->misc_flag_1, //SYRINGES WITH ISSUING SAME DAY
-                        'MISC_FLAG_5' => $request->misc_flag_5, //EXCLUDE SYSTEM NDC/GPI FORMULARY EDITS FOR OUT OF NETWORK CLAIM
-                        'MISC_FLAG_6' => $request->misc_flag_6, //EXCLUDE PLAN NDC/GPI FORMULARY EDITS FOR OUT OF NETWORK CLAIM
-                        'MISC_FLAG_7' => $request->misc_flag_7, //REJECT CLAIM FOR MISSING CARDHOLDER ID
-                        'ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->er_limit_1_max_days_supply, //LIMIT1 (RX MAXIMUM DAYS SUPPLY
-                        'ER_LIMIT_1_MINIMUM_USE' => $request->er_limit_1_minimum_use, //LIMIT1  MINIMUM USE PERCENTAGE) 
-                        'ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->er_limit_2_max_days_supply, //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
-                        'ER_LIMIT_2_MINIMUM_USE' => $request->er_limit_2_minimum_use, //LIMIT 2 - ABOVE LIMIT 1 MINIMUM USE PERCENTAGE)
-                        'ER_LIMIT_X_MINIMUM_USE' => $request->er_limit_x_minimum_use, //ABOVE LIMIT2(MAXIMUM USE MAXIMUM
-                        'ER_SEARCH_IND' => $request->er_search_ind, //ABOVE LIMIT2 SEARCH INDICATION)
-                        'MO_ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->mo_er_limit_1_max_days_supply, //LIMIT1 (RX MAXIMUM DAYS SUPPLY
-                        'MO_ER_LIMIT_1_MINIMUM_USE' => $request->mo_er_limit_1_minimum_use, //LIMIT1  MINIMUM USE PERCENTAGE) 
-                        'MO_ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->mo_er_limit_2_max_days_supply, //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
+                        'MISC_FLAG_3' => $request->misc_flag_3,
+                        //tax status
+                        'MISC_FLAG_4' => $request->misc_flag_4,
+                        //mandatory u & c
+                        'MISC_FLAG_1' => $request->misc_flag_1,
+                        //SYRINGES WITH ISSUING SAME DAY
+                        'MISC_FLAG_5' => $request->misc_flag_5,
+                        //EXCLUDE SYSTEM NDC/GPI FORMULARY EDITS FOR OUT OF NETWORK CLAIM
+                        'MISC_FLAG_6' => $request->misc_flag_6,
+                        //EXCLUDE PLAN NDC/GPI FORMULARY EDITS FOR OUT OF NETWORK CLAIM
+                        'MISC_FLAG_7' => $request->misc_flag_7,
+                        //REJECT CLAIM FOR MISSING CARDHOLDER ID
+                        'ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->er_limit_1_max_days_supply,
+                        //LIMIT1 (RX MAXIMUM DAYS SUPPLY
+                        'ER_LIMIT_1_MINIMUM_USE' => $request->er_limit_1_minimum_use,
+                        //LIMIT1  MINIMUM USE PERCENTAGE) 
+                        'ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->er_limit_2_max_days_supply,
+                        //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
+                        'ER_LIMIT_2_MINIMUM_USE' => $request->er_limit_2_minimum_use,
+                        //LIMIT 2 - ABOVE LIMIT 1 MINIMUM USE PERCENTAGE)
+                        'ER_LIMIT_X_MINIMUM_USE' => $request->er_limit_x_minimum_use,
+                        //ABOVE LIMIT2(MAXIMUM USE MAXIMUM
+                        'ER_SEARCH_IND' => $request->er_search_ind,
+                        //ABOVE LIMIT2 SEARCH INDICATION)
+                        'MO_ER_LIMIT_1_MAX_DAYS_SUPPLY' => $request->mo_er_limit_1_max_days_supply,
+                        //LIMIT1 (RX MAXIMUM DAYS SUPPLY
+                        'MO_ER_LIMIT_1_MINIMUM_USE' => $request->mo_er_limit_1_minimum_use,
+                        //LIMIT1  MINIMUM USE PERCENTAGE) 
+                        'MO_ER_LIMIT_2_MAX_DAYS_SUPPLY' => $request->mo_er_limit_2_max_days_supply,
+                        //LIMIT 2 - ABOVE LIMIT 1(RX MAXIMUM DAYS SUPPLY
                         'MO_ER_LIMIT_X_MINIMUM_USE' => $request->mo_er_limit_x_minimum_use,
                         // 'mo_er_limit_x_max_days_supply' => $request->mo_er_limit_x_max_days_supply
                         'plan_notes' => $request->plan_notes,
@@ -486,7 +533,7 @@ class PlanEditController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
                 // }
             }
-        }
+        
     }
 
 
@@ -640,7 +687,7 @@ class PlanEditController extends Controller
         return $this->respondWithToken($this->token(), '', $formulary);
     }
 
-    public function getSuperProviderNetwork(Request  $request)
+    public function getSuperProviderNetwork(Request $request)
     {
         $super_provider_network = DB::table('SUPER_RX_NETWORKS')
             ->join('SUPER_RX_NETWORK_NAMES', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
