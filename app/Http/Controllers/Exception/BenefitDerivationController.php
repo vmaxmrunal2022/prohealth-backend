@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class BenefitDerivationController extends Controller
 {
-
+use AuditTrait;
     public function addcopy(Request $request)
     {
 

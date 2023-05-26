@@ -7,11 +7,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-
+use App\Traits\AuditTrait;
 use App\Models\PlanBenefitTable;
 
 class PlanEditController extends Controller
 {
+
+    use AuditTrait;
 
     public function getCopaydropDown()
 
