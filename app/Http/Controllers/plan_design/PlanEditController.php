@@ -288,6 +288,24 @@ class PlanEditController extends Controller
                 ->where('PLAN_BENEFIT_TABLE.plan_id', $request->plan_id)
                 ->first();
 
+
+            $plan_benefit_table = DB::table('PLAN_BENEFIT_TABLE')
+                ->where(DB::raw('UPPER(plan_id)'), strtoupper('plan_id'))
+                ->first();
+
+            $plan_table_ext = DB::table('PLAN_TABLE_EXTENSIONS')
+                ->where(DB::raw('UPPER(plan_id)'), strtoupper('plan_id'))
+                ->first();
+            $record_snapshot_benefit = json_encode($addData);
+            $save_audit = $this->auditMethod('IN', $record_snapshot_benefit, 'PLAN_BENEFIT_TABLE');
+
+            $record_snapshot_ext = json_encode($plan_table_ext);
+            $save_audit_ext = $this->auditMethod('IN', $record_snapshot_ext, 'PLAN_TABLE_EXTENSIONS');
+
+            if ($addData) {
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
+            }
+
             if ($addData) {
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
             }
@@ -496,6 +514,21 @@ class PlanEditController extends Controller
                     ->join('PLAN_TABLE_EXTENSIONS', 'PLAN_BENEFIT_TABLE.plan_id', '=', 'PLAN_TABLE_EXTENSIONS.plan_id')
                     ->where('PLAN_BENEFIT_TABLE.plan_id', $request->plan_id)
                     ->first();
+
+
+                $plan_benefit_table = DB::table('PLAN_BENEFIT_TABLE')
+                    ->where(DB::raw('UPPER(plan_id)'), strtoupper('plan_id'))
+                    ->first();
+
+                $plan_table_ext = DB::table('PLAN_TABLE_EXTENSIONS')
+                    ->where(DB::raw('UPPER(plan_id)'), strtoupper('plan_id'))
+                    ->first();
+                $record_snapshot_benefit = json_encode($updateData);
+                $save_audit = $this->auditMethod('UP', $record_snapshot_benefit, 'PLAN_BENEFIT_TABLE');
+
+                $record_snapshot_ext = json_encode($plan_table_ext);
+                $save_audit_ext = $this->auditMethod('UP', $record_snapshot_ext, 'PLAN_TABLE_EXTENSIONS');
+
                 return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
                 // }
             }
