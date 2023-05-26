@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
+
 class FlexibleNetworkController extends Controller
 {
     public function add(Request $request)
@@ -19,7 +20,7 @@ class FlexibleNetworkController extends Controller
 
         if ($request->add_new == 1) {
 
-
+        // return $request->all();
 
             // if($recordCheck){
             //     return $this->respondWithToken($this->token(), 'Record Already Exists', $recordCheck);
@@ -33,13 +34,13 @@ class FlexibleNetworkController extends Controller
                         $q->whereNotNull('rx_network_rule_id');
                     })
                 ],
-                // "rx_network_rule_name" => ['max:35'],
+                "rx_network_rule_name" => ['required','max:35'],
                 // // "network_name" => ['required'],
-                // "min_rx_qty" => ['max:6', 'numeric'],
-                // "max_rx_qty" => ['max:6', 'numeric'],
+                "min_rx_qty" => ['nullable'],
+                "max_rx_qty" => ['nullable','gt:min_rx_qty'],
                 // "price_schedule_ovrd" => ['max:16'],
-                // "min_rx_days" => ['max:16'],
-                // "max_rx_days" => ['max:6'],
+                "min_rx_days" =>['nullable'],
+                "max_rx_days" =>['nullable','gt:min_rx_days'],
                 // "gpi_exception_list_ovrd" => ['max:6'],
                 // "ndc_exception_list_ovrd" => ['max:6'],
                 // "max_retail_fills" => ['max:6'],
@@ -49,6 +50,10 @@ class FlexibleNetworkController extends Controller
                 // "starter_dose_days" => ['max:3'],
                 // "starter_dose_bypass_days" => ['max:3'],
                 // "starter_dose_maint_bypass_days" => ['max:3'],
+            ],[
+                // 'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_rx_qty.gt' => 'Max Qty must be greater than Min Qty',
+                'max_rx_days.gt' => 'Max Day must be greater than Min Day',
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), 'false');
@@ -136,15 +141,21 @@ class FlexibleNetworkController extends Controller
 
 
             }
-        } else {
+        } elseif ($request->add_new == 0) {
             $validator = Validator::make($request->all(), [
-                "rx_network_rule_id" => ['required', 'max:10'],
-                // "rx_network_rule_name" => ['max:35'],
-                // "min_rx_qty" => ['max:6', 'numeric'],
-                // "max_rx_qty" => ['max:6', 'numeric'],
+                "rx_network_rule_id" => [
+                    'required',
+                    'max:10', Rule::unique('RX_NETWORK_RULE_NAMES')->where(function ($q) use($request) {
+                        $q->whereNotNull('rx_network_rule_id');
+                        $q->where('rx_network_rule_id','!=', $request->rx_network_rule_id);
+                    })
+                ],
+                "rx_network_rule_name" => ['required','max:35'],
+                "min_rx_qty" => ['nullable', ],
+                "max_rx_qty" => ['nullable', 'gt:min_rx_qty'],
                 // "price_schedule_ovrd" => ['max:16'],
-                // "min_rx_days" => ['max:16'],
-                // "max_rx_days" => ['max:6'],
+                "min_rx_days" => ['nullable', ],
+                "max_rx_days" =>['nullable', 'gt:min_rx_days'],
                 // "gpi_exception_list_ovrd" => ['max:6'],
                 // "ndc_exception_list_ovrd" => ['max:6'],
                 // "max_retail_fills" => ['max:6'],
@@ -154,6 +165,10 @@ class FlexibleNetworkController extends Controller
                 // "starter_dose_days" => ['max:3'],
                 // "starter_dose_bypass_days" => ['max:3'],
                 // "starter_dose_maint_bypass_days" => ['max:3'],
+            ],[
+                // 'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date',
+                'max_rx_qty.gt' => 'Max Qty must be greater than Min Qty',
+                'max_rx_days.gt' => 'Max Day must be greater than Min Day',
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), 'false');
@@ -198,8 +213,6 @@ class FlexibleNetworkController extends Controller
                             'MAINT_QTY_DSUP_COMPARE_RULE' => $request->maint_qty_dsup_compare_rule
                         ]
                     );
-
-
                 $data = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID', $request->rx_network_rule_id)->delete();
 
                 $flixible_list_obj = json_decode(json_encode($request->flexible_form, true));
