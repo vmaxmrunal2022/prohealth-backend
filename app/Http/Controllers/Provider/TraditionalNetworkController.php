@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Provider;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class TraditionalNetworkController extends Controller
 {
@@ -22,12 +24,28 @@ class TraditionalNetworkController extends Controller
 
         if ($request->add_new) {
 
-            if($recordcheck){
+            $validator = Validator::make($request->all(), [
+                'network_id' => ['required', 'max:10',
+                 Rule::unique('RX_NETWORK_NAMES')->where(function ($q) {
+                    $q->whereNotNull('NETWORK_ID');
+                })], 
+                "network_name" => ['required', 'max:35'],
+                "min_rx_qty" => ['nullable'],
+                "max_rx_qty" => ['nullable','gt:min_rx_qty'],
+                "min_rx_days" => ['nullable'],
+                "max_rx_days" => ['nullable','gt:min_rx_days'],
+                ],[
+                    'max_rx_qty.gt' => 'Max Qty must be greater than Min Qty',
+                    'max_rx_days.gt' => 'Max Day must be greater than Min Day',
+            ]);
 
-                return $this->respondWithToken($this->token(), 'Network ID Already Exists', $recordcheck);
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+            } 
 
-
-            }
+            // if($recordcheck){
+            //     return $this->respondWithToken($this->token(), 'Network ID Already Exists', $recordcheck);
+            // }
 
             else{
 
@@ -122,6 +140,25 @@ class TraditionalNetworkController extends Controller
 
         }
          else {
+            $validator = Validator::make($request->all(), [
+                'network_id' => ['required', 'max:10',
+                 Rule::unique('RX_NETWORK_NAMES')->where(function ($q) use($request) {
+                    $q->whereNotNull('NETWORK_ID');
+                    $q->where('NETWORK_ID','!=',$request->network_id);
+                })], 
+                "network_name" => ['required', 'max:35'],
+                "min_rx_qty" => ['nullable'],
+                "max_rx_qty" => ['nullable','gt:min_rx_qty'],
+                "min_rx_days" => ['nullable'],
+                "max_rx_days" => ['nullable','gt:min_rx_days'],
+                ],[
+                    'max_rx_qty.gt' => 'Max Qty must be greater than Min Qty',
+                    'max_rx_days.gt' => 'Max Day must be greater than Min Day',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+            } 
             $benefitcode = DB::table('RX_NETWORK_NAMES')
                 ->where('network_id', $request->network_id)
                 ->update(
@@ -196,14 +233,26 @@ class TraditionalNetworkController extends Controller
             }
 
 
-            if ($update_rx_networks) {
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_rx_networks);
+            if ($benefitcode) {
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
             }
 
 
             
         }
     
+    }
+
+
+    public function dropdown (Request $request){
+
+        $data=DB::table('RX_NETWORK_NAMES')
+        ->select('NETWORK_ID','NETWORK_NAME')
+        ->get();
+
+        return $this->respondWithToken($this->token(), 'Data fetched successfully', $data);
+
+
     }
 
 
@@ -230,7 +279,11 @@ class TraditionalNetworkController extends Controller
 
     public function search(Request $request)
     {
-        $ndc = DB::select("SELECT * FROM RX_NETWORK_NAMES");
+        $ndc =  DB::table('RX_NETWORK_NAMES')
+        // ->where('NETWORK_ID', 'like', '%' . $request->search . '%')
+        ->where(DB::raw('UPPER(RX_NETWORK_NAMES.NETWORK_ID)'), 'like', '%' . strtoupper($request->search) . '%')
+        ->orWhere('NETWORK_NAME', 'like', '%' . $request->search . '%')
+        ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -266,7 +319,7 @@ class TraditionalNetworkController extends Controller
     {
         $ndc = DB::table('RX_NETWORKS')
             ->join('RX_NETWORK_NAMES', 'RX_NETWORKS.NETWORK_ID', '=', 'RX_NETWORK_NAMES.NETWORK_ID')
-            // ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
+            ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'RX_NETWORKS.PHARMACY_NABP')
             // ->where('RX_NETWORK_NAMES.NETWORK_NAME', 'like', '%' . $ndcid . '%')
             ->orWhere('RX_NETWORKS.NETWORK_ID', $ndcid)
             ->get();

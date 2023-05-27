@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Validation\Rule;
 class ProviderDataProviderController extends Controller
 {
 
@@ -95,9 +95,120 @@ class ProviderDataProviderController extends Controller
         // dd($request->all());
 
         if ($request->add_new == 1) {
-            if ($getEligibilityData) {
-                return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
-            } else {
+            // if ($getEligibilityData) {
+            //     return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
+            // } 
+            $validator = Validator::make($request->all(), [
+                'pharmacy_nabp' => ['required', 'max:10',
+                 Rule::unique('PHARMACY_TABLE')->where(function ($q) use($request) {
+                    $q->whereNotNull('PHARMACY_NABP');
+                })], 
+                "pharmacy_name" => ['required', 'max:35'],
+                'effective_date_1' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate2 = $request->effective_date_2;
+                        $effdate3 = $request->effective_date_3;
+                        if ($value <= $effdate3) {
+                            $fail('Effective date 1 must be greater than Effective date 3.');
+                        }
+                        if ($value <= $effdate2) {
+                            $fail('Effective date 1 must be greater than Effective date 2.');
+                        }
+                        
+                    }
+                ],
+                'effective_date_2' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate3 = $request->effective_date_3;
+                        $termdate1 = $request->termination_date_1;
+                        if ($value <= $effdate3) {
+                            $fail('Effective date 2 must be greater than Effective date 3.');
+                        } 
+                        if ($value >= $termdate1) {
+                            $fail('Effective date 2 must be less than Termination date 1.');
+                        }
+                       
+                    }
+                ],
+                'effective_date_3' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $termdate2 = $request->termination_date_2;
+                        $termdate1 = $request->termination_date_1;
+                       
+                        if ($value >= $termdate1) {
+                            $fail('Effective date 3 must be less than Termination date 1.');
+                        }
+                        if ($value >= $termdate2) {
+                            $fail('Effective date 3 must be  less than Termination date 2.');
+                        } 
+                       
+                    }
+                ],
+                'tax_effective_date_1' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate2 = $request->tax_effective_date_2;
+                        $effdate3 = $request->tax_effective_date_3;
+                        if ($value <= $effdate3) {
+                            $fail('Tax Effective date 1 must be greater than Tax Effective date 3.');
+                        }
+                        if ($value <= $effdate2) {
+                            $fail('Tax Effective date 1 must be greater than Tax Effective date 2.');
+                        }
+                        
+                    }
+                ],
+                'tax_effective_date_2' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate3 = $request->tax_effective_date_3;
+                        $termdate1 = $request->tax_termination_date_1;
+                        if ($value <= $effdate3) {
+                            $fail('Tax Effective date 2 must be greater than Tax Effective date 3.');
+                        } 
+                        if ($value >= $termdate1) {
+                            $fail('Tax Effective date 2 must be less than Tax Termination date 1.');
+                        }
+                       
+                    }
+                ],
+                'tax_effective_date_3' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $termdate2 = $request->tax_termination_date_2;
+                        $termdate1 = $request->tax_termination_date_1;
+                       
+                        if ($value >= $termdate1) {
+                            $fail('Tax Effective date 3 must be less than Tax Termination date 1.');
+                        }
+                        if ($value >= $termdate2) {
+                            $fail('Tax Effective date 3 must be  less than Tax Termination date 2.');
+                        } 
+                       
+                    }
+                ],
+                "termination_date_1" => ['nullable','after:effective_date_1'],
+                "termination_date_2" => ['nullable','after:effective_date_2'],
+                "termination_date_3" => ['nullable','after:effective_date_3'],
+                "tax_termination_date_1" => ['nullable','after:tax_effective_date_1'],
+                "tax_termination_date_2" => ['nullable','after:tax_effective_date_2'],
+                "tax_termination_date_3" => ['nullable','after:tax_effective_date_3'],
+                ],[
+                    'termination_date_1.after' => 'Termination date 1 must be greater than Effective date 1',
+                    'termination_date_2.after' => 'Termination date 2 must be greater than Effective date 2',
+                    'termination_date_3.after' => 'Termination date 3 must be greater than Effective date 3',
+                    'tax_termination_date_1.after' => 'Tax Termination date 1 must be greater than Tax Effective date 1',
+                    'tax_termination_date_2.after' => 'Tax Termination date 2 must be greater than Tax Effective date 2',
+                    'tax_termination_date_3.after' => 'Tax Termination date 3 must be greater than Tax Effective date 3',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+            } 
+            else {
 
                 $addData = DB::table('PHARMACY_TABLE')
                     ->insert([
@@ -199,11 +310,12 @@ class ProviderDataProviderController extends Controller
                             ]
                         );
 
-                        $rx_networksnames = DB::table('RX_NETWORK_NAMES')->insert(
+                        $rx_networksnames = DB::table('RX_NETWORK_NAMES')
+                        ->where('NETWORK_ID',$traditional_list->network_id,)
+                        ->update(
                             [
-                                'NETWORK_ID' => $traditional_list->network_id,
+                                // 'NETWORK_ID' => $traditional_list->network_id,
                                 'NETWORK_NAME' => $traditional_list->network_name,
-                                
             
                             ]
                         );
@@ -259,6 +371,117 @@ class ProviderDataProviderController extends Controller
                 return $this->respondWithToken($this->token(), 'Added Successfully...!!!', $addData);
             }
         } else if ($request->add_new == 0) {
+            $validator = Validator::make($request->all(), [
+                'pharmacy_nabp' => ['required', 'max:10',
+                 Rule::unique('PHARMACY_TABLE')->where(function ($q) use($request) {
+                    $q->whereNotNull('PHARMACY_NABP');
+                    $q->where('PHARMACY_NABP','!=',$request->pharmacy_nabp);
+                })], 
+                "pharmacy_name" => ['required', 'max:35'],
+                'effective_date_1' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate2 = $request->effective_date_2;
+                        $effdate3 = $request->effective_date_3;
+                        if ($value <= $effdate3) {
+                            $fail('Effective date 1 must be greater than Effective date 3.');
+                        }
+                        if ($value <= $effdate2) {
+                            $fail('Effective date 1 must be greater than Effective date 2.');
+                        }
+                        
+                    }
+                ],
+                'effective_date_2' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate3 = $request->effective_date_3;
+                        $termdate1 = $request->termination_date_1;
+                        if ($value <= $effdate3) {
+                            $fail('Effective date 2 must be greater than Effective date 3.');
+                        } 
+                        if ($value >= $termdate1) {
+                            $fail('Effective date 2 must be less than Termination date 1.');
+                        }
+                       
+                    }
+                ],
+                'effective_date_3' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $termdate2 = $request->termination_date_2;
+                        $termdate1 = $request->termination_date_1;
+                       
+                        if ($value >= $termdate1) {
+                            $fail('Effective date 3 must be less than Termination date 1.');
+                        }
+                        if ($value >= $termdate2) {
+                            $fail('Effective date 3 must be  less than Termination date 2.');
+                        } 
+                       
+                    }
+                ],
+                'tax_effective_date_1' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate2 = $request->tax_effective_date_2;
+                        $effdate3 = $request->tax_effective_date_3;
+                        if ($value <= $effdate3) {
+                            $fail('Tax Effective date 1 must be greater than Tax Effective date 3.');
+                        }
+                        if ($value <= $effdate2) {
+                            $fail('Tax Effective date 1 must be greater than Tax Effective date 2.');
+                        }
+                        
+                    }
+                ],
+                'tax_effective_date_2' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate3 = $request->tax_effective_date_3;
+                        $termdate1 = $request->tax_termination_date_1;
+                        if ($value <= $effdate3) {
+                            $fail('Tax Effective date 2 must be greater than Tax Effective date 3.');
+                        } 
+                        if ($value >= $termdate1) {
+                            $fail('Tax Effective date 2 must be less than Tax Termination date 1.');
+                        }
+                       
+                    }
+                ],
+                'tax_effective_date_3' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $termdate2 = $request->tax_termination_date_2;
+                        $termdate1 = $request->tax_termination_date_1;
+                       
+                        if ($value >= $termdate1) {
+                            $fail('Tax Effective date 3 must be less than Tax Termination date 1.');
+                        }
+                        if ($value >= $termdate2) {
+                            $fail('Tax Effective date 3 must be  less than Tax Termination date 2.');
+                        } 
+                       
+                    }
+                ],
+                "termination_date_1" => ['nullable','after:effective_date_1'],
+                "termination_date_2" => ['nullable','after:effective_date_2'],
+                "termination_date_3" => ['nullable','after:effective_date_3'],
+                "tax_termination_date_1" => ['nullable','after:tax_effective_date_1'],
+                "tax_termination_date_2" => ['nullable','after:tax_effective_date_2'],
+                "tax_termination_date_3" => ['nullable','after:tax_effective_date_3'],
+                ],[
+                    'termination_date_1.after' => 'Termination date 1 must be greater than Effective date 1',
+                    'termination_date_2.after' => 'Termination date 2 must be greater than Effective date 2',
+                    'termination_date_3.after' => 'Termination date 3 must be greater than Effective date 3',
+                    'tax_termination_date_1.after' => 'Tax Termination date 1 must be greater than Tax Effective date 1',
+                    'tax_termination_date_2.after' => 'Tax Termination date 2 must be greater than Tax Effective date 2',
+                    'tax_termination_date_3.after' => 'Tax Termination date 3 must be greater than Tax Effective date 3',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+            } 
             $updateData = DB::table('PHARMACY_TABLE')
                 ->where('pharmacy_nabp',$request->pharmacy_nabp)
                 ->update([
@@ -362,14 +585,15 @@ class ProviderDataProviderController extends Controller
                         );
 
 
-                $data = DB::table('RX_NETWORK_NAMES')
-                ->where('network_id', $traditional_list->network_id)
-                ->delete();
-                if($data){
-
-                     $rx_networksnames = DB::table('RX_NETWORK_NAMES')->insert(
+                // $data = DB::table('RX_NETWORK_NAMES')
+                // ->where('network_id', $traditional_list->network_id)
+                // ->delete();
+                // if($data){
+                     $rx_networksnames = DB::table('RX_NETWORK_NAMES')
+                     ->where('network_id', $traditional_list->network_id)
+                     ->update(
                     [
-                        'NETWORK_ID' => $traditional_list->network_id,
+                        // 'NETWORK_ID' => $traditional_list->network_id,
                         'NETWORK_NAME' => $traditional_list->network_name,
                         
     
@@ -377,7 +601,7 @@ class ProviderDataProviderController extends Controller
                 );
 
 
-                }
+                // }
 
                       
     
@@ -455,9 +679,10 @@ class ProviderDataProviderController extends Controller
     public function search(Request $request)
     {
         $ndc = DB::table('PHARMACY_TABLE')
-
-            ->where('PHARMACY_NAME', 'like', '%' .$request->search. '%')
-            ->orWhere('PHARMACY_NABP', 'like', '%' .$request->search. '%')
+            ->where(DB::raw('UPPER(PHARMACY_NABP)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('PHARMACY_NAME', 'like', '%' .$request->search. '%')
+            // ->Where('PHARMACY_NABP', 'like', '%' .$request->search. '%')
+           
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

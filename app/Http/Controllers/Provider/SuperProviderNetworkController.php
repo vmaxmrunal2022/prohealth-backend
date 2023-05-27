@@ -171,13 +171,15 @@ class SuperProviderNetworkController extends Controller
     {
 
         $createddate = date('y-m-d');
-        $recordcheck = DB::table('SUPER_RX_NETWORKS')->where('super_rx_network_id', $request->super_rx_network_id)->first();
-        if ($request->add_new) {
+        // $recordcheck = DB::table('SUPER_RX_NETWORKS')->where('super_rx_network_id', $request->super_rx_network_id)->first();
+        if ($request->add_new == 1) {
 
             $validator = Validator::make($request->all(), [
-                'super_rx_network_id' => ['required', 'max:10', Rule::unique('SUPER_RX_NETWORKS')->where(function ($q) {
+                'super_rx_network_id' => ['required', 'max:10',
+                 Rule::unique('SUPER_RX_NETWORKS')->where(function ($q) {
                     $q->whereNotNull('SUPER_RX_NETWORK_ID');
-                })],
+                })
+            ],
                 // "super_rx_network_id" => ['required', 'max:10'],
                 "super_rx_network_id_name" => ['required', 'max:35'],
                 "effective_date"=>['required','max:10'],
@@ -206,18 +208,18 @@ class SuperProviderNetworkController extends Controller
 
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
-            } else {
+            } else{
 
-                if (!$request->updateForm) {
+                // if (!$request->updateForm) {
 
-                    $ifExist = DB::table('SUPER_RX_NETWORK_NAMES')
-                        ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
-                        ->get();
-                    if (count($ifExist) >= 1) {
-                        return $this->respondWithToken($this->token(), [["Super Network ID already exists"]], '', false);
-                    }
-                } else {
-                }
+                //     $ifExist = DB::table('SUPER_RX_NETWORK_NAMES')
+                //         ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                //         ->get();
+                //     if (count($ifExist) >= 1) {
+                //         return $this->respondWithToken($this->token(), [["Super Network ID already exists"]], '', false);
+                //     }
+                // } else {
+                // }
 
                 if ($request->super_rx_network_id && $request->rx_network_id) {
                     $count = DB::table('SUPER_RX_NETWORK_NAMES')
@@ -267,7 +269,8 @@ class SuperProviderNetworkController extends Controller
 
                         $add = DB::table('SUPER_RX_NETWORKS')->where('super_rx_network_id', 'like', '%' . $request->super_rx_network_id . '%')->first();
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
-                    } else {
+                    }
+                     else {
                         $updateProviderExceptionData = DB::table('SUPER_RX_NETWORK_NAMES')
                             ->where('super_rx_network_id', $request->super_rx_network_id)
                             ->update([
@@ -332,12 +335,14 @@ class SuperProviderNetworkController extends Controller
                     }
                 }
             }
-        } else {
+        }elseif($request->add_new == 0) {
             $validator = Validator::make($request->all(), [
-                'super_rx_network_id' => ['required', 'max:10', Rule::unique('SUPER_RX_NETWORKS')->where(function ($q) use($request){
+                'super_rx_network_id' => ['required', 'max:10',
+                 Rule::unique('SUPER_RX_NETWORKS')->where(function ($q) use($request){
                     $q->whereNotNull('SUPER_RX_NETWORK_ID');
-                    $q->where('SUPER_RX_NETWORK_ID',$request->super_rx_network_id);
-                })],
+                    $q->where('SUPER_RX_NETWORK_ID','!=',$request->super_rx_network_id);
+                })
+            ],
                 // "super_rx_network_id" => ['required', 'max:10'],
                 "super_rx_network_id_name" => ['required', 'max:35'],
                 "effective_date"=>['required','max:10'],
@@ -366,50 +371,149 @@ class SuperProviderNetworkController extends Controller
 
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+            }else{
+                if($request->update_new == 0){
+                    $checkRecord =  DB::table('SUPER_RX_NETWORKS')
+                                    ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                    ->where(DB::raw('UPPER(rx_network_id)'), strtoupper($request->rx_network_id))
+                                    ->where('effective_date',$request->effective_date)
+                                    ->first();
+                    if($checkRecord){
+                        $effectiveDate=$request->effective_date;
+                        $terminationDate=$request->termination_date;
+                        $overlapExists = DB::table('SUPER_RX_NETWORKS')
+                        ->where('super_rx_network_id', $request->super_rx_network_id)
+                        ->where('rx_network_id', $request->rx_network_id)
+                        ->where('effective_date','!=',$request->effective_date)
+                        ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                    $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                        ->where('TERMINATION_DATE', '>=', $terminationDate);
+                                });
+                        })
+                        ->exists();
+                        if ($overlapExists) {
+                            return $this->respondWithToken($this->token(), [["For Same Provider Network  ID , dates cannot overlap."]], '', false);
+                        }
+                        $updateProviderExceptionData = DB::table('SUPER_RX_NETWORK_NAMES')
+                                                        ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                                        ->update([
+                                                            'super_rx_network_id_name' => $request->super_rx_network_id_name,
+                                                            'user_id' => Cache::get('userId'),
+                                                            'date_time_modified' => date('d-M-y'),
+                                                            'form_id' => ''
+                                                        ]);
+                        $countValidation = DB::table('SUPER_RX_NETWORKS')
+                        ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                        ->where(DB::raw('UPPER(rx_network_id)'), strtoupper($request->rx_network_id))
+                        ->where('effective_date',$request->effective_date)
+                        ->update([
+                            'user_id' => Cache::get('userId'),
+                            'DATE_TIME_MODIFIED' => date('d-M-y'),
+                            'form_id' => '',
+                            'effective_date' => $request->effective_date,
+                            'comm_charge_paid' => $request->comm_charge_paid,
+                            'comm_charge_reject' => $request->comm_charge_reject,
+                            'days_supply_opt' => $request->days_supply_opt,
+                            // 'effective_date' => $request->effective_date,
+                            'max_fills_opt' => $request->max_fills_opt,
+                            'max_retail_fills' => $request->max_retail_fills,
+                            'max_rx_qty' => $request->max_rx_qty,
+                            'min_rx_qty' => $request->min_rx_qty,
+                            'price_schedule_ovrd' => $request->price_schedule_ovrd,
+                            'rx_network_id' => $request->rx_network_id,
+                            'rx_network_type' => $request->rx_network_type,
+                            'starter_dose_bypass_days' => $request->starter_dose_bypass_days,
+                            'starter_dose_days' => $request->starter_dose_days,
+                            'starter_dose_maint_bypass_days' => $request->starter_dose_maint_bypass_days,
+                            'super_rx_network_priority' => $request->super_rx_network_priority == null ? "1" : $request->super_rx_network_priority,
+                            'termination_date' => $request->termination_date,
+                            'min_rx_days' => $request->min_rx_days,
+                            'max_rx_days' => $request->max_rx_days,
+                        ]);
+                        return $this->respondWithToken( $this->token(), 'Record Updated successfully',$countValidation, );
+                    }else{
+                        return $this->respondWithToken($this->token(), [['Record Not Exists In Database']], '', 'false');
+                    }                
+
+                }
+                elseif($request->update_new == 1){
+
+                    $effectiveDate=$request->effective_date;
+                    $terminationDate=$request->termination_date;
+                    $overlapExists = DB::table('SUPER_RX_NETWORKS')
+                    ->where('super_rx_network_id', $request->super_rx_network_id)
+                    ->where('rx_network_id', $request->rx_network_id)
+                    // return [$request->super_rx_network_id,$request->rx_network_id];
+                   
+                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
+                            });
+                    })
+                    ->exists();
+                    if ($overlapExists) {
+                        return $this->respondWithToken($this->token(), [["For Same Provider Network  ID , dates cannot overlap."]], '', false);
+                    }
+
+                    $checkcount = DB::table('SUPER_RX_NETWORKS')
+                                    ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                    ->where(DB::raw('UPPER(rx_network_id)'), strtoupper($request->rx_network_id))
+                                    ->where('effective_date',$request->effective_date)
+                                    ->get();
+
+                    if(count($checkcount) >=1) {
+                        return $this->respondWithToken($this->token(), [['Record Already Exists']], '', false);
+                    }else{
+
+                        $updateProviderExceptionData = DB::table('SUPER_RX_NETWORK_NAMES')
+                                                        ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                                        ->update([
+                                                            'super_rx_network_id_name' => $request->super_rx_network_id_name,
+                                                            'user_id' => Cache::get('userId'),
+                                                            'date_time_modified' => date('d-M-y'),
+                                                            'form_id' => ''
+                                                        ]);
+                        $add = DB::table('SUPER_RX_NETWORKS')
+                                    ->insert([
+                                        'DATE_TIME_CREATED' => date('d-M-y'),
+                                        'user_id' => Cache::get('userId'),
+                                        'DATE_TIME_MODIFIED' => date('d-M-y'),
+                                        'form_id' => '',
+                                        'super_rx_network_id' => $request->super_rx_network_id,
+                                        'rx_network_id' => $request->rx_network_id,
+                                        'effective_date' => $request->effective_date,
+                                        'comm_charge_paid' => $request->comm_charge_paid,
+                                        'comm_charge_reject' => $request->comm_charge_reject,
+                                        'days_supply_opt' => $request->days_supply_opt,
+                                        // 'effective_date' => $request->effective_date,
+                                        'max_fills_opt' => $request->max_fills_opt,
+                                        'max_retail_fills' => $request->max_retail_fills,
+                                        'max_rx_qty' => $request->max_rx_qty,
+                                        'min_rx_qty' => $request->min_rx_qty,
+                                        'price_schedule_ovrd' => $request->price_schedule_ovrd,
+                                        // 'rx_network_id' => $request->rx_network_id,
+                                        'rx_network_type' => $request->rx_network_type,
+                                        'starter_dose_bypass_days' => $request->starter_dose_bypass_days,
+                                        'starter_dose_days' => $request->starter_dose_days,
+                                        'starter_dose_maint_bypass_days' => $request->starter_dose_maint_bypass_days,
+                                        'super_rx_network_priority' => $request->super_rx_network_priority == null ? "1" : $request->super_rx_network_priority,
+                                        'termination_date' => $request->termination_date,
+                                        'min_rx_days' => $request->min_rx_days,
+                                        'max_rx_days' => $request->max_rx_days,
+                                    ]);
+                            
+                        $add = DB::table('SUPER_RX_NETWORKS')->where('super_rx_network_id', 'like', '%' . $request->super_rx_network_id . '%')->first();
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);                                 
+                    }
+
+                }
             }
-            $updateProviderExceptionData = DB::table('SUPER_RX_NETWORK_NAMES')
-                ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
-                ->update([
-                    'super_rx_network_id_name' => $request->super_rx_network_id_name,
-                    'user_id' => Cache::get('userId'),
-                    'date_time_modified' => date('d-M-y'),
-                    'form_id' => ''
-                ]);
-
-            $countValidation = DB::table('SUPER_RX_NETWORKS')
-                ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
-                ->where(DB::raw('UPPER(rx_network_id)'), strtoupper($request->rx_network_id))
-                // ->where('pharmacy_status', $request->pharmacy_status)
-                ->update([
-                    'user_id' => Cache::get('userId'),
-                    'DATE_TIME_MODIFIED' => date('d-M-y'),
-                    'form_id' => '',
-                    'effective_date' => $request->effective_date,
-                    'comm_charge_paid' => $request->comm_charge_paid,
-                    'comm_charge_reject' => $request->comm_charge_reject,
-                    'days_supply_opt' => $request->days_supply_opt,
-                    // 'effective_date' => $request->effective_date,
-                    'max_fills_opt' => $request->max_fills_opt,
-                    'max_retail_fills' => $request->max_retail_fills,
-                    'max_rx_qty' => $request->max_rx_qty,
-                    'min_rx_qty' => $request->min_rx_qty,
-                    'price_schedule_ovrd' => $request->price_schedule_ovrd,
-                    'rx_network_id' => $request->rx_network_id,
-                    'rx_network_type' => $request->rx_network_type,
-                    'starter_dose_bypass_days' => $request->starter_dose_bypass_days,
-                    'starter_dose_days' => $request->starter_dose_days,
-                    'starter_dose_maint_bypass_days' => $request->starter_dose_maint_bypass_days,
-                    'super_rx_network_priority' => $request->super_rx_network_priority == null ? "1" : $request->super_rx_network_priority,
-                    'termination_date' => $request->termination_date,
-                    'min_rx_days' => $request->min_rx_days,
-                    'max_rx_days' => $request->max_rx_days,
-                ]);
-
-            return $this->respondWithToken(
-                $this->token(),
-                'Record Updated successfully',
-                $countValidation,
-            );
         }
     }
 
@@ -449,7 +553,7 @@ class SuperProviderNetworkController extends Controller
 
 
 
-    public function getDetails($ndcid, $rx_network_id)
+    public function getDetails($ndcid, $rx_network_id,$eff_date)
     {
 
         // $ndc =  DB::table('SUPER_RX_NETWORK_NAMES')
@@ -462,6 +566,7 @@ class SuperProviderNetworkController extends Controller
             ->join('SUPER_RX_NETWORK_NAMES', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID')
             ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', $ndcid)
             ->where('SUPER_RX_NETWORKS.rx_network_id', $rx_network_id)
+            ->where('SUPER_RX_NETWORKS.effective_date', $eff_date)
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
