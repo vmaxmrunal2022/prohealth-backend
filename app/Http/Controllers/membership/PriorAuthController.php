@@ -197,6 +197,8 @@ class PriorAuthController extends Controller
                 ->where('client_id', $request->client_id)
                 ->where('client_group_id', $request->client_group_id)
                 ->where('plan_id', $request->plan_id)
+                ->where('prior_auth_code_num', $request->prior_auth_code_num)
+
                 ->first();
             $record_snap = json_encode($inserted_record);
             $save_audit = $this->auditMethod('IN', $record_snap, 'PRIOR_AUTHORIZATIONS');
