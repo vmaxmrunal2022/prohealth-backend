@@ -681,7 +681,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('system-parameters/get-eligibility-change-log', [SystemParameterController::class, 'getEligibilityChangeLog']);
 
         //Claim History
-        Route::post('claim-history/search', [ClaimHistoryController::class, 'searchHistory']);
+        Route::get('claim-history/search', [ClaimHistoryController::class, 'searchHistory']);
         Route::get('claim-history/get-ndcdrops', [ClaimHistoryController::class, 'getNDCDropdown']);
         Route::get('claim-history/get-gpidrops', [ClaimHistoryController::class, 'getGPIDropdown']);
         Route::get('claim-history/get-proceduer-code', [ClaimHistoryController::class, 'getProcedureCode']);
@@ -1014,6 +1014,7 @@ Route::group(['prefix' => 'prescriberdata'], function ($router) {
     Route::get('/prescriber/details/{ndcid}', [PrescriberController::class, 'getDetails'])->name('prescriber.get'); // DETAIL
 
     Route::post('/prescriber/add', [PrescriberController::class, 'add'])->name('prescriber.add'); // UPDATE
+    Route::post('/prescriber/delete', [PrescriberController::class, 'delete'])->name('prescriber.delete'); // UPDATE
 
 
 });

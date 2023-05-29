@@ -40,6 +40,7 @@ class PriorAuthController extends Controller
         $count_increment = $today_count + 1;
         $prior_auth_code = date("Ymd");
         $prior_auth_code .= str_pad($count_increment, 4, "0", STR_PAD_LEFT);
+        // dd($prior_auth_code);
 
         return $this->respondWithToken($this->token(), 'Auto Generate Prior Auth Code', $prior_auth_code);
     }
@@ -80,63 +81,44 @@ class PriorAuthController extends Controller
         if ($request->add_new == 1) {
 
             $validator = Validator::make($request->all(), [
-                'member_id' => ['required', 'max:18', Rule::unique('PLAN_BENEFIT_TABLE')->where(function ($q) {
-                    $q->whereNotNull('plan_id');
+                'prior_auth_code_num' => ['required', 'max:18', Rule::unique('PRIOR_AUTHORIZATIONS')->where(function ($q) {
+                    $q->whereNotNull('PRIOR_AUTH_CODE_NUM');
                 })],
-                'person_code' => ['max:3'],
+                'person_code' => ['required'],
                 'customer_id' => ['required', 'max:10'],
                 'client_id' => ['required', 'max:15'],
-                'client_group_id' => ['max:15'],
-                'ndc' => ['max:11'],
-                'generic_product_id' => ['max:14'],
-                'prior_auth_type' => ['max:1'],
-                'prior_auth_code_num' => ['max:12'],
-                'prescriber_id' => ['max:10'],
-                'prescriber_status_override' => ['max:1'],
-                'pharmacy_nabp' => ['max:12'],
-                'pharmacy_status_override' => ['max:1'],
-                'effective_date' => ['min:0', 'max:10'],
-                'termination_date' => ['min:0', 'max:10', 'after:effective_date'],
-                'max_quantity' => ['min:0', 'max:6'],
-                'max_days' => ['min:0', 'max:6'],
-                'max_daily_dose' => ['min:0', 'max:6'],
-                'patient_pin_number' => ['max:22'],
-                'user_id' => ['max:10'],
-                'form_id' => ['max:10'],
-                'prior_auth_note' => ['max:6'],
-                'prior_auth_basis_type' => ['min:0', 'max:6'],
-                'elig_error_cat_ovr' => ['max:1'],
-                'phy_error_cat_ovr' => ['max:1'],
-                'pharm_error_cat_ovr' => ['max:1'],
-                'drug_error_cat_ovr' => ['max:1'],
-                'qty_error_cat_ovr' => ['max:1'],
-                'days_supply_error_cat_ovr' => ['max:1'],
-                'refill_error_cat_ovr' => ['max:1'],
-                'generic_indicator' => ['max:1'],
-                'accum_bene_error_cat_ovr' => ['max:1'],
-                'all_oth_error_cat_ovr' => ['max:1'],
-                'price_sched_ovr' => ['max:10'],
-                'copay_sched_ovr' => ['max:10'],
-                'brand_copay_amt' => ['min:2', 'max:12'],
-                'generic_copay_amt' => ['min:2', 'max:12'],
-                'patient_paid_diff_flag' => ['max:1'],
-                'birth_date' => ['min:0', 'max:8'],
-                'relationship' => ['max:1'],
-                'plan_id' => ['max:15'],
-                'max_dollar_amt' => ['min:2', 'max:12'],
-                'accum_bene_exclude_flag' => ['max:1'],
-                'max_num_fills' => ['min:0', 'max:2'],
-                'num_fills_used' => ['min:0', 'max:2'],
-                'oltp_date_used' => ['min:0', 'max:8'],
-                'copay_sched_ovr_mail' => ['max:10'],
-                'brand_copay_amt_mail' => ['min:2', 'max:12'],
-                'generic_copay_amt_mail' => ['min:2', 'max:12'],
-                'user_id_created' => ['max:10'],
-                'benefit_code' => ['max:10'],
-                'procedure_code' => ['max:10'],
-                'service_type' => ['max:2'],
-                'provider_type' => ['max:2'],
-                'diagnosis_id' => ['max:8'],
+                'client_group_id' => ['required','max:15'],
+                'effective_date' => ['required'],
+                'termination_date' => ['required', 'after:effective_date'],
+                'prior_auth_type'=> ['required'],
+                'relationship'=> ['required'],
+                'member_id'=> ['required'],
+                'ndc' => ['nullable',
+                    function ($attribute, $value, $fail) use ($request) {
+                        if (!empty($value) && !empty($request->generic_product_id)) {
+                            $fail('Only one option should be selected between NDC and GPI.');
+                        }
+                    }
+                    
+                ],
+                'generic_product_id' => ['nullable',
+                    function ($attribute, $value, $fail) use ($request) {
+                        if (!empty($value) && !empty($request->ndc)) {
+                            $fail('Only one option should be selected between NDC and GPI.');
+                        }
+                    }
+                
+                ],
+                'benefit_code' => ['nullable',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $ndc = $request->ndc;
+                        $gpi = $request->generic_product_id;
+
+                        if (empty($ndc) && empty($gpi) &&(empty($value) && empty($request->procedure_code) && empty($request->diagnosis_id)  && empty($request->service_type) && empty($request->provider_type) ) ) {
+                            $fail('Please enter a specific/partial NDC or GPI OR at least one of the Non-Pharmaceutical Codes');
+                        }
+                    }
+                ],
             ],[
                 'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
@@ -144,10 +126,11 @@ class PriorAuthController extends Controller
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
             }
 
-            if ($getEligibilityData) {
+            // if ($getEligibilityData) {
 
-                return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getEligibilityData);
-            } else {
+            //     return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $getEligibilityData);
+            // } 
+            else {
                 $addPriorAuth = DB::table('PRIOR_AUTHORIZATIONS')
                     ->insert([
                         //Authorization Tab Starts
@@ -221,70 +204,55 @@ class PriorAuthController extends Controller
             return $this->respondWithToken('success', 'Record Added Successfully', $inserted_record, $this->token(), 200);
         } else if ($request->add_new == 0) {
 
-
             $validator = Validator::make($request->all(), [
-                'member_id' => ['required', 'max:18'],
-                'person_code' => ['max:3'],
+                'prior_auth_code_num' => ['required', 'max:18', Rule::unique('PRIOR_AUTHORIZATIONS')->where(function ($q) use($request){
+                    $q->whereNotNull('PRIOR_AUTH_CODE_NUM');
+                    $q->where('PRIOR_AUTH_CODE_NUM','!=', $request->prior_auth_code_num);
+                })],
+                'person_code' => ['required'],
                 'customer_id' => ['required', 'max:10'],
                 'client_id' => ['required', 'max:15'],
-                'client_group_id' => ['max:15'],
-                'ndc' => ['max:11'],
-                'generic_product_id' => ['max:14'],
-                'prior_auth_type' => ['max:1'],
-                'prior_auth_code_num' => ['max:12'],
-                'prescriber_id' => ['max:10'],
-                'prescriber_status_override' => ['max:1'],
-                'pharmacy_nabp' => ['max:12'],
-                'pharmacy_status_override' => ['max:1'],
-                'effective_date' => ['min:0', 'max:10'],
-                'termination_date' => ['min:0', 'max:10', 'after:effective_date'],
-                'max_quantity' => ['min:0', 'max:6'],
-                'max_days' => ['min:0', 'max:6'],
-                'max_daily_dose' => ['min:0', 'max:6'],
-                'patient_pin_number' => ['max:22'],
-                'user_id' => ['max:10'],
-                'form_id' => ['max:10'],
-                'prior_auth_note' => ['max:6'],
-                'prior_auth_basis_type' => ['min:0', 'max:6'],
-                'elig_error_cat_ovr' => ['max:1'],
-                'phy_error_cat_ovr' => ['max:1'],
-                'pharm_error_cat_ovr' => ['max:1'],
-                'drug_error_cat_ovr' => ['max:1'],
-                'qty_error_cat_ovr' => ['max:1'],
-                'days_supply_error_cat_ovr' => ['max:1'],
-                'refill_error_cat_ovr' => ['max:1'],
-                'generic_indicator' => ['max:1'],
-                'accum_bene_error_cat_ovr' => ['max:1'],
-                'all_oth_error_cat_ovr' => ['max:1'],
-                'price_sched_ovr' => ['max:10'],
-                'copay_sched_ovr' => ['max:10'],
-                'brand_copay_amt' => ['min:2', 'max:12'],
-                'generic_copay_amt' => ['min:2', 'max:12'],
-                'patient_paid_diff_flag' => ['max:1'],
-                'birth_date' => ['min:0', 'max:8'],
-                'relationship' => ['max:1'],
-                'plan_id' => ['max:15'],
-                'max_dollar_amt' => ['min:2', 'max:12'],
-                'accum_bene_exclude_flag' => ['max:1'],
-                'max_num_fills' => ['min:0', 'max:2'],
-                'num_fills_used' => ['min:0', 'max:2'],
-                'oltp_date_used' => ['min:0', 'max:8'],
-                'copay_sched_ovr_mail' => ['max:10'],
-                'brand_copay_amt_mail' => ['min:2', 'max:12'],
-                'generic_copay_amt_mail' => ['min:2', 'max:12'],
-                'user_id_created' => ['max:10'],
-                'benefit_code' => ['max:10'],
-                'procedure_code' => ['max:10'],
-                'service_type' => ['max:2'],
-                'provider_type' => ['max:2'],
-                'diagnosis_id' => ['max:8'],
+                'client_group_id' => ['required','max:15'],
+                'effective_date' => ['required'],
+                'termination_date' => ['required', 'after:effective_date'],
+                'prior_auth_type'=> ['required'],
+                'relationship'=> ['required'],
+                'member_id'=> ['required'],
+                'ndc' => ['nullable',
+                    function ($attribute, $value, $fail) use ($request) {
+                        if (!empty($value) && !empty($request->generic_product_id)) {
+                            $fail('Only one option should be selected between NDC and GPI.');
+                        }
+                    }
+                    
+                ],
+                'generic_product_id' => ['nullable',
+                    function ($attribute, $value, $fail) use ($request) {
+                        if (!empty($value) && !empty($request->ndc)) {
+                            $fail('Only one option should be selected between NDC and GPI.');
+                        }
+                    }
+                
+                ],
+                'benefit_code' => ['nullable',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $ndc = $request->ndc;
+                        $gpi = $request->generic_product_id;
+
+                        if (empty($ndc) && empty($gpi) &&(empty($value) && empty($request->procedure_code) && empty($request->diagnosis_id)  && empty($request->service_type) && empty($request->provider_type) ) ) {
+                            $fail('Please enter a specific/partial NDC or GPI OR at least one of the Non-Pharmaceutical Codes');
+                        }
+                    }
+                ],
             ],[
                 'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
             }
-            // dd($request->prior_auth_code_num);
+
+
+            
 
             $update = DB::table('PRIOR_AUTHORIZATIONS')
                 ->where('prior_auth_code_num', $request->prior_auth_code_num)

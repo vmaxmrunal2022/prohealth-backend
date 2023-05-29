@@ -10,72 +10,148 @@ use Illuminate\Support\Facades\DB;
 class ClaimHistoryController extends Controller
 {
     use AuditTrait;
-    public function searchHistory(Request $request)
-    {
-        if ($request->data_type == 'date_filled') {
-            if ($request->from_date != null) {
-                $from_date_filled = str_replace('-', '', $request->from_date);
-                // print_r(($from_date_filled));
-            } else {
-                $from_date_filled = null;
-            }
+    // public function searchHistory(Request $request)
+    // {
+    //     if ($request->data_type == 'date_filled') {
+    //         if ($request->from_date != null) {
+    //             $from_date_filled = str_replace('-', '', $request->from_date);
+    //             // print_r(($from_date_filled));
+    //         } else {
+    //             $from_date_filled = null;
+    //         }
 
-            if ($request->to_date != null) {
-                $to_date_filled = str_replace('-', '', $request->to_date);
-            } else {
-                $to_date_filled = null;
-            }
-        } else {
-            if ($request->from_date != null) {
-                $from_date_submitted = str_replace('-', '', $request->from_date);
-            } else {
-                $from_date_submitted = null;
-            }
+    //         if ($request->to_date != null) {
+    //             $to_date_filled = str_replace('-', '', $request->to_date);
+    //         } else {
+    //             $to_date_filled = null;
+    //         }
+    //     } else {
+    //         if ($request->from_date != null) {
+    //             $from_date_submitted = str_replace('-', '', $request->from_date);
+    //         } else {
+    //             $from_date_submitted = null;
+    //         }
 
-            if ($request->to_date != null) {
-                $to_date_submitted = str_replace('-', '', $request->to_date);
-            } else {
-                $to_date_submitted = null;
-            }
-        }
+    //         if ($request->to_date != null) {
+    //             $to_date_submitted = str_replace('-', '', $request->to_date);
+    //         } else {
+    //             $to_date_submitted = null;
+    //         }
+    //     }
 
-        // print_r($from_date_filled);
-        $search_result = DB::table('rx_transaction_detail')
-            //  ->when($cardholder_id, function ($query) use ($cardholder_id) {
-            //     return $query->where('cardholder_id', 'like', '%'. $cardholder_id. '%');
-            //  })
-            ->where('cardholder_id', 'like', '%' . $request->cardholder_id . '%')
-            ->where('person_code', 'like', '%' . $request->person_code . '%')
-            ->where('patient_pin_number', 'like', '%' . $request->patient_pin_number . '%')
+    //     // print_r($from_date_filled);
+    //     $search_result = DB::table('rx_transaction_detail')
+    //         //  ->when($cardholder_id, function ($query) use ($cardholder_id) {
+    //         //     return $query->where('cardholder_id', 'like', '%'. $cardholder_id. '%');
+    //         //  })
+    //         ->where('cardholder_id',$request->cardholder_id)
+    //         ->where('person_code', 'like', '%' . $request->person_code . '%')
+    //         ->where('patient_pin_number', 'like', '%' . $request->patient_pin_number . '%')
 
-            // ->when($from_date_filled, function ($query) use ($from_date_filled) {
-            //     return $query->where('date_filled', '>=', $from_date_filled);
-            //  })
+    //         // ->when($from_date_filled, function ($query) use ($from_date_filled) {
+    //         //     return $query->where('date_filled', '>=', $from_date_filled);
+    //         //  })
 
-            //  ->when($to_date_filled, function ($query) use ($to_date_filled) {
-            //     return $query->where('date_filled', '<=', $to_date_filled);
-            //  })
+    //         //  ->when($to_date_filled, function ($query) use ($to_date_filled) {
+    //         //     return $query->where('date_filled', '<=', $to_date_filled);
+    //         //  })
 
-            //  ->when($from_date_submitted, function ($query) use ($from_date_submitted) {
-            //     return $query->where('date_submitted', '>=', $from_date_submitted);
-            //  })
+    //         //  ->when($from_date_submitted, function ($query) use ($from_date_submitted) {
+    //         //     return $query->where('date_submitted', '>=', $from_date_submitted);
+    //         //  })
 
-            //  ->when($to_date_submitted, function ($query) use ($to_date_submitted) {
-            //     return $query->where('date_submitted', '<=', $to_date_submitted);
-            //  })
+    //         //  ->when($to_date_submitted, function ($query) use ($to_date_submitted) {
+    //         //     return $query->where('date_submitted', '<=', $to_date_submitted);
+    //         //  })
 
 
-            // ->where('date_filled', '>=', str_replace('-', '', $request->date_filled) )
-            // ->where('date_submitted', '<=', str_replace('-', '', $request->date_submitted) )
+    //         // ->where('date_filled', '>=', str_replace('-', '', $request->date_filled) )
+    //         // ->where('date_submitted', '<=', str_replace('-', '', $request->date_submitted) )
 
-            // ->where('patient_pin_number', 'like', '%'. $request->patient_pin_number .'%')
-            // ->where('patient_pin_number', 'like', '%'. $request->patient_pin_number .'%')
-            // ->where('patient_pin_number', 'like', '%'. $request->patient_pin_number .'%')
-            // ->where('provider_id', 'like', '%'. $request->provider_id .'%')
-            // ->where('cardholder', 'like', '%'. $request->cardholder_id .'%')
+    //         // ->where('patient_pin_number', 'like', '%'. $request->patient_pin_number .'%')
+    //         // ->where('patient_pin_number', 'like', '%'. $request->patient_pin_number .'%')
+    //         // ->where('patient_pin_number', 'like', '%'. $request->patient_pin_number .'%')
+    //         // ->where('provider_id', 'like', '%'. $request->provider_id .'%')
+    //         // ->where('cardholder', 'like', '%'. $request->cardholder_id .'%')
+    //         ->get();
+
+    //     return $this->respondWithToken($this->token(), '', $search_result);
+    // }
+
+    public function searchHistory(Request $request){
+
+
+        // dd($request->all());
+
+
+         if ($request->transaction_status == 'all'){
+
+            // dd($request->from_date)
+
+            $data =  DB::table('RX_TRANSACTION_DETAIL')
+            ->where('DATE_FILLED', '>=', $request->from_date)
+            ->where('DATE_SUBMITTED', '<=', $request->to_date)
+            ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
             ->get();
 
-        return $this->respondWithToken($this->token(), '', $search_result);
+            return $this->respondWithToken($this->token(), '', $data);
+
+
+
+         }else if($request->transaction_status == 'P'){
+
+            $data=DB::table('RX_TRANSACTION_DETAIL')
+            ->where('DATE_FILLED', '>=', $request->from_date)
+            ->where('DATE_SUBMITTED', '<=', $request->to_date)
+            ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
+            ->where('TRANSACTION_STATUS','P')->get();
+            return $this->respondWithToken($this->token(), '', $data);
+
+
+         }
+
+         else if($request->transaction_status == 'R'){
+
+            $data=DB::table('RX_TRANSACTION_DETAIL')
+                 ->where('DATE_FILLED', '>=', $request->from_date)
+                ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
+                ->where('TRANSACTION_STATUS','R')->get();
+                return $this->respondWithToken($this->token(), '', $data);
+
+
+         }
+
+         else if($request->transaction_status == 'X'){
+
+            $data=DB::table('RX_TRANSACTION_DETAIL')
+            ->where('DATE_FILLED', '>=', $request->from_date)
+            ->where('DATE_SUBMITTED', '<=', $request->to_date)
+            ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
+            ->where('TRANSACTION_STATUS','X')->get();
+            return $this->respondWithToken($this->token(), '', $data);
+
+
+         }
+
+         else{
+
+            $data =  DB::table('RX_TRANSACTION_DETAIL')
+            ->where('DATE_FILLED', '>=', $request->from_date)
+            ->where('DATE_SUBMITTED', '<=', $request->to_date)
+            ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
+            ->get();
+
+            return $this->respondWithToken($this->token(), '', $data);
+
+
+
+         }
+
+
+               
+    
+
     }
 
     public function claimReferenceDetails(Request $request)

@@ -1000,7 +1000,7 @@ class MemberController extends Controller
                         ->first();
 
                     $record_snap_mem_diag = json_encode($member_diag);
-                    $save_audit_mem_diag = $this->auditMethod('UP', $member_diag, 'MEMBER_DIAGNOSIS');
+                    // $save_audit_mem_diag = $this->auditMethod('UP', $member_diag, 'MEMBER_DIAGNOSIS');
                 }
 
 
@@ -1022,7 +1022,7 @@ class MemberController extends Controller
                             'DIAGNOSIS_ID' => $diagnosis_list->diagnosis_id,
                             "PERSON_CODE" => "0",
                             "CHG_TYPE_IND" => "A",
-                            "BATCH_SEQUENCE_NUMBER" => '',
+                            "BATCH_SEQUENCE_NUMBER" => '0',
                             // 'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
                             // 'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
                             "TO_EFFECTIVE_DATE" => $diagnosis_list->effective_date,
@@ -1050,7 +1050,7 @@ class MemberController extends Controller
                             'DIAGNOSIS_ID' => $diagnosis_list->diagnosis_id,
                             "PERSON_CODE" => "0",
                             "CHG_TYPE_IND" => "A",
-                            "BATCH_SEQUENCE_NUMBER" => '',
+                            "BATCH_SEQUENCE_NUMBER" => '0',
 
                             'FROM_EFFECTIVE_DATE' => $diagnosis_list->effective_date,
                             'FROM_TERMINATION_DATE' => $diagnosis_list->termination_date,

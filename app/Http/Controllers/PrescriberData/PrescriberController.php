@@ -148,4 +148,23 @@ class PrescriberController extends Controller
 
        
     }
+
+    public function delete(Request $request)
+    {
+        if (isset($request->physician_id)) {
+
+            $physician_id_delete =  DB::table('PHYSICIAN_TABLE')
+                ->where('physician_id', $request->physician_id)
+                ->delete();
+            if ($physician_id_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
+        }
+    }
+
+    
 }

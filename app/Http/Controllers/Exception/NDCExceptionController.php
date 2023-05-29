@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
-use APP\Traits\AuditTrait;
+
+use App\Traits\AuditTrait;
 
 
 
@@ -515,6 +516,7 @@ class NDCExceptionController extends Controller
 
     public function add(Request $request)
     {
+
         $createddate = date('y-m-d');
 
         $validation = DB::table('NDC_EXCEPTIONS')
