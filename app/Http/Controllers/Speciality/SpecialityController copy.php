@@ -308,15 +308,6 @@ class SpecialityController extends Controller
                 $diagnosis_validation = DB::table('SPECIALTY_VALIDATIONS')
                     ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
                     ->get();
-                if (count($diagnosis_validation) <= 0) {
-                    $delete_specialty_list = DB::table('SPECIALTY_EXCEPTIONS')
-                        ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
-                        ->delete();
-                    $diagnosis_validation1 = DB::table('SPECIALTY_EXCEPTIONS')
-                        // ->where(DB::raw('UPPER(specialty_list)'), 'like', '%' . strtoupper($request->specialty_list) . '%')
-                        ->get();
-                    return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully", $diagnosis_validation1, false);
-                }
                 return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_validation);
             } else {
                 $delete_specialty_id = DB::table('SPECIALTY_EXCEPTIONS')
