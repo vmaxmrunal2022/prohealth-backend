@@ -310,9 +310,8 @@ class FlexibleNetworkController extends Controller
     public function search(Request $request)
     {
         $ndc = DB::table('RX_NETWORK_RULE_NAMES')
-            // ->where('RX_NETWORK_RULE_ID', 'like', '%' . $request->search . '%')
-            ->where(DB::raw('UPPER(RX_NETWORK_RULE_NAMES.RX_NETWORK_RULE_ID)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('RX_NETWORK_RULE_NAMES', 'like', '%' . $request->search . '%')
+            ->where('RX_NETWORK_RULE_ID', 'like', '%' . $request->search . '%')
+            ->orWhere('RX_NETWORK_RULE_NAME', 'like', '%' . $request->search . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

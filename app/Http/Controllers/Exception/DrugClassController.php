@@ -1224,7 +1224,7 @@ class DrugClassController extends Controller
     public function drugclassDelete(Request $request)
     {
         // return $request->all();
-        if (isset($request->drug_catgy_exception_list) && isset($request->scategory) && isset($request->stype) && isset($request->new_drug_status) && isset($request->process_rule) && isset($request->effective_date)) {
+        if (isset($request->drug_catgy_exception_list) && isset($request->scategory) && isset($request->stype) && isset($request->effective_date)) {
 
        
 
@@ -1242,7 +1242,7 @@ class DrugClassController extends Controller
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else if (isset($request->drug_catgy_exception_list)) {
+        } elseif(isset($request->drug_catgy_exception_list)) {
            
 
                 $all_exceptions_lists =  DB::table('DRUG_CATGY_EXCEPTION_NAMES')

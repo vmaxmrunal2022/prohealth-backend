@@ -1399,6 +1399,7 @@ class NDCExceptionController extends Controller
 
     public function ndcdelete(Request $request){
         
+        // return $request->all();
 
         if(isset($request->ndc_exception_list) && isset($request->ndc) && isset($request->effective_date)){
 
