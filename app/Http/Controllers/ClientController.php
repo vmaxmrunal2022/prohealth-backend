@@ -131,8 +131,10 @@ class ClientController extends Controller
                         'misc_data_3' => $request->misc_data_3,
                     ]
                 );
-                $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
-                    ->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
+                $benefitcode = DB::table('CLIENT')
+                    ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
+                    ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
+                    ->first();
                 $record_snapshot = json_encode($benefitcode);
                 // $record_snapshot = json_encode($benefitcode);
                 $save_audit = DB::table('FE_RECORD_LOG')
@@ -275,7 +277,7 @@ class ClientController extends Controller
         // $customername = $request->customername;
         // $clientid = $request->clientid;
         // $clientname = $request->clientname;
-
+        // return $request->all();
         $search = $request->search;
 
 
@@ -298,7 +300,7 @@ class ClientController extends Controller
     {
         $client = DB::table('client')
             // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
-            ->where(DB::raw('UPPER(CLIENT_ID)'), 'like', '%' . strtoupper($clientid) . '%')
+            ->where(DB::raw('UPPER(CLIENT_ID)'),  strtoupper($clientid))
             // ->orWhere('CLIENT_NAME', 'like', '%' . strtoupper($clientid) . '%')
             // ->orWhere('CUSTOMER_ID', 'like', '%' . strtoupper($clientid) . '%')
             ->first();

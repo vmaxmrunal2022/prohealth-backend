@@ -297,8 +297,8 @@ class CustomerController extends Controller
                         'user_id' => Cache::get('userId'),
                         'date_created' => date('Ymd'),
                         'time_created' => date('gisA'),
-                        'table_name' => 'FE_USERS',
-                        'record_action' => 'UP',
+                        'table_name' => 'CUSTOMER',
+                        'record_action' => 'IN',
                         'application' => 'ProPBM',
                         'record_snapshot' => $record_snapshot,
                     ]);
