@@ -690,6 +690,7 @@ class ProviderDataProviderController extends Controller
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
+
     public function getAll(Request $request)
     {
         $ndc = DB::table('PHARMACY_TABLE')->get();
@@ -818,6 +819,20 @@ class ProviderDataProviderController extends Controller
                       ];
                return $this->respondWithToken($this->token(), '', $merged);
             }
+
+    public function providerdataDelete(Request $request){
+        if(isset($request->pharmacy_nabp) && isset($request->rx_network_rule_id)) {
+            $pharmacy_nabp = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp',$request->pharmacy_nabp)->delete();
+
+            $Network_rules = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID'  ,$request->rx_network_rule_id)->delete();
+
+            if ($pharmacy_nabp) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }       
             
  
 }

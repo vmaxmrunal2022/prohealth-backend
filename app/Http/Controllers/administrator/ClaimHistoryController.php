@@ -83,67 +83,133 @@ class ClaimHistoryController extends Controller
 
         // dd($request->all());
 
+        
 
-         if ($request->transaction_status == 'all'){
 
-            // dd($request->from_date)
+          if($request->transaction_status == 'P'){
 
-            $data =  DB::table('RX_TRANSACTION_DETAIL')
+            if($request->sort == '1'){
+                $data=DB::table('RX_TRANSACTION_DETAIL')
             ->where('DATE_FILLED', '>=', $request->from_date)
             ->where('DATE_SUBMITTED', '<=', $request->to_date)
             ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
+            ->where('TRANSACTION_STATUS','P')
+            ->orderByDesc('DATE_SUBMITTED')
+            ->orderByDesc('TIME_SUBMITTED')
+
             ->get();
-
             return $this->respondWithToken($this->token(), '', $data);
 
 
+            }else if($request->sort == '2'){
 
-         }else if($request->transaction_status == 'P'){
 
-            $data=DB::table('RX_TRANSACTION_DETAIL')
-            ->where('DATE_FILLED', '>=', $request->from_date)
-            ->where('DATE_SUBMITTED', '<=', $request->to_date)
-            ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
-            ->where('TRANSACTION_STATUS','P')->get();
-            return $this->respondWithToken($this->token(), '', $data);
+                $data=DB::table('RX_TRANSACTION_DETAIL')
+                ->where('DATE_FILLED', '>=', $request->from_date)
+                ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
+                ->where('TRANSACTION_STATUS','P')
+                ->orderByDesc('PHARMACY_NABP')
+                ->orderByDesc('RX_NUMBER')
+                ->orderByDesc('DATE_FILLED')
+                ->get();
+                return $this->respondWithToken($this->token(), '', $data);
+            }
 
+            
 
          }
 
          else if($request->transaction_status == 'R'){
 
-            $data=DB::table('RX_TRANSACTION_DETAIL')
-                 ->where('DATE_FILLED', '>=', $request->from_date)
-                ->where('DATE_SUBMITTED', '<=', $request->to_date)
-                ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
-                ->where('TRANSACTION_STATUS','R')->get();
-                return $this->respondWithToken($this->token(), '', $data);
+            if($request->sort == 1){
 
+                $data=DB::table('RX_TRANSACTION_DETAIL')
+                ->where('DATE_FILLED', '>=', $request->from_date)
+               ->where('DATE_SUBMITTED', '<=', $request->to_date)
+               ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
+               ->where('TRANSACTION_STATUS','R')
+               ->orderByDesc('DATE_SUBMITTED')
+               ->orderByDesc('TIME_SUBMITTED')->get();
+               return $this->respondWithToken($this->token(), '', $data);
+
+
+            }else if($request->sort == 2){
+
+                $data=DB::table('RX_TRANSACTION_DETAIL')
+                ->where('DATE_FILLED', '>=', $request->from_date)
+               ->where('DATE_SUBMITTED', '<=', $request->to_date)
+               ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
+               ->where('TRANSACTION_STATUS','R')
+               ->orderByDesc('PHARMACY_NABP')
+                ->orderByDesc('RX_NUMBER')
+                ->orderByDesc('DATE_FILLED')
+                ->get();
+               return $this->respondWithToken($this->token(), '', $data);
+
+            }
+
+           
 
          }
 
          else if($request->transaction_status == 'X'){
 
-            $data=DB::table('RX_TRANSACTION_DETAIL')
-            ->where('DATE_FILLED', '>=', $request->from_date)
-            ->where('DATE_SUBMITTED', '<=', $request->to_date)
-            ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
-            ->where('TRANSACTION_STATUS','X')->get();
-            return $this->respondWithToken($this->token(), '', $data);
+            if($request->sort ==1){
+
+                $data=DB::table('RX_TRANSACTION_DETAIL')
+                ->where('DATE_FILLED', '>=', $request->from_date)
+                ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
+                ->where('TRANSACTION_STATUS','X')
+                ->orderByDesc('DATE_SUBMITTED')
+                ->orderByDesc('TIME_SUBMITTED')->get();
+                return $this->respondWithToken($this->token(), '', $data);
+
+            }
+            else if($request->sort == 2){
+                
+                $data=DB::table('RX_TRANSACTION_DETAIL')
+                ->where('DATE_FILLED', '>=', $request->from_date)
+                ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
+                ->where('TRANSACTION_STATUS','X')
+                ->orderByDesc('PHARMACY_NABP')
+                ->orderByDesc('RX_NUMBER')
+                ->orderByDesc('DATE_FILLED')->get();
+                return $this->respondWithToken($this->token(), '', $data);
+            }
+
+           
 
 
          }
 
          else{
 
-            $data =  DB::table('RX_TRANSACTION_DETAIL')
-            ->where('DATE_FILLED', '>=', $request->from_date)
-            ->where('DATE_SUBMITTED', '<=', $request->to_date)
-            ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
-            ->get();
+            if($request->sort ==1){
+                $data =  DB::table('RX_TRANSACTION_DETAIL')
+                ->where('DATE_FILLED', '>=', $request->from_date)
+                ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
+                ->get();
+                return $this->respondWithToken($this->token(), '', $data);
+    
 
-            return $this->respondWithToken($this->token(), '', $data);
+            }else if($request->sort == 2){
 
+                $data =  DB::table('RX_TRANSACTION_DETAIL')
+                ->where('DATE_FILLED', '>=', $request->from_date)
+                ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
+                ->get();
+                return $this->respondWithToken($this->token(), '', $data);
+            }
+
+
+
+
+         
 
 
          }
