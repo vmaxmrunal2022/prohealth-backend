@@ -223,6 +223,7 @@ class SpecialityController extends Controller
                             ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
                             ->get();
                         $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
+                            ->where(DB::raw('UPPER(specialty_list)'), 'like', '%' . strtoupper($request->specialty_list) . '%')
                             ->get();
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', [$diag_validation, $diag_exception]);
                     } else {
@@ -245,6 +246,7 @@ class SpecialityController extends Controller
                                 ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
                                 ->get();
                             $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
+                                ->where(DB::raw('UPPER(specialty_list)'), 'like', '%' . strtoupper($request->specialty_list) . '%')
                                 ->get();
                             return $this->respondWithToken(
                                 $this->token(),
@@ -272,6 +274,7 @@ class SpecialityController extends Controller
                                 ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
                                 ->get();
                             $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
+                                ->where(DB::raw('UPPER(specialty_list)'), 'like', '%' . strtoupper($request->specialty_list) . '%')
                                 ->get();
                             return $this->respondWithToken(
                                 $this->token(),
@@ -307,6 +310,7 @@ class SpecialityController extends Controller
                 ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
                 ->get();
             $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
+                ->where(DB::raw('UPPER(specialty_list)'), 'like', '%' . strtoupper($request->specialty_list) . '%')
                 ->get();
             return $this->respondWithToken(
                 $this->token(),

@@ -911,7 +911,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     // Route::get('/eligibility/get/{ndcid}', [EligibilityValidationListController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
     // Route::get('/eligibility/details/{elig_lis_id}', [EligibilityValidationListController::class, 'getEligibilityDetails'])->name('eligibility.details.get'); // DETAIL
     // Route::post('/eligibility/submit-eligiblity-form', [EligibilityValidationListController::class, 'addEligiblityData']);
-
+    Route::post('/eligibility/delete-record', [EligibilityValidationListController::class, 'deleteRecord']);
     Route::get('/eligibility/dropdown', [EligibilityValidationListController::class, 'DropDown']);
 
 
@@ -921,6 +921,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/provider/details/{provider_list}/{provider_nabp}', [ProviderController::class, 'getProviderDetails'])->name('ndsc.details.get'); // DETAIL
     Route::post('/provider/submit-provider-form', [ProviderController::class, 'addProviderData']);
     Route::get('/provider/provider-list-drop-down/', [ProviderController::class, 'searchDropDownProviderList']);
+    Route::post('/provider/delete-record', [ProviderController::class, 'deleteRecord']); // delete
 
 
     //DIAGNOSIS VALIDATION LIST
@@ -1016,10 +1017,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/prescriber/details/{physicain_list}/{physicain_id}', [PrescriberValidationController::class, 'getProviderDetails'])->name('prescriber.details.get'); // DETAIL
     Route::get('prescriber/prescriber-list-drop-down', [PrescriberValidationController::class, 'searchDropDownPrescriberList']);
     Route::post('/prescriber/submit-prescriber-form', [PrescriberValidationController::class, 'addPrescriberData']);
-    Route::post('/prescriber/delete', [PrescriberValidationController::class, 'deletePrescriberData']);
-
-
-
+    Route::post('/prescriber/delete-record', [PrescriberValidationController::class, 'deleteRecord']); // DELETE
 });
 
 
