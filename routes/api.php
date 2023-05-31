@@ -857,6 +857,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/provider/details/{provider_list}/{provider_nabp}', [ProviderController::class, 'getProviderDetails'])->name('ndsc.details.get'); // DETAIL
     Route::post('/provider/submit-provider-form', [ProviderController::class, 'addProviderData']);
     Route::get('/provider/provider-list-drop-down/', [ProviderController::class, 'searchDropDownProviderList']);
+    Route::post('/provider/delete-record', [ProviderController::class, 'deleteRecord']); // delete
 
 
     //DIAGNOSIS VALIDATION LIST
