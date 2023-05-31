@@ -243,6 +243,7 @@ class ProviderController extends Controller
                             ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $request->pharmacy_list)
                             ->get();
                         $diag_exception = DB::table('PHARMACY_EXCEPTIONS')
+                            ->where(DB::raw('UPPER(pharmacy_list)'), 'like', '%' . strtoupper($request->pharmacy_list) . '%')
                             ->get();
 
                         return $this->respondWithToken(
@@ -304,6 +305,7 @@ class ProviderController extends Controller
                                 ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $request->pharmacy_list)
                                 ->get();
                             $diag_exception = DB::table('PHARMACY_EXCEPTIONS')
+                                ->where(DB::raw('UPPER(pharmacy_list)'), 'like', '%' . strtoupper($request->pharmacy_list) . '%')
                                 ->get();
                             return $this->respondWithToken(
                                 $this->token(),
@@ -346,6 +348,7 @@ class ProviderController extends Controller
                 ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $request->pharmacy_list)
                 ->get();
             $diag_exception = DB::table('PHARMACY_EXCEPTIONS')
+                ->where(DB::raw('UPPER(pharmacy_list)'), 'like', '%' . strtoupper($request->pharmacy_list) . '%')
                 ->get();
             return $this->respondWithToken(
                 $this->token(),

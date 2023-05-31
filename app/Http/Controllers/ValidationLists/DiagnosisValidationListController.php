@@ -502,6 +502,7 @@ class DiagnosisValidationListController extends Controller
                         ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
                         ->get();
                     $diag_exception = DB::table('DIAGNOSIS_EXCEPTIONS')
+                        ->where(DB::raw('UPPER(diagnosis_list)'), 'like', '%' . strtoupper($request->diagnosis_list) . '%')
                         ->get();
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', [$diag_validation, $diag_exception]);
                 } else {
@@ -544,8 +545,10 @@ class DiagnosisValidationListController extends Controller
                         //     ->first();
                         $diag_validation = DB::table('DIAGNOSIS_VALIDATIONS')
                             ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
+                            ->where(DB::raw('UPPER(diagnosis_list)'), 'like', '%' . strtoupper($request->diagnosis_list) . '%')
                             ->get();
                         $diag_exception = DB::table('DIAGNOSIS_EXCEPTIONS')
+                            ->where(DB::raw('UPPER(diagnosis_list)'), 'like', '%' . strtoupper($request->diagnosis_list) . '%')
                             ->get();
 
                         $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
@@ -600,6 +603,7 @@ class DiagnosisValidationListController extends Controller
                     ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
                     ->get();
                 $diag_exception = DB::table('DIAGNOSIS_EXCEPTIONS')
+                    ->where(DB::raw('UPPER(diagnosis_list)'), 'like', '%' . strtoupper($request->diagnosis_list) . '%')
                     ->get();
 
                 return $this->respondWithToken(
@@ -662,6 +666,7 @@ class DiagnosisValidationListController extends Controller
                 ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
                 ->get();
             $diag_exception = DB::table('DIAGNOSIS_EXCEPTIONS')
+                ->where(DB::raw('UPPER(diagnosis_list)'), 'like', '%' . strtoupper($request->diagnosis_list) . '%')
                 ->get();
 
             return $this->respondWithToken(

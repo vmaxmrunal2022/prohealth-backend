@@ -228,6 +228,7 @@ class PrescriberValidationController extends Controller
                             ->distinct()
                             ->get();
                         $diag_exception = DB::table('PHYSICIAN_EXCEPTIONS')
+                            ->where(DB::raw('UPPER(PHYSICIAN_LIST)'), 'like', '%' . strtoupper($request->physician_list) . '%')
                             ->get();
 
                         // $add = DB::table('PHYSICIAN_VALIDATIONS')->where('physician_list', 'like', '%' . $request->physician_list . '%')->first();
@@ -254,6 +255,7 @@ class PrescriberValidationController extends Controller
                             ->distinct()
                             ->get();
                         $diag_exception = DB::table('PHYSICIAN_EXCEPTIONS')
+                            ->where(DB::raw('UPPER(PHYSICIAN_LIST)'), 'like', '%' . strtoupper($request->physician_list) . '%')
                             ->get();
 
                         if (count($countValidation) >= 1) {
@@ -287,6 +289,7 @@ class PrescriberValidationController extends Controller
                                 ->distinct()
                                 ->get();
                             $diag_exception = DB::table('PHYSICIAN_EXCEPTIONS')
+                                ->where(DB::raw('UPPER(PHYSICIAN_LIST)'), 'like', '%' . strtoupper($request->physician_list) . '%')
                                 ->get();
                             return $this->respondWithToken(
                                 $this->token(),
@@ -325,6 +328,7 @@ class PrescriberValidationController extends Controller
                 ->distinct()
                 ->get();
             $diag_exception = DB::table('PHYSICIAN_EXCEPTIONS')
+                ->where(DB::raw('UPPER(PHYSICIAN_LIST)'), 'like', '%' . strtoupper($request->physician_list) . '%')
                 ->get();
             return $this->respondWithToken(
                 $this->token(),
