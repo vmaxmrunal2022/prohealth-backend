@@ -941,6 +941,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/prescriber/details/{physicain_list}/{physicain_id}', [PrescriberValidationController::class, 'getProviderDetails'])->name('prescriber.details.get'); // DETAIL
     Route::get('prescriber/prescriber-list-drop-down', [PrescriberValidationController::class, 'searchDropDownPrescriberList']);
     Route::post('/prescriber/submit-prescriber-form', [PrescriberValidationController::class, 'addPrescriberData']);
+    Route::post('/prescriber/delete-record', [PrescriberValidationController::class, 'deleteRecord']); // DELETE
 });
 
 
