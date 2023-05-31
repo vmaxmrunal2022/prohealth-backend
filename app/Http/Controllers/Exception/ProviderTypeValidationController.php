@@ -749,25 +749,29 @@ class ProviderTypeValidationController extends Controller
     public function provider_type_validation_delete(Request $request)
     {
 
-        if (isset($request->prov_type_list_id) && ($request->proc_code_list_id)) {
+        if (isset($request->prov_type_list_id) && isset($request->proc_code_list_id) && isset($request->provider_type) && isset($request->effective_date) ) {
             $all_exceptions_lists =  DB::table('PROVIDER_TYPE_VALIDATIONS')
-                ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
-                ->delete();
-
+                                        ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
+                                        ->where('proc_code_list_id', $request->proc_code_list_id)
+                                        ->where('provider_type',$request->provider_type)
+                                        ->where('effective_date',$request->effective_date)
+                                        ->delete();
+            $childcount =  DB::table('PROVIDER_TYPE_VALIDATIONS')->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)->count();
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else if (isset($request->prov_type_list_id)) {
-
+        }elseif (isset($request->prov_type_list_id)) {
             $exception_delete =  DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
-                ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
-                ->delete();
-
+                                    ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
+                                    ->delete();
+            $all_exceptions_lists =  DB::table('PROVIDER_TYPE_VALIDATIONS')
+                                        ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
+                                        ->delete();
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
+            }else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         }

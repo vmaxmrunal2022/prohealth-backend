@@ -387,22 +387,27 @@ class SuperBenefitControler extends Controller
     }
     public function super_benefit_list_delete(Request $request)
     {
-        if (isset($request->super_benefit_list_id) && ($request->benefit_list_id)) {
+        if (isset($request->super_benefit_list_id) && isset($request->benefit_list_id) && isset($request->effective_date)) {
             $all_exceptions_lists =  DB::table('SUPER_BENEFIT_LISTS')
-                ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
-                ->delete();
-
+                                        ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
+                                        ->where('benefit_list_id',$request->benefit_list_id)
+                                        ->where('effective_date',$request->effective_date)
+                                        ->delete();
+            $childcount =  DB::table('SUPER_BENEFIT_LISTS')->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)->count();
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         } else if (isset($request->super_benefit_list_id)) {
 
             $exception_delete =  DB::table('SUPER_BENEFIT_LIST_NAMES')
-                ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
-                ->delete();
+                                    ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
+                                    ->delete();
 
+            $all_exceptions_lists =  DB::table('SUPER_BENEFIT_LISTS')
+                                        ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
+                                        ->delete();
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {

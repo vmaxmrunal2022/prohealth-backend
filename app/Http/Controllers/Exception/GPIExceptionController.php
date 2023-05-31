@@ -813,8 +813,9 @@ class GPIExceptionController extends Controller
                                 ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
                                 ->where('effective_date', $request->effective_date)
                                 ->delete();
+            $childcount = DB::table('GPI_EXCEPTION_LISTS')->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)->count();
             if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
@@ -837,6 +838,7 @@ class GPIExceptionController extends Controller
         }
 
     }
+
 
 
 }

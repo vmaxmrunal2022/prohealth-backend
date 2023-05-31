@@ -624,14 +624,19 @@ class ProviderTypeProcController extends Controller
     }
     public function providertype_proc_delete(Request $request)
     {
-        if (isset($request->prov_type_proc_assoc_id) && ($request->provider_type)) {
+        if (isset($request->prov_type_proc_assoc_id) && isset($request->provider_type) && isset($request->service_modifier)&& isset($request->proc_code_list_id) && isset($request->effective_date)) {
             $all_exceptions_lists =  DB::table('PROV_TYPE_PROC_ASSOC')
-                ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
-                ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
-                ->delete();
+                                        ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
+                                        ->where('provider_type', $request->provider_type)
+                                        ->where('service_modifier', $request->service_modifier)
+                                        ->where('proc_code_list_id', $request->proc_code_list_id)
+                                        ->where('effective_date', $request->effective_date)
+                                        ->delete();
+
+            $childrecords = DB::table('PROV_TYPE_PROC_ASSOC')->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)->count();                            
 
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childrecords);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
@@ -643,7 +648,12 @@ class ProviderTypeProcController extends Controller
             $all_exceptions_lists =  DB::table('PROV_TYPE_PROC_ASSOC')
                                         ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
                                         ->delete();
-        } 
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
         }
+    }
     
 }

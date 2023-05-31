@@ -1025,8 +1025,9 @@ class TherapyClassController extends Controller
                                         ->where('therapy_class',$request->therapy_class)
                                         ->where('effective_date',$request->effective_date)
                                         ->delete();
+            $childcount =  DB::table('TC_EXCEPTION_LISTS')->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)->count(); 
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

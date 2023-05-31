@@ -751,9 +751,11 @@ use AuditTrait;
                                         ->where('service_type',$request->service_type)
                                         ->where('effective_date',$request->effective_date)
                                         ->delete();
+
+            $childcount = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)->count();                            
             
             if ($all_exceptions_lists) {
-               return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+               return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             }else{
                return $this->respondWithToken($this->token(), 'Record Not Found');
             }
