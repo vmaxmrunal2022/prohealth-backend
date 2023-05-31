@@ -782,6 +782,16 @@ class DiagnosisValidationListController extends Controller
                 $diagnosis_validation = DB::table('DIAGNOSIS_VALIDATIONS')
                     ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
                     ->get();
+
+                if (count($diagnosis_validation) <= 0) {
+                    $delete_specialty_list = DB::table('DIAGNOSIS_EXCEPTIONS')
+                        ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
+                        ->delete();
+                    $diagnosis_validation1 = DB::table('DIAGNOSIS_EXCEPTIONS')
+                        // ->where(DB::raw('UPPER(specialty_list)'), 'like', '%' . strtoupper($request->specialty_list) . '%')
+                        ->get();
+                    return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully", $diagnosis_validation1, false);
+                }
                 return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_validation);
             } else {
                 $delete_diagnosis_id = DB::table('DIAGNOSIS_EXCEPTIONS')

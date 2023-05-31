@@ -299,6 +299,25 @@ class SpecialityController extends Controller
 
     public function deleteRecord(Request $request)
     {
+        $count = 0;
+        foreach ($request->all() as $key => $value) {
+            if (is_array($value)) {
+                $count++;
+            }
+        }
+        if ($count > 0) {
+            $data = $request->all();
+            $delete_specialty_id = DB::table('SPECIALTY_EXCEPTIONS')
+                ->where(DB::raw('UPPER(specialty_list)'), strtoupper($data[0]['specialty_list']))
+                ->delete();
+            $delete_specialty_id = DB::table('SPECIALTY_VALIDATIONS')
+                ->where(DB::raw('UPPER(specialty_list)'), strtoupper($data[0]['specialty_list']))
+                ->delete();
+            $diagnosis_exception =
+                DB::table('SPECIALTY_EXCEPTIONS')
+                ->get();
+            return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_exception);
+        } else        
         if ($request->specialty_list) {
             if ($request->specialty_id) {
                 $delete_specialty_id = DB::table('SPECIALTY_VALIDATIONS')
