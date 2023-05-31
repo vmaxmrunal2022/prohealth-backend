@@ -218,13 +218,8 @@ class SpecialityController extends Controller
                                 'form_id' => ''
                             ]);
 
-                        // $add = DB::table('SPECIALTY_VALIDATIONS')->where('specialty_list', 'like', '%' . $request->specialty_list . '%')->first();
-                        $diag_validation = DB::table('SPECIALTY_VALIDATIONS')
-                            ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
-                            ->get();
-                        $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
-                            ->get();
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', [$diag_validation, $diag_exception]);
+                        $add = DB::table('SPECIALTY_VALIDATIONS')->where('specialty_list', 'like', '%' . $request->specialty_list . '%')->first();
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
                     } else {
                         $updateProviderExceptionData = DB::table('SPECIALTY_EXCEPTIONS')
                             ->where('specialty_list', $request->specialty_list)
@@ -241,15 +236,10 @@ class SpecialityController extends Controller
                             ->get();
 
                         if (count($countValidation) >= 1) {
-                            $diag_validation = DB::table('SPECIALTY_VALIDATIONS')
-                                ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
-                                ->get();
-                            $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
-                                ->get();
                             return $this->respondWithToken(
                                 $this->token(),
                                 [['Specialty ID already exists']],
-                                [$diag_validation, $diag_exception],
+                                [['Specialty ID already exists']],
                                 false
                             );
                         } else {
@@ -268,15 +258,10 @@ class SpecialityController extends Controller
                                 ->where('SPECIALTY_VALIDATIONS.specialty_list', $request->specialty_list)
                                 ->where('SPECIALTY_VALIDATIONS.specialty_id', $request->specialty_id)
                                 ->first();
-                            $diag_validation = DB::table('SPECIALTY_VALIDATIONS')
-                                ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
-                                ->get();
-                            $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
-                                ->get();
                             return $this->respondWithToken(
                                 $this->token(),
                                 'Record Added successfully',
-                                [$diag_validation, $diag_exception],
+                                $reecord,
                             );
                         }
                     }
@@ -303,40 +288,17 @@ class SpecialityController extends Controller
                     'specialty_status' => $request->specialty_status,
                     'form_id' => ''
                 ]);
-            $diag_validation = DB::table('SPECIALTY_VALIDATIONS')
-                ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
-                ->get();
-            $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
-                ->get();
+
             return $this->respondWithToken(
                 $this->token(),
                 'Record Updated successfully',
-                [$diag_validation, $diag_exception],
+                $countValidation,
             );
         }
     }
 
     public function deleteRecord(Request $request)
     {
-        $count = 0;
-        foreach ($request->all() as $key => $value) {
-            if (is_array($value)) {
-                $count++;
-            }
-        }
-        if ($count > 0) {
-            $data = $request->all();
-            $delete_specialty_id = DB::table('SPECIALTY_EXCEPTIONS')
-                ->where(DB::raw('UPPER(specialty_list)'), strtoupper($data[0]['specialty_list']))
-                ->delete();
-            $delete_specialty_id = DB::table('SPECIALTY_VALIDATIONS')
-                ->where(DB::raw('UPPER(specialty_list)'), strtoupper($data[0]['specialty_list']))
-                ->delete();
-            $diagnosis_exception =
-                DB::table('SPECIALTY_EXCEPTIONS')
-                ->get();
-            return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_exception);
-        } else        
         if ($request->specialty_list) {
             if ($request->specialty_id) {
                 $delete_specialty_id = DB::table('SPECIALTY_VALIDATIONS')
@@ -346,15 +308,6 @@ class SpecialityController extends Controller
                 $diagnosis_validation = DB::table('SPECIALTY_VALIDATIONS')
                     ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
                     ->get();
-                if (count($diagnosis_validation) <= 0) {
-                    $delete_specialty_list = DB::table('SPECIALTY_EXCEPTIONS')
-                        ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
-                        ->delete();
-                    $diagnosis_validation1 = DB::table('SPECIALTY_EXCEPTIONS')
-                        // ->where(DB::raw('UPPER(specialty_list)'), 'like', '%' . strtoupper($request->specialty_list) . '%')
-                        ->get();
-                    return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully", $diagnosis_validation1, false);
-                }
                 return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_validation);
             } else {
                 $delete_specialty_id = DB::table('SPECIALTY_EXCEPTIONS')

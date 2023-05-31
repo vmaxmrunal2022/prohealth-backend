@@ -904,7 +904,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/speciality/get/{specialty_id}', [SpecialityController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
     Route::get('/speciality/details/{specialty_id}/{specialty_list}', [SpecialityController::class, 'getSpecialityDetails'])->name('ndsc.details.get'); // DETAIL
     Route::post('/speciality/submit-speciality-form', [SpecialityController::class, 'addSpeciality']); // add update speciality
-
+    Route::post('speciality/delete-record', [SpecialityController::class, 'deleteRecord']);
     Route::get('/eligibility/search', [EligibilityValidationListController::class, 'search']); // SEARCH
     // Route::get('/eligibility/get/{ndcid}', [EligibilityValidationListController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
     // Route::get('/eligibility/details/{elig_lis_id}', [EligibilityValidationListController::class, 'getEligibilityDetails'])->name('eligibility.details.get'); // DETAIL
@@ -923,6 +923,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
     //DIAGNOSIS VALIDATION LIST
     Route::post('/diagnosisvalidation/delete-limitation', [DiagnosisValidationListController::class, 'deleteLimitation']); //delete limitation
+    Route::post('/diagnosisvalidation/delete-record', [DiagnosisValidationListController::class, 'deleteRecord']); //delete limitation
     Route::get('/diagnosisvalidation/search', [DiagnosisValidationListController::class, 'search'])->name('diagnosisvalidation.search'); // SEARCH
     Route::get('/diagnosisvalidation/get/{diagnosis_list}', [DiagnosisValidationListController::class, 'getPriorityDiagnosis'])->name('diagnosisvalidation.list.get'); // LIST ITEMS
     Route::get('diagnosisvalidation/diagnosis-code-list/{disgnosis_code?}', [DiagnosisValidationListController::class, 'getDiagnosisCodeList']); //diagnosis code drop down with search
