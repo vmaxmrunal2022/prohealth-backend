@@ -92,6 +92,7 @@ class PriorAuthController extends Controller
                 'termination_date' => ['required', 'after:effective_date'],
                 'prior_auth_type'=> ['required'],
                 'relationship'=> ['required'],
+                'max_daily_dose'=>['required','max:2'],
                 'member_id'=> ['required'],
                 'ndc' => ['nullable',
                     function ($attribute, $value, $fail) use ($request) {
@@ -218,6 +219,8 @@ class PriorAuthController extends Controller
                 'prior_auth_type'=> ['required'],
                 'relationship'=> ['required'],
                 'member_id'=> ['required'],
+                'max_daily_dose'=>['required','max:2'],
+
                 'ndc' => ['nullable',
                     function ($attribute, $value, $fail) use ($request) {
                         if (!empty($value) && !empty($request->generic_product_id)) {

@@ -620,6 +620,11 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('memberdata/get-change-log-table', [MemberController::class, 'getChangeLogTable']);
 
 
+        Route::get('memberdata/details', [MemberController::class, 'memberDetails']);
+
+        
+        
+
         //Prior Authorization
         Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
         Route::get('prior-authorization/authcode_auto_generate', [PriorAuthController::class, 'priorAuthCodeGenerate']);
@@ -890,6 +895,9 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/diagnosis/get/{ndcid}', [ValidationListsController::class, 'getDiagnosisList'])->name('diagnosis.list.get'); // LIST ITEMS
     Route::get('/diagnosis/details/{ndcid}', [ValidationListsController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
+
+
+
     Route::get('/limitations', [DiagnosisController::class, 'getLimitations'])->name('diagnosis.get'); // SEARCH
 
     Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('speciality.search'); // SEARCH
@@ -926,6 +934,12 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/diagnosisvalidation/details/{diagnosis_list}/{diagnosis_id}', [DiagnosisValidationListController::class, 'getDiagnosisDetails']);
     Route::get('/diagnosisvalidation/getAll', [DiagnosisValidationListController::class, 'getAll']);
     Route::post('/diagnosisvalidation/submit-diagnosis-validation-form', [DiagnosisValidationListController::class, 'updatePriorityDiagnosisValidation']);
+
+    Route::post('/diagnosisvalidation/delete-record', [DiagnosisValidationListController::class, 'deleteRecord']); //delete limitation
+    
+    
+
+
     Route::get('/pricingstrategy/search', [PricingStrategyController::class, 'search'])->name('pricingstrategy.search'); // SEARCH
     Route::get('/pricingstrategy/get/{ndcid}', [PricingStrategyController::class, 'getProviderList'])->name('pricingstrategy.list.get'); // LIST ITEMS
     Route::get('/pricingstrategy/details/{ndcid}/{ndcid2}/{id3}', [PricingStrategyController::class, 'getNDCItemDetails'])->name('pricingstrategy.details.get'); // DETAIL
@@ -1211,8 +1225,11 @@ Route::group(['prefix' => "drug-information/"], function () {
     Route::post('drug-price/add', [DrugDatabaseController::class, 'addDrugPrice']);
     Route::get('ndc-gpi/search', [NdcGpiController::class, 'search']);
     Route::get('ndc-gpi/details/{ndcid}', [NdcGpiController::class, 'getDetails']);
-
     Route::get('ndc-gpi/drop-down', [NdcGpiController::class, 'GpiDropDown']);
+    Route::post('drug-database/delete', [DrugDatabaseController::class, 'drugdatabaseDelete']);
+
+
+
 });
 
 

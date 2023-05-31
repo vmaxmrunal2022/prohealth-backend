@@ -1374,39 +1374,50 @@ class NDCExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function ndcdelete(Request $request)
-    {
+    public function ndcdelete(Request $request){
+        
+        // return $request->all();
 
+        if(isset($request->ndc_exception_list) && isset($request->ndc) && isset($request->effective_date)){
 
-        if (isset($request->ndc_exception_list) && ($request->ndc)) {
-
-            $all_exceptions_lists =  DB::table('NDC_EXCEPTION_LISTS')
-                ->where('ndc_exception_list', $request->ndc_exception_list)
-                ->where('ndc', $request->ndc)
-                ->delete();
-            if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
+            $all_exceptions_lists=  DB::table('NDC_EXCEPTION_LISTS')
+                                        ->where('ndc_exception_list',$request->ndc_exception_list)
+                                        ->where('ndc',$request->ndc)
+                                        ->where('effective_date',$request->effective_date)
+                                        ->delete();
+             $childcount =  DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list',$request->ndc_exception_list)->count() ;              
+            if($all_exceptions_lists){
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
+            }else{
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else if (isset($request->ndc_exception_list)) {
 
+            
+        }
 
-            $exception_delete =  DB::table('NDC_EXCEPTIONS')
-                ->where('ndc_exception_list', $request->ndc_exception_list)
-                ->delete();
+        elseif(isset($request->ndc_exception_list)){
 
-            $all_exceptions_lists =  DB::table('NDC_EXCEPTION_LISTS')
-                ->where('ndc_exception_list', $request->ndc_exception_list)
-                ->delete();
+        
+            $exception_delete=  DB::table('NDC_EXCEPTIONS')
+                                    ->where('ndc_exception_list',$request->ndc_exception_list)
+                                    ->delete();
 
-            if ($exception_delete) {
+            $all_exceptions_lists=  DB::table('NDC_EXCEPTION_LISTS')
+                                        ->where('ndc_exception_list',$request->ndc_exception_list)
+                                        ->delete();
+
+            if($exception_delete){
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
+            }else{
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
+
+    
+
+
         }
     }
+
 
 
     public function ndcList(Request $request)

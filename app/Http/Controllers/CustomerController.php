@@ -297,13 +297,13 @@ class CustomerController extends Controller
                         'user_id' => Cache::get('userId'),
                         'date_created' => date('Ymd'),
                         'time_created' => date('gisA'),
-                        'table_name' => 'FE_USERS',
-                        'record_action' => 'UP',
+                        'table_name' => 'CUSTOMER',
+                        'record_action' => 'IN',
                         'application' => 'ProPBM',
                         'record_snapshot' => $record_snapshot,
                     ]);
 
-                return $this->respondWithToken($this->token(), 'RecordAdded Successfully', $benefitcode);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $benefitcode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -498,12 +498,12 @@ class CustomerController extends Controller
 
     public function ALLSuperProviderNetworkIdS(Request $request)
     {
-        $customer = DB::table('RX_NETWORK_NAMES')->get();
+        $customer = DB::table('super_rx_network_names')->get();
         $newarray = [];
         foreach ($customer as $row) {
 
-            $new['value'] = $row->network_id;
-            $new['label'] = $row->network_name;
+            $new['value'] = $row->super_rx_network_id;
+            $new['label'] = $row->super_rx_network_id_name;
             array_push($newarray, $new);
         }
 
