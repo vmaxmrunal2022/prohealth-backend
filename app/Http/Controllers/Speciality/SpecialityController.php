@@ -218,8 +218,13 @@ class SpecialityController extends Controller
                                 'form_id' => ''
                             ]);
 
-                        $add = DB::table('SPECIALTY_VALIDATIONS')->where('specialty_list', 'like', '%' . $request->specialty_list . '%')->first();
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+                        // $add = DB::table('SPECIALTY_VALIDATIONS')->where('specialty_list', 'like', '%' . $request->specialty_list . '%')->first();
+                        $diag_validation = DB::table('SPECIALTY_VALIDATIONS')
+                            ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
+                            ->get();
+                        $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
+                            ->get();
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', [$diag_validation, $diag_exception]);
                     } else {
                         $updateProviderExceptionData = DB::table('SPECIALTY_EXCEPTIONS')
                             ->where('specialty_list', $request->specialty_list)
@@ -236,10 +241,15 @@ class SpecialityController extends Controller
                             ->get();
 
                         if (count($countValidation) >= 1) {
+                            $diag_validation = DB::table('SPECIALTY_VALIDATIONS')
+                                ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
+                                ->get();
+                            $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
+                                ->get();
                             return $this->respondWithToken(
                                 $this->token(),
                                 [['Specialty ID already exists']],
-                                [['Specialty ID already exists']],
+                                [$diag_validation, $diag_exception],
                                 false
                             );
                         } else {
@@ -258,10 +268,15 @@ class SpecialityController extends Controller
                                 ->where('SPECIALTY_VALIDATIONS.specialty_list', $request->specialty_list)
                                 ->where('SPECIALTY_VALIDATIONS.specialty_id', $request->specialty_id)
                                 ->first();
+                            $diag_validation = DB::table('SPECIALTY_VALIDATIONS')
+                                ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
+                                ->get();
+                            $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
+                                ->get();
                             return $this->respondWithToken(
                                 $this->token(),
                                 'Record Added successfully',
-                                $reecord,
+                                [$diag_validation, $diag_exception],
                             );
                         }
                     }
@@ -288,11 +303,15 @@ class SpecialityController extends Controller
                     'specialty_status' => $request->specialty_status,
                     'form_id' => ''
                 ]);
-
+            $diag_validation = DB::table('SPECIALTY_VALIDATIONS')
+                ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
+                ->get();
+            $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
+                ->get();
             return $this->respondWithToken(
                 $this->token(),
                 'Record Updated successfully',
-                $countValidation,
+                [$diag_validation, $diag_exception],
             );
         }
     }

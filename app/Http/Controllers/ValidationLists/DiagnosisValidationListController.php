@@ -596,10 +596,16 @@ class DiagnosisValidationListController extends Controller
                         'form_id' => ''
                     ]);
 
+                $diag_validation = DB::table('DIAGNOSIS_VALIDATIONS')
+                    ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
+                    ->get();
+                $diag_exception = DB::table('DIAGNOSIS_EXCEPTIONS')
+                    ->get();
+
                 return $this->respondWithToken(
                     $this->token(),
                     'Record Updated successfully',
-                    $countValidation,
+                    [$diag_validation, $diag_exception],
                 );
             }
         } else {
