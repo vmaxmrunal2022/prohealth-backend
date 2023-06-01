@@ -272,9 +272,9 @@ class PlanAssociationController extends Controller
     public function planassoociationDelete(Request $request){
         if(isset($request->bin_number ) && isset($request->process_control_number) &&  isset($request->group_number ) ) {
             $planAssociation = DB::table('plan_lookup_table')
-                    ->where('bin_number', 'like', '%' . $request->bin_number . '%')
-                    ->where('process_control_number', 'like', '%' . $request->process_control_number . '%')
-                    ->where('group_number', 'like', '%' . $request->group_number . '%')->delete() ;
+                    ->where('bin_number', $request->bin_number)
+                    ->where('process_control_number', $request->process_control_number)
+                    ->where('group_number', $request->group_number )->delete() ;
 
             if ($planAssociation) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
@@ -283,6 +283,8 @@ class PlanAssociationController extends Controller
             }
         }
     }
+
+    
 }
 
 

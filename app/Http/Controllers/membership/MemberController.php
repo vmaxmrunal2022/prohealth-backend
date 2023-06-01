@@ -625,7 +625,7 @@ class MemberController extends Controller
 
                         $member_coverage = DB::table('MEMBER_COVERAGE')
                             ->where('customer_id', $coverage_list->customer_id)
-                            ->where('clinet_id', $coverage_list->client_id)
+                            ->where('client_id', $coverage_list->client_id)
                             ->where('client_group_id', $coverage_list->client_group_id)
                             ->where('member_id', $coverage_list->member_id)
                             ->where('EFFECTIVE_DATE', $coverage_list->effective_date)

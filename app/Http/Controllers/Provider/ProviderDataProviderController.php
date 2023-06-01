@@ -821,10 +821,10 @@ class ProviderDataProviderController extends Controller
             }
 
     public function providerdataDelete(Request $request){
-        if(isset($request->pharmacy_nabp) && isset($request->rx_network_rule_id)) {
+        if(isset($request->pharmacy_nabp) ) {
             $pharmacy_nabp = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp',$request->pharmacy_nabp)->delete();
 
-            $Network_rules = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID'  ,$request->rx_network_rule_id)->delete();
+            $Network_rules = DB::table('RX_NETWORKS')->where('pharmacy_nabp',$request->pharmacy_nabp)->delete();
 
             if ($pharmacy_nabp) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
