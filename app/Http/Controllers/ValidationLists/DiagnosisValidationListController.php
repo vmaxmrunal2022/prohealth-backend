@@ -504,7 +504,7 @@ class DiagnosisValidationListController extends Controller
                     $diag_exception = DB::table('DIAGNOSIS_EXCEPTIONS')
                         ->where(DB::raw('UPPER(diagnosis_list)'), 'like', '%' . strtoupper($request->diagnosis_list) . '%')
                         ->get();
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', [$diag_validation, $diag_exception]);
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', ['', '']);
                 } else {
                     $updateProviderExceptionData = DB::table('DIAGNOSIS_EXCEPTIONS')
                         ->where('diagnosis_list', $request->diagnosis_list)
@@ -799,11 +799,11 @@ class DiagnosisValidationListController extends Controller
                         ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
                         ->delete();
                     $diagnosis_validation1 = DB::table('DIAGNOSIS_EXCEPTIONS')
-                        // ->where(DB::raw('UPPER(specialty_list)'), 'like', '%' . strtoupper($request->specialty_list) . '%')
+                        ->where(DB::raw('UPPER(diagnosis_list)'), 'like', '%' . strtoupper($request->diagnosis_list) . '%')
                         ->get();
-                    return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully", $diagnosis_validation1, false);
+                    return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully ", $diagnosis_validation1, false);
                 }
-                return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_validation);
+                return $this->respondWithToken($this->token(), "Record Deleted Successfully ", $diagnosis_validation);
             } else {
                 $delete_diagnosis_id = DB::table('DIAGNOSIS_EXCEPTIONS')
                     ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
@@ -813,8 +813,9 @@ class DiagnosisValidationListController extends Controller
                     ->delete();
                 $diagnosis_exception =
                     DB::table('DIAGNOSIS_EXCEPTIONS')
+                    ->where(DB::raw('UPPER(diagnosis_list)'), 'like', '%' . strtoupper($request->diagnosis_list) . '%')
                     ->get();
-                return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_exception);
+                return $this->respondWithToken($this->token(), "Record Deleted Successfully ", '');
             }
         }
     }
