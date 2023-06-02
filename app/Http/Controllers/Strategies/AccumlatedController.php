@@ -296,6 +296,16 @@ class AccumlatedController extends Controller
         return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
     }
 
+    public function getAllAcuumlatedBenefits(Request $request){
+
+        $existdata = DB::table('accum_bene_strategy_names')
+        ->get();
+
+        return $this->respondWithToken($this->token(), 'Successfully added', $existdata);
+
+
+    }
+
     public function delete(Request $request)
     {
         if (isset($request->accum_bene_strategy_id) && isset($request->effective_date) && isset($request->plan_accum_deduct_id)) {

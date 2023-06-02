@@ -763,7 +763,7 @@ use AuditTrait;
         }elseif(isset($request->procedure_exception_list)) {
               
                 $exception_delete = DB::table('PROCEDURE_EXCEPTION_NAMES')
-                                        ->where('PROCEDURE_EXCEPTION_LIST', strtoupper($request->procedure_exception_list))
+                                        ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
                                         ->delete();
             
                 $all_exceptions_lists = DB::table('PROCEDURE_EXCEPTION_LISTS')

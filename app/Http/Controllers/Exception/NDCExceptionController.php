@@ -1126,7 +1126,7 @@ class NDCExceptionController extends Controller
                             ->first();
                         $record_snapshot = json_encode($update);
                         $save_audit = $this->auditMethod('UP', $record_snapshot, 'NDC_EXCEPTION_LISTS');
-                        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
                     }
                 }
 

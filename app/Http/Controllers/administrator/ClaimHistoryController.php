@@ -13,33 +13,33 @@ class ClaimHistoryController extends Controller
     // public function searchHistory(Request $request)
     // {
     //     if ($request->data_type == 'date_filled') {
-    //         if ($request->from_date != null) {
-    //             $from_date_filled = str_replace('-', '', $request->from_date);
-    //             // print_r(($from_date_filled));
+    //         if ($request->date_filled != null) {
+    //             $date_filled_filled = str_replace('-', '', $request->date_filled);
+    //             // print_r(($date_filled_filled));
     //         } else {
-    //             $from_date_filled = null;
+    //             $date_filled_filled = null;
     //         }
 
-    //         if ($request->to_date != null) {
-    //             $to_date_filled = str_replace('-', '', $request->to_date);
+    //         if ($request->date_submitted != null) {
+    //             $date_submitted_filled = str_replace('-', '', $request->date_submitted);
     //         } else {
-    //             $to_date_filled = null;
+    //             $date_submitted_filled = null;
     //         }
     //     } else {
-    //         if ($request->from_date != null) {
-    //             $from_date_submitted = str_replace('-', '', $request->from_date);
+    //         if ($request->date_filled != null) {
+    //             $date_filled_submitted = str_replace('-', '', $request->date_filled);
     //         } else {
-    //             $from_date_submitted = null;
+    //             $date_filled_submitted = null;
     //         }
 
-    //         if ($request->to_date != null) {
-    //             $to_date_submitted = str_replace('-', '', $request->to_date);
+    //         if ($request->date_submitted != null) {
+    //             $date_submitted_submitted = str_replace('-', '', $request->date_submitted);
     //         } else {
-    //             $to_date_submitted = null;
+    //             $date_submitted_submitted = null;
     //         }
     //     }
 
-    //     // print_r($from_date_filled);
+    //     // print_r($date_filled_filled);
     //     $search_result = DB::table('rx_transaction_detail')
     //         //  ->when($cardholder_id, function ($query) use ($cardholder_id) {
     //         //     return $query->where('cardholder_id', 'like', '%'. $cardholder_id. '%');
@@ -48,20 +48,20 @@ class ClaimHistoryController extends Controller
     //         ->where('person_code', 'like', '%' . $request->person_code . '%')
     //         ->where('patient_pin_number', 'like', '%' . $request->patient_pin_number . '%')
 
-    //         // ->when($from_date_filled, function ($query) use ($from_date_filled) {
-    //         //     return $query->where('date_filled', '>=', $from_date_filled);
+    //         // ->when($date_filled_filled, function ($query) use ($date_filled_filled) {
+    //         //     return $query->where('date_filled', '>=', $date_filled_filled);
     //         //  })
 
-    //         //  ->when($to_date_filled, function ($query) use ($to_date_filled) {
-    //         //     return $query->where('date_filled', '<=', $to_date_filled);
+    //         //  ->when($date_submitted_filled, function ($query) use ($date_submitted_filled) {
+    //         //     return $query->where('date_filled', '<=', $date_submitted_filled);
     //         //  })
 
-    //         //  ->when($from_date_submitted, function ($query) use ($from_date_submitted) {
-    //         //     return $query->where('date_submitted', '>=', $from_date_submitted);
+    //         //  ->when($date_filled_submitted, function ($query) use ($date_filled_submitted) {
+    //         //     return $query->where('date_submitted', '>=', $date_filled_submitted);
     //         //  })
 
-    //         //  ->when($to_date_submitted, function ($query) use ($to_date_submitted) {
-    //         //     return $query->where('date_submitted', '<=', $to_date_submitted);
+    //         //  ->when($date_submitted_submitted, function ($query) use ($date_submitted_submitted) {
+    //         //     return $query->where('date_submitted', '<=', $date_submitted_submitted);
     //         //  })
 
 
@@ -90,8 +90,8 @@ class ClaimHistoryController extends Controller
 
             if($request->sort == '1'){
                 $data=DB::table('RX_TRANSACTION_DETAIL')
-            ->where('DATE_FILLED', '>=', $request->from_date)
-            ->where('DATE_SUBMITTED', '<=', $request->to_date)
+            ->where('DATE_FILLED', '>=', $request->date_filled)
+            ->where('DATE_SUBMITTED', '<=', $request->date_submitted)
             ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
             ->where('TRANSACTION_STATUS','P')
             ->orderByDesc('DATE_SUBMITTED')
@@ -105,8 +105,8 @@ class ClaimHistoryController extends Controller
 
 
                 $data=DB::table('RX_TRANSACTION_DETAIL')
-                ->where('DATE_FILLED', '>=', $request->from_date)
-                ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('DATE_FILLED', '>=', $request->date_filled)
+                ->where('DATE_SUBMITTED', '<=', $request->date_submitted)
                 ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
                 ->where('TRANSACTION_STATUS','P')
                 ->orderByDesc('PHARMACY_NABP')
@@ -125,8 +125,8 @@ class ClaimHistoryController extends Controller
             if($request->sort == 1){
 
                 $data=DB::table('RX_TRANSACTION_DETAIL')
-                ->where('DATE_FILLED', '>=', $request->from_date)
-               ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('DATE_FILLED', '>=', $request->date_filled)
+               ->where('DATE_SUBMITTED', '<=', $request->date_submitted)
                ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
                ->where('TRANSACTION_STATUS','R')
                ->orderByDesc('DATE_SUBMITTED')
@@ -137,8 +137,8 @@ class ClaimHistoryController extends Controller
             }else if($request->sort == 2){
 
                 $data=DB::table('RX_TRANSACTION_DETAIL')
-                ->where('DATE_FILLED', '>=', $request->from_date)
-               ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('DATE_FILLED', '>=', $request->date_filled)
+               ->where('DATE_SUBMITTED', '<=', $request->date_submitted)
                ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
                ->where('TRANSACTION_STATUS','R')
                ->orderByDesc('PHARMACY_NABP')
@@ -158,8 +158,8 @@ class ClaimHistoryController extends Controller
             if($request->sort ==1){
 
                 $data=DB::table('RX_TRANSACTION_DETAIL')
-                ->where('DATE_FILLED', '>=', $request->from_date)
-                ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('DATE_FILLED', '>=', $request->date_filled)
+                ->where('DATE_SUBMITTED', '<=', $request->date_submitted)
                 ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
                 ->where('TRANSACTION_STATUS','X')
                 ->orderByDesc('DATE_SUBMITTED')
@@ -170,8 +170,8 @@ class ClaimHistoryController extends Controller
             else if($request->sort == 2){
                 
                 $data=DB::table('RX_TRANSACTION_DETAIL')
-                ->where('DATE_FILLED', '>=', $request->from_date)
-                ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('DATE_FILLED', '>=', $request->date_filled)
+                ->where('DATE_SUBMITTED', '<=', $request->date_submitted)
                 ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
                 ->where('TRANSACTION_STATUS','X')
                 ->orderByDesc('PHARMACY_NABP')
@@ -189,8 +189,8 @@ class ClaimHistoryController extends Controller
 
             if($request->sort ==1){
                 $data =  DB::table('RX_TRANSACTION_DETAIL')
-                ->where('DATE_FILLED', '>=', $request->from_date)
-                ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('DATE_FILLED', '>=', $request->date_filled)
+                ->where('DATE_SUBMITTED', '<=', $request->date_submitted)
                 ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
                 ->get();
                 return $this->respondWithToken($this->token(), '', $data);
@@ -199,8 +199,8 @@ class ClaimHistoryController extends Controller
             }else if($request->sort == 2){
 
                 $data =  DB::table('RX_TRANSACTION_DETAIL')
-                ->where('DATE_FILLED', '>=', $request->from_date)
-                ->where('DATE_SUBMITTED', '<=', $request->to_date)
+                ->where('DATE_FILLED', '>=', $request->date_filled)
+                ->where('DATE_SUBMITTED', '<=', $request->date_submitted)
                 ->where('CARDHOLDER_ID', '=', $request->cardholder_id)
                 ->get();
                 return $this->respondWithToken($this->token(), '', $data);
@@ -309,7 +309,7 @@ class ClaimHistoryController extends Controller
         //                    ->get();
 
         if ($request->ndc != null) {
-            $ndc = $request->ndc['ndcvalue'];
+            $ndc = $request->ndc;
         } else {
             $ndc = null;
         }
@@ -338,7 +338,7 @@ class ClaimHistoryController extends Controller
             $client_group_id = null;
         }
 
-        $searchOptionResult = DB::table('RX_TRANSACTION_LOG')
+        $searchOptionResult = DB::table('RX_TRANSACTION_DETAIL')
             ->where('rx_number', 'like', '%' . $request->rx_number . '%')
             ->where('claim_reference_number', 'like', '%' . $request->claim_reference_number . '%')
             ->when($ndc, function ($query) use ($ndc) {
