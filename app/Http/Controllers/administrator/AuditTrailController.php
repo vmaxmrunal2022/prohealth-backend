@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use PDO;
 
+use function PHPUnit\Framework\isEmpty;
+
 class AuditTrailController extends Controller
 {
     public function getTables(Request $request)
@@ -131,10 +133,8 @@ class AuditTrailController extends Controller
             ->when($prov_type_proc_assoc_id, function ($query) use ($prov_type_proc_assoc_id) {
                 return $query->where('prov_type_proc_assoc_id', 'like', '%' . $prov_type_proc_assoc_id . '%');
             })
-
-
-
             ->get();
+
 
         $old_column_arr = [];
         $old_value_arr = [];
@@ -166,15 +166,26 @@ class AuditTrailController extends Controller
             $arr2 = $key;
             array_push($column_arr, $arr2);
         }
-
         $current_record = [];
-        foreach ($record[0] as $key => $val) {
-            $ar = $val;
-            array_push($current_record, $ar);
+        if (isEmpty($record)) {
+            $record[0] = ["This record is deleted"];
+        } else {
+            foreach ($record[0] as $key => $val) {
+                $ar = $val;
+                array_push($current_record, $ar);
+            }
         }
+        // foreach ($record[0] as $key => $val) {
+        //     $ar = $val;
+        //     array_push($current_record, $ar);
+        // }
+
 
         // $data = ['user_record' => $user_record[0], 'record_snapshot' => $current_record, 'old_record' => $old_value_arr, 'columns' => $old_column_arr];
-        $data = ['user_record' => $user_record[0], 'record_snapshot' => $record[0], 'old_record' => $old_value_arr, 'columns' => $old_column_arr];
+        $data = [
+            'user_record' => $user_record[0], 'record_snapshot' => $record[0], 'old_record' => $old_value_arr,
+            'columns' => $old_column_arr
+        ];
         return $this->respondWithToken($this->token(), '', $data);
     }
 

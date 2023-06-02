@@ -366,6 +366,7 @@ class PrescriberValidationController extends Controller
                 ->delete();
             $diagnosis_exception =
                 DB::table('PHYSICIAN_EXCEPTIONS')
+                ->where(DB::raw('UPPER(physician_list)'), 'like', '%' . strtoupper($request->physician_list) . '%')
                 ->get();
             return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_exception);
         } else        
@@ -383,8 +384,7 @@ class PrescriberValidationController extends Controller
                         ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
                         ->delete();
                     $diagnosis_validation1 = DB::table('PHYSICIAN_EXCEPTIONS')
-                        // ->where(DB::raw('UPPER(physician_list)'), 'like', '%' . strtoupper($request->physician_list) . '%')
-                        ->get();
+                        ->where(DB::raw('UPPER(physician_list)'), 'like', '%' . strtoupper($request->physician_list) . '%')->get();
                     return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully", $diagnosis_validation1, false);
                 }
                 return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_validation);
@@ -397,8 +397,9 @@ class PrescriberValidationController extends Controller
                     ->delete();
                 $diagnosis_exception =
                     DB::table('PHYSICIAN_EXCEPTIONS')
+                    ->where(DB::raw('UPPER(physician_list)'), 'like', '%' . strtoupper($request->physician_list) . '%')
                     ->get();
-                return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_exception);
+                return $this->respondWithToken($this->token(), "Record Deleted Successfully", '');
             }
         }
     }

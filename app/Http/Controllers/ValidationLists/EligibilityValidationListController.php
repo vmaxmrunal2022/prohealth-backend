@@ -207,7 +207,7 @@ class EligibilityValidationListController extends Controller
         $updated_list = DB::table('ELIG_VALIDATION_LISTS')
             ->get();
 
-        return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $updated_list);
+        return $this->respondWithToken($this->token(), 'Record Deleted Successfully', '');
     }
 }
 
