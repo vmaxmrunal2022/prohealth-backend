@@ -260,6 +260,21 @@ class FlexibleNetworkController extends Controller
         }
     }
 
+    public function flexibleNetworkDelete(Request $request){
+        if(isset($request->rx_network_rule_id)) {
+            $network_rule_name = DB::table('RX_NETWORK_RULE_NAMES')
+                    ->where('rx_network_rule_id', $request->rx_network_rule_id)->delete();
+
+            $Network_rules = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID'  ,$request->rx_network_rule_id)->delete();
+
+            if ($network_rule_name) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
+
 
     public function all(Request $request)
     {

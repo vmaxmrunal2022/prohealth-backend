@@ -643,8 +643,10 @@ class ProviderTypeProcController extends Controller
                                         ->where('effective_date', $request->effective_date)
                                         ->delete();
 
+            $childrecords = DB::table('PROV_TYPE_PROC_ASSOC')->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)->count();                            
+
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childrecords);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

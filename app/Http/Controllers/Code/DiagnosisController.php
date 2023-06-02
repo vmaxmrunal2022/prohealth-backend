@@ -12,9 +12,13 @@ class DiagnosisController extends Controller
 {
     public function all(Request $request)
     {
-
+// return "test";
         $benefitcodes = DB::table('DIAGNOSIS_CODES')
-            ->get();
+                        ->select('diagnosis_id','description')
+                        // ->take(100)
+                        ->get();
+
+            // return count( $benefitcodes);
         return $this->respondWithToken($this->token(), '', $benefitcodes);
     }
 
@@ -30,6 +34,8 @@ class DiagnosisController extends Controller
                 ->where(DB::raw('UPPER(diagnosis_id)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . $request->search . '%')
                 ->get();
+
+             
 
             return $this->respondWithToken($this->token(), '', $benefitcodes);
         }

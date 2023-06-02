@@ -473,7 +473,7 @@ class SuperBenefitControler extends Controller
     {
         $benefitLists = DB::table('SUPER_BENEFIT_LISTS')
                         ->join('SUPER_BENEFIT_LIST_NAMES', 'SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID', '=', 'SUPER_BENEFIT_LIST_NAMES.SUPER_BENEFIT_LIST_ID')
-                        ->where('SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID','like','%'.strtoupper($request->search).'%')
+                        ->where('SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID','like','%'.$request->search.'%')
                         ->get();
 
         return $this->respondWithToken($this->token(),'',$benefitLists);
@@ -487,8 +487,9 @@ class SuperBenefitControler extends Controller
                                         ->where('benefit_list_id',$request->benefit_list_id)
                                         ->where('effective_date',$request->effective_date)
                                         ->delete();
+            $childcount =  DB::table('SUPER_BENEFIT_LISTS')->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)->count();
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

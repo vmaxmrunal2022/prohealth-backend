@@ -338,4 +338,19 @@ class TraditionalNetworkController extends Controller
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
+
+
+    public function traditionalNetworkDelete(Request $request){
+        if(isset($request->network_id) ) {
+            $network_id = DB::table('RX_NETWORK_NAMES')->where('network_id', $request->network_id)->delete();
+
+            $Rx_networks = DB::table('RX_NETWORKS')->where('NETWORK_ID', $request->network_id)->delete();
+
+            if ($network_id) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
 }

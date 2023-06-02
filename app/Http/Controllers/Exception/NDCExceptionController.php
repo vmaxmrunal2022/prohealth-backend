@@ -1408,12 +1408,14 @@ class NDCExceptionController extends Controller
                                         ->where('ndc',$request->ndc)
                                         ->where('effective_date',$request->effective_date)
                                         ->delete();
+             $childcount =  DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list',$request->ndc_exception_list)->count() ;              
             if($all_exceptions_lists){
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             }else{
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
 
+            
         }
 
         elseif(isset($request->ndc_exception_list)){

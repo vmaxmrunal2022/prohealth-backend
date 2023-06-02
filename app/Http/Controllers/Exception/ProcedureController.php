@@ -749,9 +749,11 @@ class ProcedureController extends Controller
                                         ->where('service_type',$request->service_type)
                                         ->where('effective_date',$request->effective_date)
                                         ->delete();
+
+            $childcount = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)->count();                            
             
             if ($all_exceptions_lists) {
-               return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+               return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             }else{
                return $this->respondWithToken($this->token(), 'Record Not Found');
             }
@@ -759,7 +761,7 @@ class ProcedureController extends Controller
         }elseif(isset($request->procedure_exception_list)) {
               
                 $exception_delete = DB::table('PROCEDURE_EXCEPTION_NAMES')
-                                        ->where('PROCEDURE_EXCEPTION_LIST', strtoupper($request->procedure_exception_list))
+                                        ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
                                         ->delete();
             
                 $all_exceptions_lists = DB::table('PROCEDURE_EXCEPTION_LISTS')

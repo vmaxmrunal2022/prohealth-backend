@@ -223,7 +223,7 @@ class ProviderDataProviderController extends Controller
                         'PHONE' => $request->phone,
                         'FAX' => $request->fax,
                         'MAILING_ADDRESS_1' => $request->mailing_address_1,
-                        'MAILING_ADDRESS_2' => $request->mailing_address__2,
+                        'MAILING_ADDRESS_2' => $request->mailing_address_2,
                         'MAILING_CITY' => $request->mailing_city,
                         'MAILING_STATE' => $request->mailing_state,
                         'MAILING_ZIP_CODE' => $request->mailing_zip_code,
@@ -249,7 +249,7 @@ class ProviderDataProviderController extends Controller
                         'REIMB_PREFERENCE' => $request->reimb_preference,
                         'RECORD_USAGE' => $request->record_usage,
                         'BASE_PHARMACY_NABP' => $request->base_pharmacy_nabp,
-                        'COUNTY' => $request->country,
+                        'COUNTY' => $request->county,
                         'TAX_SCHEDULE_ID_1' => $request->tax_schedule_id_1,
                         'TAX_EFFECTIVE_DATE_1' => $request->tax_effective_date_1,
                         'TAX_TERMINATION_DATE_1' => $request->tax_termination_date_1,
@@ -368,7 +368,7 @@ class ProviderDataProviderController extends Controller
             }
 
             if ($addData) {
-                return $this->respondWithToken($this->token(), 'Added Successfully...!!!', $addData);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
             }
         } else if ($request->add_new == 0) {
             $validator = Validator::make($request->all(), [
@@ -482,6 +482,8 @@ class ProviderDataProviderController extends Controller
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
             } 
+
+            // dd($request->mailing_country);
             $updateData = DB::table('PHARMACY_TABLE')
                 ->where('pharmacy_nabp',$request->pharmacy_nabp)
                 ->update([
@@ -495,7 +497,7 @@ class ProviderDataProviderController extends Controller
                     'PHONE' => $request->phone,
                     'FAX' => $request->fax,
                     'MAILING_ADDRESS_1' => $request->mailing_address_1,
-                    'MAILING_ADDRESS_2' => $request->mailing_address__2,
+                    'MAILING_ADDRESS_2' => $request->mailing_address_2,
                     'MAILING_CITY' => $request->mailing_city,
                     'MAILING_STATE' => $request->mailing_state,
                     'MAILING_ZIP_CODE' => $request->mailing_zip_code,
@@ -521,7 +523,7 @@ class ProviderDataProviderController extends Controller
                     'REIMB_PREFERENCE' => $request->reimb_preference,
                     'RECORD_USAGE' => $request->record_usage,
                     'BASE_PHARMACY_NABP' => $request->base_pharmacy_nabp,
-                    'COUNTY' => $request->country,
+                    'COUNTY' => $request->county,
                     'TAX_SCHEDULE_ID_1' => $request->tax_schedule_id_1,
                     'TAX_EFFECTIVE_DATE_1' => $request->tax_effective_date_1,
                     'TAX_TERMINATION_DATE_1' => $request->tax_termination_date_1,
@@ -553,6 +555,7 @@ class ProviderDataProviderController extends Controller
                     'MAILING_COUNTRY' => $request->mailing_country,
                     'COUNTRY_CODE' => $request->country_code,
                     'MAILING_COUNTRY_CODE' => $request->mailing_country_code,
+
 
                 ]);
 
@@ -687,6 +690,7 @@ class ProviderDataProviderController extends Controller
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
+
     public function getAll(Request $request)
     {
         $ndc = DB::table('PHARMACY_TABLE')->get();
@@ -734,7 +738,7 @@ class ProviderDataProviderController extends Controller
 
 
                     ]);
-                return $this->respondWithToken($this->token(), 'Added Successfully...!!!', $addData);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
             } else {
                 return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
             }
@@ -750,7 +754,7 @@ class ProviderDataProviderController extends Controller
                     'TERMINATION_DATE' => $request->termination_date,
 
                 ]);
-            return $this->respondWithToken($this->token(), 'Updated Successfully...!!!', $updateData);
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
         }
     }
 
@@ -771,7 +775,7 @@ class ProviderDataProviderController extends Controller
 
 
                     ]);
-                return $this->respondWithToken($this->token(), 'Added Successfully...!!!', $addData);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
             } else {
                 return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
             }
@@ -784,7 +788,7 @@ class ProviderDataProviderController extends Controller
                     'TERMINATION_DATE' => $request->termination_date,
 
                 ]);
-            return $this->respondWithToken($this->token(), 'Updated Successfully...!!!', $updateData);
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
         }
     }
 
@@ -815,6 +819,20 @@ class ProviderDataProviderController extends Controller
                       ];
                return $this->respondWithToken($this->token(), '', $merged);
             }
+
+    public function providerdataDelete(Request $request){
+        if(isset($request->pharmacy_nabp) ) {
+            $pharmacy_nabp = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp',$request->pharmacy_nabp)->delete();
+
+            $Network_rules = DB::table('RX_NETWORKS')->where('pharmacy_nabp',$request->pharmacy_nabp)->delete();
+
+            if ($pharmacy_nabp) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }       
             
  
 }

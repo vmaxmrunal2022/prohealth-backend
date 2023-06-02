@@ -139,4 +139,17 @@ class ChainController extends Controller
         
 
     }
+
+    public function chainDelete(Request $request){
+        if(isset($request->pharmacy_chain)) {
+            $chainDelete = DB::table('PHARMACY_CHAIN')
+                              ->where(DB::raw('UPPER(PHARMACY_CHAIN)'), strtoupper($request->pharmacy_chain))->delete() ;
+
+            if ($chainDelete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
 }

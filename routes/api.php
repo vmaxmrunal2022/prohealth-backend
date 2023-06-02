@@ -461,7 +461,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/provider/search', [ProviderDataProviderController::class, 'search'])->name('provider.search'); // SEARCH
         Route::get('/provider/get/{ndcid}', [ProviderDataProviderController::class, 'getProviderList'])->name('provider.list.get'); // LIST ITEMS
         Route::get('/provider/details/{ndcid}', [ProviderDataProviderController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
-        Route::post('/provider/add', [ProviderDataProviderController::class, 'add'])->name('ndsc.details.get'); // DETAIL
+        Route::post('/provider/add', [ProviderDataProviderController::class, 'add'])->name('ndsc.details.get');
+        Route::post('/provider/delete', [ProviderDataProviderController::class, 'providerdataDelete'])->name('provider.delete'); // DETAIL
         Route::get('/get-provider-networks', [ProviderDataProviderController::class, 'getProviderNetworks']);
 
         Route::get('/get-combine-networks', [ProviderDataProviderController::class, 'getCombileNetworks']);
@@ -474,6 +475,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::get('supernetwork/get/{ndcid}', [SuperProviderNetworkController::class, 'networkList']);
         Route::post('superprovider/add', [SuperProviderNetworkController::class, 'add']);
+        Route::post('superprovider/delete', [SuperProviderNetworkController::class, 'superProviderNetworkDelete']);
         Route::get('supernetwork/dropdown', [SuperProviderNetworkController::class, 'dropDown']);
         Route::get('supernetwork/getDetails/{ndcid}/{provider_network_id}/{eff_date}', [SuperProviderNetworkController::class, 'getDetails']);
 
@@ -485,6 +487,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('traditionalnetwork/details/{ndcid}', [TraditionalNetworkController::class, 'getDetails']);
 
         Route::post('traditionalnetwork/add', [TraditionalNetworkController::class, 'add']);
+        Route::post('traditionalnetwork/delete', [TraditionalNetworkController::class, 'traditionalNetworkDelete']);
 
         Route::get('traditionalnetwork/dropdown', [TraditionalNetworkController::class, 'dropdown']);
 
@@ -529,6 +532,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::get('chain/get/{ndcid}', [ChainController::class, 'getList']);
         Route::post('chain/add', [ChainController::class, 'add']);
+        Route::post('chain/delete', [ChainController::class, 'chainDelete']);
     });
 
 
@@ -587,6 +591,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('plan-edit/get-super-provider-network', [PlanEditController::class, 'getSuperProviderNetwork']);
         Route::get('plan-edit/get-exhausted-benefits', [PlanEditController::class, 'getExhaustedBenefits']);
         Route::get('plan-edit/get-procedure-exception', [PlanEditController::class, 'getProcedureException']);
+        Route::get('plan-edit/delete', [PlanEditController::class, 'planeditDelete']);
     });
 
     //Membership
@@ -1107,6 +1112,7 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('flexiblenetwork/get/{ndcid}', [FlexibleNetworkController::class, 'getList']);
     Route::get('flexiblenetwork/details/{ndcid}', [FlexibleNetworkController::class, 'getDetails']);
     Route::post('flexiblenetwork/add', [FlexibleNetworkController::class, 'add']);
+    Route::post('flexiblenetwork/delete', [FlexibleNetworkController::class, 'flexibleNetworkDelete']);
     Route::get('flexiblenetwork/all', [FlexibleNetworkController::class, 'all']);
 
 
@@ -1208,6 +1214,7 @@ Route::group(['prefix' => "drug-information/"], function () {
     Route::get('drug-database/get', [DrugDatabaseController::class, 'get']);
     Route::get('drug-database/get-drug-prices', [DrugDatabaseController::class, 'getDrugPrices']);
     Route::post('drug-price/add', [DrugDatabaseController::class, 'addDrugPrice']);
+    Route::post('drug-database/delete', [DrugDatabaseController::class, 'drugdatabaseDelete']);
     Route::get('ndc-gpi/search', [NdcGpiController::class, 'search']);
     Route::get('ndc-gpi/details/{ndcid}', [NdcGpiController::class, 'getDetails']);
 
@@ -1232,6 +1239,7 @@ Route::group(['prefix' => 'plan-design/'], function () {
     Route::get('plan-association/get-transaction-association', [PlanAssociationController::class, 'getTransactionAssociation']);
     Route::get('plan-association/get-client-group-label', [PlanAssociationController::class, 'getClientGroupLabel']);
     Route::get('plan-association/get-plan-id', [PlanAssociationController::class, 'getPlanId']);
+    Route::post('plan-association/delete', [PlanAssociationController::class, 'planassoociationDelete']);
 });
 
 //Membership
@@ -1268,6 +1276,7 @@ Route::group(['prefix' => 'membership/'], function () {
     //Prior Authorization
     Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
     Route::post('prior-authorization/submit', [PriorAuthController::class, 'submitPriorAuthorization']);
+    Route::post('prior-authorization/delete', [PriorAuthController::class, 'priorAuthDelete']);
 
 
     //Plan Validation

@@ -627,12 +627,12 @@ class RvaListController extends Controller
     {
         if (isset($request->rva_list_id) && isset($request->effective_date)) {
             $all_exceptions_lists =  DB::table('RVA_LIST')
-                ->where('RVA_LIST_ID', $request->rva_list_id)
-                ->where('EFFECTIVE_DATE', $request->effective_date)
-                ->delete();
-
+                                        ->where('RVA_LIST_ID', $request->rva_list_id)
+                                        ->where('EFFECTIVE_DATE', $request->effective_date)
+                                        ->delete();
+            $childcount =  DB::table('RVA_LIST')->where('RVA_LIST_ID', $request->rva_list_id)->count();
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

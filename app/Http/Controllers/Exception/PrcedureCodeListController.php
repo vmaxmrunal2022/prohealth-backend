@@ -469,9 +469,10 @@ class PrcedureCodeListController extends Controller
                                         ->where('procedure_code',$request->procedure_code)
                                         ->where('effective_date',$request->effective_date)
                                         ->delete();
+           $childcount = DB::table('PROC_CODE_LISTS')->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)->count();
 
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

@@ -605,9 +605,9 @@ class BenefitDerivationController extends Controller
                                         ->where('benefit_code', $request->benefit_code)
                                         ->where('effective_date', $request->effective_date)
                                         ->delete();
-
+            $childcount = DB::table('BENEFIT_DERIVATION')->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)->count(); 
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

@@ -326,4 +326,16 @@ class PriorAuthController extends Controller
             return $this->respondWithToken($this->token(), 'Record Updated Successfully!', $inserted_record);
         }
     }
+
+    public function priorAuthDelete(Request $request){
+        if(isset($request->prior_auth_code_num)) {
+            $PRIOR_AUTHORIZATIONS = DB::table('PRIOR_AUTHORIZATIONS')
+                                       ->where('prior_auth_code_num', $request->prior_auth_code_num)->delete();
+            if ($PRIOR_AUTHORIZATIONS) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
 }

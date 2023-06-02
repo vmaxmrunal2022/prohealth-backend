@@ -608,9 +608,10 @@ class ProcedureUcrList extends Controller
                                         ->where('PROCEDURE_CODE',$request->procedure_code)
                                         ->where('EFFECTIVE_DATE',$request->effective_date)
                                         ->delete();
+            $childcount =    DB::table('PROCEDURE_UCR_LIST')->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)->count();                         
 
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
@@ -622,8 +623,6 @@ class ProcedureUcrList extends Controller
 
             $all_exceptions_lists =  DB::table('PROCEDURE_UCR_LIST')
                                     ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
-                                    // ->where('PROCEDURE_CODE',$request->procedure_code)
-                                    // ->where('EFFECTIVE_DATE',$request->effective_date)
                                     ->delete();                        
 
             if ($exception_delete) {

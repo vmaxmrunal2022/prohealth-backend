@@ -325,5 +325,20 @@ class DrugDatabaseController extends Controller
 
     }
 
+    public function drugdatabaseDelete(Request $request){
+        if (isset($request->ndc) ) {
+            $all_exceptions_lists =   DB::table('DRUG_MASTER')
+                                              ->where('NDC', $request->ndc)->delete();
+
+            $drug_price = DB::table('DRUG_PRICE')->where('NDC', $request->ndc)->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        } 
+    }
+
 
 }

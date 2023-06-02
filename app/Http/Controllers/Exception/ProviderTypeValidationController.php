@@ -469,8 +469,9 @@ public function add(Request $request)
                                         ->where('provider_type',$request->provider_type)
                                         ->where('effective_date',$request->effective_date)
                                         ->delete();
+            $childcount =  DB::table('PROVIDER_TYPE_VALIDATIONS')->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)->count();
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

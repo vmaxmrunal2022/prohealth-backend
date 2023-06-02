@@ -1236,9 +1236,9 @@ class DrugClassController extends Controller
                                         // ->where('PROCESS_RULE', $request->process_rule)
                                         ->where('EFFECTIVE_DATE', $request->effective_date)
                                         ->delete();
-                    
+            $childcount =    DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)->count();
             if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

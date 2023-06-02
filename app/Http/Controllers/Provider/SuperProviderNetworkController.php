@@ -571,4 +571,43 @@ class SuperProviderNetworkController extends Controller
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
+
+
+    public function superProviderNetworkDelete(Request $request){
+        if(isset($request->super_rx_network_id) && isset($request->rx_network_id) && isset($request->effective_date)){
+
+            $network_list =  DB::table('SUPER_RX_NETWORKS')
+                                ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                ->where(DB::raw('UPPER(rx_network_id)'), strtoupper($request->rx_network_id))
+                                ->where('effective_date',$request->effective_date)
+                                ->delete();
+             $childcount =  DB::table('SUPER_RX_NETWORKS')->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                               ->count() ;              
+            if($network_list){
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
+            }else{
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+
+            
+        }
+        elseif(isset($request->super_rx_network_id)){
+
+        
+            $exception_delete=   DB::table('SUPER_RX_NETWORK_NAMES')
+                                    ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                    ->delete();
+
+            $all_exceptions_lists = DB::table('SUPER_RX_NETWORKS')
+                                     ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                        ->delete();
+
+            if($exception_delete){
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            }else{
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+
+        }
+    }
 }

@@ -459,9 +459,10 @@ class ReasonCodeExceptionController extends Controller
                                         ->where('REASON_CODE', $request->reason_code)
                                         ->where('EFFECTIVE_DATE',$request->effective_date)
                                         ->delete();
-
+                                        
+            $childcount =   DB::table('REASON_CODE_LISTS')->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)->count();
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             }else{
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
