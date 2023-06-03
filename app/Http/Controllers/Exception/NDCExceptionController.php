@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
-use APP\Traits\AuditTrait;
+
+use App\Traits\AuditTrait;
+
 
 
 class NDCExceptionController extends Controller
@@ -514,6 +516,7 @@ class NDCExceptionController extends Controller
 
     public function add(Request $request)
     {
+
         $createddate = date('y-m-d');
 
         $validation = DB::table('NDC_EXCEPTIONS')
@@ -1123,7 +1126,6 @@ class NDCExceptionController extends Controller
                             ->first();
                         $record_snapshot = json_encode($update);
                         $save_audit = $this->auditMethod('UP', $record_snapshot, 'NDC_EXCEPTION_LISTS');
-                        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
                     }
                 }
@@ -1159,7 +1161,6 @@ class NDCExceptionController extends Controller
                 //     ->update(
                 //         [
                 //             'exception_name'=>$request->exception_name,
-
                 //         ]
                 //     );
 
@@ -1244,12 +1245,10 @@ class NDCExceptionController extends Controller
                 //                 'RX_QTY_OPT_MULTIPLIER'=>$request->rx_qty_opt_multiplier,
                 //                 'DAYS_SUPPLY_OPT_MULTIPLIER'=>$request->days_supply_opt_multiplier,
                 //                 'MODULE_EXIT'=>$request->module_exit,
-
                 //             ]
                 //         );
                 //         $update = DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
                 //         return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-
 
 
 
@@ -1378,19 +1377,22 @@ class NDCExceptionController extends Controller
     public function ndcdelete(Request $request)
     {
 
+        // return $request->all();
 
-        if (isset($request->ndc_exception_list) && ($request->ndc)) {
+        if (isset($request->ndc_exception_list) && isset($request->ndc) && isset($request->effective_date)) {
 
             $all_exceptions_lists =  DB::table('NDC_EXCEPTION_LISTS')
                 ->where('ndc_exception_list', $request->ndc_exception_list)
                 ->where('ndc', $request->ndc)
+                ->where('effective_date', $request->effective_date)
                 ->delete();
+            $childcount =  DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', $request->ndc_exception_list)->count();
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else if (isset($request->ndc_exception_list)) {
+        } elseif (isset($request->ndc_exception_list)) {
 
 
             $exception_delete =  DB::table('NDC_EXCEPTIONS')
@@ -1408,6 +1410,7 @@ class NDCExceptionController extends Controller
             }
         }
     }
+
 
 
     public function ndcList(Request $request)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -10,9 +11,7 @@ use Illuminate\Validation\Rule;
 
 class ClientController extends Controller
 {
-
-
-
+    use AuditTrait;
     public function add(Request $request)
     {
         $customer_data = DB::table('CUSTOMER')
@@ -323,5 +322,33 @@ class ClientController extends Controller
             ->get();
 
         return $this->respondWithToken($this->token(), '', $client);
+    }
+
+    public function deleteClient(Request $request)
+    {
+        $client = DB::table('CLIENT')
+            ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
+            ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
+            ->first();
+
+        $record_snapshot = json_encode($client);
+        $save_audit = $this->auditMethod('DE', $record_snapshot, 'CLIENT');
+        $client = DB::table('CLIENT')
+            ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
+            ->delete();
+        //Client Group
+        $client_group = DB::table('CLIENT_GROUP')
+            ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
+            ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
+            ->get();
+        for ($i = 0; $i < count($client_group); $i++) {
+            // $record_snapshot = json_encode($client_group[$i]);
+            $save_audit = $this->auditMethod('DE', json_encode($client_group[$i]), 'CLIENT_GROUP');
+        }
+        $client_group_delete = DB::table('CLIENT_GROUP')
+            ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
+            ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
+            ->delete();
+        return $this->respondWithToken($this->token(), "Record Deleted Successfully", '');
     }
 }
