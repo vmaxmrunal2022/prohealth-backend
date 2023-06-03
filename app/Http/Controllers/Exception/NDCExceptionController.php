@@ -1420,6 +1420,7 @@ class NDCExceptionController extends Controller
 
 
 
+
     public function ndcList(Request $request)
     {
         $ndc = DB::table('NDC_EXCEPTIONS')

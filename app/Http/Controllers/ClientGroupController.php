@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +13,7 @@ use Illuminate\Validation\Rule;
 class ClientGroupController extends Controller
 {
 
-
+    use AuditTrait;
 
     public function add(Request $request)
     {
@@ -20,14 +21,21 @@ class ClientGroupController extends Controller
             ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
             ->first();
         $errorMsg = ["Client group effective date must be greater than client effective date"];
-        if ((date('Y-m-d', strtotime($request->group_effective_date))) < (date('Y-m-d', strtotime($client_Data->effective_date)))) {
-            return $this->respondWithToken(
-                $this->token(),
-                [$errorMsg],
-                '',
-                false
-            );
-        }
+        // if ($client_Data && (date('Y-m-d', strtotime($request->group_effective_date))) < (date('Y-m-d', strtotime($client_Data->effective_date)))) {
+        //     return $this->respondWithToken(
+        //         $this->token(),
+        //         [$errorMsg],
+        //         '',
+        //         false
+        //     );
+        // } else {
+        //     return $this->respondWithToken(
+        //         $this->token(),
+        //         [$errorMsg],
+        //         '',
+        //         false
+        //     );
+        // }
 
         $createddate = date('y-m-d');
         if ($request->add_new) {
@@ -142,7 +150,13 @@ class ClientGroupController extends Controller
                         'misc_data_3' => $request->misc_data_3,
                     ]
                 );
-                $benefitcode = DB::table('CLIENT_GROUP')->where('client_group_id', 'like', '%' . $request->client_group_id . '%')->first();
+                $benefitcode = DB::table('CLIENT_GROUP')
+                    ->where('client_group_id', $request->client_group_id)->first();
+                $updated = DB::table('CLIENT_GROUP')
+                    ->where('client_group_id', 'like', '%' . $request->client_group_id . '%')
+                    ->where('client_id', 'like', '%' . $request->client_id . '%')
+                    ->where('customer_id', 'like', '%' . $request->customer_id . '%')
+                    ->get();
                 $record_snapshot = json_encode($benefitcode);
                 $save_audit = DB::table('FE_RECORD_LOG')
                     ->insert([
@@ -267,7 +281,12 @@ class ClientGroupController extends Controller
                             'misc_data_3' => $request->misc_data_3,
                         ]
                     );
-                $benefitcode = DB::table('CLIENT_GROUP')->where('client_group_id', 'like', '%' . $request->client_group_id . '%')->first();
+                $benefitcode = DB::table('CLIENT_GROUP')->where('client_group_id', $request->client_group_id)->first();
+                $updated = DB::table('CLIENT_GROUP')
+                    ->where('client_group_id', 'like', '%' . $request->client_group_id . '%')
+                    ->where('client_id', 'like', '%' . $request->client_id . '%')
+                    ->where('customer_id', 'like', '%' . $request->customer_id . '%')
+                    ->get();
                 if (!Cache::get('userId')) {
 
                     $responseMessage = "Sorry, this user does not exist";
@@ -287,7 +306,7 @@ class ClientGroupController extends Controller
                     ]);
             }
         }
-        return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
+        return $this->respondWithToken($this->token(), 'Added Successfully!', $updated);
     }
     public function getClientGroup(Request $request)
     {
@@ -338,5 +357,30 @@ class ClientGroupController extends Controller
             ->get();
 
         return $this->respondWithToken($this->token(), '', $client);
+    }
+
+    public function deleteRecord(Request $request)
+    {
+        $client_group = DB::table('CLIENT_GROUP')
+            ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
+            ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
+            ->where(DB::raw('UPPER(client_group_id)'), strtoupper($request->client_group_id))
+            ->first();
+
+        $record_snapshot = json_encode($client_group);
+        $save_audit = $this->auditMethod('DE', $record_snapshot, 'CLIENT_GROUP');
+        $client_group = DB::table('CLIENT_GROUP')
+            ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
+            ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
+            ->where(DB::raw('UPPER(client_group_id)'), strtoupper($request->client_group_id))
+            ->delete();
+
+        $updated = DB::table('CLIENT_GROUP')
+            ->where(DB::raw('UPPER(customer_id)'), 'like', '%' . strtoupper($request->customer_id) . '%')
+            ->where(DB::raw('UPPER(client_id)'), 'like', '%' . strtoupper($request->client_id) . '%')
+            ->where(DB::raw('UPPER(client_group_id)'), 'like', '%' .  strtoupper($request->client_group_id) . '%')
+            ->get();
+
+        return $this->respondWithToken($this->token(), "Record Deleted Successfully", $updated);
     }
 }

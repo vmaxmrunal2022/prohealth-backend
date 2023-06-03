@@ -430,6 +430,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
     Route::get('client/get', [ClientController::class, 'searchClient']);
     Route::get('client/get/{clientid}', [ClientController::class, 'GetOneClient']);
     Route::post('client/add', [ClientController::class, 'add']);
+    Route::post('client/delete-client', [ClientController::class, 'deleteClient']);
 
 
     Route::get('clientgroup/get', [ClientGroupController::class, 'searchClientgroup']);
@@ -1062,6 +1063,7 @@ Route::post('client/add', [ClientController::class, 'add']);
 
 
 Route::get('clientgroup/get', [ClientGroupController::class, 'searchClientgroup']);
+Route::post('clientgroup/delete-client-group', [ClientGroupController::class, 'deleteRecord']);
 Route::get('clientgroup/get/{clientgrpid}', [ClientGroupController::class, 'GetOneClientGroup']);
 
 

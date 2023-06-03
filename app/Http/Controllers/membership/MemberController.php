@@ -1099,8 +1099,11 @@ class MemberController extends Controller
         $member_diagnosis=DB::table('MEMBER_DIAGNOSIS')->where('member_id',$request->member_id)->get();
         $prior_authorizations=DB::table('PRIOR_AUTHORIZATIONS')->where('member_id',$request->member_id)->get();
         $change_log=DB::table('MEMBER_CHANGE_LOG')->where('member_id',$request->member_id)->get();
-        $claim_history=DB::table('RX_TRANSACTION_DETAIL')->where('member_id',$request->member_id)->get();
-        
+        $claim_history=DB::table('RX_TRANSACTION_LOG')->join('RX_TRANSACTION_DETAIL', 'RX_TRANSACTION_DETAIL.PHARMACY_NABP', '=', 'RX_TRANSACTION_LOG.PHARMACY_NABP')
+        ->select('RX_TRANSACTION_LOG.PHARMACY_NABP')
+                        ->where('RX_TRANSACTION_LOG.MEMBER_ID',$request->member_id)
+                        ->get();
+
         // dd($member_form_data_effe);
 
 

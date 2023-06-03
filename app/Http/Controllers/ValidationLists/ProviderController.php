@@ -224,11 +224,11 @@ class ProviderController extends Controller
                                 'form_id' => ''
                             ]);
 
-                        $reecord = DB::table('PHARMACY_VALIDATIONS')
-                            ->join('PHARMACY_VALIDATIONS', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST', '=', 'PHARMACY_VALIDATIONS.PHARMACY_LIST')
-                            ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $request->pharmacy_list)
-                            ->where('PHARMACY_VALIDATIONS.PHARMACY_NABP', $request->pharmacy_nabp)
-                            ->first();
+                        // $reecord = DB::table('PHARMACY_VALIDATIONS')
+                        //     ->join('PHARMACY_VALIDATIONS', 'PHARMACY_VALIDATIONS.PHARMACY_LIST', '=', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST')
+                        //     ->where(DB::raw('UPPER(PHARMACY_VALIDATIONS.PHARMACY_LIST)'), strtoupper($request->pharmacy_list))
+                        //     ->where(DB::raw('UPPER(PHARMACY_VALIDATIONS.PHARMACY_NABP)'), strtoupper($request->pharmacy_nabp))
+                        //     ->first();
 
                         $diag_validation = DB::table('PHARMACY_VALIDATIONS')
                             ->select(
@@ -287,11 +287,11 @@ class ProviderController extends Controller
                                     'date_time_modified' => date('d-M-y'),
                                     'form_id' => ''
                                 ]);
-                            $reecord = DB::table('PHARMACY_EXCEPTIONS')
-                                ->join('PHARMACY_VALIDATIONS', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST', '=', 'PHARMACY_VALIDATIONS.PHARMACY_LIST')
-                                ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $request->pharmacy_list)
-                                ->where('PHARMACY_VALIDATIONS.PHARMACY_NABP', $request->pharmacy_nabp)
-                                ->first();
+                            // $reecord = DB::table('PHARMACY_EXCEPTIONS')
+                            //     ->join('PHARMACY_VALIDATIONS', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST', '=', 'PHARMACY_VALIDATIONS.PHARMACY_LIST')
+                            //     ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $request->pharmacy_list)
+                            //     ->where('PHARMACY_VALIDATIONS.PHARMACY_NABP', $request->pharmacy_nabp)
+                            //     ->first();
                             $diag_validation = DB::table('PHARMACY_VALIDATIONS')
                                 ->select(
                                     'PHARMACY_TABLE.PHARMACY_NABP',
