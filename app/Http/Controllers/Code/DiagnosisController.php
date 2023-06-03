@@ -28,11 +28,14 @@ class DiagnosisController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $benefitcodes = DB::table('DIAGNOSIS_CODES')
-                ->where(DB::raw('UPPER(diagnosis_id)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . $request->search . '%')
+                // ->where(DB::raw('UPPER(diagnosis_id)'), 'like', '%' . strtoupper($request->search) . '%')
+
+                ->whereRaw('LOWER(DIAGNOSIS_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])                // ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . $request->search . '%')
+                // ->where(DB::raw('UPPER(diagnosis_id)'), 'like', '%' . strtoupper($request->search) . '%')
+
                 ->get();
 
-            return $this->respondWithToken($this->token(), '', $benefitcodes);
+            return $this->respondWithToken($this->token(),'', $benefitcodes);
         }
     }
 
@@ -55,10 +58,15 @@ class DiagnosisController extends Controller
     public function add(Request $request)
     {
         if ($request->new) {
-            $validator = Validator::make($request->all(), [
-                'diagnosis_id' => ['required', 'max:8', Rule::unique('DIAGNOSIS_CODES')->where(function ($q) {
-                    $q->whereNotNull('diagnosis_id');
-                })],
+            // $validator = Validator::make($request->all(), [
+            //     'diagnosis_id' => ['required', 'max:8', Rule::unique('DIAGNOSIS_CODES')->where(function ($q) {
+            //         $q->whereNotNull('diagnosis_id');
+            //     })],
+
+                $validator = Validator::make($request->all(), [
+                    'diagnosis_id' => ['required', 'max:8', Rule::unique('DIAGNOSIS_CODES')->where(function ($q) {
+                        $q->whereNotNull('diagnosis_id');
+                    })],
                 "description" => ['max:35'],
                 // 'complete_code_ind' => ['required'],
             ]);
@@ -78,7 +86,7 @@ class DiagnosisController extends Controller
                     ]
                 );
                 $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
-                return  $this->respondWithToken($this->token(), 'Added Successfully!', $code);
+                return  $this->respondWithToken($this->token(), 'Record Added Successfully', $code);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -104,7 +112,7 @@ class DiagnosisController extends Controller
                         ]
                     );
                 // $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
-                return  $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
+                return  $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
             }
         }
         // $code = DB::table('DIAGNOSIS_CODES')->where('DIAGNOSIS_ID', strtoupper($request->diagnosis_id))->where('DESCRIPTION', strtoupper($request->description))->first();
