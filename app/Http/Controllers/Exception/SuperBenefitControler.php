@@ -379,9 +379,9 @@ class SuperBenefitControler extends Controller
     public function getBenefitCode(Request $request)
     {
         $benefitLists = DB::table('SUPER_BENEFIT_LISTS')
-            ->join('SUPER_BENEFIT_LIST_NAMES', 'SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID', '=', 'SUPER_BENEFIT_LIST_NAMES.SUPER_BENEFIT_LIST_ID')
-            ->where('SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->get();
+            // ->join('SUPER_BENEFIT_LIST_NAMES', 'SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID', '=', 'SUPER_BENEFIT_LIST_NAMES.SUPER_BENEFIT_LIST_ID')
+            ->leftjoin('SUPER_BENEFIT_LIST_NAMES', 'SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID', '=', 'SUPER_BENEFIT_LIST_NAMES.SUPER_BENEFIT_LIST_ID')
+            ->whereRaw('LOWER(SUPER_BENEFIT_LISTS.SUPER_BENEFIT_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])->get();
 
         return $this->respondWithToken($this->token(), '', $benefitLists);
     }

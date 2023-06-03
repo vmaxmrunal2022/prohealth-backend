@@ -19,7 +19,8 @@ class PrescriberController extends Controller
     public function search(Request $request)
     {
         $ndc = DB::table('PHYSICIAN_TABLE')
-            ->where('PHYSICIAN_ID', 'like', '%' . $request->search . '%')
+
+            ->whereRaw('LOWER(PHYSICIAN_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('PHYSICIAN_FIRST_NAME', 'like', '%' . $request->search . '%')
             ->orWhere('PHYSICIAN_LAST_NAME', 'like', '%' . $request->search . '%')
 

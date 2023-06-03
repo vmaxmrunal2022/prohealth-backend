@@ -315,7 +315,7 @@ class ClaimHistoryController extends Controller
         }
 
         if ($request->procedure_code != null) {
-            $procedure_code = $request->procedure_code['procvalue'];
+            $procedure_code = $request->procedure_code;
         } else {
             $procedure_code = null;
         }
@@ -444,7 +444,7 @@ class ClaimHistoryController extends Controller
             ->get();
 
 
-        dd($search_claim_history);
+        // dd($search_claim_history);
 
 
 

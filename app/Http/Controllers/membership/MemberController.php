@@ -1099,8 +1099,7 @@ class MemberController extends Controller
         $member_diagnosis=DB::table('MEMBER_DIAGNOSIS')->where('member_id',$request->member_id)->get();
         $prior_authorizations=DB::table('PRIOR_AUTHORIZATIONS')->where('member_id',$request->member_id)->get();
         $change_log=DB::table('MEMBER_CHANGE_LOG')->where('member_id',$request->member_id)->get();
-
-        
+        $claim_history=DB::table('RX_TRANSACTION_DETAIL')->where('member_id',$request->member_id)->get();
         
         // dd($member_form_data_effe);
 
@@ -1112,7 +1111,8 @@ class MemberController extends Controller
             "member_coverage_history"=>$member_coverage_history,
             "member_diagnosis"=>$member_diagnosis,
             "prior_authorizations"=>$prior_authorizations,
-            "change_log"=>$change_log
+            "change_log"=>$change_log,
+            "claim_history"=>$claim_history,
           ];
 
           return $this->respondWithToken($this->token(), 'data fetched successfully', $merged);
