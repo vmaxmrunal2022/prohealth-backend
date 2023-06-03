@@ -60,7 +60,7 @@ class DiagnosisController extends Controller
                     $q->whereNotNull('diagnosis_id');
                 })],
                 "description" => ['max:35'],
-                'complete_code_ind' => ['required'],
+                // 'complete_code_ind' => ['required'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -84,7 +84,7 @@ class DiagnosisController extends Controller
             $validator = Validator::make($request->all(), [
                 'diagnosis_id' => ['required', 'max:8'],
                 "description" => ['max:35'],
-                'complete_code_ind' => ['required'],
+                // 'complete_code_ind' => ['required'],
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
