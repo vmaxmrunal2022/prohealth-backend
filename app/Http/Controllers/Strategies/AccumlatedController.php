@@ -296,6 +296,15 @@ class AccumlatedController extends Controller
         return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
     }
 
+    public function getAllAcuumlatedBenefits(Request $request)
+    {
+
+        $existdata = DB::table('accum_bene_strategy_names')
+            ->get();
+
+        return $this->respondWithToken($this->token(), 'Successfully added', $existdata);
+    }
+
     public function delete(Request $request)
     {
         if (isset($request->accum_bene_strategy_id) && isset($request->effective_date) && isset($request->plan_accum_deduct_id)) {
@@ -310,21 +319,45 @@ class AccumlatedController extends Controller
                 $all_accum_bene_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
                     ->where('ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
                     ->delete();
+                $val = DB::table('ACCUM_BENEFIT_STRATEGY')
+                    ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
+                    ->where('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
+                    ->get();
+                $exp = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                    ->select('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
+                    ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), strtoupper($request->accum_bene_strategy_id))
+                    ->get();
+                // $ndclist = DB::table('ACCUM_BENEFIT_STRATEGY')
+                // ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
+                // ->where('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', $ndcid)
+                // ->get();
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', [$exp, $val]);
             } else {
                 $all_accum_bene_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
                     ->where('ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
                     ->where('PLAN_ACCUM_DEDUCT_ID', $request->plan_accum_deduct_id)
                     ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
                     ->delete();
+                $val = DB::table('ACCUM_BENEFIT_STRATEGY')
+                    ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
+                    ->where('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
+                    ->get();
+                $exp = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                    ->select('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
+                    ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), strtoupper($request->accum_bene_strategy_id))
+                    ->get();
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', [$exp, $val]);
             }
 
-            if ($all_accum_bene_strategy) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
-            }
+
             // return $this->respondWithToken($this->token(), 'Record deleted Successfully', $all_accum_bene_strategy);
         } else {
+            if (isset($request->accum_bene_strategy_id)) {
+                $all_accum_bene_strategy_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                    ->where('ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
+                    ->delete();
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', '', false);
+            }
             return $this->respondWithToken($this->token(), 'Record Not found', 'false');
         }
     }

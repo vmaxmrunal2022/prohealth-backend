@@ -289,7 +289,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/accumulated/benifit/get/{ndcid}', [AccumlatedBenifitController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
         Route::get('/accumulated/benifit/details/{ndcid}', [AccumlatedBenifitController::class, 'getDetails'])->name('accumulated.benifit.details.get'); // DETAIL
         Route::post('/accumulated/benifit/add', [AccumlatedBenifitController::class, 'add'])->name('accumulated.benifit.add'); // SEARCH
-
+        Route::get('/accumulated/details/{ndcid}/{effective_date}/{id}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
 
         Route::get('/gpiExclusion/search', [GpiExclusionController::class, 'search'])->name('gpiExclusion.search'); // SEARCH
 
@@ -890,16 +890,16 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
     Route::get('/accumulated/search', [AccumlatedController::class, 'search'])->name('accumulated.search'); // SEARCH
     Route::get('/accumulated/get/{ndcid}', [AccumlatedController::class, 'getList'])->name('accumulated.list.get'); // LIST ITEMS
-    Route::get('/accumulated/details/{ndcid}/{effective_date}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
+    // Route::get('/accumulated/details/{ndcid}/{effective_date}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
     Route::post('/accumulated/add', [AccumlatedController::class, 'add'])->name('accumulated.add'); // SEARCH
-
-
+    Route::post('/accumulated/benifit/delete', [AccumlatedBenifitController::class, 'delete'])->name('accumulated.benifit.delete'); // delete
+    Route::get('/accumulated/details/{accum_bene_strategy_id}/{effective_date}/{plan_accum_deduct_id}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
 
     Route::get('/accumulated/benifit/search', [AccumlatedBenifitController::class, 'search'])->name('accumulated.benifit.search'); // SEARCH
     Route::get('/accumulated/benifit/get/{ndcid}', [AccumlatedBenifitController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
     Route::get('/accumulated/benifit/details/{ndcid}', [AccumlatedBenifitController::class, 'getDetails'])->name('accumulated.benifit.details.get'); // DETAIL
     Route::post('/accumulated/benifit/add', [AccumlatedBenifitController::class, 'add'])->name('accumulated.benifit.add'); // SEARCH
-
+    Route::post('/accumulated/delete', [AccumlatedController::class, 'delete'])->name('accumulated.delete'); // delete
 
     Route::get('/gpiExclusion/search', [GpiExclusionController::class, 'search'])->name('gpiExclusion.search'); // SEARCH
 
