@@ -52,7 +52,16 @@ class CopayStrategyController extends Controller
                     ]
                 );
                 if ($create_copay_strategy) {
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully',  $create_copay_strategy);
+                    $val = DB::table('COPAY_STRATEGY')
+                        ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
+                        ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                        ->get();
+
+                    $exp = DB::table('COPAY_STRATEGY_NAMES')
+                        ->select('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name')
+                        ->where(DB::raw('UPPER(COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID)'), 'like', '%' . strtoupper($request->copay_strategy_id) . '%')
+                        ->get();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully ',  '');
                 }
             }
         } else {
@@ -93,7 +102,16 @@ class CopayStrategyController extends Controller
                         ]
                     );
                 if ($update_copay_strategy) {
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully');
+                    $val = DB::table('COPAY_STRATEGY')
+                        ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
+                        ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                        ->get();
+
+                    $exp = DB::table('COPAY_STRATEGY_NAMES')
+                        ->select('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name')
+                        ->where(DB::raw('UPPER(COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID)'), 'like', '%' . strtoupper($request->copay_strategy_id) . '%')
+                        ->get();
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully ', [$val, $exp]);
                 }
             } else {
                 $update_copay_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
@@ -123,7 +141,16 @@ class CopayStrategyController extends Controller
                 );
 
                 if ($create_copay_strategy) {
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully');
+                    $val = DB::table('COPAY_STRATEGY')
+                        ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
+                        ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                        ->get();
+
+                    $exp = DB::table('COPAY_STRATEGY_NAMES')
+                        ->select('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name')
+                        ->where(DB::raw('UPPER(COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID)'), 'like', '%' . strtoupper($request->copay_strategy_id) . '%')
+                        ->get();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', [$val, $exp]);
                 }
             }
         }
@@ -166,7 +193,6 @@ class CopayStrategyController extends Controller
 
     public function CopayDropDown(Request $request)
     {
-
         $ndc = DB::table('COPAY_STRATEGY_NAMES')
             ->get();
 
@@ -199,12 +225,38 @@ class CopayStrategyController extends Controller
             }
 
             if ($copay_strategy) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                $val = DB::table('COPAY_STRATEGY')
+                    ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
+                    ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                    ->get();
+
+                $exp = DB::table('COPAY_STRATEGY_NAMES')
+                    ->select('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name')
+                    ->where(DB::raw('UPPER(COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID)'), 'like', '%' . strtoupper($request->copay_strategy_id) . '%')
+                    ->get();
+
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', [$val, $exp]);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }
             return $this->respondWithToken($this->token(), 'Record deleted Successfully', $copay_strategy);
         } else {
+            if (isset($request->copay_strategy_id)) {
+                $all_accum_bene_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
+                    ->where('copay_strategy_id', $request->copay_strategy_id)
+                    ->delete();
+                $val = DB::table('COPAY_STRATEGY')
+                    ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
+                    ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                    ->get();
+
+                $exp = DB::table('COPAY_STRATEGY_NAMES')
+                    ->select('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name')
+                    ->where(DB::raw('UPPER(COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID)'), 'like', '%' . strtoupper($request->copay_strategy_id) . '%')
+                    ->get();
+
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', [$val, $exp], false);
+            }
             return $this->respondWithToken($this->token(), 'Record Not found', 'false');
         }
     }

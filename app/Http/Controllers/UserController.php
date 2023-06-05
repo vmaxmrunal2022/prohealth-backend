@@ -140,8 +140,8 @@ class UserController extends Controller
             // $a = getUserData($userid);
             // app()->instance('my_global_data', $userid);
             // $usersData =
-            // $usersData = auth()->user()->user_id;
-            $usersData = auth()->user();
+            $usersData = auth()->user()->user_id;
+            // $usersData = auth()->user();
 
             Cache::put('userId', $usersData, 86400);
             // return Cache::get('users.active');

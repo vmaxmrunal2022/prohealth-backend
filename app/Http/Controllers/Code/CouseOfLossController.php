@@ -74,7 +74,7 @@ class CouseOfLossController extends Controller
             } else {
                 $procedurecode = DB::table('CAUSE_OF_LOSS_CODES')
                     // ->where('CAUSE_OF_LOSS_CODES', 'like', strtoupper($request->benefit_code))
-                    ->where(DB::raw('UPPER(CAUSE_OF_LOSS_CODE)'), $request->cause_of_loss_code)
+                    ->where('cause_of_loss_code',$request->cause_of_loss_code)
                     ->update(
                         [
                             // 'CAUSE_OF_LOSS_CODE' => strtoupper($request->cause_of_loss_code),
