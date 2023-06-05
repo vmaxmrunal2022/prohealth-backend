@@ -181,7 +181,15 @@ class AccumlatedController extends Controller
                 ->first();
             if ($existDataStrategy) {
                 if ($request->addUpdate == 0) {
-                    return $this->respondWithToken($this->token(), 'Accumulate Benefit Plan ID already exists', $existDataStrategy, false);
+                    $val = DB::table('ACCUM_BENEFIT_STRATEGY')
+                        ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
+                        ->where('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
+                        ->get();
+                    $exp = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                        ->select('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
+                        ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), strtoupper($request->accum_bene_strategy_id))
+                        ->get();
+                    return $this->respondWithToken($this->token(), 'Accumulate Benefit Plan ID already exists', [$val, $exp], false);
                 }
                 $updateAccstrategyName = DB::table('ACCUM_BENE_STRATEGY_NAMES')
                     ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
@@ -302,11 +310,12 @@ class AccumlatedController extends Controller
 
     public function getDetails($accum_bene_strategy_id, $effective_date, $plan_accum_deduct_id)
     {
+        $eff_date = date(strtotime('Y-m-d', $effective_date));
         $ndc = DB::table('ACCUM_BENEFIT_STRATEGY')
-            ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID')
+            ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
             ->where('ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', $accum_bene_strategy_id)
-            ->where('effective_date', $effective_date)
-            ->where('plan_accum_deduct_id', $plan_accum_deduct_id)
+            ->where('ACCUM_BENEFIT_STRATEGY.effective_date', $effective_date)
+            ->where('ACCUM_BENEFIT_STRATEGY.plan_accum_deduct_id', $plan_accum_deduct_id)
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

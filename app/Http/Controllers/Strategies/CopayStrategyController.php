@@ -73,7 +73,16 @@ class CopayStrategyController extends Controller
                 ->count();
             if ($checkRecordListsExits) {
                 if ($request->addUpdate == 0) {
-                    return $this->respondWithToken($this->token(), 'Copay Schedule ID already exists', $checkRecordListsExits, false);
+                    $val = DB::table('COPAY_STRATEGY')
+                        ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
+                        ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                        ->get();
+
+                    $exp = DB::table('COPAY_STRATEGY_NAMES')
+                        ->select('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name')
+                        ->where(DB::raw('UPPER(COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID)'), 'like', '%' . strtoupper($request->copay_strategy_id) . '%')
+                        ->get();
+                    return $this->respondWithToken($this->token(), 'Copay Schedule ID already exists', [$val, $exp], false);
                 }
                 $update_copay_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
                     ->where(DB::raw('UPPER(copay_strategy_id)'), strtoupper($request->copay_strategy_id))
