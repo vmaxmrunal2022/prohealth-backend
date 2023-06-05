@@ -154,7 +154,15 @@ class PricingStrategyController extends Controller
             } else {
                 if ($checkPricingStrategyRecord) {
                     if ($request->addUpdate == 0) {
-                        return $this->respondWithToken($this->token(), 'Pricing Schedule ID already exists', $checkPricingStrategyRecord, false);
+                        $val = DB::table('PRICING_STRATEGY')
+                            ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+                            ->where('PRICING_STRATEGY.pricing_strategy_id', $request->pricing_strategy_id)
+                            ->get();
+
+                        $exp = DB::table('PRICING_STRATEGY_NAMES')
+                            ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->pricing_strategy_id) . '%')
+                            ->get();
+                        return $this->respondWithToken($this->token(), 'Pricing Schedule ID already exists', [$val, $exp], false);
                     }
                     $benefitcode = DB::table('PRICING_STRATEGY_NAMES')
                         ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))

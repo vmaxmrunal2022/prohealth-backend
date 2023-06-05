@@ -244,10 +244,12 @@ class ClientController extends Controller
                             'misc_data_3' => $request->misc_data_3,
                         ]
                     );
-
-
-                $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
-                    ->where('customer_id', 'like', '%' . $request->customer_id . '%')
+                $benefitcode = DB::table('client')
+                    ->join('customer', 'client.CUSTOMER_ID', '=', 'customer.CUSTOMER_ID')
+                    ->select('CLIENT_ID', 'CLIENT_NAME', 'customer.CUSTOMER_NAME as customername', 'client.CUSTOMER_ID as customerid', 'client.EFFECTIVE_DATE as clienteffectivedate', 'client.TERMINATION_DATE as clientterminationdate')
+                    ->where(DB::raw('UPPER(client.CLIENT_ID)'), 'like', '%' . strtoupper($request->client_id) . '%')
+                    // ->orWhere(DB::raw('UPPER(client.CLIENT_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+                    ->orWhere('customer.CUSTOMER_ID', 'like', '%' . strtoupper($request->customer_id) . '%')
                     ->get();
                 // $record_snapshot = implode('|', (array) $benefitcode);
                 $record_snapshot = json_encode($benefitcode);
