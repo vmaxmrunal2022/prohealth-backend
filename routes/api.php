@@ -274,7 +274,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/copay/details/{ndcid}', [CopayStrategyController::class, 'getDetails'])->name('copay.details.get'); // DETAIL
         Route::post('/copay/add', [CopayStrategyController::class, 'add'])->name('copay.add'); // SEARCH
         Route::get('/copay/drop-down', [CopayStrategyController::class, 'CopayDropDown'])->name('copay.dropdown'); // SEARCH
-
+        Route::post('/copay/delete', [CopayStrategyController::class, 'delete'])->name('copay.delete'); // SEARCH
 
 
         Route::get('/accumulated/search', [AccumlatedController::class, 'search'])->name('accumulated.search'); // SEARCH
@@ -883,8 +883,9 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
     Route::get('/copay/search', [CopayStrategyController::class, 'search'])->name('copay.search'); // SEARCH
     Route::get('/copay/get/{ndcid}', [CopayStrategyController::class, 'getList'])->name('copay.list.get'); // LIST ITEMS
-    Route::get('/copay/details/{ndcid}', [CopayStrategyController::class, 'getDetails'])->name('copay.details.get'); // DETAIL
+    // Route::get('/copay/details/{ndcid}', [CopayStrategyController::class, 'getDetails'])->name('copay.details.get'); // DETAIL
     Route::post('/copay/add', [CopayStrategyController::class, 'add'])->name('copay.add'); // SEARCH
+    Route::get('/copay/details/{ndcid}/{id2}/{id3}', [CopayStrategyController::class, 'getDetails'])->name('copay.details.get'); // DETAIL
 
 
 
