@@ -248,7 +248,7 @@ class ClientController extends Controller
 
                 $benefitcode = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
                     ->where('customer_id', 'like', '%' . $request->customer_id . '%')
-                    ->first();
+                    ->get();
                 // $record_snapshot = implode('|', (array) $benefitcode);
                 $record_snapshot = json_encode($benefitcode);
                 // $record_snapshot = json_encode($benefitcode);

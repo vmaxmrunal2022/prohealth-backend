@@ -225,7 +225,7 @@ class SpecialityController extends Controller
                         $diag_exception = DB::table('SPECIALTY_EXCEPTIONS')
                             ->where(DB::raw('UPPER(specialty_list)'), 'like', '%' . strtoupper($request->specialty_list) . '%')
                             ->get();
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', [$diag_validation, $diag_exception]);
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', [[], []]);
                     } else {
                         $updateProviderExceptionData = DB::table('SPECIALTY_EXCEPTIONS')
                             ->where('specialty_list', $request->specialty_list)

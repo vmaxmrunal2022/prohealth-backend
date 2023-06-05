@@ -368,7 +368,14 @@ class PrescriberValidationController extends Controller
                 DB::table('PHYSICIAN_EXCEPTIONS')
                 ->where(DB::raw('UPPER(physician_list)'), 'like', '%' . strtoupper($request->physician_list) . '%')
                 ->get();
-            return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_exception);
+            $physician_validation_list = DB::table('PHYSICIAN_VALIDATIONS')
+                ->select('PHYSICIAN_VALIDATIONS.*', 'PHYSICIAN_EXCEPTIONS.*', 'PHYSICIAN_TABLE.*')
+                ->join('PHYSICIAN_TABLE', 'PHYSICIAN_VALIDATIONS.PHYSICIAN_ID', '=', 'PHYSICIAN_TABLE.PHYSICIAN_ID')
+                ->join('PHYSICIAN_EXCEPTIONS', 'PHYSICIAN_VALIDATIONS.PHYSICIAN_LIST', '=', 'PHYSICIAN_EXCEPTIONS.PHYSICIAN_LIST')
+                ->where('PHYSICIAN_VALIDATIONS.PHYSICIAN_LIST', $request->physician_list)
+                ->distinct()
+                ->get();
+            return $this->respondWithToken($this->token(), "Record Deleted Successfully1", $physician_validation_list);
         } else        
         if ($request->physician_list) {
             if ($request->physician_id) {
@@ -379,15 +386,29 @@ class PrescriberValidationController extends Controller
                 $diagnosis_validation = DB::table('PHYSICIAN_VALIDATIONS')
                     ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
                     ->get();
+                $diag_validation = DB::table('PHYSICIAN_VALIDATIONS')
+                    ->select('PHYSICIAN_VALIDATIONS.*', 'PHYSICIAN_EXCEPTIONS.*', 'PHYSICIAN_TABLE.*')
+                    ->join('PHYSICIAN_TABLE', 'PHYSICIAN_VALIDATIONS.PHYSICIAN_ID', '=', 'PHYSICIAN_TABLE.PHYSICIAN_ID')
+                    ->join('PHYSICIAN_EXCEPTIONS', 'PHYSICIAN_VALIDATIONS.PHYSICIAN_LIST', '=', 'PHYSICIAN_EXCEPTIONS.PHYSICIAN_LIST')
+                    ->where('PHYSICIAN_VALIDATIONS.PHYSICIAN_LIST', $request->physician_list)
+                    ->distinct()
+                    ->get();
                 if (count($diagnosis_validation) <= 0) {
                     $delete_physician_list = DB::table('PHYSICIAN_EXCEPTIONS')
                         ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
                         ->delete();
                     $diagnosis_validation1 = DB::table('PHYSICIAN_EXCEPTIONS')
                         ->where(DB::raw('UPPER(physician_list)'), 'like', '%' . strtoupper($request->physician_list) . '%')->get();
-                    return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully", $diagnosis_validation1, false);
+                    $diag_validation = DB::table('PHYSICIAN_VALIDATIONS')
+                        ->select('PHYSICIAN_VALIDATIONS.*', 'PHYSICIAN_EXCEPTIONS.*', 'PHYSICIAN_TABLE.*')
+                        ->join('PHYSICIAN_TABLE', 'PHYSICIAN_VALIDATIONS.PHYSICIAN_ID', '=', 'PHYSICIAN_TABLE.PHYSICIAN_ID')
+                        ->join('PHYSICIAN_EXCEPTIONS', 'PHYSICIAN_VALIDATIONS.PHYSICIAN_LIST', '=', 'PHYSICIAN_EXCEPTIONS.PHYSICIAN_LIST')
+                        ->where('PHYSICIAN_VALIDATIONS.PHYSICIAN_LIST', $request->physician_list)
+                        ->distinct()
+                        ->get();
+                    return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully", $diag_validation, false);
                 }
-                return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_validation);
+                return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diag_validation);
             } else {
                 $delete_physician_id = DB::table('PHYSICIAN_EXCEPTIONS')
                     ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
@@ -398,6 +419,13 @@ class PrescriberValidationController extends Controller
                 $diagnosis_exception =
                     DB::table('PHYSICIAN_EXCEPTIONS')
                     ->where(DB::raw('UPPER(physician_list)'), 'like', '%' . strtoupper($request->physician_list) . '%')
+                    ->get();
+                $diag_validation = DB::table('PHYSICIAN_VALIDATIONS')
+                    ->select('PHYSICIAN_VALIDATIONS.*', 'PHYSICIAN_EXCEPTIONS.*', 'PHYSICIAN_TABLE.*')
+                    ->join('PHYSICIAN_TABLE', 'PHYSICIAN_VALIDATIONS.PHYSICIAN_ID', '=', 'PHYSICIAN_TABLE.PHYSICIAN_ID')
+                    ->join('PHYSICIAN_EXCEPTIONS', 'PHYSICIAN_VALIDATIONS.PHYSICIAN_LIST', '=', 'PHYSICIAN_EXCEPTIONS.PHYSICIAN_LIST')
+                    ->where('PHYSICIAN_VALIDATIONS.PHYSICIAN_LIST', $request->physician_list)
+                    ->distinct()
                     ->get();
                 return $this->respondWithToken($this->token(), "Record Deleted Successfully", '');
             }

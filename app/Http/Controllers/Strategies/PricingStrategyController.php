@@ -267,11 +267,11 @@ class PricingStrategyController extends Controller
                 $exp = DB::table('PRICING_STRATEGY_NAMES')
                     ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->pricing_strategy_id) . '%')
                     ->get();
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', [$val, $exp]);
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', [$val, $exp]);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }
-            return $this->respondWithToken($this->token(), 'Record deleted Successfully', $pricing_strategy);
+            return $this->respondWithToken($this->token(), 'Record deleted Successfully ', $pricing_strategy);
         } else {
             if (isset($request->pricing_strategy_id)) {
                 $all_accum_bene_strategy_names = DB::table('PRICING_STRATEGY_NAMES')
@@ -286,7 +286,7 @@ class PricingStrategyController extends Controller
                     ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->pricing_strategy_id) . '%')
                     ->get();
 
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', [$val, $exp], false);
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', [$val, $exp], false);
             }
             return $this->respondWithToken($this->token(), 'Record Not found', 'false');
         }
