@@ -546,29 +546,29 @@ class BenefitListController extends Controller
     public function getBLItemDetails(Request $request)
     {
         $ndc = DB::table('BENEFIT_LIST')
-            ->select(
-                'BENEFIT_LIST.*',
-                'NAMES.DESCRIPTION',
-                'BENEFIT_LIST.PRICING_STRATEGY_ID as pricing_strategy_description',
-                'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_starategy_description',
-                'CODES.DESCRIPTION AS benefit_code_description',
-                'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_starategy_description'
-            )
-
-            ->leftjoin('BENEFIT_LIST_NAMES AS NAMES', 'NAMES.BENEFIT_LIST_ID', '=', 'BENEFIT_LIST.BENEFIT_LIST_ID')
-            ->leftjoin('BENEFIT_CODES AS CODES', 'CODES.BENEFIT_CODE', '=', 'BENEFIT_LIST.BENEFIT_CODE')
-            ->leftjoin('PRICING_STRATEGY as pricing_strategies', 'pricing_strategies.PRICING_STRATEGY_ID', '=', 'BENEFIT_LIST.PRICING_STRATEGY_ID')
-            ->leftjoin('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'BENEFIT_LIST.ACCUM_BENE_STRATEGY_ID')
-            ->leftjoin('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID', '=', 'BENEFIT_LIST.COPAY_STRATEGY_ID')
+        ->select('BENEFIT_LIST.*',
+        'NAMES.DESCRIPTION',
+        'BENEFIT_LIST.PRICING_STRATEGY_ID as pricing_strategy_description',
+        'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_starategy_description',
+        'CODES.DESCRIPTION AS benefit_code_description',
+        'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_starategy_description')
+        
+        ->leftjoin('BENEFIT_LIST_NAMES AS NAMES', 'NAMES.BENEFIT_LIST_ID', '=', 'BENEFIT_LIST.BENEFIT_LIST_ID')
+        ->leftjoin('BENEFIT_CODES AS CODES','CODES.BENEFIT_CODE','=','BENEFIT_LIST.BENEFIT_CODE')
+        ->leftjoin('PRICING_STRATEGY as pricing_strategies','pricing_strategies.PRICING_STRATEGY_ID','=','BENEFIT_LIST.PRICING_STRATEGY_ID')
+        ->leftjoin('ACCUM_BENE_STRATEGY_NAMES','ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID','=','BENEFIT_LIST.ACCUM_BENE_STRATEGY_ID')
+        ->leftjoin('COPAY_STRATEGY_NAMES','COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID','=','BENEFIT_LIST.COPAY_STRATEGY_ID')
 
 
-            ->where('BENEFIT_LIST.BENEFIT_LIST_ID', $request->benefit_list_id)
-            ->where('BENEFIT_LIST.BENEFIT_CODE', $request->benefit_code)
+        ->where('BENEFIT_LIST.BENEFIT_LIST_ID',$request->benefit_list_id)
+        ->where('BENEFIT_LIST.BENEFIT_CODE',$request->benefit_code)
+        ->where('BENEFIT_LIST.EFFECTIVE_DATE',$request->effective_date)
 
-            // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
-            ->first();
+        // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
+        ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
+
     }
     public function benefit_list_delete(Request $request)
     {
