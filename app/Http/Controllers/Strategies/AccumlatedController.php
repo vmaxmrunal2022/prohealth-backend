@@ -12,7 +12,6 @@ use Illuminate\Validation\Rule;
 
 class AccumlatedController extends Controller
 {
-
     use AuditTrait;
     public function add(Request $request)
     {
@@ -65,7 +64,15 @@ class AccumlatedController extends Controller
                 $record_snap = json_encode($acc_beneffit);
                 $save_audit = $this->auditMethod('IN', $record_snap, 'ACCUM_BENEFIT_STRATEGY');
                 if ($add) {
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+                    $val = DB::table('ACCUM_BENEFIT_STRATEGY')
+                        ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
+                        ->where('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
+                        ->get();
+                    $exp = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                        ->select('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
+                        ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), strtoupper($request->accum_bene_strategy_id))
+                        ->get();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', '');
                 }
             }
 
@@ -213,7 +220,15 @@ class AccumlatedController extends Controller
                 $save_audit = $this->auditMethod('UP', $record_snap, 'ACCUM_BENEFIT_STRATEGY');
 
                 if ($updateAccstrategy) {
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateAccstrategy);
+                    $val = DB::table('ACCUM_BENEFIT_STRATEGY')
+                        ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
+                        ->where('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
+                        ->get();
+                    $exp = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                        ->select('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
+                        ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), strtoupper($request->accum_bene_strategy_id))
+                        ->get();
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', [$val, $exp]);
                 }
             } else {
                 $add = DB::table('ACCUM_BENEFIT_STRATEGY')
@@ -242,7 +257,15 @@ class AccumlatedController extends Controller
                 $record_snap = json_encode($acc_beneffit);
                 $save_audit = $this->auditMethod('UP', $record_snap, 'ACCUM_BENEFIT_STRATEGY');
                 if ($add) {
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+                    $val = DB::table('ACCUM_BENEFIT_STRATEGY')
+                        ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
+                        ->where('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
+                        ->get();
+                    $exp = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                        ->select('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
+                        ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), strtoupper($request->accum_bene_strategy_id))
+                        ->get();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', [$val, $exp]);
                 }
             }
         }
