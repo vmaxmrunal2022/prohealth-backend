@@ -249,7 +249,7 @@ class ProviderController extends Controller
                         return $this->respondWithToken(
                             $this->token(),
                             'Record Added successfully',
-                            [$diag_validation, $diag_exception],
+                            [[], []],
                         );
                     } else {
                         $updateProviderExceptionData = DB::table('PHARMACY_EXCEPTIONS')
@@ -404,7 +404,19 @@ class ProviderController extends Controller
                 DB::table('PHARMACY_EXCEPTIONS')
                 ->where(DB::raw('UPPER(pharmacy_list)'), 'like', '%' . strtoupper($request->pharmacy_list) . '%')
                 ->get();
-            return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_exception);
+            $diag_validation = DB::table('PHARMACY_VALIDATIONS')
+                ->select(
+                    'PHARMACY_TABLE.PHARMACY_NABP',
+                    'PHARMACY_VALIDATIONS.PHARMACY_LIST',
+                    'PHARMACY_VALIDATIONS.PHARMACY_STATUS',
+                    'PHARMACY_TABLE.PHARMACY_NAME',
+                    'PHARMACY_EXCEPTIONS.EXCEPTION_NAME'
+                )
+                ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'PHARMACY_VALIDATIONS.PHARMACY_NABP')
+                ->join('PHARMACY_EXCEPTIONS', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST', '=', 'PHARMACY_VALIDATIONS.PHARMACY_LIST')
+                ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $request->pharmacy_list)
+                ->get();
+            return $this->respondWithToken($this->token(), "Record Deleted Successfully ", $diag_validation);
         } else        
         if ($request->pharmacy_list) {
             if ($request->pharmacy_nabp) {
@@ -415,6 +427,18 @@ class ProviderController extends Controller
                 $diagnosis_validation = DB::table('PHARMACY_VALIDATIONS')
                     ->where(DB::raw('UPPER(pharmacy_list)'), strtoupper($request->pharmacy_list))
                     ->get();
+                $diag_validation = DB::table('PHARMACY_VALIDATIONS')
+                    ->select(
+                        'PHARMACY_TABLE.PHARMACY_NABP',
+                        'PHARMACY_VALIDATIONS.PHARMACY_LIST',
+                        'PHARMACY_VALIDATIONS.PHARMACY_STATUS',
+                        'PHARMACY_TABLE.PHARMACY_NAME',
+                        'PHARMACY_EXCEPTIONS.EXCEPTION_NAME'
+                    )
+                    ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'PHARMACY_VALIDATIONS.PHARMACY_NABP')
+                    ->join('PHARMACY_EXCEPTIONS', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST', '=', 'PHARMACY_VALIDATIONS.PHARMACY_LIST')
+                    ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $request->pharmacy_list)
+                    ->get();
                 if (count($diagnosis_validation) <= 0) {
                     $delete_pharmacy_list = DB::table('PHARMACY_EXCEPTIONS')
                         ->where(DB::raw('UPPER(pharmacy_list)'), strtoupper($request->pharmacy_list))
@@ -422,9 +446,21 @@ class ProviderController extends Controller
                     $diagnosis_validation1 = DB::table('PHARMACY_EXCEPTIONS')
                         ->where(DB::raw('UPPER(pharmacy_list)'), 'like', '%' . strtoupper($request->pharmacy_list) . '%')
                         ->get();
-                    return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully", $diagnosis_validation1, false);
+                    $diag_validation = DB::table('PHARMACY_VALIDATIONS')
+                        ->select(
+                            'PHARMACY_TABLE.PHARMACY_NABP',
+                            'PHARMACY_VALIDATIONS.PHARMACY_LIST',
+                            'PHARMACY_VALIDATIONS.PHARMACY_STATUS',
+                            'PHARMACY_TABLE.PHARMACY_NAME',
+                            'PHARMACY_EXCEPTIONS.EXCEPTION_NAME'
+                        )
+                        ->join('PHARMACY_TABLE', 'PHARMACY_TABLE.PHARMACY_NABP', '=', 'PHARMACY_VALIDATIONS.PHARMACY_NABP')
+                        ->join('PHARMACY_EXCEPTIONS', 'PHARMACY_EXCEPTIONS.PHARMACY_LIST', '=', 'PHARMACY_VALIDATIONS.PHARMACY_LIST')
+                        ->where('PHARMACY_VALIDATIONS.PHARMACY_LIST', $request->pharmacy_list)
+                        ->get();
+                    return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully ", $diag_validation, false);
                 }
-                return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_validation);
+                return $this->respondWithToken($this->token(), "Record Deleted Successfully ", $diag_validation);
             } else {
                 $delete_pharmacy_nabp = DB::table('PHARMACY_EXCEPTIONS')
                     ->where(DB::raw('UPPER(pharmacy_list)'), strtoupper($request->pharmacy_list))
@@ -436,7 +472,7 @@ class ProviderController extends Controller
                     DB::table('PHARMACY_EXCEPTIONS')
                     ->where(DB::raw('UPPER(pharmacy_list)'), 'like', '%' . strtoupper($request->pharmacy_list) . '%')
                     ->get();
-                return $this->respondWithToken($this->token(), "Record Deleted Successfully", '');
+                return $this->respondWithToken($this->token(), "Record Deleted Successfully ", '');
             }
         }
     }
