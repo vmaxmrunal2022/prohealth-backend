@@ -720,6 +720,7 @@ class BenefitListController extends Controller
 
         ->where('BENEFIT_LIST.BENEFIT_LIST_ID',$request->benefit_list_id)
         ->where('BENEFIT_LIST.BENEFIT_CODE',$request->benefit_code)
+        ->where('BENEFIT_LIST.EFFECTIVE_DATE',$request->effective_date)
 
         // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
         ->first();

@@ -296,8 +296,8 @@ class PlanEditController extends Controller
                 ->first();
 
             $plan_table_ext = DB::table('PLAN_TABLE_EXTENSIONS')
-                ->where(DB::raw('UPPER(plan_id)'), strtoupper('plan_id'))
-                ->first();
+                                ->where(DB::raw('UPPER(plan_id)'), strtoupper('plan_id'))
+                                ->first();
             $record_snapshot_benefit = json_encode($addData);
             $save_audit = $this->auditMethod('IN', $record_snapshot_benefit, 'PLAN_BENEFIT_TABLE');
 

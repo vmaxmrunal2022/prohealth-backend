@@ -1513,7 +1513,7 @@ class NDCExceptionController extends Controller
     {
 
 
-    
+
             $ifset = DB::table('NDC_EXCEPTION_LISTS')
         
                     ->select('NDC_EXCEPTION_LISTS.*', 'NDC_EXCEPTIONS.NDC_EXCEPTION_LIST as exception_list',

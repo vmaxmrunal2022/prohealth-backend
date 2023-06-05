@@ -787,8 +787,8 @@ class GPIExceptionController extends Controller
             ->leftjoin('DRUG_MASTER as DRUG_MASTER2', 'DRUG_MASTER2.NDC', '=', 'GPI_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
             ->leftjoin('DRUG_MASTER as DRUG_MASTER3', 'DRUG_MASTER3.GENERIC_PRODUCT_ID', '=', 'GPI_EXCEPTION_LISTS.GENERIC_PRODUCT_ID')
             ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST', $request->gpi_exception_list)
-
             ->where('GPI_EXCEPTION_LISTS.generic_product_id', $request->generic_product_id)
+            ->where('GPI_EXCEPTION_LISTS.effective_date', $request->effective_date)
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);

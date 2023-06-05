@@ -149,13 +149,14 @@ class DrugClassController extends Controller
 
 
             ->select('PLAN_DRUG_CATGY_EXCEPTIONS.*','FE_SYSTEM_CATEGORIES.SDESCRIPTION', 'DRUG_MASTER1.LABEL_NAME as preferd_ndc_description',
-            'DRUG_MASTER2.LABEL_NAME as conversion_ndc_description',)
+            'DRUG_MASTER2.LABEL_NAME as conversion_ndc_description','DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_NAME')
             ->leftjoin('FE_SYSTEM_CATEGORIES', function ($join) {
                 $join->on('FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
                      ->on('FE_SYSTEM_CATEGORIES.SQUAL', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.STYPE');
             })
             ->leftjoin('DRUG_MASTER as DRUG_MASTER1', 'DRUG_MASTER1.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.PREFERRED_PRODUCT_NDC')
             ->leftjoin('DRUG_MASTER as DRUG_MASTER2', 'DRUG_MASTER2.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.CONVERSION_PRODUCT_NDC')
+            ->leftjoin('DRUG_CATGY_EXCEPTION_NAMES', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST')
             ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST',$request->drug_ctgy_exception_list)
             ->where('PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY',$request->scategory)
             ->where('PLAN_DRUG_CATGY_EXCEPTIONS.STYPE',$request->stype)

@@ -57,6 +57,10 @@ class DiagnosisController extends Controller
         return $this->respondWithToken($this->token(), '', $benefitcodes);
     }
 
+    
+
+
+    
     public function add(Request $request)
     {
         if ($request->new) {

@@ -562,12 +562,14 @@ class BenefitDerivationController extends Controller
 
     public function getBLItemDetails(Request $request)
     {
+        // return 'all';
+    //    return  $request->all();
         $ndclist = DB::table('BENEFIT_DERIVATION')
-            ->join('BENEFIT_DERIVATION_NAMES as benefitnames', 'benefitnames.BENEFIT_DERIVATION_ID', '=', 'BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID')
-            ->join('SERVICE_TYPES', 'SERVICE_TYPES.SERVICE_TYPE', '=', 'BENEFIT_DERIVATION.SERVICE_TYPE')
-            ->join('SERVICE_MODIFIERS', 'SERVICE_MODIFIERS.SERVICE_MODIFIER', '=', 'BENEFIT_DERIVATION.SERVICE_MODIFIER')
-            ->join('PROC_CODE_LIST_NAMES', 'PROC_CODE_LIST_NAMES.PROC_CODE_LIST_ID', '=', 'BENEFIT_DERIVATION.PROC_CODE_LIST_ID')
-            ->join('BENEFIT_CODES', 'BENEFIT_CODES.BENEFIT_CODE', '=', 'BENEFIT_DERIVATION.BENEFIT_CODE')
+            ->leftjoin('BENEFIT_DERIVATION_NAMES as benefitnames', 'benefitnames.BENEFIT_DERIVATION_ID', '=', 'BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID')
+            ->leftjoin('SERVICE_TYPES', 'SERVICE_TYPES.SERVICE_TYPE', '=', 'BENEFIT_DERIVATION.SERVICE_TYPE')
+            ->leftjoin('SERVICE_MODIFIERS', 'SERVICE_MODIFIERS.SERVICE_MODIFIER', '=', 'BENEFIT_DERIVATION.SERVICE_MODIFIER')
+            ->leftjoin('PROC_CODE_LIST_NAMES', 'PROC_CODE_LIST_NAMES.PROC_CODE_LIST_ID', '=', 'BENEFIT_DERIVATION.PROC_CODE_LIST_ID')
+            ->leftjoin('BENEFIT_CODES', 'BENEFIT_CODES.BENEFIT_CODE', '=', 'BENEFIT_DERIVATION.BENEFIT_CODE')
             ->select(
                 'BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID',
                 'BENEFIT_DERIVATION.SERVICE_TYPE',
@@ -585,6 +587,7 @@ class BenefitDerivationController extends Controller
 
             ->where('BENEFIT_DERIVATION.BENEFIT_DERIVATION_ID', $request->ben_deriv_id)
             ->where('BENEFIT_DERIVATION.BENEFIT_CODE', $request->ben_code)
+            ->where('BENEFIT_DERIVATION.EFFECTIVE_DATE', $request->effective_date)
 
             // ->orWhere( 'EXCEPTION_NAME', 'like', '%' . strtoupper( $ndcid ) . '%' )
             ->first();
