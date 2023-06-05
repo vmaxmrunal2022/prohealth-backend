@@ -21,7 +21,9 @@ class BenifitController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $benefitcodes = DB::table('benefit_codes')
-                ->where(DB::raw('UPPER(benefit_code)'), 'like', '%' .  strtoupper($request->search) . '%')
+
+                ->whereRaw('LOWER(benefit_code) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                // ->where(DB::raw('UPPER(benefit_code)'), 'like', '%' .  strtoupper($request->search) . '%')
                 ->orWhere(DB::raw('UPPER(description)'), 'like', '%' .  strtoupper($request->search) . '%')
                 ->get();
 

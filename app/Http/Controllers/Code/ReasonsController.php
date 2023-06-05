@@ -19,7 +19,8 @@ class ReasonsController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('REASON_CODES')
-                ->where('REASON_CODE', 'like', '%' . strtoupper($request->search) . '%')
+                // ->where('REASON_CODE', 'like', '%' . strtoupper($request->search) . '%')
+                ->whereRaw('LOWER(REASON_CODE) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere('REASON_DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 

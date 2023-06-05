@@ -21,7 +21,8 @@ class ServiceModifierController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('SERVICE_MODIFIERS')
-                ->where(DB::raw('UPPER(SERVICE_MODIFIER)'), 'like', '%' . strtoupper($request->search) . '%')
+                // ->where(DB::raw('UPPER(SERVICE_MODIFIER)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->whereRaw('LOWER(SERVICE_MODIFIER) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
