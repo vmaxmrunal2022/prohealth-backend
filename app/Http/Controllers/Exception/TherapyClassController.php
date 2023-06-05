@@ -1013,6 +1013,7 @@ class TherapyClassController extends Controller
 
         ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST',$request->ther_class_exception_list)
         ->where('TC_EXCEPTION_LISTS.THERAPY_CLASS',$request->therapy_class)
+        ->where('TC_EXCEPTION_LISTS.EFFECTIVE_DATE',$request->effective_date) 
         ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
