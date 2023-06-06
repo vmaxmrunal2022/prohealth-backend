@@ -528,6 +528,9 @@ class CustomerController extends Controller
             // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
             ->where(DB::raw('UPPER(CUSTOMER_ID)'), 'like', '%' . strtoupper($customerid) . '%')
             ->first();
+
+
+
         return $this->respondWithToken($this->token(), '', $customer);
     }
 

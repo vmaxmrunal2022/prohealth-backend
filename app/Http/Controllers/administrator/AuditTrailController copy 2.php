@@ -36,10 +36,10 @@ class AuditTrailController extends Controller
             ->orderBy('date_created', 'desc')
             ->where('date_created', date('Ymd', strtotime($request->date_created)))
             ->get();
-        // return $user_record;
+
         $results = DB::table('PHIDBA.FE_RECORD_LOG')
             ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 30) . "%'")
-            ->where('table_name', $request->table_name)
+            ->where(DB::raw('UPPER(table_name)'), strtoupper($request->table_name))
             ->orderBy(
                 'DATE_CREATED',
                 'DESC'
@@ -47,7 +47,8 @@ class AuditTrailController extends Controller
             ->orderBy('TIME_CREATED', 'DESC')
             ->take(2000)
             ->get();
-        // return $results;
+        return $results;
+        exit();
         $table_name = $request->table_name;
         $customer_id = isset(json_decode($request->record_snapshot)->customer_id) ? json_decode($request->record_snapshot)->customer_id : null;
         $client_id = isset(json_decode($request->record_snapshot)->client_id)  ? json_decode($request->record_snapshot)->client_id : null;
@@ -166,14 +167,13 @@ class AuditTrailController extends Controller
             $arr2 = $key;
             array_push($column_arr, $arr2);
         }
-        // if (empty($record)) {
-        //     return "empty";
-        // } else {
-        //     return "not empty";
-        // }
+        if (empty($record)) {
+            return "empty";
+        } else {
+            return "not empty";
+        }
         $current_record = [];
-        //if (empty($record)) {
-        if (isEmpty($record)) {
+        if (empty($record)) {
             $record[0] = ["This record is deleted"];
         } else {
             foreach ($record[0] as $key => $val) {
@@ -186,12 +186,11 @@ class AuditTrailController extends Controller
         //     array_push($current_record, $ar);
         // }
 
-        // return $column_arr;
+
         // $data = ['user_record' => $user_record[0], 'record_snapshot' => $current_record, 'old_record' => $old_value_arr, 'columns' => $old_column_arr];
         $data = [
             'user_record' => $user_record[0], 'record_snapshot' => $record[0], 'old_record' => $old_value_arr,
             'columns' => $old_column_arr
-            // 'columns' => $column_arr
         ];
         return $this->respondWithToken($this->token(), '', $data);
     }
