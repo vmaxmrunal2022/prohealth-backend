@@ -105,6 +105,7 @@ class ClaimHistoryController extends Controller
 
     public function getProcedureCode(Request $request)
     {
+        // return 'test';
         $procedureCodes = DB::table('PROC_CODE_LISTS')
             // ->select('PROC_CODE_LISTS.PROCEDURE_CODE', 'PROC_CODE_LIST_NAMES.DESCRIPTION')
             // ->join('PROC_CODE_LIST_NAMES', 'PROC_CODE_LIST_NAMES.PROC_CODE_LIST_ID', '=', 'PROC_CODE_LISTS.PROCEDURE_CODE')
@@ -112,8 +113,13 @@ class ClaimHistoryController extends Controller
             // ->get();
 
             ->select('procedure_code')
-            ->where('procedure_code', 'like', '%' . $request->search . '%')
-            ->get();
+            ->whereRaw('upper(procedure_code) LIKE ?', ['%' . strtoupper($request->search) . '%'])
+            // ->where('procedure_code', 'like', '%' . $request->search . '%')
+            // ->distinct()
+            // ->pluck('procedure_code')
+            // ->toArray();
+            ->paginate(100);
+            // ->get();
         return $this->respondWithToken($this->token(), '', $procedureCodes);
     }
 
