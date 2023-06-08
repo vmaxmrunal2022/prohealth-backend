@@ -232,7 +232,7 @@ class PrescriberValidationController extends Controller
                             ->get();
 
                         // $add = DB::table('PHYSICIAN_VALIDATIONS')->where('physician_list', 'like', '%' . $request->physician_list . '%')->first();
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', [$diag_validation, $diag_exception]);
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', [[], []]);
                     } else {
                         $updateProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
                             ->where('PHYSICIAN_LIST', $request->physician_list)

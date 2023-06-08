@@ -297,7 +297,7 @@ class CustomerController extends Controller
                 //Audit 
                 // $record_snapshot = implode('|', (array) $benefitcode);
                 $record_snapshot = json_encode($benefitcode);
-                $save_audit = $this->auditMethod('IN', $record_snapshot, 'CUSTOMER');
+                $save_audit = $this->auditMethod('IN', $record_snapshot, 'PH_CUSTOMER');
                 return $this->respondWithToken($this->token(), 'RecordAdded Successfully', $updated_data);
             }
         } else {
@@ -420,7 +420,7 @@ class CustomerController extends Controller
                         'user_id' => Cache::get('userId'),
                         'date_created' => date('Ymd'),
                         'time_created' => date('gisA'),
-                        'table_name' => 'CLIENT',
+                        'table_name' => 'PH_CUSTOMER',
                         'record_action' => 'UP',
                         'application' => 'ProPBM',
                         // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,

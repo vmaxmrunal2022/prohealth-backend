@@ -36,19 +36,11 @@ class AuditTrailController extends Controller
             ->orderBy('date_created', 'desc')
             ->where('date_created', date('Ymd', strtotime($request->date_created)))
             ->get();
-        // return $request->record_snapshot;
-        // return substr($request->record_snapshot, 0, 100);
-        // $results = DB::table('PHIDBA.FE_RECORD_LOG')
-        //     ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 30) . "%'")
-        //     ->where('table_name', $request->table_name)
-        //     ->orderBy(
-        //         'DATE_CREATED',
-        //         'DESC'
-        //     )
-        //     ->orderBy('TIME_CREATED', 'DESC')
-        //     ->take(2000)
-        //     ->get();
-        // return $request->table_name;
+
+        $table_name = $request->table_name;
+        if ($request->table_name == 'PH_CUSTOMER') {
+            $table_name = 'CUSTOMER';
+        }
         $results = DB::table('PHIDBA.FE_RECORD_LOG')
             ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 30) . "%'")
             ->where(DB::raw('UPPER(table_name)'), strtoupper($request->table_name))
@@ -60,7 +52,8 @@ class AuditTrailController extends Controller
             ->take(2000)
             ->get();
         // return $results;
-        $table_name = $request->table_name;
+
+
         $customer_id = isset(json_decode($request->record_snapshot)->customer_id) ? json_decode($request->record_snapshot)->customer_id : null;
         $client_id = isset(json_decode($request->record_snapshot)->client_id)  ? json_decode($request->record_snapshot)->client_id : null;
         $client_group_id = isset(json_decode($request->record_snapshot)->client_group_id)  ? json_decode($request->record_snapshot)->client_group_id : null;
@@ -80,14 +73,14 @@ class AuditTrailController extends Controller
         $prov_type_proc_assoc_id = isset(json_decode($request->record_snapshot)->prov_type_proc_assoc_id)  ? json_decode($request->record_snapshot)->prov_type_proc_assoc_id : null;
 
 
-        // return $member_id;
-        $record = DB::table($request->table_name)
+        // return $table_name;
+        $record = DB::table($table_name)
             ->when($customer_id, function ($query) use ($customer_id) {
                 return $query->where('customer_id', 'like', '%' . $customer_id . '%');
             })
-            ->when([$customer_id, $client_id], function ($query) use ($client_id, $customer_id) {
-                $result =  $query->where('customer_id', 'like', '%' . $customer_id . '%')
-                    ->where('client_id', 'like', '%' . $client_id . '%');
+            ->when($customer_id, function ($query) use ($client_id, $customer_id) {
+                $result =  $query->where('customer_id', 'like', '%' . $customer_id . '%');
+                // ->where('client_id', 'like', '%' . $client_id . '%');
                 return $result;
             })
             ->when($client_group_id, function ($query) use ($client_group_id, $customer_id, $client_id) {
@@ -180,12 +173,10 @@ class AuditTrailController extends Controller
             }
         }
 
-
-
         /***************************** */
 
 
-        $get_column = DB::table($request->table_name)->get();
+        $get_column = DB::table($table_name)->get();
         $column_arr = [];
         foreach ($get_column[0] as $key => $val) {
             $arr2 = $key;
@@ -384,9 +375,13 @@ class AuditTrailController extends Controller
         }
         // print_r($toDate);
         // print_r($request->to_date, "todate");
+        $table_name = $request->table_name['value'];
+        if ($request->table_name['value'] == 'CUSTOMER') {
+            $table_name = 'PH_CUSTOMER';
+        }
 
         $search = DB::table('FE_RECORD_LOG')
-            ->where('table_name', $request->table_name['value'])
+            ->where(DB::raw('UPPER(table_name)'), strtoupper($table_name))
             ->when($user_id, function ($query) use ($user_id) {
                 return $query->where('user_id', 'like', '%' . $user_id . '%');
             })
@@ -405,7 +400,7 @@ class AuditTrailController extends Controller
 
             ->orderBy('date_created', 'desc')
             ->get();
-
+        // return $search;
         return $this->respondWithToken($this->token(), '', $search);
     }
 
