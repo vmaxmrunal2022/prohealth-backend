@@ -368,6 +368,18 @@ class MemberController extends Controller
         return $this->respondWithToken($this->token(), '', $view_limitations);
     }
 
+    public function getViewLimitationsNew(Request $request)
+    {
+        $view_limitations = [
+            ['limit_id' => '1', 'limit_name' => 'All Claims'],
+            ['limit_id' => '2', 'limit_name' => 'Paid Claims'],
+            ['limit_id' => '3', 'limit_name' => 'Rejected Claims'],
+            ['limit_id' => '4', 'limit_name' => 'Reversed Claim'],
+        ];
+
+        return $this->respondWithToken($this->token(), '', $view_limitations);
+    }
+
     public function getCopayStrategyId(Request $request)
     {
         $copay_strategy_id = DB::table('COPAY_STRATEGY')
@@ -379,6 +391,13 @@ class MemberController extends Controller
     {
         $acc_beni_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
             ->get();
+
+        return $this->respondWithToken($this->token(), '', $acc_beni_strategy);
+    }
+    public function getAccumulatedBenifitStrategyNew(Request $request)
+    {
+        $acc_beni_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $acc_beni_strategy);
     }

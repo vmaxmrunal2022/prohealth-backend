@@ -170,28 +170,28 @@ class PlanEditController extends Controller
 
             $addData = DB::table('PLAN_BENEFIT_TABLE')
                 ->insert([
-                    'PLAN_ID' => strtoupper($request->plan_id),
+                    'PLAN_ID' => $request->plan_id,
                     'EFFECTIVE_DATE' => date('Ymd', strtotime($request->effective_date)),
-                    'PLAN_NAME' => strtoupper($request->plan_name),
-                    'DEFAULT_DRUG_STATUS' => strtoupper($request->default_drug_status),
-                    'DEFAULT_PRICE_SCHEDULE' => strtoupper($request->default_price_schedule),
-                    'MAC_LIST' => strtoupper($request->mac_list),
-                    'PHARMACY_EXCEPTIONS_FLAG' => strtoupper($request->pharmacy_exceptions_flag),
-                    'PRESCRIBER_EXCEPTIONS_FLAG' => strtoupper($request->prescriber_exceptions_flag),
-                    'DRUG_CATGY_EXCPT_FLAG' => strtoupper($request->drug_catgy_excpt_flag),
-                    'NDC_EXCEPTION_LIST' => strtoupper($request->ndc_exception_list),
-                    'GPI_EXCEPTION_LIST' => strtoupper($request->gpi_exception_list),
-                    'THER_CLASS_EXCEPTION_LIST' => strtoupper($request->ther_class_exception_list),
+                    'PLAN_NAME' => $request->plan_name,
+                    'DEFAULT_DRUG_STATUS' =>$request->default_drug_status,
+                    'DEFAULT_PRICE_SCHEDULE' =>$request->default_price_schedule,
+                    'MAC_LIST' => $request->mac_list,
+                    'PHARMACY_EXCEPTIONS_FLAG' => $request->pharmacy_exceptions_flag,
+                    'PRESCRIBER_EXCEPTIONS_FLAG' => $request->prescriber_exceptions_flag,
+                    'DRUG_CATGY_EXCPT_FLAG' => $request->drug_catgy_excpt_flag,
+                    'NDC_EXCEPTION_LIST' =>$request->ndc_exception_list,
+                    'GPI_EXCEPTION_LIST' => $request->gpi_exception_list,
+                    'THER_CLASS_EXCEPTION_LIST' =>($request->ther_class_exception_list),
                     'TERMINATION_DATE' => date('Ymd', strtotime($request->termination_date)),
-                    'MIN_RX_QTY' => strtoupper($request->min_rx_qty),
-                    'MAX_RX_QTY' => strtoupper($request->max_rx_qty),
-                    'MIN_RX_DAYS' => strtoupper($request->min_rx_days),
-                    'MAX_RX_DAYS' => strtoupper($request->max_rx_days),
-                    'MIN_CTL_DAYS' => strtoupper($request->min_ctl_days),
-                    'MAX_CTL_DAYS' => strtoupper($request->max_ctl_days),
+                    'MIN_RX_QTY' =>($request->min_rx_qty),
+                    'MAX_RX_QTY' => $request->max_rx_qty,
+                    'MIN_RX_DAYS' =>($request->min_rx_days),
+                    'MAX_RX_DAYS' =>($request->max_rx_days),
+                    'MIN_CTL_DAYS' =>($request->min_ctl_days),
+                    'MAX_CTL_DAYS' =>($request->max_ctl_days),
                     'MAX_REFILLS' => $request->max_refills,
-                    'MAX_DAYS_PER_FILL' => strtoupper($request->max_days_per_fill),
-                    'MAX_DOSE' => strtoupper($request->max_dose),
+                    'MAX_DAYS_PER_FILL' => ($request->max_days_per_fill),
+                    'MAX_DOSE' => ($request->max_dose),
                     'MIN_AGE' => $request->min_age,
                     'MAX_AGE' => $request->max_age,
                     'MIN_PRICE' => $request->min_price,
@@ -287,7 +287,9 @@ class PlanEditController extends Controller
 
             $addData = DB::table('PLAN_BENEFIT_TABLE')
                 ->leftJoin('PLAN_TABLE_EXTENSIONS', 'PLAN_BENEFIT_TABLE.plan_id', '=', 'PLAN_TABLE_EXTENSIONS.plan_id')
-                ->where('PLAN_BENEFIT_TABLE.plan_id', $request->plan_id)
+                // ->where('PLAN_BENEFIT_TABLE.plan_id', $request->plan_id)
+                ->where(DB::raw('UPPER(PLAN_BENEFIT_TABLE.plan_id)'), strtoupper($request->plan_id))
+
                 ->first();
 
 
@@ -296,8 +298,8 @@ class PlanEditController extends Controller
                 ->first();
 
             $plan_table_ext = DB::table('PLAN_TABLE_EXTENSIONS')
-                                ->where(DB::raw('UPPER(plan_id)'), strtoupper('plan_id'))
-                                ->first();
+                ->where(DB::raw('UPPER(plan_id)'), strtoupper('plan_id'))
+                ->first();
             $record_snapshot_benefit = json_encode($addData);
             $save_audit = $this->auditMethod('IN', $record_snapshot_benefit, 'PLAN_BENEFIT_TABLE');
 
@@ -405,26 +407,26 @@ class PlanEditController extends Controller
                     ->update([
                         'EFFECTIVE_DATE' => date('Ymd', strtotime($request->effective_date)),
                         // 'effective_date' => $request->effective_date,
-                        'PLAN_NAME' => strtoupper($request->plan_name),
-                        'DEFAULT_DRUG_STATUS' => strtoupper($request->default_drug_status),
-                        'DEFAULT_PRICE_SCHEDULE' => strtoupper($request->default_price_schedule),
-                        'MAC_LIST' => strtoupper($request->mac_list),
-                        'PHARMACY_EXCEPTIONS_FLAG' => strtoupper($request->pharmacy_exceptions_flag),
-                        'PRESCRIBER_EXCEPTIONS_FLAG' => strtoupper($request->prescriber_exceptions_flag),
-                        'DRUG_CATGY_EXCPT_FLAG' => strtoupper($request->drug_catgy_excpt_flag),
-                        'NDC_EXCEPTION_LIST' => strtoupper($request->ndc_exception_list),
-                        'GPI_EXCEPTION_LIST' => strtoupper($request->gpi_exception_list),
-                        'THER_CLASS_EXCEPTION_LIST' => strtoupper($request->ther_class_exception_list),
+                        'PLAN_NAME' => $request->plan_name,
+                        'DEFAULT_DRUG_STATUS' =>$request->default_drug_status,
+                        'DEFAULT_PRICE_SCHEDULE' =>$request->default_price_schedule,
+                        'MAC_LIST' =>$request->mac_list,
+                        'PHARMACY_EXCEPTIONS_FLAG' => $request->pharmacy_exceptions_flag,
+                        'PRESCRIBER_EXCEPTIONS_FLAG' =>$request->prescriber_exceptions_flag,
+                        'DRUG_CATGY_EXCPT_FLAG' =>$request->drug_catgy_excpt_flag,
+                        'NDC_EXCEPTION_LIST' =>$request->ndc_exception_list,
+                        'GPI_EXCEPTION_LIST' =>$request->gpi_exception_list,
+                        'THER_CLASS_EXCEPTION_LIST' =>$request->ther_class_exception_list,
                         'TERMINATION_DATE' => date('Ymd', strtotime($request->termination_date)),
-                        'MIN_RX_QTY' => strtoupper($request->min_rx_qty),
-                        'MAX_RX_QTY' => strtoupper($request->max_rx_qty),
-                        'MIN_RX_DAYS' => strtoupper($request->min_rx_days),
-                        'MAX_RX_DAYS' => strtoupper($request->max_rx_days),
-                        'MIN_CTL_DAYS' => strtoupper($request->min_ctl_days),
-                        'MAX_CTL_DAYS' => strtoupper($request->max_ctl_days),
+                        'MIN_RX_QTY' => $request->min_rx_qty,
+                        'MAX_RX_QTY' =>$request->max_rx_qty,
+                        'MIN_RX_DAYS' =>$request->min_rx_days,
+                        'MAX_RX_DAYS' =>$request->max_rx_days,
+                        'MIN_CTL_DAYS' =>$request->min_ctl_days,
+                        'MAX_CTL_DAYS' =>$request->max_ctl_days,
                         'MAX_REFILLS' => $request->max_refills,
-                        'MAX_DAYS_PER_FILL' => strtoupper($request->max_days_per_fill),
-                        'MAX_DOSE' => strtoupper($request->max_dose),
+                        'MAX_DAYS_PER_FILL' =>$request->max_days_per_fill,
+                        'MAX_DOSE' =>$request->max_dose,
                         'MIN_AGE' => $request->min_age,
                         'MAX_AGE' => $request->max_age,
                         'MIN_PRICE' => $request->min_price,
@@ -541,8 +543,9 @@ class PlanEditController extends Controller
     public function get(Request $request)
     {
         $planEdit = DB::table('PLAN_BENEFIT_TABLE')
-            ->join('plan_table_extensions', 'plan_table_extensions.plan_id', '=', 'PLAN_BENEFIT_TABLE.plan_id')
-            ->where('PLAN_BENEFIT_TABLE.PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->leftjoin('plan_table_extensions', 'plan_table_extensions.plan_id', '=', 'PLAN_BENEFIT_TABLE.plan_id')
+            ->whereRaw('LOWER(PLAN_BENEFIT_TABLE.PLAN_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            // ->where('PLAN_BENEFIT_TABLE.PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('PLAN_BENEFIT_TABLE.PLAN_NAME', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 

@@ -19,7 +19,8 @@ class ProcedureController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('PROCEDURE_CODES')
-                ->where(DB::raw('UPPER(PROCEDURE_CODE)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('LOWER(PROCEDURE_CODE) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                // ->where(DB::raw('UPPER(PROCEDURE_CODE)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 

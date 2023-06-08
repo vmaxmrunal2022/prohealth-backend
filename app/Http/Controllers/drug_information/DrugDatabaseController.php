@@ -324,11 +324,11 @@ class DrugDatabaseController extends Controller
         }
 
     }
-
-    public function drugdatabaseDelete(Request $request){
-        if (isset($request->ndc) ) {
-            $all_exceptions_lists =   DB::table('DRUG_MASTER')
-                                              ->where('NDC', $request->ndc)->delete();
+    public function drugdatabaseDelete(Request $request)
+    {
+        if (isset($request->ndc)) {
+            $all_exceptions_lists = DB::table('DRUG_MASTER')
+                ->where('NDC', $request->ndc)->delete();
 
             $drug_price = DB::table('DRUG_PRICE')->where('NDC', $request->ndc)->delete();
 
@@ -337,7 +337,7 @@ class DrugDatabaseController extends Controller
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } 
+        }
     }
 
 

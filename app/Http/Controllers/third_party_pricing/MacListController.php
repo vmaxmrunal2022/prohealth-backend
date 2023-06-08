@@ -29,6 +29,21 @@ class MacListController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
+    public function Details(Request $request)
+    
+    {
+        $data = DB::table('MAC_LIST')
+        ->join('MAC_TABLE', 'mac_list.mac_list', '=', 'mac_table.mac_list')
+        ->where('mac_table.mac_list', $request->mac_list)
+        ->where('mac_table.gpi', $request->gpi)
+        ->where('mac_table.effective_date', $request->effective_date)
+        ->get();
+    return $this->respondWithToken($this->token(), '', $data);
+
+        
+
+
+    }
     public function getPriceSource(Request $request)
     {
         $priceSource = [
@@ -473,10 +488,9 @@ class MacListController extends Controller
                                         ->where('EFFECTIVE_DATE',$request->effective_date)
                                         ->where('GPI',$request->gpi)
                                         ->delete();
-            $childcount = DB::table('MAC_TABLE')->where('MAC_LIST', $request->mac_list)->count();
 
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

@@ -104,7 +104,4 @@ class ProviderDataController extends Controller
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
-
-
-    
 }

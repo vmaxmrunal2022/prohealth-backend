@@ -990,8 +990,8 @@ class TherapyClassController extends Controller
         $ndclist = DB::table('TC_EXCEPTION_LISTS')
                 // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
                 ->join('TC_EXCEPTIONS','TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
-                // ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
                 ->whereRaw('LOWER(TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($ndcid) . '%'])
+                // ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
                 // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
                 ->get();
 
@@ -1013,9 +1013,9 @@ class TherapyClassController extends Controller
 
         ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST',$request->ther_class_exception_list)
         ->where('TC_EXCEPTION_LISTS.THERAPY_CLASS',$request->therapy_class)
-        ->where('TC_EXCEPTION_LISTS.EFFECTIVE_DATE',$request->effective_date)
+        ->where('TC_EXCEPTION_LISTS.EFFECTIVE_DATE',$request->effective_date) 
         ->first();
- 
+
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }

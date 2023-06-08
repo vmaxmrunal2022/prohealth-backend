@@ -21,7 +21,9 @@ class BenifitController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $benefitcodes = DB::table('benefit_codes')
-                ->where(DB::raw('UPPER(benefit_code)'), 'like', '%' .  strtoupper($request->search) . '%')
+
+                ->whereRaw('LOWER(benefit_code) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                // ->where(DB::raw('UPPER(benefit_code)'), 'like', '%' .  strtoupper($request->search) . '%')
                 ->orWhere(DB::raw('UPPER(description)'), 'like', '%' .  strtoupper($request->search) . '%')
                 ->get();
 
@@ -108,13 +110,16 @@ class BenifitController extends Controller
     {
         if (isset($request->benefit_code)) {
 
+            $all_records =  DB::table('BENEFIT_CODES')->get();
+
+
             $delete_benefit_code =  DB::table('BENEFIT_CODES')
                 ->where('benefit_code', $request->benefit_code)
                 ->delete();
             if ($delete_benefit_code) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$all_records,'true');
             } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
+                return $this->respondWithToken($this->token() ,'Record Not Found','','false');
             }
         } else {
             return $this->respondWithToken($this->token(), 'Record Not Found');

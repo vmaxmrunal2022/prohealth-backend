@@ -834,5 +834,12 @@ class ProviderDataProviderController extends Controller
         }
     }       
             
- 
+    public function getProviderNetworksNew(Request $request)
+    {
+       
+           $traditional_network_data=DB::table('RX_NETWORKS')->paginate(100);
+           
+           return $this->respondWithToken($this->token(), '', $traditional_network_data);
+    }
+
 }

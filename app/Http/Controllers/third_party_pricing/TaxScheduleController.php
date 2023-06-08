@@ -69,7 +69,7 @@ class TaxScheduleController extends Controller
                     'RX_TAX_CALCULATION' => $request->rx_tax_calculation,
                     'RX_TAX_BASE_PRICE' => $request->rx_tax_base_price,
                     'OTC_TAX_PERCENTAGE' => $request->otc_tax_percentage,
-                    'OTC_FLAT_TAX_AMOUNT' => $request->otc_flat_tx_amount,
+                    'OTC_FLAT_TAX_AMOUNT' => $request->otc_flat_tax_amount,
                     'OTC_TAX_CALCULATION' => $request->otc_tax_calculation,
                     'OTC_TAX_BASE_PRICE' => $request->otc_tax_base_price,
                 ]);
@@ -101,7 +101,7 @@ class TaxScheduleController extends Controller
                     'RX_TAX_CALCULATION' => $request->rx_tax_calculation,
                     'RX_TAX_BASE_PRICE' => $request->rx_tax_base_price,
                     'OTC_TAX_PERCENTAGE' => $request->otc_tax_percentage,
-                    'OTC_FLAT_TAX_AMOUNT' => $request->otc_flat_tx_amount,
+                    'OTC_FLAT_TAX_AMOUNT' => $request->otc_flat_tax_amount,
                     'OTC_TAX_CALCULATION' => $request->otc_tax_calculation,
                     'OTC_TAX_BASE_PRICE' => $request->otc_tax_base_price,
                 ]);

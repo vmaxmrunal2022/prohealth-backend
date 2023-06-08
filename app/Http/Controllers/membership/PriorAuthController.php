@@ -92,6 +92,7 @@ class PriorAuthController extends Controller
                 'termination_date' => ['required', 'after:effective_date'],
                 'prior_auth_type'=> ['required'],
                 'relationship'=> ['required'],
+                'max_daily_dose'=>['required','max:2'],
                 'member_id'=> ['required'],
                 'ndc' => ['nullable',
                     function ($attribute, $value, $fail) use ($request) {
@@ -197,8 +198,6 @@ class PriorAuthController extends Controller
                 ->where('client_id', $request->client_id)
                 ->where('client_group_id', $request->client_group_id)
                 ->where('plan_id', $request->plan_id)
-                ->where('prior_auth_code_num', $request->prior_auth_code_num)
-
                 ->first();
             $record_snap = json_encode($inserted_record);
             $save_audit = $this->auditMethod('IN', $record_snap, 'PRIOR_AUTHORIZATIONS');
@@ -220,6 +219,8 @@ class PriorAuthController extends Controller
                 'prior_auth_type'=> ['required'],
                 'relationship'=> ['required'],
                 'member_id'=> ['required'],
+                'max_daily_dose'=>['required','max:2'],
+
                 'ndc' => ['nullable',
                     function ($attribute, $value, $fail) use ($request) {
                         if (!empty($value) && !empty($request->generic_product_id)) {

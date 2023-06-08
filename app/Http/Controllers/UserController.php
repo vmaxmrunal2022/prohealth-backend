@@ -141,6 +141,8 @@ class UserController extends Controller
             // app()->instance('my_global_data', $userid);
             // $usersData =
             $usersData = auth()->user()->user_id;
+            // $usersData = auth()->user();
+
             Cache::put('userId', $usersData, 86400);
             // return Cache::get('users.active');
 
@@ -150,7 +152,9 @@ class UserController extends Controller
 
             // return auth()->user()->user_id;
 
-            return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
+            // return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
+            return $this->respondWithToken($accessToken, $responseMessage, $usersData);
+
         } else {
             $responseMessage = "Sorry, this user does not exist";
             return response()->json([

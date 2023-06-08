@@ -17,10 +17,12 @@ use Symfony\Component\HttpFoundation\Session\Session as SessionSession;
 use Session;
 use App\getUserData;
 use App\getUserData1;
+use App\Traits\AuditTrait;
 use Illuminate\Support\Facades\Cache;
 
 class CustomerController extends Controller
 {
+    use AuditTrait;
     public $customerIdPrefix = 'CN';
     public $customerIdMaxDigits = 4;
     // public $user_id;
@@ -303,7 +305,7 @@ class CustomerController extends Controller
                         'record_snapshot' => $record_snapshot,
                     ]);
 
-                return $this->respondWithToken($this->token(), 'RecordAdded Successfully', $benefitcode);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $benefitcode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -416,7 +418,7 @@ class CustomerController extends Controller
                             'misc_data_3' => $request->misc_data_3,
                         ]
                     );
-                $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
+                $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->get();
                 //Audit 
                 // $record_snapshot = implode('|', (array) $benefitcode);
                 $record_snapshot = json_encode($benefitcode);
@@ -529,10 +531,42 @@ class CustomerController extends Controller
 
     public function deleteCutomer(Request $request)
     {
-        // dd($request->all());
+        //CUSTOMER
+        $customer = DB::table('customer')
+            ->where('customer_id', $request->customer_id)
+            ->first();
+        //save audit
+        $record_snapshot = json_encode($customer);
+        $save_audit = $this->auditMethod('DE', $record_snapshot, 'CUSTOMER');
         $delete_customer = DB::table('customer')
             ->where('customer_id', $request->customer_id)
             ->delete();
-        return $this->respondWithToken($this->token(), "deleted", "deleted");
+
+        //CLIENT
+        $client  = DB::table('CLIENT')
+            ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
+            ->get();
+        for ($i = 0; $i < count($client); $i++) {
+            $record_snapshot_client = json_encode($client[$i]);
+            $save_audit = $this->auditMethod('DE', $record_snapshot_client, 'CLIENT');
+        }
+        $delete_client  = DB::table('CLIENT')
+            ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
+            ->delete();
+
+        //CLIENT GROUP
+        $client_group = DB::table('CLIENT_GROUP')
+            ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
+            ->get();
+        for ($i = 0; $i < count($client_group); $i++) {
+            $record_snapshot = json_encode($client_group[$i]);
+            $save_audit = $this->auditMethod('DE', $record_snapshot, 'CLIENT_GROUP');
+        }
+        $delete_client_group  = DB::table('CLIENT_GROUP')
+            ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
+            ->delete();
+
+
+        return $this->respondWithToken($this->token(), "Record Deleted Successfully", '');
     }
 }

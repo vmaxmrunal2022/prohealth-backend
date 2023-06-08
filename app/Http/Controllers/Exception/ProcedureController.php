@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
+use App\Traits\AuditTrait;
+
 class ProcedureController extends Controller
 {
 
-
+use AuditTrait;
     public function addcopy( Request $request ) {
 
         $createddate = date( 'y-m-d' );

@@ -507,19 +507,15 @@ class CopayScheduleController extends Controller
 
     public function deleteCopaySchedule(Request $request)
     {
+        $all_exceptions_lists =  DB::table('copay_schedule')
+            ->where('COPAY_SCHEDULE', $request->copay_schedule)
+            ->delete();
 
-        if(isset($request->copay_schedule)){
-            $all_exceptions_lists =  DB::table('copay_schedule')
-                                        ->where('COPAY_SCHEDULE', $request->copay_schedule)
-                                        ->delete();
-
-            if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
-            }
+        if ($all_exceptions_lists) {
+            return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
         }
-        
     }
 
 

@@ -542,11 +542,9 @@ class ProcedureCrossReferenceController extends Controller
                                         ->where('EFFECTIVE_DATE', str_replace('-', '', $request->effective_date))
                                         ->where('TERMINATION_DATE',str_replace('-', '', $request->termination_date))
                                         ->delete();
-
-            $childcount = DB::table('PROCEDURE_XREF')->where('PROCEDURE_XREF_ID', $request->procedure_xref_id)->count();
            
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

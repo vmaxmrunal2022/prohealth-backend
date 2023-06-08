@@ -20,24 +20,38 @@ class CopayStepScheduleController extends Controller
 
             $copayStepData = DB::table('COPAY_LIST')
                 // ->where('COPAY_LIST', 'like', '%' . $request->copay_list . '%')
-                ->whereRaw('LOWER(COPAY_LIST) LIKE ?', ['%' . strtolower($request->copay_list) . '%'])
-                ->get();
+                ->select('COPAY_LIST.*')
+                ->join('COPAY_MATRIX','COPAY_LIST.COPAY_LIST','=','COPAY_MATRIX.COPAY_LIST')
+                ->where('COPAY_LIST.COPAY_LIST', 'like', '%'.$request->copay_list.'%')
+                 ->where('COPAY_MATRIX.DAYS_SUPPLY', '!=', 0)
+                 ->distinct()
+                 ->get();
+
+                // $data= array_unique($copayStepData);
+                //  ->groupby('COPAY_LIST.COPAY_LIST')->get();
+                //  ->get()->unique('COPAY_MATRIX.COPAY_LIST');
             return $this->respondWithToken($this->token(), '', $copayStepData);
 
 
-        } else if ($request->search == 'cost_max' && $request->copay_list) {
+        }
+         else if ($request->search == 'cost_max' && $request->copay_list) {
 
-            // $copayStepData = DB::table('COPAY_MATRIX')
-            // ->join('COPAY_LIST','COPAY_LIST.COPAY_LIST','=','COPAY_MATRIX.COPAY_LIST')
-            // ->where('COPAY_MATRIX.COPAY_LIST', 'like', '%'.$request->copay_list.'%')
-            // ->where('COPAY_MATRIX.DAYS_SUPPLY', '=', 0)
-
-            // ->get();
-
+            
             $copayStepData = DB::table('COPAY_LIST')
                 // ->where('COPAY_LIST', 'like', '%' . $request->copay_list . '%')
-                ->whereRaw('LOWER(COPAY_LIST) LIKE ?', ['%' . strtolower($request->copay_list) . '%'])
-                ->get();
+                ->select('COPAY_LIST.*')
+                ->join('COPAY_MATRIX','COPAY_LIST.COPAY_LIST','=','COPAY_MATRIX.COPAY_LIST')
+                ->where('COPAY_LIST.COPAY_LIST', 'like', '%'.$request->copay_list.'%')
+                 ->where('COPAY_MATRIX.COST_MAX', '!=', 0)
+                 ->distinct()
+                 ->get();
+
+            // $copayStepData = DB::table('COPAY_LIST')
+            //     // ->where('COPAY_LIST', 'like', '%' . $request->copay_list . '%')
+            //     ->whereRaw('LOWER(COPAY_LIST) LIKE ?', ['%' . strtolower($request->copay_list) . '%'])
+            //                 ->where('COPAY_MATRIX.DAYS_SUPPLY', '=', 0)
+
+            //     ->get();
             return $this->respondWithToken($this->token(), '', $copayStepData);
 
         }
@@ -223,6 +237,15 @@ class CopayStepScheduleController extends Controller
             } else if ($request->add_new == 0) {
 
 
+                $addCopaylist1 = DB::table('COPAY_LIST')
+                ->where('COPAY_LIST',$request->copay_list)
+                ->update([
+                    'COPAY_DESC' => $request->copay_desc,
+                    'DATE_TIME_CREATED' => '',
+                    'DATE_TIME_MODIFIED' => ''
+                ]);
+
+
 
                 if (!empty($request->cost_max_form)) {
 
@@ -299,6 +322,13 @@ class CopayStepScheduleController extends Controller
 
 
                     }
+
+
+
+                   
+
+
+
 
 
                     if ($addCopaymatrix1) {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\AccumLatedBenifits;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -12,8 +13,7 @@ use Illuminate\Support\Facades\Cache;
 class MajorMedicalController extends Controller
 {
 
-
-
+    use AuditTrait;
     public function add(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -22,94 +22,20 @@ class MajorMedicalController extends Controller
             "client_group_id" => ['required'],
             'mm_claim_max' => ['max:10'],
             'mm_life_maximum' => ['max:10'],
-        ]);
+            'termination_date' => ['gt:effective_date']
+
+        ], ['termination_date.gt' => 'Effective Date Could Not Be Greater Than or Equal to Termination Date ']);
         if ($validator->fails()) {
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        }
-        if ($request->has('new')) {
-            $insert = DB::table('MM_LIFE_MAX')->insert(
-                [
-                    'CUSTOMER_ID' => $request->customer_id,
-                    'CLIENT_ID' => $request->client_id,
-                    'CLIENT_GROUP_ID' => $request->client_group_id,
-                    'MM_LIFE_MAXIMUM' => $request->mm_life_maximum,
-                    'EFFECTIVE_DATE' => $request->effective_date,
-                    'TERMINATION_DATE' => $request->termination_date,
-                    'GROUPING_TYPE' => $request->grouping_type,
-                    'USER_ID_CREATED'=>Cache::get('userId'),
-                    'DATE_TIME_CREATED'=>date('Ymd'),
-                    'USER_ID_MODIFIED'=>date('Ymd'),
-                    'MM_CLAIM_MAX'=>$request->mm_claim_max,
-                    'MM_CLAIM_MAX_PERIOD'=>$request->mm_claim_max_period,
-                    'MM_CLAIM_MAX_MULT'=>$request->mm_claim_max_mult,
-                    'MM_CLAIM_MAX_GROUP_TYPE'=>$request->mm_claim_max_group_type,
-                 
-                ]
-            );
-            if ($insert) {
-                return $this->respondWithToken($this->token(), 'Recored Added Successfully', $insert);
-            }
         } else {
-            $effectiveDate=$request->effective_date;
-            $terminationDate=$request->termination_date;
-            $overlapExists = DB::table('MM_LIFE_MAX')
-            ->where('customer_id', $request->customer_id)
-            ->where('client_id',$request->client_id)
-            ->where('client_group_id',$request->client_group_id)
-            ->where('effective_date','!=',$request->effective_date)
-            ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                    ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                    ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                        $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                            ->where('TERMINATION_DATE', '>=', $terminationDate);
-                    });
-            })
-            ->exists();
-            if ($overlapExists) {
-                return $this->respondWithToken($this->token(), [['For same Client Id , Customer Id , Client Group ID , dates cannot overlap.']], '', 'false');
-            }
-            $update = DB::table('MM_LIFE_MAX')
-                ->where('customer_id', $request->customer_id)
-                ->where('client_id', $request->client_id)
-                ->where('client_group_id', $request->client_group_id)
-                ->where('effective_date',$request->effective_date)
-                ->update(
-                    [
-                        'MM_LIFE_MAXIMUM' => $request->mm_life_maximum,
-                        'TERMINATION_DATE' => $request->termination_date,
-                        'GROUPING_TYPE' => $request->grouping_type,
-                        'USER_ID_CREATED'=>Cache::get('userId'),
-                        'DATE_TIME_CREATED'=>date('Ymd'),
-                        'USER_ID_MODIFIED'=>date('Ymd'),
-                        'MM_CLAIM_MAX'=>$request->mm_claim_max,
-                        'MM_CLAIM_MAX_PERIOD'=>$request->mm_claim_max_period,
-                        'MM_CLAIM_MAX_MULT'=>$request->mm_claim_max_mult,
-                        'MM_CLAIM_MAX_GROUP_TYPE'=>$request->mm_claim_max_group_type,
-                     
-                    ]
-                );
-
-            $recordcheck = DB::table('MM_LIFE_MAX')
-                ->where('customer_id',$request->customer_id)
-                ->where('client_id', $request->client_id)
-                ->where('client_group_id', $request->client_group_id)
-                ->first();
-
-
-            // dd($request->all());
-
-            if ($request->new == 1) {
-                if ($recordcheck) {
-                    return $this->respondWithToken($this->token(), 'Record already exists in the system..!!!', $recordcheck, false);
-                } else {
-                    $effectiveDate=$request->effective_date;
-                    $terminationDate=$request->termination_date;
-                    $overlapExists = DB::table('MM_LIFE_MAX')
+            if ($request->update_new == 1) {
+                $effectiveDate = $request->effective_date;
+                $terminationDate = $request->termination_date;
+                $overlapExists = DB::table('MM_LIFE_MAX')
                     ->where('customer_id', $request->customer_id)
-                    ->where('client_id',$request->client_id)
-                    ->where('client_group_id',$request->client_group_id)
-                    // ->where('effective_date','!=',$request->effective_date)
+                    ->where('client_id', $request->client_id)
+                    ->where('client_group_id', $request->client_group_id)
+                    // ->where('effective_date',$request->effective_date)
                     ->where(function ($query) use ($effectiveDate, $terminationDate) {
                         $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
                             ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
@@ -119,52 +45,59 @@ class MajorMedicalController extends Controller
                             });
                     })
                     ->exists();
-                    if ($overlapExists) {
-                        return $this->respondWithToken($this->token(), [['For same Client Id , Customer Id , Client Group ID , dates cannot overlap.']], '', 'false');
-                    }
-                    $insert = DB::table('MM_LIFE_MAX')->insert(
-                        [
-                            'customer_id' => $request->customer_id,
-                            'client_id' => $request->client_id,
-                            'client_group_id' => $request->client_group_id,
-                            'mm_life_maximum' => $request->mm_life_maximum,
-                            'grouping_type' => $request->grouping_type,
-                            'mm_claim_max' => $request->mm_claim_max,
-                            'effective_date' => $request->effective_date,
-                            'termination_date' => $request->termination_date,
-                            'mm_claim_max_group_type' =>$request->mm_claim_max_group_type,
-
-                        ]
-                    );
-                    // $benefitcode = DB::table('TEMP_MM_LIFE_MAX')->where('customer_id',$request->customer_id)->first();    
-                    return $this->respondWithToken($this->token(), 'Record added Successfully', $insert);
+                if ($overlapExists) {
+                    return $this->respondWithToken($this->token(), [['For same Client Id , Customer Id , Client Group ID , dates cannot overlap.']], '', 'false');
                 }
-            } else {
-                $effectiveDate=$request->effective_date;
-                $terminationDate=$request->termination_date;
+
+                $insert = DB::table('MM_LIFE_MAX')->insert(
+                    [
+                        'customer_id' => $request->customer_id,
+                        'client_id' => $request->client_id,
+                        'client_group_id' => $request->client_group_id,
+                        'mm_life_maximum' => $request->mm_life_maximum,
+                        'grouping_type' => $request->grouping_type,
+                        'mm_claim_max' => $request->mm_claim_max,
+                        'effective_date' => $request->effective_date,
+                        'termination_date' => $request->termination_date,
+                        'mm_claim_max_group_type' => $request->mm_claim_max_group_type,
+
+                    ]
+                );
+                $add = DB::table('MM_LIFE_MAX')
+                    ->where('customer_id', $request->customer_id)
+                    ->where('client_id', $request->client_id)
+                    ->where('client_group_id', $request->client_group_id)
+                    ->where('effective_date', $request->effective_date)
+                    ->first();
+                $record_snap = json_encode($add);
+                $save_audit = $this->auditMethod('IN', $record_snap, 'MM_LIFE_MAX');
+                return $this->respondWithToken($this->token(), 'Record added Successfully', $insert);
+            } else if ($request->update_new == 0) {
+                $effectiveDate = $request->effective_date;
+                $terminationDate = $request->termination_date;
                 $overlapExists = DB::table('MM_LIFE_MAX')
-                ->where('customer_id', $request->customer_id)
-                ->where('client_id',$request->client_id)
-                ->where('client_group_id',$request->client_group_id)
-                ->where('effective_date','!=',$request->effective_date)
-                ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                    $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                        ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                        ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                            $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                                ->where('TERMINATION_DATE', '>=', $terminationDate);
-                        });
-                })
-                ->exists();
+                    ->where('customer_id', $request->customer_id)
+                    ->where('client_id', $request->client_id)
+                    ->where('client_group_id', $request->client_group_id)
+                    ->where('effective_date', '!=', $request->effective_date)
+                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
+                            });
+                    })
+                    ->exists();
                 if ($overlapExists) {
                     return $this->respondWithToken($this->token(), [['For same Client Id , Customer Id , Client Group ID , dates cannot overlap.']], '', 'false');
                 }
 
                 $update = DB::table('MM_LIFE_MAX')
                     ->where('customer_id', $request->customer_id)
-                    ->where('client_id',$request->client_id)
-                    ->where('client_group_id',$request->client_group_id)
-                    ->where('effective_date',$request->effective_date)
+                    ->where('client_id', $request->client_id)
+                    ->where('client_group_id', $request->client_group_id)
+                    ->where('effective_date', $request->effective_date)
 
                     ->update(
                         [
@@ -181,9 +114,9 @@ class MajorMedicalController extends Controller
                     ->where('client_id', $request->client_id)
                     ->where('client_group_id', $request->client_group_id)
                     ->first();
-
-                // $benefitcode = DB::table('MM_LIFE_MAX')->where('mm_life_maximum', 'like', '%'.$request->mm_life_maximum .'%')->first();
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $recordcheck);
+                $record_snap = json_encode($benefitcode);
+                $save_audit = $this->auditMethod('UP', $record_snap, 'MM_LIFE_MAX');
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
             }
         }
     }
@@ -210,8 +143,13 @@ class MajorMedicalController extends Controller
 
     {
         $ndc = DB::table('CUSTOMER')
-            ->where('CUSTOMER_ID', 'like', '%' . $request->search. '%')
+            // ->where('CUSTOMER_ID', 'like', '%' . $request->search. '%')
+            ->whereRaw('LOWER(CUSTOMER_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('CUSTOMER_NAME', 'like', '%' .$request->search. '%')
+
+
+
+
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -232,8 +170,10 @@ class MajorMedicalController extends Controller
     {
 
         $ndc = DB::table('MM_LIFE_MAX')
-            ->where('CLIENT_ID', $ndcid)
-            ->get();
+        ->select('MM_LIFE_MAX.EFFECTIVE_DATE','CLIENT_GROUP.GROUP_NAME','MM_LIFE_MAX.CLIENT_GROUP_ID','MM_LIFE_MAX.CUSTOMER_ID','MM_LIFE_MAX.CLIENT_ID')
+        ->join('CLIENT_GROUP','MM_LIFE_MAX.CLIENT_GROUP_ID','=','CLIENT_GROUP.CLIENT_GROUP_ID')
+        ->where('MM_LIFE_MAX.CLIENT_ID', $ndcid)
+        ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
