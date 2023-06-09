@@ -228,6 +228,17 @@ class Controller extends BaseController
         }
         return $this->respondWithToken($this->token(), '', $states);
     }
+
+    public function getStatesOfCountrySearchNew(Request $request)
+    {
+        $state_code = $request->search;
+        if (!empty($state_code)) {
+            $states = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(STATE_CODE)'), 'like', '%' . strtoupper($state_code) . '%')->paginate(100);
+        } else {
+            $states = DB::table('COUNTRY_STATES')->paginate(100);
+        }
+        return $this->respondWithToken($this->token(), '', $states);
+    }
     //Member
     public function getMember(Request $request)
     {

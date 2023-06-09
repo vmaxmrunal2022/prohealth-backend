@@ -19,6 +19,15 @@ class DiagnosisController extends Controller
         return $this->respondWithToken($this->token(), '', $benefitcodes);
     }
 
+    public function allNew(Request $request)
+    {
+
+        $benefitcodes = DB::table('DIAGNOSIS_CODES')
+                            ->select('diagnosis_id','description')
+                            ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $benefitcodes);
+    }
+
     public function get(Request $request)
     {
         $validator = Validator::make($request->all(), [

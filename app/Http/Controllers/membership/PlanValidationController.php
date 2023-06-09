@@ -152,4 +152,44 @@ class PlanValidationController extends Controller
       ->get();
     return $this->respondWithToken($this->token(), '', $plan_ids);
   }
+
+  public function getPlanIdNew(Request $request)
+  {
+    $plan_ids = DB::table('PLAN_TABLE_EXTENSIONS')
+      ->join('PLAN_BENEFIT_TABLE', 'PLAN_TABLE_EXTENSIONS.PLAN_ID', '=', 'PLAN_BENEFIT_TABLE.PLAN_ID')
+      // ->select('id')
+      ->paginate(100);
+    return $this->respondWithToken($this->token(), '', $plan_ids);
+  }
+  public function planValidationdelete(Request $request){
+
+    if(isset($request->customer_id) && isset( $request->client_id) && isset( $request->client_group_id) && isset( $request->plan_id)){
+
+      $planValidation = DB::table('plan_validation_lists')
+
+                          ->where('customer_id', $request->customer_id)
+
+                          ->where('client_id', $request->client_id)
+
+                          ->where('client_group_id', $request->client_group_id)
+
+                          ->where('plan_id', $request->plan_id)
+
+                         
+
+                        ->delete();
+
+      if( $planValidation ){
+
+        return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+
+      }else{
+
+        return $this->respondWithToken($this->token(), 'Record Not Found');
+
+      }
+
+    }
+
+  }
 }

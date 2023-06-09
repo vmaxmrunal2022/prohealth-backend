@@ -37,6 +37,20 @@ class PricingStrategyController extends Controller
         }
     }
 
+    public function get_allNew(Request $request)
+    {
+
+        $pricing_strategies = DB::table('PRICING_STRATEGY_NAMES')->paginate(100);
+
+        if ($pricing_strategies) {
+
+            return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $pricing_strategies);
+        } else {
+
+            return $this->respondWithToken($this->token(), 'something Went Wrong', $pricing_strategies);
+        }
+    }
+
 
 
     public function getProviderList($ndcid)

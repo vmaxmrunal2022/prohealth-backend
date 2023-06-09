@@ -220,7 +220,17 @@ class AccumlatedBenifitController extends Controller
         }
     }
 
+    public function searchNew(Request $request)
 
+    {
+        $ndc = DB::table('PLAN_ACCUM_DEDUCT_TABLE')
+        //     ->where('PLAN_ACCUM_DEDUCT_ID', 'like', '%' . $request->search . '%')
+            ->whereRaw('LOWER(PLAN_ACCUM_DEDUCT_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhere('PLAN_ACCUM_DEDUCT_NAME', 'like', '%' . $request->search . '%')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
 
 
     public function get_all(Request $request)

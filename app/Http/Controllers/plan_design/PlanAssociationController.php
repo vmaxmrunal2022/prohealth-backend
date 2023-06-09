@@ -200,12 +200,46 @@ class PlanAssociationController extends Controller
         return $this->respondWithToken($this->token(), '', $customers);
     }
 
+    
+    public function getCustomerNew(Request $request)
+    {
+        // return $request;
+        $customers = DB::table('customer')
+                        ->select('customer_id', 'CUSTOMER_NAME','effective_date','termination_date')
+                        ->whereRaw('LOWER(customer_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                        ->orwhereRaw('LOWER(CUSTOMER_NAME) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                        // ->where(DB::raw('UPPER(customer_id)'), 'like', '%' . strtoupper($rqeuest->sarch) . '%')
+                        // ->orwhereRaw(DB::raw('UPPER(CUSTOMER_NAME)'), 'like', '%' . strtoupper($request->sarch) . '%')
+                        ->paginate(100);
+                        // ->get();
+
+                       
+        return $this->respondWithToken($this->token(), '', $customers);
+    }
+
     public function getClient(Request $rqeuest)
     {
         $clients = DB::table('client')
             ->where(DB::raw('UPPER(client_id)'), 'like', '%' . strtoupper($rqeuest->search) . '%')
             ->orWhere(DB::raw('UPPER(client_name)'), 'like', '%' . strtoupper($rqeuest->search) . '%')
             ->get();
+        return $this->respondWithToken($this->token(), '', $clients);
+    }
+    public function getClientNew(Request $request)
+    {
+        $clients = DB::table('client')
+                        ->where(function ($query) use ($request) {
+                            if (isset($request->customer_id)) {
+                                $query->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
+                                    ->when(isset($request->search), function ($subquery) use ($request) {
+                                        return $subquery->where(function ($subquery2) use ($request) {
+                                            $subquery2->whereRaw('LOWER(client_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                                                ->orWhereRaw('LOWER(client_name) LIKE ?', ['%' . strtolower($request->search) . '%']);
+                                        });
+                                    });
+                            }
+                        })
+                    ->paginate(100);
         return $this->respondWithToken($this->token(), '', $clients);
     }
 
@@ -226,6 +260,26 @@ class PlanAssociationController extends Controller
             ->where(DB::raw('UPPER(client_group_id)'), 'like', '%' . strtoupper($rqeuest->search) . '%')
             ->orWhere(DB::raw('UPPER(group_name)'), 'like', '%' . strtoupper($rqeuest->search) . '%')
             ->get();
+        return $this->respondWithToken($this->token(), '', $client_groups);
+    }
+
+    public function getClientGroupNew(Request $request)
+    {
+        $client_groups =  DB::table('client_group')
+            ->where(function ($query) use ($request) {
+                if (isset($request->customer_id) && isset($request->client_id) ){
+                    $query->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id));
+                    $query->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
+                        ->when(isset($request->search), function ($subquery) use ($request) {
+                            return $subquery->where(function ($subquery2) use ($request) {
+                                $subquery2->whereRaw('LOWER(client_group_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                                    ->orWhereRaw('LOWER(group_name) LIKE ?', ['%' . strtolower($request->search) . '%']);
+                            });
+                        });
+                }
+            })
+        ->paginate(100);
+       
         return $this->respondWithToken($this->token(), '', $client_groups);
     }
 

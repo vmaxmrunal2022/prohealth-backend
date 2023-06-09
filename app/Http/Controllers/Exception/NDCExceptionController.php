@@ -1448,7 +1448,7 @@ class NDCExceptionController extends Controller
                 // ->where('NDC_EXCEPTION_LIST', 'like', '%' .$request->search. '%')
                 ->whereRaw('LOWER(NDC_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
-                ->get();
+                ->paginate(10);
 
             if ($ndc->count() < 1) {
                 return $this->respondWithToken($this->token(), 'No Data Found', $ndc);
@@ -1457,6 +1457,26 @@ class NDCExceptionController extends Controller
             }
         }
     }
+
+
+    public function allData(Request $request)
+    {
+
+      
+
+            $ndc = DB::table('NDC_EXCEPTIONS')
+                ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
+                // ->where('NDC_EXCEPTION_LIST', 'like', '%' .$request->search. '%')
+                ->whereRaw('LOWER(NDC_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
+                ->paginate(2);
+
+            if ($ndc->count() < 1) {
+                return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
+            } else {
+                return $this->respondWithToken($this->token(), 'No Data Found', $ndc);
+            }
+           }
 
     public function getNDCList($ndcid)
     {

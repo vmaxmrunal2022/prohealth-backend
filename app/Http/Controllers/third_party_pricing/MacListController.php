@@ -29,6 +29,21 @@ class MacListController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
+    public function Details(Request $request)
+    
+    {
+        $data = DB::table('MAC_LIST')
+        ->join('MAC_TABLE', 'mac_list.mac_list', '=', 'mac_table.mac_list')
+        ->where('mac_table.mac_list', $request->mac_list)
+        ->where('mac_table.gpi', $request->gpi)
+        ->where('mac_table.effective_date', $request->effective_date)
+        ->get();
+    return $this->respondWithToken($this->token(), '', $data);
+
+        
+
+
+    }
     public function getPriceSource(Request $request)
     {
         $priceSource = [

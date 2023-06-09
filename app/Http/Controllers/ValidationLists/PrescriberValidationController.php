@@ -347,6 +347,15 @@ class PrescriberValidationController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
+    public function searchDropDownPrescriberListNew()
+    {
+        $data = DB::table('PHYSICIAN_TABLE')
+            ->orWhere('PHYSICIAN_LAST_NAME', 'LIKE', '%' . strtoupper('campB') . '%')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $data);
+    }
+
     public function deleteRecord(Request $request)
     {
         // return $request->all();
