@@ -173,7 +173,6 @@ class CustomerController extends Controller
 
     public function add(Request $request)
     {
-        // return $request->rva_list_id;
         if ($request->add_new) {
             $validator = Validator::make($request->all(), [
                 'customer_id' => ['required', 'max:10', Rule::unique('CUSTOMER')->where(function ($q) {
