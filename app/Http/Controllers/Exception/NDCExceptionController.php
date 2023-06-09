@@ -1435,13 +1435,13 @@ class NDCExceptionController extends Controller
     public function search(Request $request)
     {
 
-        $validator = Validator::make($request->all(), [
-            "search" => ['required']
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     "search" => ['required']
+        // ]);
 
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        } else {
+        // if ($validator->fails()) {
+        //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        // } else {
 
             $ndc = DB::table('NDC_EXCEPTIONS')
                 ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
@@ -1455,7 +1455,7 @@ class NDCExceptionController extends Controller
             } else {
                 return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
             }
-        }
+        // }
     }
 
 
