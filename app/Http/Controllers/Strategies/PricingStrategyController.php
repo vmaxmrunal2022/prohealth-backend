@@ -87,7 +87,7 @@ class PricingStrategyController extends Controller
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 if ($checkPricingStrategyNamesRecord) {
-                    return $this->respondWithToken($this->token(), 'Pricing Strategy ID already exists', $checkPricingStrategyNamesRecord, false);
+                    return $this->respondWithToken($this->token(), [['Pricing Strategy ID already exists']], [[], []], false);
                 } else {
                     $accum_benfit_stat_names = DB::table('PRICING_STRATEGY_NAMES')->insert(
                         [

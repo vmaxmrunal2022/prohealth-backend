@@ -57,6 +57,7 @@ use App\Http\Controllers\administrator\AuditTrailController;
 use App\Http\Controllers\administrator\SystemParameterController;
 use App\Http\Controllers\administrator\UserDefinationController;
 use App\Http\Controllers\administrator\VerifyDrugVCoverage;
+use App\Http\Controllers\copy\CopyController;
 use App\Http\Controllers\Provider\SuperProviderNetworkController;
 use App\Http\Controllers\Provider\TraditionalNetworkController;
 use App\Http\Controllers\Provider\FlexibleNetworkController;
@@ -105,6 +106,9 @@ use Nette\Schema\Context;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+
+
+
 Route::group(['middleware' => 'apisession'], function ($router) {
 
     Route::group(['prefix' => 'users'], function ($router) {
@@ -112,6 +116,12 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/login', [UserController::class, 'login'])->name('login.user');
         Route::get('/view-profile', [UserController::class, 'viewProfile'])->name('profile.user');
         Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
+    });
+
+    Route::group(['prefix' => '/copy-item'], function ($router) {
+        Route::get('/copy', [CopyController::class, 'viewCopy']);
+        Route::post('/get-unique', [CopyController::class, 'getUniqueId']);
+        Route::post('/submit-copy', [CopyController::class, 'submitCopy']);
     });
 
     Route::group(['prefix' => 'codes'], function ($router) {
