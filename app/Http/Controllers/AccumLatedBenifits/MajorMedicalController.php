@@ -123,19 +123,20 @@ class MajorMedicalController extends Controller
 
     public function delete(Request $request)
     {
-        if (isset($request->customer_id) && isset($request->client_id) && isset($request->client_group_id)) {
+        if (isset($request->customer_id) && isset($request->client_id) && isset($request->client_group_id) && isset($request->effective_date)) {
             $delete_mm_life_max =  DB::table('MM_LIFE_MAX')
-                ->where('customer_id', $request->customer_id)
-                ->where('client_id', $request->client_id)
-                ->where('client_group_id', $request->client_group_id)
-                ->delete();
+                                    ->where('customer_id', $request->customer_id)
+                                    ->where('client_id', $request->client_id)
+                                    ->where('client_group_id', $request->client_group_id)
+                                    ->where('effective_date', $request->client_group_id)
+                                    ->delete();
+
+                                    
             if ($delete_mm_life_max) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else {
-            return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
 
@@ -146,10 +147,6 @@ class MajorMedicalController extends Controller
             // ->where('CUSTOMER_ID', 'like', '%' . $request->search. '%')
             ->whereRaw('LOWER(CUSTOMER_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('CUSTOMER_NAME', 'like', '%' .$request->search. '%')
-
-
-
-
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

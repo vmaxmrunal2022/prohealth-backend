@@ -215,7 +215,7 @@ class CopayStrategyController extends Controller
         return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
     }
 
-    public function delete(Request $request)
+    public function deletemrunal(Request $request)
     {
         if (isset($request->copay_strategy_id) && isset($request->effective_date) && isset($request->copay_schedule)) {
             $all_copay_strategy = DB::table('COPAY_STRATEGY')
@@ -275,5 +275,50 @@ class CopayStrategyController extends Controller
             }
             return $this->respondWithToken($this->token(), 'Record Not found', 'false');
         }
+    }
+
+    public function delete(Request $request)
+    {
+        if (isset($request->copay_strategy_id) && isset($request->effective_date) && isset($request->copay_schedule)) {
+            $all_copay_strategy = DB::table('COPAY_STRATEGY')
+                ->where('COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                ->first();
+
+            if($all_copay_strategy){
+                $copay_strategy = DB::table('COPAY_STRATEGY')
+                    ->where('COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->where('COPAY_SCHEDULE', $request->copay_schedule)
+                    ->delete();
+
+                if($copay_strategy) {
+                    $val = DB::table('COPAY_STRATEGY')
+                    // ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
+                    ->where('COPAY_STRATEGY.COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                    ->count();
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully ',$val);
+                }   
+            }else{
+                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            }
+
+          
+        } elseif (isset($request->copay_strategy_id)) {
+                $all_accum_bene_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
+                    ->where('copay_strategy_id', $request->copay_strategy_id)
+                    ->delete();
+
+                $copay_strategy = DB::table('COPAY_STRATEGY')
+                                ->where('COPAY_STRATEGY_ID', $request->copay_strategy_id)
+                                // ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                                // ->where('COPAY_SCHEDULE', $request->copay_schedule)
+                                ->delete();  
+
+                if($all_accum_bene_strategy_names){
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', 'true');
+                } else{
+                    return $this->respondWithToken($this->token(), 'Record Not found', 'false');
+                } 
+            }
     }
 }
