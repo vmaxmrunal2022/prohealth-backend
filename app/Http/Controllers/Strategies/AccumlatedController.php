@@ -328,6 +328,13 @@ class AccumlatedController extends Controller
         return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
     }
 
+    public function AccumlatedDropDown_New(Request $request)
+    {
+        $ndc = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+            ->paginate(100);
+        return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
+    }
+
     public function getAllAcuumlatedBenefits(Request $request){
 
         $existdata = DB::table('accum_bene_strategy_names')

@@ -356,7 +356,7 @@ class PrescriberValidationController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function deleteRecord(Request $request)
+    public function deleteRecordold(Request $request)
     {
         // return $request->all();
         $count = 0;
@@ -440,4 +440,46 @@ class PrescriberValidationController extends Controller
             }
         }
     }
+
+
+    public function deleteRecord(Request $request)
+    {
+        if (isset($request->physician_list) && isset($request->physician_status) && isset($request->physician_id)) {
+            $all_physician = DB::table('PHYSICIAN_VALIDATIONS')
+                ->where('physician_list', $request->physician_list)
+                ->where('physician_status', $request->physician_status)
+                ->where('physician_id',$request->physician_id)
+                ->first();
+            if ($all_physician) {
+                $physician_list = DB::table('PHYSICIAN_VALIDATIONS')
+                ->where('physician_list', $request->physician_list)
+                ->where('physician_status', $request->physician_status)
+                ->where('physician_id',$request->physician_id)
+                    ->delete();
+                if ($physician_list) {
+                    $val = DB::table('PHYSICIAN_VALIDATIONS')
+                        // ->join('PHYSICIAN_EXCEPTIONS', 'PHYSICIAN_VALIDATIONS.pricing_strategy_id', '=', 'PHYSICIAN_EXCEPTIONS.pricing_strategy_id')
+                        ->where('PHYSICIAN_VALIDATIONS.physician_list', $request->physician_list)
+                        ->count();
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', $val);
+                }
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            }
+        } elseif (isset($request->physician_list)) {
+            $physician_exceptions = DB::table('PHYSICIAN_EXCEPTIONS')
+                ->where('physician_list', $request->physician_list)
+                ->delete();
+            $physician_validations = DB::table('PHYSICIAN_VALIDATIONS')
+                ->where('physician_list', $request->physician_list)
+                ->delete();
+            if ($physician_exceptions) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not found', 'false');
+            }
+        }
+    }
+
+
 }

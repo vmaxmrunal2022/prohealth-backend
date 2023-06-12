@@ -529,7 +529,18 @@ use AuditTrait;
 
         return $this->respondWithToken($this->token(), 'data fetched Successfully', $data);
 
+    }
+
+    public function getAll_New(Request $request)
+    {
+
+
+        $data = DB::table('BENEFIT_DERIVATION_NAMES')
+            ->where('BENEFIT_DERIVATION_ID', 'LIKE', '%' . strtoupper($request->benefit_derivation_id) . '%')
+            ->paginate(100);
+
         return $this->respondWithToken($this->token(), 'data fetched Successfully', $data);
+
     }
 
     public function search(Request $request)

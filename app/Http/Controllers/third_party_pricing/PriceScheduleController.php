@@ -31,6 +31,14 @@ class PriceScheduleController extends Controller
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }
 
+    public function getAll_New(Request $request)
+    {
+        $priceShedule = DB::table('PRICE_SCHEDULE')
+        ->select('price_schedule','price_schedule_name')
+        ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $priceShedule);
+    }
+
 
     public function getPriceScheduleDetails(Request $erquest)
     {

@@ -22,6 +22,17 @@ class ProcedureUcrList extends Controller
         return $this->respondWithToken($this->token(), '', $ucrName);
     }
 
+    public function get_New(Request $request)
+    {
+        $ucrName = DB::table('procedure_ucr_names')
+            ->where('PROCEDURE_UCR_ID', 'like', '%' . $request->search . '%')
+            ->orWhere('PROCEDURE_UCR_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ucrName);
+    }
+
 
     public function getProcedureListData(Request $request)
     {

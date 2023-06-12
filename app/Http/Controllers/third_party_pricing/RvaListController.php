@@ -661,7 +661,12 @@ class RvaListController extends Controller
                 ->delete();
 
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+
+                $val = DB::table('RVA_LIST')
+                ->where('RVA_LIST_ID', $request->rva_list_id)
+                ->count();
+
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$val);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

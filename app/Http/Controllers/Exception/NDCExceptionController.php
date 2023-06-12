@@ -1429,6 +1429,14 @@ class NDCExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function ndcList_New(Request $request)
+    {
+        $ndc = DB::table('NDC_EXCEPTIONS')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
 
 
 

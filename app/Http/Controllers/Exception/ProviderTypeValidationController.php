@@ -681,6 +681,16 @@ class ProviderTypeValidationController extends Controller
         return $this->respondWithToken($this->token(), 'data fetched  successfully', $data);
     }
 
+    public function getAllNames_New(Request $request)
+    {
+
+        $data = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
+            ->where('PROV_TYPE_PROC_ASSOC_ID', 'LIKE', '%' . $request->search . '%')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), 'data fetched  successfully', $data);
+    }
+
     public function get(Request $request)
     {
         $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
@@ -693,6 +703,20 @@ class ProviderTypeValidationController extends Controller
         // dd($request->all());
         return $this->respondWithToken($this->token(), '', $providerTypeValidations);
     }
+
+    public function get_New(Request $request)
+    {
+        $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
+            // $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATIONS')
+            // ->where('effective_date', 'like', '%'.$request->search.'%')
+            // ->Where('prov_type_list_id', 'like', '%' . $request->search . '%')
+            ->whereRaw('LOWER(prov_type_list_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            // ->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
+        // dd($request->all());
+        return $this->respondWithToken($this->token(), '', $providerTypeValidations);
+    }
+
 
     public function getList($ncdid)
     {

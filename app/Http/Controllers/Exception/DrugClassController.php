@@ -74,10 +74,9 @@ class DrugClassController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function DrugCategoryList(Request $request)
+    public function DrugCategoryList_New(Request $request)
     {
-        $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')->get();
-
+        $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')->paginate(100);
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
