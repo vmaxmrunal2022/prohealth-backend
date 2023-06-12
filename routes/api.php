@@ -314,6 +314,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/copay/add', [CopayStrategyController::class, 'add'])->name('copay.add'); // SEARCH
         Route::get('/copay/drop-down', [CopayStrategyController::class, 'CopayDropDown'])->name('copay.dropdown'); // SEARCH
         Route::get('/copay/drop-down-new', [CopayStrategyController::class, 'CopayDropDownNew'])->name('copay.dropdown');
+        Route::post('/copay/delete', [CopayStrategyController::class, 'delete'])->name('copay.delete');
 
 
 
