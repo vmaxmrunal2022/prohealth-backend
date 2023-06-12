@@ -122,6 +122,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/copy', [CopyController::class, 'viewCopy']);
         Route::post('/get-unique', [CopyController::class, 'getUniqueId']);
         Route::post('/submit-copy', [CopyController::class, 'submitCopy']);
+        Route::get('/get-all-tables', [CopyController::class, 'getAllCloneTable']);
     });
 
     Route::group(['prefix' => 'codes'], function ($router) {
