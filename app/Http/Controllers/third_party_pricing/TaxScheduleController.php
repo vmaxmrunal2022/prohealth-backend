@@ -47,9 +47,9 @@ class TaxScheduleController extends Controller
 
         if ($request->add_new == 1) {
 
-            if ($validation->count() > 0) {
-                return $this->respondWithToken($this->token(), [['Tax Schedule ID is Already Exists']], $validation, 'false', 200, 1);
-            }
+            // if ($validation->count() > 0) {
+            //     return $this->respondWithToken($this->token(), [['Tax Schedule ID is Already Exists']], $validation, 'false', 200, 1);
+            // }
             $validator = Validator::make($request->all(), [
                 'tax_schedule_id' => ['required', 'max:10', Rule::unique('tax_schedule')->where(function ($q) {
                     $q->whereNotNull('tax_schedule_id');

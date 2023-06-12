@@ -467,6 +467,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
     Route::get('/get-member-id', [MemberController::class, 'get']);
     Route::get('/ndc-drop-down', [NDCExceptionController::class, 'getNdcDropDown']);
     Route::get('/get-plan-id', [PlanAssociationController::class, 'getPlanId']);
+    Route::get('/get-plan-id/new', [PlanAssociationController::class, 'getPlanId_New']);
 
 
     Route::group(['prefix' => 'providerdata'], function ($router) {
@@ -581,6 +582,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         // Route::get('plan-association/get', [PlanAssociationController::class, 'getDetails']);
         Route::post('plan-association/submit-form', [PlanAssociationController::class, 'submitPlanAssociation']);
         Route::get('plan-association/get-pharmacy-chain', [PlanAssociationController::class, 'getPharmacyChain']);
+        Route::get('plan-association/get-pharmacy-chain/new', [PlanAssociationController::class, 'getPharmacyChain_New']);
+
         Route::get('plan-association/get-form-id', [PlanAssociationController::class, 'getFormId']);
         Route::get('plan-association/get-membership-process-flag', [PlanAssociationController::class, 'getMemProcFlag']);
         Route::get('plan-association/get-customer', [PlanAssociationController::class, 'getCustomer']);

@@ -338,8 +338,8 @@ class SpecialityController extends Controller
                 ->delete();
             $diagnosis_exception =
                 DB::table('SPECIALTY_EXCEPTIONS')
-                ->where(DB::raw('UPPER(specialty_list)'), 'like', '%' . strtoupper($request->specialty_list) . '%')
-                ->get();
+                ->where('specialty_list',$request->specialty_list)
+                ->count();
             return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_exception);
         } else        
         if ($request->specialty_list) {
@@ -356,8 +356,8 @@ class SpecialityController extends Controller
                         ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
                         ->delete();
                     $diagnosis_validation1 = DB::table('SPECIALTY_EXCEPTIONS')
-                        ->where(DB::raw('UPPER(specialty_list)'), 'like', '%' . strtoupper($request->specialty_list) . '%')
-                        ->get();
+                        ->where('specialty_list',$request->specialty_list)
+                        ->count();
                     return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully", $diagnosis_validation1, false);
                 }
                 return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_validation);

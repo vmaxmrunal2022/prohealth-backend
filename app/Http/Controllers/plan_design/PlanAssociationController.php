@@ -173,6 +173,14 @@ class PlanAssociationController extends Controller
         return $this->respondWithToken($this->token(), '', $pharmacy_chain);
     }
 
+    public function getPharmacyChain_New(Request $request)
+    {
+        $pharmacy_chain = DB::table('PHARMACY_CHAIN')
+            ->where(DB::raw('UPPER(pharmacy_chain)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $pharmacy_chain);
+    }
+
     public function getFormId(Request $request)
     {
         $formIds = null;
@@ -319,6 +327,15 @@ class PlanAssociationController extends Controller
         $planIds = DB::table('plan_table')
             // ->select('id')
             ->get();
+
+        return $this->respondWithToken($this->token(), '', $planIds);
+    }
+
+    public function getPlanId_New(Request $request)
+    {
+        $planIds = DB::table('plan_table')
+            // ->select('id')
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $planIds);
     }
