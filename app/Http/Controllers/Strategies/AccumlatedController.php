@@ -338,7 +338,7 @@ class AccumlatedController extends Controller
 
     }
 
-    public function delete(Request $request)
+    public function deleteold(Request $request)
     {
         if (isset($request->accum_bene_strategy_id) && isset($request->effective_date) && isset($request->plan_accum_deduct_id)) {
             $all_accum_bene_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
@@ -394,4 +394,44 @@ class AccumlatedController extends Controller
             return $this->respondWithToken($this->token(), 'Record Not found', 'false');
         }
     }
+
+    public function delete(Request $request)
+    {
+        if (isset($request->accum_bene_strategy_id) && isset($request->effective_date) && isset($request->plan_accum_deduct_id)) {
+            $all_accum_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
+                ->where('accum_bene_strategy_id', $request->accum_bene_strategy_id)
+                ->where('plan_accum_deduct_id', $request->plan_accum_deduct_id)
+                ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                ->first();
+            if ($all_accum_strategy) {
+                $accum_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
+                    ->where('accum_bene_strategy_id', $request->accum_bene_strategy_id)
+                    ->where('plan_accum_deduct_id', $request->plan_accum_deduct_id)
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->delete();
+                if ($accum_strategy) {
+                    $val = DB::table('ACCUM_BENEFIT_STRATEGY')
+                        // ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENEFIT_STRATEGY.copay_strategy_id', '=', 'ACCUM_BENE_STRATEGY_NAMES.copay_strategy_id')
+                        ->where('ACCUM_BENEFIT_STRATEGY.accum_bene_strategy_id', $request->accum_bene_strategy_id)
+                        ->count();
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', $val);
+                }
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            }
+        } elseif (isset($request->copay_strategy_id)) {
+            $all_accum_bene_strategy_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                ->where('accum_bene_strategy_id', $request->accum_bene_strategy_id)
+                ->delete();
+            $accum_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
+                ->where('accum_bene_strategy_id', $request->accum_bene_strategy_id)
+                ->delete();
+            if ($all_accum_bene_strategy_names) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not found', 'false');
+            }
+        }
+    }
+
 }

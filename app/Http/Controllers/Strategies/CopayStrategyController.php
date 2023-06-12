@@ -286,12 +286,12 @@ class CopayStrategyController extends Controller
                 ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
                 ->first();
             if ($all_copay_strategy) {
-                $pricing_strategy = DB::table('COPAY_STRATEGY')
+                $copay_strategy = DB::table('COPAY_STRATEGY')
                     ->where('copay_strategy_id', $request->copay_strategy_id)
                     ->where('copay_schedule', $request->copay_schedule)
                     ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
                     ->delete();
-                if ($pricing_strategy) {
+                if ($copay_strategy) {
                     $val = DB::table('COPAY_STRATEGY')
                         // ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.copay_strategy_id', '=', 'COPAY_STRATEGY_NAMES.copay_strategy_id')
                         ->where('COPAY_STRATEGY.copay_strategy_id', $request->copay_strategy_id)
@@ -305,7 +305,7 @@ class CopayStrategyController extends Controller
             $all_accum_bene_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
                 ->where('copay_strategy_id', $request->copay_strategy_id)
                 ->delete();
-            $pricing_strategy = DB::table('COPAY_STRATEGY')
+            $copay_strategy = DB::table('COPAY_STRATEGY')
                 ->where('copay_strategy_id', $request->copay_strategy_id)
                 ->delete();
             if ($all_accum_bene_strategy_names) {
