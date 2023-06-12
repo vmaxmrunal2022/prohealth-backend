@@ -23,7 +23,7 @@ class AccumlatedController extends Controller
 
         if ($request->new) {
             if ($existdata) {
-                return $this->respondWithToken($this->token(), "Accumulate Benefit Strategy ID already exists", '', false);
+                return $this->respondWithToken($this->token(), [["Accumulate Benefit Strategy ID already exists"]], '', false);
             } else {
                 $add_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')
                     ->insert(
@@ -189,7 +189,7 @@ class AccumlatedController extends Controller
                         ->select('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
                         ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), strtoupper($request->accum_bene_strategy_id))
                         ->get();
-                    return $this->respondWithToken($this->token(), 'Accumulate Benefit Plan ID already exists', [$val, $exp], false);
+                    return $this->respondWithToken($this->token(), [['Accumulate Benefit Plan ID already exists']], [$val, $exp], false);
                 }
                 $updateAccstrategyName = DB::table('ACCUM_BENE_STRATEGY_NAMES')
                     ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
@@ -396,13 +396,17 @@ class AccumlatedController extends Controller
     }
 
     public function delete(Request $request)
+
     {
+        // dd($request->all());
         if (isset($request->accum_bene_strategy_id) && isset($request->effective_date) && isset($request->plan_accum_deduct_id)) {
             $all_accum_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
                 ->where('accum_bene_strategy_id', $request->accum_bene_strategy_id)
                 ->where('plan_accum_deduct_id', $request->plan_accum_deduct_id)
-                ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                ->where('EFFECTIVE_DATE', $request->effective_date)
                 ->first();
+                // dd($all_accum_strategy);
+
             if ($all_accum_strategy) {
                 $accum_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
                     ->where('accum_bene_strategy_id', $request->accum_bene_strategy_id)
@@ -412,14 +416,15 @@ class AccumlatedController extends Controller
                 if ($accum_strategy) {
                     $val = DB::table('ACCUM_BENEFIT_STRATEGY')
                         // ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENEFIT_STRATEGY.copay_strategy_id', '=', 'ACCUM_BENE_STRATEGY_NAMES.copay_strategy_id')
-                        ->where('ACCUM_BENEFIT_STRATEGY.accum_bene_strategy_id', $request->accum_bene_strategy_id)
+                        ->where('ACCUM_BENEFIT_STRATEGY.accum_bene_strategy_id',$request->accum_bene_strategy_id)
                         ->count();
+                        // dd($val);
                     return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', $val);
                 }
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }
-        } elseif (isset($request->copay_strategy_id)) {
+        } elseif (isset($request->accum_bene_strategy_id)) {
             $all_accum_bene_strategy_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')
                 ->where('accum_bene_strategy_id', $request->accum_bene_strategy_id)
                 ->delete();

@@ -101,7 +101,7 @@ class PricingStrategyController extends Controller
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 if ($checkPricingStrategyNamesRecord) {
-                    return $this->respondWithToken($this->token(), 'Pricing Strategy ID already exists', $checkPricingStrategyNamesRecord, false);
+                    return $this->respondWithToken($this->token(), [['Pricing Strategy ID already exists']], $checkPricingStrategyNamesRecord, false);
                 } else {
                     $accum_benfit_stat_names = DB::table('PRICING_STRATEGY_NAMES')->insert(
                         [
@@ -176,7 +176,7 @@ class PricingStrategyController extends Controller
                         $exp = DB::table('PRICING_STRATEGY_NAMES')
                             ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->pricing_strategy_id) . '%')
                             ->get();
-                        return $this->respondWithToken($this->token(), 'Pricing Schedule ID already exists', [$val, $exp], false);
+                        return $this->respondWithToken($this->token(), [['Pricing Schedule ID already exists']], [$val, $exp], false);
                     }
                     $benefitcode = DB::table('PRICING_STRATEGY_NAMES')
                         ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))
@@ -258,7 +258,7 @@ class PricingStrategyController extends Controller
         }
     }
 
-    public function delete(Request $request)
+    public function deleteold(Request $request)
     {
         if (isset($request->pricing_strategy_id) && isset($request->effective_date) && isset($request->price_schedule)) {
             $all_pricing_strategy = DB::table('PRICING_STRATEGY')
@@ -311,6 +311,45 @@ class PricingStrategyController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', [$val, $exp], false);
             }
             return $this->respondWithToken($this->token(), 'Record Not found', 'false');
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        if (isset($request->pricing_strategy_id) && isset($request->effective_date) && isset($request->price_schedule)) {
+            $all_pricing_strategy = DB::table('PRICING_STRATEGY')
+                ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                ->where('price_schedule', $request->price_schedule)
+                ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                ->first();
+            if ($all_pricing_strategy) {
+                $pricing_strategy = DB::table('PRICING_STRATEGY')
+                    ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                    ->where('price_schedule', $request->price_schedule)
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->delete();
+                if ($pricing_strategy) {
+                    $val = DB::table('PRICING_STRATEGY')
+                        // ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+                        ->where('PRICING_STRATEGY.pricing_strategy_id', $request->pricing_strategy_id)
+                        ->count();
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', $val);
+                }
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            }
+        } elseif (isset($request->pricing_strategy_id)) {
+            $all_accum_bene_strategy_names = DB::table('PRICING_STRATEGY_NAMES')
+                ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                ->delete();
+            $copay_strategy = DB::table('PRICING_STRATEGY')
+                ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                ->delete();
+            if ($all_accum_bene_strategy_names) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not found', 'false');
+            }
         }
     }
 }

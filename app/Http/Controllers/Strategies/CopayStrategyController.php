@@ -21,7 +21,7 @@ class CopayStrategyController extends Controller
             ->count();
         if ($request->has('new')) {
             if ($checkRecordExits) {
-                return $this->respondWithToken($this->token(), 'Copay Strategy Id already exists', $checkRecordExits, false);
+                return $this->respondWithToken($this->token(), [['Copay Strategy Id already exists']], $checkRecordExits, false);
             } else {
                 $create_copay_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
                     ->insert(
@@ -82,7 +82,7 @@ class CopayStrategyController extends Controller
                         ->select('COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_NAME as copay_strategy_name')
                         ->where(DB::raw('UPPER(COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID)'), 'like', '%' . strtoupper($request->copay_strategy_id) . '%')
                         ->get();
-                    return $this->respondWithToken($this->token(), 'Copay Schedule ID already exists', [$val, $exp], false);
+                    return $this->respondWithToken($this->token(), [['Copay Schedule ID already exists']], [$val, $exp], false);
                 }
                 $update_copay_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
                     ->where(DB::raw('UPPER(copay_strategy_id)'), strtoupper($request->copay_strategy_id))

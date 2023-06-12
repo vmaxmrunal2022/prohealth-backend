@@ -304,7 +304,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/pricingstrategy/add', [PricingStrategyController::class, 'add'])->name('pricingstrategy.add'); // SEARCH
         Route::get('/pricingstrategy/all', [PricingStrategyController::class, 'get_all'])->name('pricingstrategy.get.all'); // SEARCH
         Route::get('/pricingstrategy/all-new', [PricingStrategyController::class, 'get_allNew'])->name('pricingstrategy.get.all'); // SEARCH
-        Route::get('/pricingstrategy/delete', [PricingStrategyController::class, 'delete'])->name('pricingstrategy.delete'); // SEARCH
+        Route::post('/pricingstrategy/delete', [PricingStrategyController::class, 'delete'])->name('pricingstrategy.delete'); // SEARCH
 
 
 
