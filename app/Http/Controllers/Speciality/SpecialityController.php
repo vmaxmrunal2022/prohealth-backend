@@ -358,7 +358,7 @@ class SpecialityController extends Controller
                     $diagnosis_validation1 = DB::table('SPECIALTY_EXCEPTIONS')
                         ->where('specialty_list',$request->specialty_list)
                         ->count();
-                    return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully", $diagnosis_validation1, false);
+                    return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully", $diagnosis_validation1, true);
                 }
                 return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_validation);
             } else {

@@ -607,24 +607,24 @@ class RvaListController extends Controller
                     ->get();
 
                 if (count($checkGPI) >= 1) {
-                    return $this->respondWithToken($this->token(), [["RVA Value already exists"]], '', 'false');
+                    return $this->respondWithToken($this->token(), [["Effective Date  already exists"]], '', 'false');
                 } else {
-                    // $effectiveDate=$request->effective_date;
-                    // $terminationDate=$request->termination_date;
-                    // $overlapExists = DB::table('RVA_LIST')
-                    // ->where('RVA_LIST_ID', $request->rva_list_id)
-                    // // ->where('RVA_VALUE', $request->rva_value)
-                    // ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                    //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                    //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                    //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                    //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                    //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
-                    //         });
-                    // }) ->exists();
-                    // if ($overlapExists) {
-                    //     return $this->respondWithToken($this->token(), [["For Same RVA Value , dates cannot overlap."]], '', 'false');
-                    // }
+                    $effectiveDate=$request->effective_date;
+                    $terminationDate=$request->termination_date;
+                    $overlapExists = DB::table('RVA_LIST')
+                    ->where('RVA_LIST_ID', $request->rva_list_id)
+                    // ->where('RVA_VALUE', $request->rva_value)
+                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
+                            });
+                    }) ->exists();
+                    if ($overlapExists) {
+                        return $this->respondWithToken($this->token(), [["For Same RVA Value , dates cannot overlap."]], '', 'false');
+                    }
 
                     $add = DB::table('RVA_LIST')
                         ->insert([
