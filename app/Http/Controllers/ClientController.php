@@ -299,7 +299,7 @@ class ClientController extends Controller
             })
             ->get();
 
-        $this->respondWithToken($this->token() ?? '', '', $clients);
+        $this->respondWithToken($this->token() ?? '', 'clients loaded', $clients);
     }
 
     public function GetOneClient($clientid)
@@ -310,7 +310,6 @@ class ClientController extends Controller
             // ->orWhere('CLIENT_NAME', 'like', '%' . strtoupper($clientid) . '%')
             // ->orWhere('CUSTOMER_ID', 'like', '%' . strtoupper($clientid) . '%')
             ->first();
-
         return $this->respondWithToken($this->token(), '', $client);
     }
 

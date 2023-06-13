@@ -315,7 +315,6 @@ class ClientController extends Controller
 
     public function searchClient(Request $request)
     {
-
         $search = $request->search;
 
         $client = DB::table('client')
