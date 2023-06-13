@@ -93,7 +93,7 @@ class UserDefinationController extends Controller
                 $record_snapshot = json_encode($user);
                 $this->auditMethod('UP', $record_snapshot, 'FE_USERS');
                 if ($updateUser) {
-                    return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateUser);
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $user);
                 }
             }
         }
@@ -510,7 +510,7 @@ class UserDefinationController extends Controller
                 $record_snapshot = json_encode($user_data);
                 $save_audit =  $this->auditMethod('UP', $record_snapshot, 'FE_USERS');
                 if ($updateUser) {
-                    return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateUser);
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $user_data);
                 }
             }
         }
@@ -759,14 +759,7 @@ class UserDefinationController extends Controller
         $user_data = DB::table('fe_users')->where('user_id', $request->user_id)->first();
         $user_profile = str_split($user_data->user_profile);
         $position = $request->search;
-        // $user_profile[$position] = 'D';
         $updated_user_profile = implode('', $user_profile);
-
-        // $update = DB::table('fe_users')->where('user_id', $request->user_id)
-        //     ->update([
-        //         'user_profile' => $updated_user_profile,
-        //     ]);
-        // dd($user_profile);
         return $this->respondWithToken($this->token(), '', $user_profile[$position]);
     }
 
@@ -775,32 +768,17 @@ class UserDefinationController extends Controller
         $user_data = DB::table('fe_users')->where('user_id', $request->user_id)->first();
         $user_profile = str_split($user_data->user_profile);
         $position = $request->search;
-        // $user_profile[$position] = 'D';
         $updated_user_profile = implode('', $user_profile);
-
-        // $update = DB::table('fe_users')->where('user_id', $request->user_id)
-        //     ->update([
-        //         'user_profile' => $updated_user_profile,
-        //     ]);
         return $this->respondWithToken($this->token(), '', $user_profile);
     }
 
     public function getGroupAllAccess(Request $request)
     {
-        //$user_data = DB::table('fe_user_groups')->where(DB::raw('UPPER(group_id)'), strtoupper($request->group_id))->first();
         $str = str_replace(' ', '+', $request->group_id);
         $user_data = DB::table('fe_user_groups')->where(DB::raw('UPPER(group_id)'), 'like', '%' . strtoupper($str) . '%')->first();
-        // return $str;
         $user_profile = str_split($user_data->user_profile);
         $position = $request->search;
-        // $user_profile[$position] = 'D';
         $updated_user_profile = implode('', $user_profile);
-
-        // $update = DB::table('fe_users')->where('user_id', $request->user_id)
-        //     ->update([
-        //         'user_profile' => $updated_user_profile,
-        //     ]);
-        // dd($user_profile);
         return $this->respondWithToken($this->token(), '', $user_profile);
     }
 
@@ -809,14 +787,7 @@ class UserDefinationController extends Controller
         $user_data = DB::table('fe_user_groups')->where('group_id', $request->group_id)->first();
         $user_profile = str_split($user_data->user_profile);
         $position = $request->access_code;
-        // $user_profile[$position] = 'D';
         $updated_user_profile = implode('', $user_profile);
-
-        // $update = DB::table('fe_users')->where('user_id', $request->user_id)
-        //     ->update([
-        //         'user_profile' => $updated_user_profile,
-        //     ]);
-        // dd($user_profile);
         return $this->respondWithToken($this->token(), '', $user_profile[$position]);
     }
 

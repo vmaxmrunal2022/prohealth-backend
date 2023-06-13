@@ -131,14 +131,11 @@ class ClientController extends Controller
                     ]
                 );
                 $benefitcode = DB::table('CLIENT')
-                    ->where('client_id', 'like', '%' . $request->client_id . '%')
-                    ->where('customer_id', 'like', '%' . $request->customer_id . '%')
-                    ->first();
-                $update_code = DB::table('CLIENT')
-                    ->where(DB::raw('UPPER(client_id)'), 'like', '%' . strtoupper($request->client_id) . '%')
+                    ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
                     ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
-                    ->get();
+                    ->first();
                 $record_snapshot = json_encode($benefitcode);
+                // $record_snapshot = json_encode($benefitcode);
                 $save_audit = DB::table('FE_RECORD_LOG')
                     ->insert([
                         'user_id' => Cache::get('userId'),
@@ -150,7 +147,7 @@ class ClientController extends Controller
                         // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
                         'record_snapshot' => $record_snapshot,
                     ]);
-                return $this->respondWithToken($this->token(), 'Added Successfully!', $update_code);
+                return $this->respondWithToken($this->token(), 'Added Successfully!', $benefitcode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -254,8 +251,10 @@ class ClientController extends Controller
                     // ->orWhere(DB::raw('UPPER(client.CLIENT_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
                     ->orWhere('customer.CUSTOMER_ID', 'like', '%' . strtoupper($request->customer_id) . '%')
                     ->get();
-                $benefitcode_audit = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
-                    ->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
+                $benefitcode_audit = DB::table('CLIENT')
+                    ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
+                    ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
+                    ->first();
                 // $record_snapshot = implode('|', (array) $benefitcode);
                 $record_snapshot = json_encode($benefitcode_audit);
                 // $record_snapshot = json_encode($benefitcode);
@@ -271,7 +270,7 @@ class ClientController extends Controller
                         'record_snapshot' => $record_snapshot,
                     ]);
 
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
+                return $this->respondWithToken($this->token(), 'Updated Successfully!', $benefitcode);
             }
         }
     }
@@ -299,7 +298,7 @@ class ClientController extends Controller
             })
             ->get();
 
-        $this->respondWithToken($this->token() ?? '', 'clients loaded', $clients);
+        $this->respondWithToken($this->token() ?? '', '', $clients);
     }
 
     public function GetOneClient($clientid)
@@ -310,12 +309,12 @@ class ClientController extends Controller
             // ->orWhere('CLIENT_NAME', 'like', '%' . strtoupper($clientid) . '%')
             // ->orWhere('CUSTOMER_ID', 'like', '%' . strtoupper($clientid) . '%')
             ->first();
+
         return $this->respondWithToken($this->token(), '', $client);
     }
 
     public function searchClient(Request $request)
     {
-
         $search = $request->search;
 
         $client = DB::table('client')

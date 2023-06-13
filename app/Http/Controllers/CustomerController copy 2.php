@@ -173,6 +173,7 @@ class CustomerController extends Controller
 
     public function add(Request $request)
     {
+        // return $request->rva_list_id;
         if ($request->add_new) {
             $validator = Validator::make($request->all(), [
                 'customer_id' => ['required', 'max:10', Rule::unique('CUSTOMER')->where(function ($q) {
@@ -291,13 +292,24 @@ class CustomerController extends Controller
                 // $benefitcode = DB::table('CUSTOMER')
                 //     ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
                 //     ->first();
-                $benefitcode = DB::table('CUSTOMER')->where('customer_id', $request->customer_id)->first();
-                $updated_data = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->get();
+                $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
+
                 //Audit 
                 // $record_snapshot = implode('|', (array) $benefitcode);
                 $record_snapshot = json_encode($benefitcode);
-                $save_audit = $this->auditMethod('IN', $record_snapshot, 'PH_CUSTOMER');
-                return $this->respondWithToken($this->token(), 'RecordAdded Successfully', $updated_data);
+                $save_audit = DB::table('FE_RECORD_LOG')
+                    ->insert([
+                        'user_id' => Cache::get('userId'),
+                        'date_created' => date('Ymd'),
+                        'time_created' => date('gisA'),
+                        'table_name' => 'CUSTOMER',
+                        'record_action' => 'IN',
+                        'application' => 'ProPBM',
+                        'record_snapshot' => $record_snapshot,
+                    ]);
+
+
+                return $this->respondWithToken($this->token(), 'RecordAdded Successfully', $benefitcode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -408,25 +420,25 @@ class CustomerController extends Controller
                             'misc_data_3' => $request->misc_data_3,
                         ]
                     );
-                $update_data = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->get();
+                $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->get();
+                //Audit 
+                // $benefitcode = DB::table('CUSTOMER')->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
 
-                $benefitcode_audit = DB::table('CUSTOMER')
-                    ->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
-                $record_snapshot = json_encode($benefitcode_audit);
-                // $save_audit = $this->auditMethod('UP', $record_snapshot, 'CUSTOMER');
+                //Audit 
+                // $record_snapshot = implode('|', (array) $benefitcode);
+                $record_snapshot = json_encode($benefitcode);
                 $save_audit = DB::table('FE_RECORD_LOG')
                     ->insert([
                         'user_id' => Cache::get('userId'),
                         'date_created' => date('Ymd'),
                         'time_created' => date('gisA'),
-                        'table_name' => 'PH_CUSTOMER',
+                        'table_name' => 'CUSTOMER',
                         'record_action' => 'UP',
                         'application' => 'ProPBM',
-                        // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
                         'record_snapshot' => $record_snapshot,
                     ]);
 
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_data);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
                 // return $this->respondWithToken($this->token(), auth('web')->user(), $benefitcode);
             }
         }
@@ -516,6 +528,9 @@ class CustomerController extends Controller
             // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
             ->where(DB::raw('UPPER(CUSTOMER_ID)'), 'like', '%' . strtoupper($customerid) . '%')
             ->first();
+
+
+
         return $this->respondWithToken($this->token(), '', $customer);
     }
 
