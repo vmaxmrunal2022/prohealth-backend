@@ -543,6 +543,7 @@ class PlanEditController extends Controller
     public function get(Request $request)
     {
         $planEdit = DB::table('PLAN_BENEFIT_TABLE')
+        ->select('PLAN_BENEFIT_TABLE.*')
             ->leftjoin('plan_table_extensions', 'plan_table_extensions.plan_id', '=', 'PLAN_BENEFIT_TABLE.plan_id')
             ->whereRaw('LOWER(PLAN_BENEFIT_TABLE.PLAN_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             // ->where('PLAN_BENEFIT_TABLE.PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')

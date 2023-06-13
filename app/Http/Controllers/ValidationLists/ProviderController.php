@@ -394,7 +394,7 @@ class ProviderController extends Controller
         return $this->respondWithToken($this->token(), '', $provider_options);
     }
 
-    public function deleteRecord(Request $request)
+    public function deleteRecordold(Request $request)
     {
         // return $request->all();
         $count = 0;
@@ -484,6 +484,43 @@ class ProviderController extends Controller
                     ->where(DB::raw('UPPER(pharmacy_list)'), 'like', '%' . strtoupper($request->pharmacy_list) . '%')
                     ->get();
                 return $this->respondWithToken($this->token(), "Record Deleted Successfully ", '');
+            }
+        }
+    }
+
+    public function deleteRecord(Request $request)
+    {
+        if (isset($request->pharmacy_list) && isset($request->pharmacy_nabp)) {
+            $all_copay_strategy = DB::table('PHARMACY_VALIDATIONS')
+                ->where('pharmacy_list', $request->pharmacy_list)
+                ->where('pharmacy_nabp', $request->pharmacy_nabp)
+                ->first();
+            if ($all_copay_strategy) {
+                $copay_strategy = DB::table('PHARMACY_VALIDATIONS')
+                ->where('pharmacy_list', $request->pharmacy_list)
+                ->where('pharmacy_nabp', $request->pharmacy_nabp)
+                    ->delete();
+                if ($copay_strategy) {
+                    $val = DB::table('PHARMACY_VALIDATIONS')
+                        // ->join('SPECIALTY_EXCEPTIONS', 'PHARMACY_VALIDATIONS.copay_strategy_id', '=', 'SPECIALTY_EXCEPTIONS.copay_strategy_id')
+                        ->where('PHARMACY_VALIDATIONS.pharmacy_list', $request->pharmacy_list)
+                        ->count();
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', $val);
+                }
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            }
+        } elseif (isset($request->pharmacy_list)) {
+            $all_accum_bene_strategy_names = DB::table('PHARMACY_EXCEPTIONS')
+                ->where('pharmacy_list', $request->pharmacy_list)
+                ->delete();
+            $copay_strategy = DB::table('PHARMACY_VALIDATIONS')
+                ->where('pharmacy_list', $request->pharmacy_list)
+                ->delete();
+            if ($all_accum_bene_strategy_names) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not found', 'false');
             }
         }
     }

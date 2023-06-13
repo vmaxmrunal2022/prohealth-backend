@@ -302,7 +302,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
 
         Route::get('/pricingstrategy/search', [PricingStrategyController::class, 'search'])->name('pricingstrategy.search'); // SEARCH
-        Route::get('/pricingstrategy/search/new', [PricingStrategyController::class, 'search'])->name('pricingstrategy.search'); // SEARCH
+        Route::get('/pricingstrategy/search/new', [PricingStrategyController::class, 'searchNew'])->name('pricingstrategy.search'); // SEARCH
 
         Route::get('/pricingstrategy/get/{ndcid}', [PricingStrategyController::class, 'getProviderList'])->name('pricingstrategy.list.get'); // LIST ITEMS
         Route::get('/pricingstrategy/details/{ndcid}/{ndcid2}/{id3}', [PricingStrategyController::class, 'getNDCItemDetails'])->name('pricingstrategy.details.get'); // DETAIL
@@ -671,7 +671,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('plan-validation/get-plan-ids', [PlanValidationController::class, 'getplanIds']);
         Route::get('plan-validation/get-details', [PlanValidationController::class, 'getpgetDetailslanIds']);
         Route::get('plan-validation/get-plan-id', [PlanValidationController::class, 'getPlanId']);
-        Route::get('plan-validation/get-plan-id-new', [PlanValidationController::class, 'getPlanIdNew']);
+        Route::get('plan-validation/get-plan-id/new', [PlanValidationController::class, 'getPlanIdNew']);
         Route::post('plan-validation/add-plan-validaion', [PlanValidationController::class, 'addPlanValidation']);
     });
 
@@ -736,6 +736,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('zipcode/search', [ZipCodeController::class, 'search']);
         Route::get('zipcode/get/{zip_code}', [ZipCodeController::class, 'getZipCodeList']);
         Route::post('zipcode/submit', [ZipCodeController::class, 'submitFormData']);
+        Route::post('zipcode/delete', [ZipCodeController::class, 'delete']);
+
 
         //claim history
         Route::get('claim-history', [ClaimHistoryController::class, 'get']);
@@ -1297,7 +1299,7 @@ Route::group(['prefix' => "drug-information/"], function () {
 //Plan Design
 Route::group(['prefix' => 'plan-design/'], function () {
     //Plan Association
-    Route::get('plan-association/get/{id}', [PlanAssociationController::class, 'getDetails']);
+    Route::get('plan-association/get/{binnumber}/{process_control_number}/{group_number}', [PlanAssociationController::class, 'getDetails']);
     Route::get('plan-association/search', [PlanAssociationController::class, 'search']);
     Route::post('plan-association/submit-form', [PlanAssociationController::class, 'submitPlanAssociation']);
     Route::get('plan-association/get-pharmacy-chain', [PlanAssociationController::class, 'getPharmacyChain']);

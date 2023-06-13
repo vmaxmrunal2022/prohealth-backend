@@ -27,16 +27,17 @@ class PlanValidationController extends Controller
         ->whereRaw('LOWER(CUSTOMER.CUSTOMER_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
 
         //   ->orWhere('PLAN_VALIDATION_LISTS.client_id', 'like', '%'. strtoupper($request->search) .'%')
-        ->orWhere('CUSTOMER.customer_name', 'like', '%' .$request->search. '%')
+        ->orWhere('CUSTOMER.customer_name', 'like', '%' . $request->search . '%')
         ->get();
       return $this->respondWithToken($this->token(), '', $planValidation);
     }
   }
 
-  public function getplanIds(Request $request){
+  public function getplanIds(Request $request)
+  {
 
     $clientList = DB::table('PLAN_VALIDATION_LISTS')
-    ->where('PLAN_VALIDATION_LISTS.customer_id', $request->customer_id)->get();
+      ->where('PLAN_VALIDATION_LISTS.customer_id', $request->customer_id)->get();
 
     return $this->respondWithToken($this->token(), '', $clientList);
 
@@ -65,7 +66,7 @@ class PlanValidationController extends Controller
       // ->leftjoin('CUSTOMER','CUSTOMER.CUSTOMER_ID','=','PLAN_VALIDATION_LISTS.CUSTOMER_ID')
       // ->leftjoin('CLIENT','CLIENT.CLIENT_ID','=','PLAN_VALIDATION_LISTS.CLIENT_ID')
       ->where('PLAN_VALIDATION_LISTS.customer_id', $request->customer_id)
-      ->where('PLAN_VALIDATION_LISTS.CLIENT_ID', $request->client_id)              
+      ->where('PLAN_VALIDATION_LISTS.CLIENT_ID', $request->client_id)
       // ->where('PLAN_VALIDATION_LISTS.client_group_id', $request->client_group_id)  
       // ->where('PLAN_VALIDATION_LISTS.plan_id',$request->plan_id)                 
       ->get();
@@ -87,7 +88,7 @@ class PlanValidationController extends Controller
     }
 
     $getEligibilityData = DB::table('plan_validation_lists')
-      ->where('customer_id',$request->customer_id)
+      ->where('customer_id', $request->customer_id)
       ->where('client_id', $request->client_id)
       ->where('client_group_id', $request->client_group_id)
       ->where('plan_id', $request->plan_id)
@@ -98,7 +99,7 @@ class PlanValidationController extends Controller
 
       if ($getEligibilityData) {
 
-        return $this->respondWithToken($this->token(), [['Plan Validation ID Already Exists ']],$getEligibilityData,'false');
+        return $this->respondWithToken($this->token(), [['Plan Validation ID Already Exists ']], $getEligibilityData, 'false');
       } else {
 
         $planValidation = DB::table('plan_validation_lists')
@@ -110,8 +111,8 @@ class PlanValidationController extends Controller
           ]);
         $getEligibilityData = DB::table('plan_validation_lists')
           ->where('customer_id', $request->customer_id)
-          ->where('client_id',$request->client_id)
-          ->where('client_group_id',$request->client_group_id)
+          ->where('client_id', $request->client_id)
+          ->where('client_group_id', $request->client_group_id)
           ->where('plan_id', $request->plan_id)
           ->first();
         $record_snap = json_encode($getEligibilityData);
@@ -133,7 +134,7 @@ class PlanValidationController extends Controller
       // dd($planValidation);
 
       $getEligibilityData = DB::table('plan_validation_lists')
-        ->where('customer_id',$request->customer_id)
+        ->where('customer_id', $request->customer_id)
         ->where('client_id', $request->client_id)
         ->where('client_group_id', $request->client_group_id)
         ->where('plan_id', $request->plan_id)
@@ -161,29 +162,24 @@ class PlanValidationController extends Controller
       ->paginate(100);
     return $this->respondWithToken($this->token(), '', $plan_ids);
   }
-  public function planValidationdelete(Request $request){
+  public function planValidationdelete(Request $request)
+  {
 
-    if(isset($request->customer_id) && isset( $request->client_id) && isset( $request->client_group_id) && isset( $request->plan_id)){
+    if (isset($request->customer_id) && isset($request->client_id) && isset($request->client_group_id) && isset($request->plan_id)) {
 
       $planValidation = DB::table('plan_validation_lists')
 
-                          ->where('customer_id', $request->customer_id)
+        ->where('customer_id', $request->customer_id)
+        ->where('client_id', $request->client_id)
+        ->where('client_group_id', $request->client_group_id)
+        ->where('plan_id', $request->plan_id)
+        ->delete();
 
-                          ->where('client_id', $request->client_id)
-
-                          ->where('client_group_id', $request->client_group_id)
-
-                          ->where('plan_id', $request->plan_id)
-
-                         
-
-                        ->delete();
-
-      if( $planValidation ){
+      if ($planValidation) {
 
         return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
 
-      }else{
+      } else {
 
         return $this->respondWithToken($this->token(), 'Record Not Found');
 

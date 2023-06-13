@@ -110,4 +110,20 @@ class ZipCodeController extends Controller
                 
             
   }
+
+  public function delete(Request $request){
+    if(isset($request->zip_code)){
+
+        $zip_code_delete = DB::table('ZIP_CODES')
+        ->where('ZIP_CODE',$request->zip_code)
+        ->delete();
+
+        if($zip_code_delete){
+            return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+        }else{
+            return $this->respondWithToken($this->token(), 'Record Not Found!');
+        }
+
+    }
+  }
 }

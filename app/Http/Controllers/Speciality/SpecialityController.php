@@ -320,7 +320,7 @@ class SpecialityController extends Controller
         }
     }
 
-    public function deleteRecord(Request $request)
+    public function deleteRecordold(Request $request)
     {
         $count = 0;
         foreach ($request->all() as $key => $value) {
@@ -376,4 +376,44 @@ class SpecialityController extends Controller
             }
         }
     }
+
+    public function deleteRecord(Request $request)
+    {
+        if (isset($request->specialty_list) && isset($request->specialty_id)) {
+            $all_copay_strategy = DB::table('SPECIALTY_VALIDATIONS')
+                ->where('specialty_list', $request->specialty_list)
+                ->where('specialty_id', $request->specialty_id)
+                // ->where('specialty_status',$request->specialty_status)
+                ->first();
+            if ($all_copay_strategy) {
+                $copay_strategy = DB::table('SPECIALTY_VALIDATIONS')
+                ->where('specialty_list', $request->specialty_list)
+                ->where('specialty_id', $request->specialty_id)
+                // ->where('specialty_status',$request->specialty_status)
+                    ->delete();
+                if ($copay_strategy) {
+                    $val = DB::table('SPECIALTY_VALIDATIONS')
+                        // ->join('SPECIALTY_EXCEPTIONS', 'SPECIALTY_VALIDATIONS.copay_strategy_id', '=', 'SPECIALTY_EXCEPTIONS.copay_strategy_id')
+                        ->where('SPECIALTY_VALIDATIONS.specialty_list', $request->specialty_list)
+                        ->count();
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', $val);
+                }
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            }
+        } elseif (isset($request->specialty_list)) {
+            $all_accum_bene_strategy_names = DB::table('SPECIALTY_EXCEPTIONS')
+                ->where('specialty_list', $request->specialty_list)
+                ->delete();
+            $copay_strategy = DB::table('SPECIALTY_VALIDATIONS')
+                ->where('specialty_list', $request->specialty_list)
+                ->delete();
+            if ($all_accum_bene_strategy_names) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not found', 'false');
+            }
+        }
+    }
+
 }

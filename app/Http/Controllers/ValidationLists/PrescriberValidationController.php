@@ -21,7 +21,8 @@ class PrescriberValidationController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $physicianExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
-                ->where('PHYSICIAN_LIST', 'like', '%' . $request->search . '%')
+                // ->where('PHYSICIAN_LIST', 'like', '%' . $request->search . '%')
+                ->whereRaw('LOWER(PHYSICIAN_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
                 ->orderBy('PHYSICIAN_LIST', 'ASC')
                 ->get();
@@ -444,16 +445,14 @@ class PrescriberValidationController extends Controller
 
     public function deleteRecord(Request $request)
     {
-        if (isset($request->physician_list) && isset($request->physician_status) && isset($request->physician_id)) {
+        if (isset($request->physician_list)  && isset($request->physician_id)) {
             $all_physician = DB::table('PHYSICIAN_VALIDATIONS')
                 ->where('physician_list', $request->physician_list)
-                ->where('physician_status', $request->physician_status)
                 ->where('physician_id',$request->physician_id)
                 ->first();
             if ($all_physician) {
                 $physician_list = DB::table('PHYSICIAN_VALIDATIONS')
                 ->where('physician_list', $request->physician_list)
-                ->where('physician_status', $request->physician_status)
                 ->where('physician_id',$request->physician_id)
                     ->delete();
                 if ($physician_list) {
