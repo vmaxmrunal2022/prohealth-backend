@@ -372,7 +372,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
 
 
-        Route::get('customer/search', [MajorMedicalController::class, 'search']);
+        Route::get('customer/major_medical/search', [MajorMedicalController::class, 'search']);
         Route::get('client/get/{customerid}', [MajorMedicalController::class, 'getClient']);
         Route::get('clientgroup/get/{client}', [MajorMedicalController::class, 'getClientGroup']);
         Route::get('clientgroup/details', [MajorMedicalController::class, 'getDetails']);
@@ -657,6 +657,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
         Route::get('memberdata/dropdown', [MemberController::class, 'getMembersDropDownList']);
 
+        Route::get('memberdata/delete', [MemberController::class, 'delete']);
+
         //tab table routes
         Route::get('memberdata/get-coverage-information-table', [MemberController::class, 'getCoverageInformationTable']);
         Route::get('memberdata/get-health-conditions-diagnosis-table', [MemberController::class, 'getDiagnosisTable']);
@@ -675,6 +677,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         //Prior Authorization
         Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);
         Route::get('prior-authorization/authcode_auto_generate', [PriorAuthController::class, 'priorAuthCodeGenerate']);
+        Route::get('prior-authorization/delete', [PriorAuthController::class, 'delete']);
 
 
         //Plan Validation

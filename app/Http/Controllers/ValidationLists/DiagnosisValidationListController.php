@@ -552,6 +552,8 @@ class DiagnosisValidationListController extends Controller
                             ->get();
 
                         $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
+                        $data = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')->where('diagnosis_list', $request->diagnosis_list)->delete();
+
                         if (!empty($request->limitations_form)) {
                             $limitation_list = $limitation_list_obj[0];
                             foreach ($limitation_list_obj as $key => $limitation_list) {

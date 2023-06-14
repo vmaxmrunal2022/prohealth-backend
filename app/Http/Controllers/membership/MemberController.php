@@ -1142,4 +1142,31 @@ class MemberController extends Controller
 
 
     }
+
+    public function delete(Request $request){
+        
+
+        $member_form_data=DB::table('RX_TRANSACTION_LOG')
+       
+        ->where('member_id',$request->member_id)->count();
+
+        if(isset($request->member_id) && $member_form_data>1){
+
+
+            return $this->respondWithToken($this->token(), 'Deletion Denied Beacause of Rx Transactions Not Empty!');
+
+        }
+        else{
+
+            $member_delete=DB::table('member')
+                ->where('member_id',$request->member_id)->delete();
+                if($member_delete){
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+
+                }else{
+                    return $this->respondWithToken($this->token(), 'Record Not Found');
+
+                }
+        }
+    }
 }
