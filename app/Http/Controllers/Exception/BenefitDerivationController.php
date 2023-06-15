@@ -51,7 +51,6 @@ class BenefitDerivationController extends Controller
                     'TERMINATION_DATE' => $request->termination_date,
                     'DATE_TIME_CREATED' => $createddate,
                     'PROC_CODE_LIST_ID' => $request->proc_code_list_id,
-
                 ]
             );
             $benefitcode = DB::table('BENEFIT_DERIVATION')
@@ -102,12 +101,7 @@ class BenefitDerivationController extends Controller
 
     public function add(Request $request)
     {
-
-
-
-
         $createddate = date('y-m-d');
-
         $validation = DB::table('BENEFIT_DERIVATION_NAMES')
             ->where('benefit_derivation_id', $request->benefit_derivation_id)
             ->get();
@@ -177,7 +171,6 @@ class BenefitDerivationController extends Controller
                     [
                         'benefit_derivation_id' => $request->benefit_derivation_id,
                         'description' => $request->description,
-
                     ]
                 );
 
@@ -217,7 +210,10 @@ class BenefitDerivationController extends Controller
                     );
 
 
-                $add = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
+                $add = DB::table('BENEFIT_DERIVATION')
+                    ->where(DB::raw('UPPER(benefit_derivation_id)'), strtoupper($request->benefit_derivation_id))
+                    ->first();
+                $save_audit = $this->auditMethod('IN', json_encode($add), 'BENEFIT_DERIVATION');
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
             }
         } else if ($request->add_new == 0) {
@@ -321,6 +317,7 @@ class BenefitDerivationController extends Controller
 
                         );
                     $update = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
+                    $save_audit = $this->auditMethod('UP', json_encode($update), 'BENEFIT_DERIVATION');
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                 } elseif ($request->update_new == 1) {
                     $checkGPI = DB::table('BENEFIT_DERIVATION')
@@ -393,7 +390,10 @@ class BenefitDerivationController extends Controller
                             );
 
 
-                        $update = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
+                        $update = DB::table('BENEFIT_DERIVATION')
+                            ->where('benefit_derivation_id', $request->benefit_derivation_id)
+                            ->first();
+                        $save_audit = $this->auditMethod('UP', json_encode($update), 'BENEFIT_DERIVATION');
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
                     }
                 }
@@ -593,6 +593,10 @@ class BenefitDerivationController extends Controller
     public function benefitderivationdelete(Request $request)
     {
         if (isset($request->benefit_derivation_id) && ($request->proc_code_list_id)) {
+            $to_delete =  DB::table('BENEFIT_DERIVATION')
+                ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                ->first();
+            $save_audit = $this->auditMethod('DE', json_encode($to_delete), 'BENEFIT_DERIVATION');
             $all_exceptions_lists =  DB::table('BENEFIT_DERIVATION')
                 ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
                 ->delete();
@@ -604,6 +608,10 @@ class BenefitDerivationController extends Controller
             }
         } else if (isset($request->benefit_derivation_id)) {
 
+            $to_delete =  DB::table('BENEFIT_DERIVATION_NAMES')
+                ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                ->first();
+            $save_audit = $this->auditMethod('DE', json_encode($to_delete), 'BENEFIT_DERIVATION_NAMES');
             $exception_delete =  DB::table('BENEFIT_DERIVATION_NAMES')
                 ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
                 ->delete();
