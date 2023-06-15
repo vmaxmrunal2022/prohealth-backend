@@ -1252,6 +1252,8 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
 
     Route::get('copay-step-schedule/getcopaylistdata', [CopayStepScheduleController::class, 'getList']);
 
+    Route::post('copay-step-schedule/delete', [CopayStepScheduleController::class, 'delete']);
+
 
     //MAC List
     Route::get('mac-list/get', [MacListController::class, 'get'])->name('get.macList');
