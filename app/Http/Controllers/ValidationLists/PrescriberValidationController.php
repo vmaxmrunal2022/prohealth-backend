@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ValidationLists;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,7 @@ use Illuminate\Validation\Rules\RequiredIf;
 
 class PrescriberValidationController extends Controller
 {
+    use AuditTrait;
     public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -261,6 +263,10 @@ class PrescriberValidationController extends Controller
                             'date_time_modified' => date('d-M-y'),
                             'form_id' => ''
                         ]);
+                    $get_parent = DB::table('PHYSICIAN_EXCEPTIONS')
+                        ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->destination_id))
+                        ->first();
+                    $save_audit_parent = $this->auditMethod('IN', json_encode($get_parent), 'PHYSICIAN_EXCEPTIONS');
 
                     foreach ($source_validations as $child) {
                         $add_destination_child = DB::table('PHYSICIAN_VALIDATIONS')
@@ -273,6 +279,17 @@ class PrescriberValidationController extends Controller
                                 'date_time_modified' => date('d-M-y'),
                                 'form_id' => ''
                             ]);
+
+                        $get_parent = DB::table('PHYSICIAN_EXCEPTIONS')
+                            ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->destination_id))
+                            ->first();
+                        $save_audit_parent = $this->auditMethod('IN', json_encode($get_parent), 'PHYSICIAN_EXCEPTIONS');
+
+                        $get_child = DB::table('PHYSICIAN_VALIDATIONS')
+                            ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->destination_id))
+                            ->where(DB::raw('UPPER(physician_id)'), strtoupper($child->physician_id))
+                            ->first();
+                        $save_audit_child = $this->auditMethod('IN', json_encode($get_child), 'PHYSICIAN_VALIDATIONS');
                     }
 
                     return $this->respondWithToken(
@@ -318,6 +335,12 @@ class PrescriberValidationController extends Controller
                                 'form_id' => ''
                             ]);
 
+                        $get_child = DB::table('PHYSICIAN_VALIDATIONS')
+                            ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->destination_id))
+                            ->where(DB::raw('UPPER(physician_id)'), strtoupper($request->physician_id))
+                            ->first();
+                        $save_audit_parent = $this->auditMethod('IN', json_encode($get_child), 'PHYSICIAN_VALIDATIONS');
+
                         $diag_validation = DB::table('PHYSICIAN_VALIDATIONS')
                             ->select('PHYSICIAN_VALIDATIONS.*', 'PHYSICIAN_EXCEPTIONS.*', 'PHYSICIAN_TABLE.*')
                             ->join('PHYSICIAN_TABLE', 'PHYSICIAN_VALIDATIONS.PHYSICIAN_ID', '=', 'PHYSICIAN_TABLE.PHYSICIAN_ID')
@@ -340,6 +363,10 @@ class PrescriberValidationController extends Controller
                                 'date_time_modified' => date('d-M-y'),
                                 'form_id' => ''
                             ]);
+                        $get_parent = DB::table('PHYSICIAN_EXCEPTIONS')
+                            ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->destination_id))
+                            ->first();
+                        $save_audit = $this->auditMethod('UP', json_encode($get_parent), 'PHYSICIAN_EXCEPTIONS');
                         $countValidation = DB::table('PHYSICIAN_VALIDATIONS')
                             ->where(DB::raw('UPPER(PHYSICIAN_LIST)'), strtoupper($request->physician_list))
                             ->where(DB::raw('UPPER(PHYSICIAN_ID)'), strtoupper($request->physician_id))
@@ -374,6 +401,11 @@ class PrescriberValidationController extends Controller
                                     'date_time_modified' => date('d-M-y'),
                                     'form_id' => ''
                                 ]);
+                            $get_parent = DB::table('PHYSICIAN_VALIDATIONS')
+                                ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->destination_id))
+                                ->where(DB::raw('UPPER(physician_id)'), strtoupper($request->physician_id))
+                                ->first();
+                            $save_audit = $this->auditMethod('IN', json_encode($get_parent), 'PHYSICIAN_VALIDATIONS');
                             $reecord = DB::table('PHYSICIAN_EXCEPTIONS')
                                 ->join('PHYSICIAN_VALIDATIONS', 'PHYSICIAN_EXCEPTIONS.physician_list', '=', 'PHYSICIAN_VALIDATIONS.physician_list')
                                 ->where('PHYSICIAN_VALIDATIONS.physician_list', $request->physician_list)
@@ -407,6 +439,10 @@ class PrescriberValidationController extends Controller
                     'date_time_modified' => date('d-M-y'),
                     'form_id' => ''
                 ]);
+            $get_exp = DB::table('PHYSICIAN_EXCEPTIONS')
+                ->where('physician_list', $request->physician_list)
+                ->first();
+            $this->auditMethod('UP', json_encode($get_exp), 'PHYSICIAN_EXCEPTIONS');
 
             $countValidation = DB::table('PHYSICIAN_VALIDATIONS')
                 ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
@@ -417,6 +453,12 @@ class PrescriberValidationController extends Controller
                     'date_time_modified' => date('d-M-y'),
                     'form_id' => ''
                 ]);
+
+            $get_val = DB::table('PHYSICIAN_VALIDATIONS')
+                ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
+                ->where(DB::raw('UPPER(physician_id)'), strtoupper($request->physician_id))
+                ->first();
+            $saveh_audit_val = $this->auditMethod('UP', json_encode($get_val), 'PHYSICIAN_VALIDATIONS');
 
             $diag_validation = DB::table('PHYSICIAN_VALIDATIONS')
                 ->select('PHYSICIAN_VALIDATIONS.*', 'PHYSICIAN_EXCEPTIONS.*', 'PHYSICIAN_TABLE.*')
@@ -456,9 +498,18 @@ class PrescriberValidationController extends Controller
         }
         if ($count > 0) {
             $data = $request->all();
+            $get_exp = DB::table('PHYSICIAN_EXCEPTIONS')
+                ->where(DB::raw('UPPER(physician_list)'), strtoupper($data[0]['physician_list']))
+                ->first();
+            $save_audit_val = $this->auditMethod('DE', json_encode($get_exp), 'PHYSICIAN_EXCEPTIONS');
             $delete_physician_id = DB::table('PHYSICIAN_EXCEPTIONS')
                 ->where(DB::raw('UPPER(physician_list)'), strtoupper($data[0]['physician_list']))
                 ->delete();
+
+            $get_val = DB::table('PHYSICIAN_VALIDATIONS')
+                ->where(DB::raw('UPPER(physician_list)'), strtoupper($data[0]['physician_list']))
+                ->first();
+            $save_audit_val = $this->auditMethod('DE', json_encode($get_val), 'PHYSICIAN_VALIDATIONS');
             $delete_physician_id = DB::table('PHYSICIAN_VALIDATIONS')
                 ->where(DB::raw('UPPER(physician_list)'), strtoupper($data[0]['physician_list']))
                 ->delete();
@@ -477,6 +528,11 @@ class PrescriberValidationController extends Controller
         } else        
         if ($request->physician_list) {
             if ($request->physician_id) {
+                $get_val = DB::table('PHYSICIAN_VALIDATIONS')
+                    ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
+                    ->where(DB::raw('UPPER(physician_id)'), strtoupper($request->physician_id))
+                    ->first();
+                $save_val = $this->auditMethod('DE', json_encode($get_val), 'PHYSICIAN_VALIDATIONS');
                 $delete_physician_id = DB::table('PHYSICIAN_VALIDATIONS')
                     ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
                     ->where(DB::raw('UPPER(physician_id)'), strtoupper($request->physician_id))
@@ -492,6 +548,10 @@ class PrescriberValidationController extends Controller
                     ->distinct()
                     ->get();
                 if (count($diagnosis_validation) <= 0) {
+                    $get_exp = DB::table('PHYSICIAN_EXCEPTIONS')
+                        ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
+                        ->first();
+                    $this->auditMethod('DE', json_encode($get_exp), 'PHYSICIAN_EXCEPTIONS');
                     $delete_physician_list = DB::table('PHYSICIAN_EXCEPTIONS')
                         ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
                         ->delete();
@@ -508,9 +568,18 @@ class PrescriberValidationController extends Controller
                 }
                 return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diag_validation);
             } else {
+                $get_exp = DB::table('PHYSICIAN_EXCEPTIONS')
+                    ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
+                    ->first();
+                $this->auditMethod('DE', json_encode($get_exp), 'PHYSICIAN_EXCEPTIONS');
                 $delete_physician_id = DB::table('PHYSICIAN_EXCEPTIONS')
                     ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
                     ->delete();
+                $get_val = DB::table('PHYSICIAN_VALIDATIONS')
+                    ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
+                    ->where(DB::raw('UPPER(physician_id)'), strtoupper($request->physician_id))
+                    ->first();
+                $save_val = $this->auditMethod('DE', json_encode($get_val), 'PHYSICIAN_VALIDATIONS');
                 $delete_physician_id = DB::table('PHYSICIAN_VALIDATIONS')
                     ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
                     ->delete();
