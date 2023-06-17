@@ -19,6 +19,13 @@ class TherapyClassController extends Controller
 
     }
 
+    public function TherapyClassList_New(Request $request){
+
+        $ndc = DB::table('TC_EXCEPTIONS')->paginate(100);
+        return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
+
     public function addcopy( Request $request ) {
 
         $createddate = date( 'y-m-d' );

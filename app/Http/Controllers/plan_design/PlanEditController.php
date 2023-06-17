@@ -543,11 +543,54 @@ class PlanEditController extends Controller
     public function get(Request $request)
     {
         $planEdit = DB::table('PLAN_BENEFIT_TABLE')
-            ->leftjoin('plan_table_extensions', 'plan_table_extensions.plan_id', '=', 'PLAN_BENEFIT_TABLE.plan_id')
+        // ->select('PLAN_BENEFIT_TABLE.*',
+        // 'PLAN_TABLE_EXTENSIONS.EFFECTIVE_DATE',
+        // 'PLAN_TABLE_EXTENSIONS.PLAN_NOTES',
+        // 'PLAN_TABLE_EXTENSIONS.DATE_WRITTEN_TO_FIRST_FILL',
+        // 'PLAN_TABLE_EXTENSIONS.DATE_FILLED_TO_SUB_ONLINE',
+        // 'PLAN_TABLE_EXTENSIONS.DATE_FILLED_TO_SUB_DMR',
+        // 'PLAN_TABLE_EXTENSIONS.DATE_SUB_TO_FILLED_FUTURE',
+        // 'PLAN_TABLE_EXTENSIONS.DAYS_FOR_REVERSALS',
+        // 'PLAN_TABLE_EXTENSIONS.ER_LIMIT_1_MAX_DAYS_SUPPLY',
+        // 'PLAN_TABLE_EXTENSIONS.ER_LIMIT_1_MINIMUM_USE',
+        // 'PLAN_TABLE_EXTENSIONS.ER_LIMIT_2_MAX_DAYS_SUPPLY',
+        // 'PLAN_TABLE_EXTENSIONS.ER_LIMIT_2_MINIMUM_USE',
+        // 'PLAN_TABLE_EXTENSIONS.ER_LIMIT_X_MINIMUM_USE',
+        // 'PLAN_TABLE_EXTENSIONS.MO_ER_LIMIT_1_MAX_DAYS_SUPPLY',
+        // 'PLAN_TABLE_EXTENSIONS.MO_ER_LIMIT_1_MINIMUM_USE',
+        // 'PLAN_TABLE_EXTENSIONS.MO_ER_LIMIT_2_MAX_DAYS_SUPPLY',
+        // 'PLAN_TABLE_EXTENSIONS.MO_ER_LIMIT_2_MINIMUM_USE',
+        // 'PLAN_TABLE_EXTENSIONS.MO_ER_LIMIT_X_MINIMUM_USE',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_1',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_2',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_3',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_4',
+
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_5',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_6',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_7',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_8',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_9',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_10',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_11',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_12',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_13',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_14',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_15',
+        // 'PLAN_TABLE_EXTENSIONS.MISC_FLAG_16',
+        // 'PLAN_TABLE_EXTENSIONS.ER_SEARCH_IND',
+        // 'PLAN_TABLE_EXTENSIONS.ER_BYPASS_HIST_DAYS_SUPPLY',
+        // 'PLAN_TABLE_EXTENSIONS.MO_ER_SEARCH_IND',
+        // 'PLAN_TABLE_EXTENSIONS.MO_ER_BYPASS_HIST_DAYS_SUPPLY',
+
+
+        
+        // )
+            ->join('plan_table_extensions', 'plan_table_extensions.plan_id', '=', 'PLAN_BENEFIT_TABLE.plan_id')
             ->whereRaw('LOWER(PLAN_BENEFIT_TABLE.PLAN_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             // ->where('PLAN_BENEFIT_TABLE.PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('PLAN_BENEFIT_TABLE.PLAN_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->get();
+            ->paginate(100);
 
         $system_limits = DB::table('GLOBAL_PARAMS')->select(['sys_date_written_to_first_fill', 'sys_date_filled_to_sub_online', 'sys_date_filled_to_sub_dmr', 'sys_date_sub_to_filled_future', 'sys_days_for_reversals'])->first();
 
@@ -699,6 +742,14 @@ class PlanEditController extends Controller
         return $this->respondWithToken($this->token(), '', $super_provider_network);
     }
 
+    public function getSuperProviderNetwork_New(Request  $request)
+    {
+        $super_provider_network = DB::table('SUPER_RX_NETWORKS')
+            ->join('SUPER_RX_NETWORK_NAMES', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
+            ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $super_provider_network);
+    }
+
     public function getExhaustedBenefits(Request $request)
     {
         $exhausetd_benefit = [
@@ -716,6 +767,15 @@ class PlanEditController extends Controller
             ->get();
         return $this->respondWithToken($this->token(), '', $procedure_list);
     }
+
+    public function getProcedureException_New(Request $request)
+    {
+        $procedure_list = DB::table('PROCEDURE_EXCEPTION_LISTS')
+            ->join('PROCEDURE_EXCEPTION_NAMES', 'PROCEDURE_EXCEPTION_NAMES.PROCEDURE_EXCEPTION_LIST', '=', 'PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST')
+            ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $procedure_list);
+    }
+
 
 
     public function planeditDelete(Request $request){

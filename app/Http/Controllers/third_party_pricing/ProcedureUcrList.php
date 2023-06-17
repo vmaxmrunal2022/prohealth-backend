@@ -22,6 +22,17 @@ class ProcedureUcrList extends Controller
         return $this->respondWithToken($this->token(), '', $ucrName);
     }
 
+    public function get_New(Request $request)
+    {
+        $ucrName = DB::table('procedure_ucr_names')
+            ->where('PROCEDURE_UCR_ID', 'like', '%' . $request->search . '%')
+            ->orWhere('PROCEDURE_UCR_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ucrName);
+    }
+
 
     public function getProcedureListData(Request $request)
     {
@@ -628,40 +639,8 @@ class ProcedureUcrList extends Controller
     }
 
 
-    // public function procedure_delete(Request $request)
-    // {
 
-    //     if (isset($request->procedure_ucr_id) && isset($request->procedure_code) && isset($request->effective_date)) {
-    //         $all_exceptions_lists = DB::table('PROCEDURE_UCR_LIST')
-    //             ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
-    //             ->where('PROCEDURE_CODE', $request->procedure_code)
-    //             ->where('EFFECTIVE_DATE', $request->effective_date)
-    //             ->delete();
 
-    //         if ($all_exceptions_lists) {
-    //             return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-    //         } else {
-    //             return $this->respondWithToken($this->token(), 'Record Not Found');
-    //         }
-    //     } elseif (isset($request->procedure_ucr_id)) {
-
-    //         $exception_delete = DB::table('procedure_ucr_names')
-    //             ->where('procedure_ucr_id', $request->procedure_ucr_id)
-    //             ->delete();
-
-    //         $all_exceptions_lists = DB::table('PROCEDURE_UCR_LIST')
-    //             ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
-    //             // ->where('PROCEDURE_CODE',$request->procedure_code)
-    //             // ->where('EFFECTIVE_DATE',$request->effective_date)
-    //             ->delete();
-
-    //         if ($exception_delete) {
-    //             return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-    //         } else {
-    //             return $this->respondWithToken($this->token(), 'Record Not Found');
-    //         }
-    //     }
-    // }
     public function procedure_delete(Request $request)
     {
 

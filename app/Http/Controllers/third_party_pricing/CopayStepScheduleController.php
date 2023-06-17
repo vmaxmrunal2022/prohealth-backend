@@ -355,4 +355,60 @@ class CopayStepScheduleController extends Controller
             ->count();
         return $this->respondWithToken($this->token(), '', $exist);
     }
+
+    public function delete(Request $request)
+    {
+        if (!empty($request->cost_max)) {
+
+            if(isset($request->copay_list)){
+
+
+               $copay_matrix_delete= DB::table('COPAY_MATRIX')
+                ->where('copay_list', $request->copay_list)
+                ->delete();
+
+                $copay_list_delete= DB::table('COPAY_LIST')
+                ->where('copay_list', $request->copay_list)
+                ->delete();
+
+                if($copay_list_delete){
+
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+
+                }
+
+
+            }
+
+        }
+
+        if (!empty($request->days_supply)) {
+
+            if(isset($request->copay_list)){
+
+
+               $copay_matrix_delete= DB::table('COPAY_MATRIX')
+                ->where('copay_list', $request->copay_list)
+                ->delete();
+
+                $copay_list_delete= DB::table('COPAY_LIST')
+                ->where('copay_list', $request->copay_list)
+                ->delete();
+
+                if($copay_list_delete){
+
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+
+                }
+
+
+            }
+
+        }
+
+        
+
+
+
+    }
 }

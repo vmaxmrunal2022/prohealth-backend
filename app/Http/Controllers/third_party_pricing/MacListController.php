@@ -20,6 +20,17 @@ class MacListController extends Controller
         return $this->respondWithToken($this->token(), '', $macList);
     }
 
+    public function get_New(Request $request)
+    {
+        $macList = DB::table('MAC_LIST')
+            ->where('MAC_LIST', 'like', '%' . strtoupper($request->search). '%')
+            ->orWhere('MAC_LIST', 'like', '%' . $request->search. '%')
+            ->orWhere('MAC_DESC', 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $macList);
+    }
+
     public function getMacList(Request $request)
     {
         $data = DB::table('MAC_LIST')
@@ -490,7 +501,11 @@ class MacListController extends Controller
                                         ->delete();
 
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                $val = DB::table('MAC_TABLE')
+                // ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+                ->where('mac_list', $request->mac_list)
+                ->count();
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$val);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

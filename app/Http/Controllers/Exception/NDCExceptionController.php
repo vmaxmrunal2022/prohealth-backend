@@ -1374,6 +1374,16 @@ class NDCExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function getAllNDCSNew()
+    {
+
+        $ndc = DB::table('DRUG_MASTER')
+            ->select('NDC', 'LABEL_NAME')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
     public function ndcdelete(Request $request){
         
         // return $request->all();
@@ -1429,25 +1439,34 @@ class NDCExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function ndcList_New(Request $request)
+    {
+        $ndc = DB::table('NDC_EXCEPTIONS')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
 
 
 
     public function search(Request $request)
     {
 
-        $validator = Validator::make($request->all(), [
-            "search" => ['required']
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     "search" => ['required']
+        // ]);
 
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        } else {
+        // if ($validator->fails()) {
+        //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        // } else {
 
             $ndc = DB::table('NDC_EXCEPTIONS')
                 ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
                 // ->where('NDC_EXCEPTION_LIST', 'like', '%' .$request->search. '%')
                 ->whereRaw('LOWER(NDC_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
+                // ->paginate(10);
                 ->get();
 
             if ($ndc->count() < 1) {
@@ -1455,7 +1474,7 @@ class NDCExceptionController extends Controller
             } else {
                 return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
             }
-        }
+        // }
     }
 
 

@@ -376,6 +376,20 @@ class SuperBenefitControler extends Controller
         return $this->respondWithToken($this->token(), '', $superBenefitNames);
     }
 
+    public function get_New(Request $request)
+    {
+
+        $superBenefitNames = DB::table('SUPER_BENEFIT_LIST_NAMES')
+            //   ->where('SUPER_BENEFIT_LIST_ID','like','%'.strtoupper($request->search).'%')
+            ->whereRaw('LOWER(SUPER_BENEFIT_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
+
+        //  return $superBenefitNames;
+
+        return $this->respondWithToken($this->token(), '', $superBenefitNames);
+    }
+
     public function getBenefitCode(Request $request)
     {
         $benefitLists = DB::table('SUPER_BENEFIT_LISTS')

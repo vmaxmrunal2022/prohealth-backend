@@ -10,15 +10,18 @@ use Illuminate\Validation\Rule;
 
 class PlanAssociationController extends Controller
 {
-    public function getDetails($id)
+    public function getDetails($binnumber,$process_control_number,$group_number)
     {
 
         $planAssociation = DB::table('PLAN_LOOKUP_TABLE')
                 ->select('PLAN_LOOKUP_TABLE.*', 'client.client_name', 'client_group.group_name', 'customer.customer_name')
-                ->join('client', 'PLAN_LOOKUP_TABLE.client_id', '=', 'client.client_id')
-                ->join('client_group', 'PLAN_LOOKUP_TABLE.client_group_id', '=', 'client_group.client_group_id')
-                ->join('customer', 'PLAN_LOOKUP_TABLE.customer_id', '=', 'customer.customer_id')
-                ->where('PLAN_LOOKUP_TABLE.BIN_NUMBER', strtoupper($id))
+                ->leftjoin('customer', 'PLAN_LOOKUP_TABLE.customer_id', '=', 'customer.customer_id')
+                ->leftjoin('client', 'PLAN_LOOKUP_TABLE.client_id', '=', 'client.client_id')
+                ->leftjoin('client_group', 'PLAN_LOOKUP_TABLE.client_group_id', '=', 'client_group.client_group_id')
+                ->where('PLAN_LOOKUP_TABLE.BIN_NUMBER', strtoupper($binnumber))
+                ->where('PLAN_LOOKUP_TABLE.PROCESS_CONTROL_NUMBER',$process_control_number)
+                ->where('PLAN_LOOKUP_TABLE.GROUP_NUMBER',$group_number)
+
                 // ->where('PLAN_LOOKUP_TABLE.BIN_NUMBER', $id)
                 ->get();
         return $this->respondWithToken($this->token(), '', $planAssociation);
@@ -37,15 +40,15 @@ class PlanAssociationController extends Controller
         } else {
             $planAssociation = DB::table('PLAN_LOOKUP_TABLE')
                 ->select('PLAN_LOOKUP_TABLE.*', 'client.client_name', 'client_group.group_name', 'customer.customer_name')
-                ->join('client', 'PLAN_LOOKUP_TABLE.client_id', '=', 'client.client_id')
-                ->join('client_group', 'PLAN_LOOKUP_TABLE.client_group_id', '=', 'client_group.client_group_id')
-                ->join('customer', 'PLAN_LOOKUP_TABLE.customer_id', '=', 'customer.customer_id')
+                ->leftjoin('client', 'PLAN_LOOKUP_TABLE.client_id', '=', 'client.client_id')
+                ->leftjoin('client_group', 'PLAN_LOOKUP_TABLE.client_group_id', '=', 'client_group.client_group_id')
+                ->leftjoin('customer', 'PLAN_LOOKUP_TABLE.customer_id', '=', 'customer.customer_id')
                 ->where('PLAN_LOOKUP_TABLE.BIN_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere('PLAN_LOOKUP_TABLE.PROCESS_CONTROL_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere('PLAN_LOOKUP_TABLE.GROUP_NUMBER', 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere('PLAN_LOOKUP_TABLE.PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere('PLAN_LOOKUP_TABLE.PIN_NUMBER_SUFFIX', 'like', '%' . strtoupper($request->search) . '%')
-                ->get();
+                ->paginate(100);
 
 
             return $this->respondWithToken($this->token(), '', $planAssociation);
@@ -135,9 +138,9 @@ class PlanAssociationController extends Controller
             } else {
 
                 $planAssociation = DB::table('plan_lookup_table')
-                    ->where('bin_number', 'like', '%' . $request->bin_number . '%')
-                    ->where('process_control_number', 'like', '%' . $request->process_control_number . '%')
-                    ->where('group_number', 'like', '%' . $request->group_number . '%')
+                    ->where('bin_number', $request->bin_number)
+                    ->where('process_control_number',$request->process_control_number)
+                    ->where('group_number', $request->group_number)
                     ->update([
                         'client_group_id' => $client_group_id,
                         'client_id' => $client_id,
@@ -170,6 +173,14 @@ class PlanAssociationController extends Controller
         $pharmacy_chain = DB::table('PHARMACY_CHAIN')
             ->where(DB::raw('UPPER(pharmacy_chain)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
+        return $this->respondWithToken($this->token(), '', $pharmacy_chain);
+    }
+
+    public function getPharmacyChain_New(Request $request)
+    {
+        $pharmacy_chain = DB::table('PHARMACY_CHAIN')
+            ->where(DB::raw('UPPER(pharmacy_chain)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $pharmacy_chain);
     }
 
@@ -319,6 +330,15 @@ class PlanAssociationController extends Controller
         $planIds = DB::table('plan_table')
             // ->select('id')
             ->get();
+
+        return $this->respondWithToken($this->token(), '', $planIds);
+    }
+
+    public function getPlanId_New(Request $request)
+    {
+        $planIds = DB::table('plan_table')
+            // ->select('id')
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $planIds);
     }

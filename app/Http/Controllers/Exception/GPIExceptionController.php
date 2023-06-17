@@ -744,6 +744,15 @@ class GPIExceptionController extends Controller
     }
 
 
+    public function GpiList_New(Request $request)
+    {
+
+        $benefitcode = DB::table('GPI_EXCEPTIONS')->paginate(100);
+        return $this->respondWithToken($this->token(), 'Successfully Fetched Data', $benefitcode);
+    }
+
+
+
 
     public function search(Request $request)
     {

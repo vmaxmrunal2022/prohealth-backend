@@ -122,32 +122,50 @@ class MajorMedicalController extends Controller
     }
 
     public function delete(Request $request)
-    {
-        if (isset($request->customer_id) && isset($request->client_id) && isset($request->client_group_id) && isset($request->effective_date)) {
-            $delete_mm_life_max =  DB::table('MM_LIFE_MAX')
-                                    ->where('customer_id', $request->customer_id)
-                                    ->where('client_id', $request->client_id)
-                                    ->where('client_group_id', $request->client_group_id)
-                                    ->where('effective_date', $request->client_group_id)
-                                    ->delete();
 
-                                    
+    {
+
+        if (isset($request->customer_id) && isset($request->client_id) && isset($request->client_group_id) && isset($request->effective_date)) {
+
+            $delete_mm_life_max =  DB::table('MM_LIFE_MAX')
+                    ->where('customer_id', $request->customer_id)
+                    ->where('client_id', $request->client_id)
+                    ->where('client_group_id', $request->client_group_id)
+                    ->where('effective_date', $request->effective_date)
+                    ->delete();
+                    // dd($delete_mm_life_max);
+
+
+
+
+                                   
+
             if ($delete_mm_life_max) {
+
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+
             } else {
+
                 return $this->respondWithToken($this->token(), 'Record Not Found');
+
             }
+
         }
+
     }
+
+    
 
     public function search(Request $request)
 
     {
-        $ndc = DB::table('CUSTOMER')
-            // ->where('CUSTOMER_ID', 'like', '%' . $request->search. '%')
-            ->whereRaw('LOWER(CUSTOMER_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
-            ->orWhere('CUSTOMER_NAME', 'like', '%' .$request->search. '%')
-            ->get();
+        $ndc = DB::table('MM_LIFE_MAX')
+        ->select('MM_LIFE_MAX.CUSTOMER_ID', 'CUSTOMER.CUSTOMER_NAME')
+        ->leftJoin('CUSTOMER', 'CUSTOMER.CUSTOMER_ID', '=', 'MM_LIFE_MAX.CUSTOMER_ID')
+        ->whereRaw('LOWER(MM_LIFE_MAX.CUSTOMER_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+        ->groupBy('MM_LIFE_MAX.CUSTOMER_ID', 'CUSTOMER.CUSTOMER_NAME')
+        ->orderBy('MM_LIFE_MAX.CUSTOMER_ID')
+        ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -155,8 +173,17 @@ class MajorMedicalController extends Controller
 
     public function getClient($ndcid)
     {
-        $ndc = DB::table('CLIENT')
-            ->where('CUSTOMER_ID', 'like', '%' . $ndcid . '%')
+        $ndc = DB::table('MM_LIFE_MAX')
+        // ->join('CLIENT','CLIENT.CUSTOMER_ID','=','MM_LIFE_MAX.CUSTOMER_ID')
+        //     ->where('MM_LIFE_MAX.CUSTOMER_ID', 'like', '%' . $ndcid . '%')
+        //     ->get();
+
+
+            ->select('MM_LIFE_MAX.CLIENT_ID', 'CLIENT.CLIENT_NAME')
+            ->join('CLIENT','CLIENT.CUSTOMER_ID','=','MM_LIFE_MAX.CUSTOMER_ID')
+            ->whereRaw('LOWER(MM_LIFE_MAX.CUSTOMER_ID) LIKE ?', ['%' . strtolower($ndcid) . '%'])
+            ->groupBy('MM_LIFE_MAX.CLIENT_ID', 'CLIENT.CLIENT_NAME')
+            ->orderBy('MM_LIFE_MAX.CLIENT_ID')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
