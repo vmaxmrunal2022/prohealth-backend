@@ -634,7 +634,7 @@ class ProcedureUcrList extends Controller
     public function getProcedureCode(Request $request)
     {
         $procedure_codes = DB::table('procedure_codes')
-            ->get();
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $procedure_codes);
     }
 
