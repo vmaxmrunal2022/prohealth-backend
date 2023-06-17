@@ -1187,6 +1187,7 @@ Route::group(['prefix' => 'membership/'], function () {
     Route::get('memberdata/get-provider-search-table', [MemberController::class, 'getProviderSearch']);
     Route::get('memberdata/get-change-log-table', [MemberController::class, 'getChangeLogTable']);
 
+    Route::get('memberdata/details', [MemberController::class, 'memberDetails']);
 
     //Prior Authorization
     Route::get('prior-authorization/get', [PriorAuthController::class, 'get']);

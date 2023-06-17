@@ -661,10 +661,10 @@ class UserDefinationController extends Controller
                         'user_profile' => $updated_user_profile
                     ]);
 
-                $add_fe_group = DB::table('FE_USER_GROUPS')
+                $get_add_fe_group = DB::table('FE_USER_GROUPS')
                     ->where('group_id', $request->group_id)
                     ->first();
-                $record_snap_group = json_encode($add_fe_group);
+                $record_snap_group = json_encode($get_add_fe_group);
                 $save_audit_group = $this->auditMethod('IN', $record_snap_group, 'FE_USER_GROUPS');
                 return $this->respondWithToken($this->token(), 'Added Successfully!', $add_fe_group);
             }
@@ -737,10 +737,10 @@ class UserDefinationController extends Controller
                     ]);
 
 
-                $update_fe_group = DB::table('FE_USER_GROUPS')
+                $get_update_fe_group = DB::table('FE_USER_GROUPS')
                     ->where(DB::raw('UPPER(group_id)'), strtoupper($request->group_id))
                     ->first();
-                $record_snap_group = json_encode($update_fe_group);
+                $record_snap_group = json_encode($get_update_fe_group);
                 $save_audit_group = $this->auditMethod('UP', $record_snap_group, 'FE_USER_GROUPS');
                 return $this->respondWithToken($this->token(), 'Updated Successfully!', $update_fe_group);
             }

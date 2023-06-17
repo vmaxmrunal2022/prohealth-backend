@@ -47,11 +47,14 @@ class SystemParameterController extends Controller
             'tba_percent' => ['max:3'],
             'processor_cntl_num_cust_length' => ['max:2'],
             'max_ucr' => ['numeric'],
+
         ]);
 
         if ($validator->fails()) {
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         }
+
+
 
         // $getusersData = DB::table('GLOBAL_PARAMS')
         //     ->where('user_id', $request->user_id)
