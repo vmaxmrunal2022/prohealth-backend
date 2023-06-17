@@ -246,6 +246,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/providertype-proc/add', [ProviderTypeProcController::class, 'add'])->name('provtype.add'); // SEARCH
         Route::get('/providertype-proc/getlist/{id}', [ProviderTypeProcController::class, 'getList'])->name('provtype.get'); // SEARCH
         Route::get('/get-all-ndc', [NDCExceptionController::class, 'getAllNDCS'])->name('getall.ndcs'); // SEARCH
+        Route::get('/get-all-ndc-new', [NDCExceptionController::class, 'getAllNDCSNew'])->name('getall.ndcs'); // SEARCH
+
         Route::post('/providertype-proc/delete', [ProviderTypeProcController::class, 'providertype_proc_delete'])->name('providertype_proc_delete');
 
 
@@ -393,6 +395,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //exception Price Schedule list
         Route::get('price-schedule/getAll', [PriceScheduleController::class, 'getAll']);
+        Route::get('price-schedule/getAll-new', [PriceScheduleController::class, 'getAllNew']);
 
         //exception copay Schedule list
         Route::get('copay-schedule/getAll', [CopayScheduleController::class, 'getAll'])->name('exception.getAll.copay');
@@ -685,7 +688,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('plan-validation/get-plan-ids', [PlanValidationController::class, 'getplanIds']);
         Route::get('plan-validation/get-details', [PlanValidationController::class, 'getpgetDetailslanIds']);
         Route::get('plan-validation/get-plan-id', [PlanValidationController::class, 'getPlanId']);
-        Route::get('plan-validation/get-plan-id/new', [PlanValidationController::class, 'getPlanIdNew']);
+        Route::get('plan-validation/get-plan-id-new', [PlanValidationController::class, 'getPlanIdNew']);
         Route::post('plan-validation/add-plan-validaion', [PlanValidationController::class, 'addPlanValidation']);
     });
 

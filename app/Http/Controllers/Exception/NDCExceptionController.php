@@ -1374,6 +1374,16 @@ class NDCExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function getAllNDCSNew()
+    {
+
+        $ndc = DB::table('DRUG_MASTER')
+            ->select('NDC', 'LABEL_NAME')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
     public function ndcdelete(Request $request){
         
         // return $request->all();
@@ -1456,7 +1466,8 @@ class NDCExceptionController extends Controller
                 // ->where('NDC_EXCEPTION_LIST', 'like', '%' .$request->search. '%')
                 ->whereRaw('LOWER(NDC_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
-                ->paginate(10);
+                // ->paginate(10);
+                ->get();
 
             if ($ndc->count() < 1) {
                 return $this->respondWithToken($this->token(), 'No Data Found', $ndc);
