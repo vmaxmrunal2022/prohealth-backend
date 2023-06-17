@@ -126,13 +126,12 @@ class PrcedureCodeListController extends Controller
                 //     $q->whereNotNull('ndc_exception_list');
                 // })],
 
-                "description"=>['required','max:36'],
-                "effective_date"=>['required','max:10'],
-                'termination_date'=>['required','max:10','after:effective_date'],
-                'procedure_code'=>['required','max:10'],
-                
 
-            ],[
+                "description" => ['required', 'max:36'],
+                "effective_date" => ['required', 'max:10'],
+                'termination_date' => ['required', 'max:10', 'after:effective_date'],
+                'procedure_code' => ['required', 'max:10'],
+            ], [
                 'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
             ]);
 
