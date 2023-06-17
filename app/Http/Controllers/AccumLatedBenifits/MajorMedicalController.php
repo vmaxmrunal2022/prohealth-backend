@@ -59,7 +59,6 @@ class MajorMedicalController extends Controller
                         'effective_date' => $request->effective_date,
                         'termination_date' => $request->termination_date,
                         'mm_claim_max_group_type' => $request->mm_claim_max_group_type,
-
                     ]
                 );
                 $add = DB::table('MM_LIFE_MAX')
