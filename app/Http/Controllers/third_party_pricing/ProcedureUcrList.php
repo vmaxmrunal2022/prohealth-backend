@@ -379,6 +379,11 @@ class ProcedureUcrList extends Controller
 
                     ]
                 );
+                $parent = DB::table('procedure_ucr_names')->where('procedure_ucr_id', $request->procedure_ucr_id)->first();
+                if($parent){
+                    $record_snap = json_encode($parent);
+                    $save_audit = $this->auditMethod('IN', $record_snap, 'procedure_ucr_names'); 
+                }
 
                 $add = DB::table('PROCEDURE_UCR_LIST')
                     ->insert([
@@ -389,6 +394,15 @@ class ProcedureUcrList extends Controller
                         'unit_value' => $request->unit_value,
                         'UCR_CURRENCY' => $request->ucr_currency,
                     ]);
+                
+                $child = DB::table('PROCEDURE_UCR_LIST')
+                    ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
+                    ->where('PROCEDURE_CODE', $request->procedure_code)
+                    ->where('EFFECTIVE_DATE', $request->effective_date)->first();
+                if($child){
+                    $record_snap = json_encode($child);
+                    $save_audit = $this->auditMethod('IN', $record_snap, 'PROCEDURE_UCR_LIST');
+                }        
                 $add = DB::table('PROCEDURE_UCR_LIST')->where('procedure_ucr_id', 'like', '%' . $request->procedure_ucr_id . '%')->first();
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
 
@@ -454,6 +468,11 @@ class ProcedureUcrList extends Controller
 
                                 ]
                             );
+                        $parent = DB::table('procedure_ucr_names')->where('procedure_ucr_id', $request->procedure_ucr_id)->first();
+                        if($parent){
+                            $record_snap = json_encode($parent);
+                            $save_audit = $this->auditMethod('UP', $record_snap, 'procedure_ucr_names'); 
+                        }    
 
 
                         $update = DB::table('PROCEDURE_UCR_LIST')
@@ -468,6 +487,14 @@ class ProcedureUcrList extends Controller
                                 'unit_value' => $request->unit_value,
                                 'UCR_CURRENCY' => $request->ucr_currency,
                             ]);
+                        $child = DB::table('PROCEDURE_UCR_LIST')
+                            ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
+                            ->where('PROCEDURE_CODE', $request->procedure_code)
+                            ->where('EFFECTIVE_DATE', $request->effective_date)->first();
+                        if($child){
+                            $record_snap = json_encode($child);
+                            $save_audit = $this->auditMethod('UP', $record_snap, 'PROCEDURE_UCR_LIST');
+                        }     
                         $update = DB::table('PROCEDURE_UCR_LIST')->where('procedure_ucr_id', 'like', '%' . $request->procedure_ucr_id . '%')->first();
                         return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                     } else {
@@ -511,6 +538,14 @@ class ProcedureUcrList extends Controller
                                 'unit_value' => $request->unit_value,
                                 'UCR_CURRENCY' => $request->ucr_currency,
                             ]);
+                        $child = DB::table('PROCEDURE_UCR_LIST')
+                            ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
+                            ->where('PROCEDURE_CODE', $request->procedure_code)
+                            ->where('EFFECTIVE_DATE', $request->effective_date)->first();
+                        if($child){
+                            $record_snap = json_encode($child);
+                            $save_audit = $this->auditMethod('IN', $record_snap, 'PROCEDURE_UCR_LIST');
+                        }     
 
 
                         $add_names = DB::table('procedure_ucr_names')
@@ -648,6 +683,15 @@ class ProcedureUcrList extends Controller
 
         if (isset($request->procedure_ucr_id) && isset($request->procedure_code) && isset($request->effective_date)) {
 
+            $child = DB::table('PROCEDURE_UCR_LIST')
+                            ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
+                            ->where('PROCEDURE_CODE', $request->procedure_code)
+                            ->where('EFFECTIVE_DATE', $request->effective_date)->first();
+            if($child){
+                $record_snap = json_encode($child);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'PROCEDURE_UCR_LIST');
+            }
+
             $all_exceptions_lists = DB::table('PROCEDURE_UCR_LIST')
                 ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
                 ->where('PROCEDURE_CODE', $request->procedure_code)
@@ -672,12 +716,23 @@ class ProcedureUcrList extends Controller
         } elseif (isset($request->procedure_ucr_id)) {
 
 
-
+            $parent = DB::table('procedure_ucr_names')->where('procedure_ucr_id', $request->procedure_ucr_id)->first();
+            if($parent){
+                $record_snap = json_encode($parent);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'procedure_ucr_names'); 
+            }
 
             $exception_delete = DB::table('procedure_ucr_names')
                 ->where('procedure_ucr_id', $request->procedure_ucr_id)
                 ->delete();
 
+            $childs = DB::table('PROCEDURE_UCR_LIST')->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)->get();
+            if($childs){
+                foreach($childs as $child){
+                    $record_snap = json_encode($child);
+                    $save_audit = $this->auditMethod('DE', $record_snap, 'PROCEDURE_UCR_LIST');
+                }
+            }  
             $all_exceptions_lists = DB::table('PROCEDURE_UCR_LIST')
                 ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
                 ->delete();

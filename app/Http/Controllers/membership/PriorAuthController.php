@@ -199,9 +199,10 @@ class PriorAuthController extends Controller
                 ->where('client_group_id', $request->client_group_id)
                 ->where('plan_id', $request->plan_id)
                 ->first();
-            $record_snap = json_encode($inserted_record);
-            $save_audit = $this->auditMethod('IN', $record_snap, 'PRIOR_AUTHORIZATIONS');
-
+            if($inserted_record){
+                $record_snap = json_encode($inserted_record);
+                $save_audit = $this->auditMethod('IN', $record_snap, 'PRIOR_AUTHORIZATIONS');
+            }  
             return $this->respondWithToken('success', 'Record Added Successfully', $inserted_record, $this->token(), 200);
         } else if ($request->add_new == 0) {
 
@@ -322,14 +323,24 @@ class PriorAuthController extends Controller
             $inserted_record = DB::table('PRIOR_AUTHORIZATIONS')
                 ->where('prior_auth_code_num', $request->prior_auth_code_num)
                 ->first();
-            $record_snap = json_encode($inserted_record);
-            $save_audit = $this->auditMethod('UP', $record_snap, 'PRIOR_AUTHORIZATIONS');
+            if($inserted_record){
+                $record_snap = json_encode($inserted_record);
+                $save_audit = $this->auditMethod('UP', $record_snap, 'PRIOR_AUTHORIZATIONS');
+            }  
             return $this->respondWithToken($this->token(), 'Record Updated Successfully!', $inserted_record);
         }
     }
 
     public function priorAuthDelete(Request $request){
         if(isset($request->prior_auth_code_num)) {
+            $inserted_record = DB::table('PRIOR_AUTHORIZATIONS')
+                ->where('prior_auth_code_num', $request->prior_auth_code_num)
+                ->first();
+            if($inserted_record){
+                $record_snap = json_encode($inserted_record);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'PRIOR_AUTHORIZATIONS');
+            } 
+
             $PRIOR_AUTHORIZATIONS = DB::table('PRIOR_AUTHORIZATIONS')
                                        ->where('prior_auth_code_num', $request->prior_auth_code_num)->delete();
             if ($PRIOR_AUTHORIZATIONS) {

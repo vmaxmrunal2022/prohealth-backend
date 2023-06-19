@@ -59,8 +59,12 @@ class ProviderTypeController extends Controller
                         'DATE_TIME_MODIFIED' => '',
                         'FORM_ID' => '',
                         // 'COMPLETE_CODE_IND' => ''
-                    ]
-                );
+                    ]);
+                $record = DB::table('PROVIDER_TYPES')->where(DB::raw('UPPER(PROVIDER_TYPE)'), strtoupper($request->provider_type))->first();
+                if($record){
+                    $record_snap = json_encode($record);
+                    $save_audit = $this->auditMethod('IN', $record_snap, 'PROVIDER_TYPES');
+                }    
                 return  $this->respondWithToken($this->token(), 'Record Added Successfully!', $procedurecode);
             }
         } else {
@@ -86,7 +90,11 @@ class ProviderTypeController extends Controller
                             // 'COMPLETE_CODE_IND' => ''
                         ]
                     );
-                // dd($procedurecode);
+                $record = DB::table('PROVIDER_TYPES')->where(DB::raw('UPPER(PROVIDER_TYPE)'), strtoupper($request->provider_type))->first();
+                if($record){
+                    $record_snap = json_encode($record);
+                    $save_audit = $this->auditMethod('UP', $record_snap, 'PROVIDER_TYPES');
+                } 
                 return  $this->respondWithToken($this->token(), 'Record Updated Successfully', $procedurecode);
             }
         }
@@ -100,6 +108,11 @@ class ProviderTypeController extends Controller
     public function delete(Request $request)
     {
         if (isset($request->provider_type)) {
+            $record = DB::table('PROVIDER_TYPES')->where(DB::raw('UPPER(PROVIDER_TYPE)'), strtoupper($request->provider_type))->first();
+            if($record){
+                $record_snap = json_encode($record);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'PROVIDER_TYPES');
+            }
             $delete_provider_type =  DB::table('PROVIDER_TYPES')
                 ->where('PROVIDER_TYPE', $request->provider_type)
                 ->delete();
