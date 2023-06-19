@@ -54,7 +54,6 @@ class UserController extends Controller
     }
     public function login(Request $request)
     {
-
         //return Session::get('user');
         // return FacadesAuth::user();
         $prefix = '$2y$';
@@ -150,7 +149,8 @@ class UserController extends Controller
 
             // return auth()->user()->user_id;
 
-            return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
+            //return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
+            return $this->respondWithToken($accessToken, $responseMessage, $user);
         } else {
             $responseMessage = "Sorry, this user does not exist";
             return response()->json([
