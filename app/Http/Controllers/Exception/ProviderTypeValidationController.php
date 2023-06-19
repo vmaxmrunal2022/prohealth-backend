@@ -155,29 +155,39 @@ class ProviderTypeValidationController extends Controller
                     [
                         'prov_type_list_id' => $request->prov_type_list_id,
                         'description' => $request->description,
-
                     ]
                 );
 
+                $parent = DB::table('PROVIDER_TYPE_VALIDATION_NAMES') ->where('prov_type_list_id', $request->prov_type_list_id)->first();
+                if($parent){
+                    $record_snap = json_encode($parent);
+                    $save_audit = $this->auditMethod('IN', $record_snap, 'PROVIDER_TYPE_VALIDATION_NAMES');
+                }
+
                 $add = DB::table('PROVIDER_TYPE_VALIDATIONS')
                     ->insert([
-
                         'PROV_TYPE_LIST_ID' => $request->prov_type_list_id,
-
                         'PROC_CODE_LIST_ID' => $request->proc_code_list_id,
                         'PROVIDER_TYPE' => $request->provider_type,
                         'EFFECTIVE_DATE' => $request->effective_date,
                         'TERMINATION_DATE' => $request->termination_date,
                         'DATE_TIME_CREATED' => $createddate,
-
-
                     ]);
+
+                
+                $child = DB::table('PROVIDER_TYPE_VALIDATIONS')
+                        ->where('prov_type_list_id', $request->prov_type_list_id)
+                        ->where('proc_code_list_id', $request->proc_code_list_id)
+                        ->where('provider_type', $request->provider_type)
+                        ->where('effective_date', $request->effective_date)->first();
+                if($child){
+                    $record_snap = json_encode($child);
+                    $save_audit = $this->auditMethod('IN', $record_snap, 'PROVIDER_TYPE_VALIDATIONS');
+                }            
 
                 $add = DB::table('PROVIDER_TYPE_VALIDATIONS')
                     ->where('prov_type_list_id', 'like', '%' . $request->prov_type_list_id . '%')
                     ->first();
-                $record_snap = json_encode($add);
-                $save_audit = $this->auditMethod('IN', $record_snap, 'PROVIDER_TYPE_VALIDATIONS');
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
             }
         } else if ($request->add_new == 0) {
@@ -238,6 +248,11 @@ class ProviderTypeValidationController extends Controller
 
                             ]
                         );
+                    $parent = DB::table('PROVIDER_TYPE_VALIDATION_NAMES') ->where('prov_type_list_id', $request->prov_type_list_id)->first();
+                    if($parent){
+                        $record_snap = json_encode($parent);
+                        $save_audit = $this->auditMethod('UP', $record_snap, 'PROVIDER_TYPE_VALIDATION_NAMES');
+                    }    
 
                     $update = DB::table('PROVIDER_TYPE_VALIDATIONS')
                         ->where('prov_type_list_id', $request->prov_type_list_id)
@@ -251,11 +266,19 @@ class ProviderTypeValidationController extends Controller
 
                             ]
                         );
+                    $child = DB::table('PROVIDER_TYPE_VALIDATIONS')
+                            ->where('prov_type_list_id', $request->prov_type_list_id)
+                            ->where('proc_code_list_id', $request->proc_code_list_id)
+                            ->where('provider_type', $request->provider_type)
+                            ->where('effective_date', $request->effective_date)->first();
+                    if($child){
+                        $record_snap = json_encode($child);
+                        $save_audit = $this->auditMethod('UP', $record_snap, 'PROVIDER_TYPE_VALIDATIONS');
+                    }    
                     $update = DB::table('PROVIDER_TYPE_VALIDATIONS')
                         ->where('prov_type_list_id', 'like', '%' . $request->prov_type_list_id . '%')
                         ->first();
-                    $record_snap = json_encode($update);
-                    $save_audit = $this->auditMethod('UP', $record_snap, 'PROVIDER_TYPE_VALIDATIONS');
+                    
 
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                 } elseif ($request->update_new == 1) {
@@ -299,12 +322,19 @@ class ProviderTypeValidationController extends Controller
                                 'TERMINATION_DATE' => $request->termination_date,
                                 'DATE_TIME_CREATED' => $createddate,
                             ]);
+                        $child = DB::table('PROVIDER_TYPE_VALIDATIONS')
+                                ->where('prov_type_list_id', $request->prov_type_list_id)
+                                ->where('proc_code_list_id', $request->proc_code_list_id)
+                                ->where('provider_type', $request->provider_type)
+                                ->where('effective_date', $request->effective_date)->first();
+                        if($child){
+                            $record_snap = json_encode($child);
+                            $save_audit = $this->auditMethod('IN', $record_snap, 'PROVIDER_TYPE_VALIDATIONS');
+                        }    
 
                         $update = DB::table('PROVIDER_TYPE_VALIDATIONS')
                             ->where('prov_type_list_id', 'like', '%' . $request->prov_type_list_id . '%')
                             ->first();
-                        $record_snap = json_encode($update);
-                        $save_audit = $this->auditMethod('UP', $record_snap, 'PROVIDER_TYPE_VALIDATIONS');
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
                     }
                 }
@@ -774,6 +804,15 @@ class ProviderTypeValidationController extends Controller
     {
 
         if (isset($request->prov_type_list_id) && isset($request->proc_code_list_id) && isset($request->provider_type) && isset($request->effective_date) ) {
+            $child = DB::table('PROVIDER_TYPE_VALIDATIONS')
+                        ->where('prov_type_list_id', $request->prov_type_list_id)
+                        ->where('proc_code_list_id', $request->proc_code_list_id)
+                        ->where('provider_type', $request->provider_type)
+                        ->where('effective_date', $request->effective_date)->first();
+            if($child){
+                $record_snap = json_encode($child);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'PROVIDER_TYPE_VALIDATIONS');
+            }
             $all_exceptions_lists =  DB::table('PROVIDER_TYPE_VALIDATIONS')
                                         ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
                                         ->where('proc_code_list_id', $request->proc_code_list_id)
@@ -787,9 +826,23 @@ class ProviderTypeValidationController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         }elseif (isset($request->prov_type_list_id)) {
+            $parent = DB::table('PROVIDER_TYPE_VALIDATION_NAMES') ->where('prov_type_list_id', $request->prov_type_list_id)->first();
+            if($parent){
+                $record_snap = json_encode($parent);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'PROVIDER_TYPE_VALIDATION_NAMES');
+            }
             $exception_delete =  DB::table('PROVIDER_TYPE_VALIDATION_NAMES')
                                     ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
                                     ->delete();
+            $childs = DB::table('PROVIDER_TYPE_VALIDATIONS')
+                    ->where('prov_type_list_id', $request->prov_type_list_id)
+                     ->get();
+            if($childs){
+                foreach($childs as $rec){
+                    $record_snap = json_encode($rec);
+                    $save_audit = $this->auditMethod('DE', $record_snap, 'PROVIDER_TYPE_VALIDATIONS');
+                }
+            }                        
             $all_exceptions_lists =  DB::table('PROVIDER_TYPE_VALIDATIONS')
                                         ->where('PROV_TYPE_LIST_ID', $request->prov_type_list_id)
                                         ->delete();

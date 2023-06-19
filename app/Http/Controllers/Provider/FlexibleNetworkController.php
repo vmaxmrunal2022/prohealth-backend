@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Traits\AuditTrait;
 
 
 class FlexibleNetworkController extends Controller
 {
+    use AuditTrait;
     public function add(Request $request)
     {
         $createddate = date('y-m-d');
@@ -97,6 +99,13 @@ class FlexibleNetworkController extends Controller
                     ]
                 );
 
+                $record = DB::table('RX_NETWORK_RULE_NAMES')
+                             ->where('rx_network_rule_id', $request->rx_network_rule_id)->first();
+                if($record){
+                    $record_snapshot = json_encode($record);
+                    $save_audit = $this->auditMethod('IN', $record_snapshot, 'RX_NETWORK_RULE_NAMES');
+                }            
+
 
 
                 $flexible_network_list = json_decode(json_encode($request->flexible_form, true));
@@ -128,9 +137,14 @@ class FlexibleNetworkController extends Controller
                                 'TERMINATION_DATE' => $flexible_list->termination_date,
                             ]
                         );
+                    }
 
-
-
+                    $child_records = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID', $request->rx_network_rule_id)->get();
+                    if($child_records){
+                        foreach($child_records as $rec){
+                            $record_snapshot = json_encode($rec);
+                            $save_audit = $this->auditMethod('IN', $record_snapshot, 'RX_NETWORK_RULES');
+                        }
                     }
                 }
 
@@ -213,6 +227,14 @@ class FlexibleNetworkController extends Controller
                             'MAINT_QTY_DSUP_COMPARE_RULE' => $request->maint_qty_dsup_compare_rule
                         ]
                     );
+
+                $record = DB::table('RX_NETWORK_RULE_NAMES')
+                        ->where('rx_network_rule_id', $request->rx_network_rule_id)->first();
+                if($record){
+                    $record_snapshot = json_encode($record);
+                    $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORK_RULE_NAMES');
+                } 
+                
                 $data = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID', $request->rx_network_rule_id)->delete();
 
                 $flixible_list_obj = json_decode(json_encode($request->flexible_form, true));
@@ -221,7 +243,6 @@ class FlexibleNetworkController extends Controller
                     $flixible_list = $flixible_list_obj[0];
 
                     foreach ($flixible_list_obj as $key => $flixible_list) {
-
 
                         $Network_rules = DB::table('RX_NETWORK_RULES')->insert(
                             [
@@ -244,9 +265,13 @@ class FlexibleNetworkController extends Controller
                         );
 
                     }
-
-
-
+                    $child_records = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID', $request->rx_network_rule_id)->get();
+                    if($child_records){
+                        foreach($child_records as $rec){
+                            $record_snapshot = json_encode($rec);
+                            $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORK_RULES');
+                        }
+                    }
                 }
 
 
@@ -262,9 +287,23 @@ class FlexibleNetworkController extends Controller
 
     public function flexibleNetworkDelete(Request $request){
         if(isset($request->rx_network_rule_id)) {
+            $record = DB::table('RX_NETWORK_RULE_NAMES')
+                        ->where('rx_network_rule_id', $request->rx_network_rule_id)->first();
+            if($record){
+                $record_snapshot = json_encode($record);
+                $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORK_RULE_NAMES');
+            } 
             $network_rule_name = DB::table('RX_NETWORK_RULE_NAMES')
                     ->where('rx_network_rule_id', $request->rx_network_rule_id)->delete();
 
+
+            $child_records = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID', $request->rx_network_rule_id)->get();
+            if($child_records){
+                foreach($child_records as $rec){
+                    $record_snapshot = json_encode($rec);
+                    $save_audit = $this->auditMethod('DE', $record_snapshot, 'RX_NETWORK_RULES');
+                }
+            }
             $Network_rules = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID'  ,$request->rx_network_rule_id)->delete();
 
             if ($network_rule_name) {

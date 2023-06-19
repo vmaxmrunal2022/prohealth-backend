@@ -8,10 +8,11 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use App\Traits\AuditTrait;
 
 class SuperProviderNetworkController extends Controller
 {
-
+    use AuditTrait;
     public function dropDown(Request $request)
     {
 
@@ -238,6 +239,7 @@ class SuperProviderNetworkController extends Controller
                                 'form_id' => ''
                             ]
                         );
+                        
                         $add = DB::table('SUPER_RX_NETWORKS')
                             ->insert([
                                 'DATE_TIME_CREATED' => date('d-M-y'),
@@ -266,7 +268,19 @@ class SuperProviderNetworkController extends Controller
                                 'min_rx_days' => $request->min_rx_days,
                                 'max_rx_days' => $request->max_rx_days,
                             ]);
-
+                           // audit trail
+                            $parent_record = DB::table('SUPER_RX_NETWORK_NAMES')
+                                        ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))->first();
+                            if($parent_record){
+                                $record_snapshot = json_encode($parent_record);
+                                $save_audit = $this->auditMethod('IN', $record_snapshot, 'SUPER_RX_NETWORK_NAMES');
+                            }             
+                            $child_record = DB::table('SUPER_RX_NETWORKS')
+                                        ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))->first();
+                            if($child_record){
+                                $record_snapshot = json_encode($parent_record);
+                                $save_audit = $this->auditMethod('IN', $record_snapshot, 'SUPER_RX_NETWORKS');
+                            }           
                         $add = DB::table('SUPER_RX_NETWORKS')->where('super_rx_network_id', 'like', '%' . $request->super_rx_network_id . '%')->first();
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
                     }
@@ -280,6 +294,12 @@ class SuperProviderNetworkController extends Controller
                                 // 'specialty_status' => $request->specialty_status,
                                 'form_id' => ''
                             ]);
+                            $parent_record = DB::table('SUPER_RX_NETWORK_NAMES')
+                            ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))->first();
+                            if($parent_record){
+                                $record_snapshot = json_encode($parent_record);
+                                $save_audit = $this->auditMethod('UP', $record_snapshot, 'SUPER_RX_NETWORK_NAMES');
+                            } 
                         $countValidation = DB::table('SUPER_RX_NETWORKS')
                             ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
                             ->where(DB::raw('UPPER(rx_network_id)'), strtoupper($request->rx_network_id))
@@ -321,6 +341,15 @@ class SuperProviderNetworkController extends Controller
                                     'min_rx_days' => $request->min_rx_days,
                                     'max_rx_days' => $request->max_rx_days,
                                 ]);
+
+                            $child_record = DB::table('SUPER_RX_NETWORKS')
+                                            ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                            ->where(DB::raw('UPPER(rx_network_id)'), strtoupper($request->rx_network_id))
+                                            ->where('effective_date',$request->effective_date)->first();
+                            if($child_record){
+                                $record_snapshot = json_encode($child_record);
+                                $save_audit = $this->auditMethod('IN', $record_snapshot, 'SUPER_RX_NETWORKS');
+                            }                 
                             $reecord = DB::table('SUPER_RX_NETWORKS')
                                 ->join('SUPER_RX_NETWORK_NAMES', 'SUPER_RX_NETWORK_NAMES.super_rx_network_id', '=', 'SUPER_RX_NETWORKS.super_rx_network_id')
                                 ->where('SUPER_RX_NETWORKS.super_rx_network_id', $request->super_rx_network_id)
@@ -405,6 +434,12 @@ class SuperProviderNetworkController extends Controller
                                                             'date_time_modified' => date('d-M-y'),
                                                             'form_id' => ''
                                                         ]);
+                        $parent_update = DB::table('SUPER_RX_NETWORK_NAMES')
+                                                      ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))->first();
+                        if($parent_update) {
+                            $record_snapshot = json_encode($parent_update);
+                            $save_audit = $this->auditMethod('UP', $record_snapshot, 'SUPER_RX_NETWORK_NAMES');
+                        }                                                           
                         $countValidation = DB::table('SUPER_RX_NETWORKS')
                         ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
                         ->where(DB::raw('UPPER(rx_network_id)'), strtoupper($request->rx_network_id))
@@ -433,6 +468,15 @@ class SuperProviderNetworkController extends Controller
                             'min_rx_days' => $request->min_rx_days,
                             'max_rx_days' => $request->max_rx_days,
                         ]);
+
+                        $record = DB::table('SUPER_RX_NETWORKS')
+                                        ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                        ->where(DB::raw('UPPER(rx_network_id)'), strtoupper($request->rx_network_id))
+                                        ->where('effective_date',$request->effective_date)->first();
+                        if($record){
+                            $record_snapshot = json_encode($record);
+                            $save_audit = $this->auditMethod('UP', $record_snapshot, 'SUPER_RX_NETWORKS');
+                        }                
                         return $this->respondWithToken( $this->token(), 'Record Updated successfully',$countValidation, );
                     }else{
                         return $this->respondWithToken($this->token(), [['Record Not Exists In Database']], '', 'false');
@@ -507,6 +551,14 @@ class SuperProviderNetworkController extends Controller
                                         'min_rx_days' => $request->min_rx_days,
                                         'max_rx_days' => $request->max_rx_days,
                                     ]);
+                        $record = DB::table('SUPER_RX_NETWORKS')
+                                    ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                    ->where(DB::raw('UPPER(rx_network_id)'), strtoupper($request->rx_network_id))
+                                    ->where('effective_date',$request->effective_date)->first();
+                        if($record){
+                            $record_snapshot = json_encode($record);
+                            $save_audit = $this->auditMethod('IN', $record_snapshot, 'SUPER_RX_NETWORKS');
+                        }            
                             
                         $add = DB::table('SUPER_RX_NETWORKS')->where('super_rx_network_id', 'like', '%' . $request->super_rx_network_id . '%')->first();
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);                                 
@@ -575,6 +627,15 @@ class SuperProviderNetworkController extends Controller
 
     public function superProviderNetworkDelete(Request $request){
         if(isset($request->super_rx_network_id) && isset($request->rx_network_id) && isset($request->effective_date)){
+            // Audit trail 
+            $record=  DB::table('SUPER_RX_NETWORKS')
+                                ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                ->where(DB::raw('UPPER(rx_network_id)'), strtoupper($request->rx_network_id))
+                                ->where('effective_date',$request->effective_date)->first();
+            if($record)  {
+                $record_snapshot = json_encode($record);
+                $save_audit = $this->auditMethod('DE', $record_snapshot, 'SUPER_RX_NETWORKS');
+            }                  
 
             $network_list =  DB::table('SUPER_RX_NETWORKS')
                                 ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
@@ -592,11 +653,28 @@ class SuperProviderNetworkController extends Controller
             
         }
         elseif(isset($request->super_rx_network_id)){
-
-        
+             // Audit trail 
+            $super_rx_network_delete=   DB::table('SUPER_RX_NETWORK_NAMES')
+                                          ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                          ->first();
+            if($super_rx_network_delete){
+                $record_snapshot = json_encode($super_rx_network_delete);
+                $save_audit = $this->auditMethod('DE', $record_snapshot, 'SUPER_RX_NETWORK_NAMES');
+            }
             $exception_delete=   DB::table('SUPER_RX_NETWORK_NAMES')
                                     ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
                                     ->delete();
+
+            // Audit trail 
+            $child_records = DB::table('SUPER_RX_NETWORKS')
+                                     ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))->get();
+            if($child_records){
+                foreach ($child_records as $rec) {
+                    $record_snapshot = json_encode($rec);
+                    $save_audit = $this->auditMethod('DE', $record_snapshot, 'SUPER_RX_NETWORKS');
+                }   
+            }                                                
+                         
 
             $all_exceptions_lists = DB::table('SUPER_RX_NETWORKS')
                                      ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))

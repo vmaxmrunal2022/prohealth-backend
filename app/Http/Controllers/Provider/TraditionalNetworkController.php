@@ -7,10 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
+use App\Traits\AuditTrait;
 
 class TraditionalNetworkController extends Controller
 {
-
+    use AuditTrait;
 
 
     public function add(Request $request)
@@ -89,8 +90,12 @@ class TraditionalNetworkController extends Controller
                         
     
     
-                    ]
-                );
+                    ]);
+                $record = DB::table('RX_NETWORK_NAMES')->where('network_id', $request->network_id)->first();
+                if($record){
+                    $record_snapshot = json_encode($record);
+                    $save_audit = $this->auditMethod('IN', $record_snapshot, 'RX_NETWORK_NAMES');
+                }
 
                 $traditional_list_obj = json_decode(json_encode($request->traditional_form, true));
 
@@ -98,9 +103,7 @@ class TraditionalNetworkController extends Controller
                     $traditional_list = $traditional_list_obj[0];
     
                     foreach ($traditional_list_obj as $key => $traditional_list) {
-    
-    
-                    $rx_networks = DB::table('RX_NETWORKS')->insert(
+                      $rx_networks = DB::table('RX_NETWORKS')->insert(
                         [
                             'NETWORK_ID' => $request->network_id,
                             'PHARMACY_NABP' => $traditional_list->pharmacy_nabp,
@@ -111,32 +114,24 @@ class TraditionalNetworkController extends Controller
                             'EFFECTIVE_DATE' => $traditional_list->effective_date,
                             'TERMINATION_DATE' => $traditional_list->termination_date,
         
-                        ]
-                    );
-                        
-    
-    
+                        ]);
                     }
+
+                    $child_recs = DB::table('RX_NETWORKS')->where( 'NETWORK_ID', $request->network_id)->get();
+                    if($child_recs){
+                         foreach($child_recs as $rec){
+                            $record_snapshot = json_encode($rec);
+                            $save_audit = $this->auditMethod('IN', $record_snapshot, 'RX_NETWORKS');
+                         }
+                    }
+                    
                 }
-    
-    
-               
     
                 if ($rx_networknames) {
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $rx_networknames);
                 }
 
             }
-
-           
-
-
-
-
-          
-
-           
-
 
         }
          else {
@@ -200,6 +195,12 @@ class TraditionalNetworkController extends Controller
                     ]
                 );
 
+            $record = DB::table('RX_NETWORK_NAMES')->where('network_id', $request->network_id)->first();
+            if($record){
+                $record_snapshot = json_encode($record);
+                $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORK_NAMES');
+            }
+
 
             $data = DB::table('RX_NETWORKS')->where('NETWORK_ID', $request->network_id)->delete();
 
@@ -224,15 +225,16 @@ class TraditionalNetworkController extends Controller
         
                         ]
                     );
-
-
+                }
+                $child_recs = DB::table('RX_NETWORKS')->where( 'NETWORK_ID', $request->network_id)->get();
+                if($child_recs){
+                    foreach($child_recs as $rec){
+                        $record_snapshot = json_encode($rec);
+                        $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORKS');
+                    }
                 }
 
-               
-
             }
-
-
             if ($benefitcode) {
                 return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
             }
@@ -342,7 +344,23 @@ class TraditionalNetworkController extends Controller
 
     public function traditionalNetworkDelete(Request $request){
         if(isset($request->network_id) ) {
+
+            $record = DB::table('RX_NETWORK_NAMES')->where('network_id', $request->network_id)->first();
+            if($record){
+                $record_snapshot = json_encode($record);
+                $save_audit = $this->auditMethod('DE', $record_snapshot, 'RX_NETWORK_NAMES');
+            } 
+
             $network_id = DB::table('RX_NETWORK_NAMES')->where('network_id', $request->network_id)->delete();
+
+
+            $child_recs = DB::table('RX_NETWORKS')->where( 'NETWORK_ID', $request->network_id)->get();
+            if($child_recs){
+                foreach($child_recs as $rec){
+                    $record_snapshot = json_encode($rec);
+                    $save_audit = $this->auditMethod('DE', $record_snapshot, 'RX_NETWORKS');
+                }
+            }
 
             $Rx_networks = DB::table('RX_NETWORKS')->where('NETWORK_ID', $request->network_id)->delete();
 

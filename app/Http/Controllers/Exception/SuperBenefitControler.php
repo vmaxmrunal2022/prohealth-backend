@@ -88,6 +88,11 @@ class SuperBenefitControler extends Controller
 
                     ]
                 );
+                $parent = DB::table('SUPER_BENEFIT_LIST_NAMES')->where('super_benefit_list_id', $request->super_benefit_list_id)->first();
+                if($parent){
+                     $record_snap = json_encode($parent);
+                     $save_audit = $this->auditMethod('IN', $record_snap, 'SUPER_BENEFIT_LIST_NAMES');
+                }
 
                 $add = DB::table('SUPER_BENEFIT_LISTS')
                     ->insert(
@@ -103,17 +108,16 @@ class SuperBenefitControler extends Controller
                         ]
                     );
 
-
-                $add = DB::table('SUPER_BENEFIT_LISTS')
-                    ->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')
-                    ->first();
-
-                $update = DB::table('SUPER_BENEFIT_LISTS')
-                    ->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')
-                    ->first();
-                $record_snap = json_encode($add);
-                $save_audit = $this->auditMethod('UP', $record_snap, 'SUPER_BENEFIT_LISTS');
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+                $child = DB::table('SUPER_BENEFIT_LISTS')
+                        ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
+                        ->where('benefit_list_id', $request->benefit_list_id)
+                        ->where('effective_date', $request->effective_date)->first();
+                if($child){
+                    $record_snap = json_encode($child);
+                    $save_audit = $this->auditMethod('IN', $record_snap, 'SUPER_BENEFIT_LISTS');
+                }        
+               
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $child);
             }
         } else if ($request->add_new == 0) {
 
@@ -170,6 +174,12 @@ class SuperBenefitControler extends Controller
                             ]
                         );
 
+                    $parent = DB::table('SUPER_BENEFIT_LIST_NAMES')->where('super_benefit_list_id', $request->super_benefit_list_id)->first();
+                    if($parent){
+                            $record_snap = json_encode($parent);
+                            $save_audit = $this->auditMethod('UP', $record_snap, 'SUPER_BENEFIT_LIST_NAMES');
+                    }    
+
                     $update = DB::table('SUPER_BENEFIT_LISTS')
                         ->where('super_benefit_list_id', $request->super_benefit_list_id)
                         ->where('benefit_list_id', $request->benefit_list_id)
@@ -184,12 +194,15 @@ class SuperBenefitControler extends Controller
 
                             ]
                         );
-                    $update = DB::table('SUPER_BENEFIT_LISTS')
-                        ->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')
-                        ->first();
-                    $record_snap = json_encode($update);
-                    $save_audit = $this->auditMethod('UP', $record_snap, 'SUPER_BENEFIT_LISTS');
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+                        $child = DB::table('SUPER_BENEFIT_LISTS')
+                                ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
+                                ->where('benefit_list_id', $request->benefit_list_id)
+                                ->where('effective_date', $request->effective_date)->first();
+                        if($child){
+                            $record_snap = json_encode($child);
+                            $save_audit = $this->auditMethod('UP', $record_snap, 'SUPER_BENEFIT_LISTS');
+                        }
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $child);
                 } elseif ($request->update_new == 1) {
 
 
@@ -236,112 +249,17 @@ class SuperBenefitControler extends Controller
 
                                 ]
                             );
-                        $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                            $child = DB::table('SUPER_BENEFIT_LISTS')
+                                        ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
+                                        ->where('benefit_list_id', $request->benefit_list_id)
+                                        ->where('effective_date', $request->effective_date)->first();
+                            if($child){
+                                $record_snap = json_encode($child);
+                                $save_audit = $this->auditMethod('IN', $record_snap, 'SUPER_BENEFIT_LISTS');
+                            }
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $child);
                     }
                 }
-
-
-
-                //   exit();
-
-                // $update_names = DB::table('SUPER_BENEFIT_LIST_NAMES')
-                // ->where('super_benefit_list_id', $request->super_benefit_list_id )
-                // ->first();
-
-
-                // $checkGPI = DB::table('SUPER_BENEFIT_LISTS')
-                // ->where('super_benefit_list_id', $request->super_benefit_list_id )
-                // ->where('benefit_list_id',$request->benefit_list_id)
-                // ->where('effective_date',$request->effective_date)
-                // ->where('termination_date',$request->termination_date)
-                // ->get()
-                // ->count();
-                //     // dd($checkGPI);
-                // // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                // //if result 0 then add NDC_EXCEPTION_LISTS record
-
-
-                // if ($checkGPI <= "0") {
-
-
-                //     // $effectiveDate=$request->effective_date;
-                //     // $terminationDate=$request->termination_date;
-                //     // $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
-                //     // ->where('SUPER_BENEFIT_LIST_ID', $request->procedure_xref_id)
-                //     // ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                //     //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                //     //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                //     //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                //     //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                //     //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
-                //     //         });
-                //     // })
-                //     // ->exists();
-                //     // if ($overlapExists) {
-                //     //     return $this->respondWithToken($this->token(), 'For same Benefit List, dates cannot overlap.', $validation, true, 200, 1);
-                //     // }
-
-                //     $update = DB::table('SUPER_BENEFIT_LISTS')
-                //     ->insert(
-                //         [
-                //             'SUPER_BENEFIT_LIST_ID'=>$request->super_benefit_list_id,
-                //             'BENEFIT_LIST_ID'=>$request->benefit_list_id,
-                //             'EFFECTIVE_DATE'=>$request->effective_date,
-                //             'TERMINATION_DATE'=>$request->termination_date,
-                //             'ACCUM_BENEFIT_STRATEGY_ID'=>$request->accum_benefit_strategy_id,
-                //             'DATE_TIME_CREATED'=>$createddate,
-
-
-                //         ]);
-
-
-                //     $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
-                //     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-
-                // } else {
-                //     // $effectiveDate=$request->effective_date;
-                //     // $terminationDate=$request->termination_date;
-                //     // $overlapExists = DB::table('SUPER_BENEFIT_LISTS')
-                //     // ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
-                //     // ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                //     //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                //     //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                //     //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                //     //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                //     //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
-                //     //         });
-                //     // })
-                //     // ->exists();
-                //     // if ($overlapExists) {
-                //     //     return $this->respondWithToken($this->token(), 'For same Benefit List, dates cannot overlap.', $validation, true, 200, 1);
-                //     // }
-                //     $add_names = DB::table('SUPER_BENEFIT_LIST_NAMES')
-                //     ->where('super_benefit_list_id',$request->super_benefit_list_id)
-                //     ->update(
-                //         [
-                //             'description'=>$request->description,
-                //         ]
-                //     );
-
-                //     $update = DB::table('SUPER_BENEFIT_LISTS' )
-                //     ->where('super_benefit_list_id', $request->super_benefit_list_id )
-                //     ->where('benefit_list_id',$request->benefit_list_id)
-                //     ->where('effective_date',$request->effective_date)
-                //     ->where('termination_date',$request->termination_date)
-
-                //     ->update(
-                //         [
-                //             'TERMINATION_DATE'=>$request->termination_date,
-                //             'ACCUM_BENEFIT_STRATEGY_ID'=>$request->accum_benefit_strategy_id
-
-
-                //         ]
-                //     );
-                //     $update = DB::table('SUPER_BENEFIT_LISTS')->where('super_benefit_list_id', 'like', '%' . $request->super_benefit_list_id . '%')->first();
-                //     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-                // }
-
             }
         }
     }
@@ -402,6 +320,14 @@ class SuperBenefitControler extends Controller
     public function super_benefit_list_delete(Request $request)
     {
         if (isset($request->super_benefit_list_id) && isset($request->benefit_list_id) && isset($request->effective_date)) {
+            $child = DB::table('SUPER_BENEFIT_LISTS')
+                                        ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
+                                        ->where('benefit_list_id', $request->benefit_list_id)
+                                        ->where('effective_date', $request->effective_date)->first();
+            if($child){
+                $record_snap = json_encode($child);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'SUPER_BENEFIT_LISTS');
+            }
             $all_exceptions_lists =  DB::table('SUPER_BENEFIT_LISTS')
                                         ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
                                         ->where('benefit_list_id',$request->benefit_list_id)
@@ -415,13 +341,30 @@ class SuperBenefitControler extends Controller
             }
         } else if (isset($request->super_benefit_list_id)) {
 
+            $parent =  DB::table('SUPER_BENEFIT_LIST_NAMES')
+                                    ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)->first();
+
+            if($parent){
+                $record_snap = json_encode($parent);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'SUPER_BENEFIT_LIST_NAMES');
+            }
             $exception_delete =  DB::table('SUPER_BENEFIT_LIST_NAMES')
                                     ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
                                     ->delete();
 
+            $childs =  DB::table('SUPER_BENEFIT_LISTS')
+                       ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)->get();
+
+            if($childs){
+                foreach($childs as $rec){
+                    $record_snap = json_encode($rec);
+                    $save_audit = $this->auditMethod('DE', $record_snap, 'SUPER_BENEFIT_LISTS');
+                }
+            }    
             $all_exceptions_lists =  DB::table('SUPER_BENEFIT_LISTS')
                                         ->where('SUPER_BENEFIT_LIST_ID', $request->super_benefit_list_id)
                                         ->delete();
+                                        
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
