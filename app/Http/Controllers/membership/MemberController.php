@@ -498,13 +498,60 @@ class MemberController extends Controller
 
                 'member_id' => [
                     'required',
-                    'max:10', Rule::unique('MEMBER')->where(function ($q) {
+                     Rule::unique('MEMBER')->where(function ($q) {
                         $q->whereNotNull('member_id');
                     })
                 ],
-
-
-
+                'accum_bene_eff_date_1' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate2 = $request->accum_bene_eff_date_2;
+                        $effdate3 = $request->accum_bene_eff_date_3;
+                        if ($value <= $effdate3) {
+                            $fail('Tier 1 Effective date  must be greater than Tier 3 Effective date.');
+                        }
+                        if ($value <= $effdate2) {
+                            $fail('Tier 1 Effective date  must be greater than Tier 2 Effective date.');
+                        }
+                        
+                    }
+                ],
+                'accum_bene_eff_date_2' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate3 = $request->accum_bene_eff_date_3;
+                        $termdate1 = $request->accum_bene_term_date_1;
+                        if ($value <= $effdate3) {
+                            $fail('Tier 2 Effective date  must be greater than Tier 3 Effective date.');
+                        } 
+                        if ($value >= $termdate1) {
+                            $fail('Tier 2 Effective date  must be less than Tier 1  Termination date.');
+                        }
+                       
+                    }
+                ],
+                'accum_bene_eff_date_3' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $termdate2 = $request->accum_bene_term_date_2;
+                        $termdate1 = $request->accum_bene_term_date_1;
+                       
+                        if ($value >= $termdate1) {
+                            $fail('Tier 3 Effective date  must be less than Tier 1 Termination date.');
+                        }
+                        if ($value >= $termdate2) {
+                            $fail('Tier 3 Effective date  must be  less than Tier 2 Termination date.');
+                        } 
+                       
+                    }
+                ],
+                "accum_bene_term_date_1" => ['nullable','after:accum_bene_eff_date_1'],
+                "accum_bene_term_date_2" => ['nullable','after:accum_bene_eff_date_2'],
+                "accum_bene_term_date_3" => ['nullable','after:accum_bene_eff_date_3'],
+                ],[
+                    'accum_bene_term_date_1.after' => 'Tier 1 Termination date  must be greater than Tier 1  Effective date',
+                    'accum_bene_term_date_2.after' => 'Tier 2 Termination date  must be greater than Tier 2  Effective date',
+                    'accum_bene_term_date_3.after' => 'Tier 3 Termination date  must be greater than Tier 3  Effective date',
             ]);
 
             if ($validator->fails()) {

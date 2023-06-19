@@ -115,8 +115,10 @@ class PlanValidationController extends Controller
           ->where('client_group_id', $request->client_group_id)
           ->where('plan_id', $request->plan_id)
           ->first();
-        $record_snap = json_encode($getEligibilityData);
-        $save_audit = $this->auditMethod('IN', $record_snap, 'plan_validation_lists');
+        if($getEligibilityData){
+          $record_snap = json_encode($getEligibilityData);
+          $save_audit = $this->auditMethod('IN', $record_snap, 'plan_validation_lists');
+        }  
         return $this->respondWithToken($this->token(), 'Record Added Successfully', $planValidation);
       }
     } else if ($request->add_new == 0) {
@@ -139,8 +141,11 @@ class PlanValidationController extends Controller
         ->where('client_group_id', $request->client_group_id)
         ->where('plan_id', $request->plan_id)
         ->first();
-      $record_snap = json_encode($getEligibilityData);
-      $save_audit = $this->auditMethod('UP', $record_snap, 'plan_validation_lists');
+      if($getEligibilityData){
+        $record_snap = json_encode($getEligibilityData);
+        $save_audit = $this->auditMethod('UP', $record_snap, 'plan_validation_lists');
+      }    
+     
       return $this->respondWithToken($this->token(), 'Record Updated Successfully', $planValidation);
     }
   }
@@ -166,9 +171,17 @@ class PlanValidationController extends Controller
   {
 
     if (isset($request->customer_id) && isset($request->client_id) && isset($request->client_group_id) && isset($request->plan_id)) {
-
+      $getEligibilityData = DB::table('plan_validation_lists')
+        ->where('customer_id', $request->customer_id)
+        ->where('client_id', $request->client_id)
+        ->where('client_group_id', $request->client_group_id)
+        ->where('plan_id', $request->plan_id)
+        ->first();
+      if($getEligibilityData){
+        $record_snap = json_encode($getEligibilityData);
+        $save_audit = $this->auditMethod('DE', $record_snap, 'plan_validation_lists');
+      }  
       $planValidation = DB::table('plan_validation_lists')
-
         ->where('customer_id', $request->customer_id)
         ->where('client_id', $request->client_id)
         ->where('client_group_id', $request->client_group_id)

@@ -169,6 +169,11 @@ class PrcedureCodeListController extends Controller
                         
                     ]
                 );
+                $parent = DB::table('PROC_CODE_LIST_NAMES')->where('proc_code_list_id',$request->proc_code_list_id)->first();
+                if($parent){
+                    $record_snap = json_encode($parent);
+                    $save_audit = $this->auditMethod('IN', $record_snap, 'PROC_CODE_LIST_NAMES'); 
+                }
     
                 $add = DB::table('PROC_CODE_LISTS')
                 ->insert(
@@ -182,14 +187,14 @@ class PrcedureCodeListController extends Controller
                         
                     ]);
 
-
-                    $proc_code_list = DB::table('PROC_CODE_LISTS')
-                    ->where('proc_code_list_id', $request->proc_code_list_id)
-                    ->where('procedure_code', $request->procedure_code)
-                    ->where('effective_date', $request->effective_date)
-                    ->first();
-                $record_snap = json_encode($proc_code_list);
-                $save_audit = $this->auditMethod('IN', $record_snap, 'PROC_CODE_LISTS');
+                $child = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', $request->proc_code_list_id)->where('procedure_code', $request->procedure_code)
+                                ->where('effective_date', $request->effective_date)
+                                ->first();
+                if($child){
+                    $record_snap = json_encode($child);
+                    $save_audit = $this->auditMethod('IN', $record_snap, 'PROC_CODE_LISTS');
+                }             
+               
 
                 $add = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
                    
@@ -256,6 +261,11 @@ class PrcedureCodeListController extends Controller
                         
                     ]
                 );
+                $parent = DB::table('PROC_CODE_LIST_NAMES')->where('proc_code_list_id',$request->proc_code_list_id)->first();
+                if($parent){
+                    $record_snap = json_encode($parent);
+                    $save_audit = $this->auditMethod('UP', $record_snap, 'PROC_CODE_LIST_NAMES'); 
+                }
 
                 $update = DB::table('PROC_CODE_LISTS' )
                 ->where('proc_code_list_id', $request->proc_code_list_id )
@@ -268,6 +278,13 @@ class PrcedureCodeListController extends Controller
     
                     ]
                 );
+                $child = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', $request->proc_code_list_id)->where('procedure_code', $request->procedure_code)
+                            ->where('effective_date', $request->effective_date)
+                            ->first();
+                if($child){
+                    $record_snap = json_encode($child);
+                    $save_audit = $this->auditMethod('UP', $record_snap, 'PROC_CODE_LISTS');
+                }
                 $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
                 return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
             }elseif($request->update_new == 1){
@@ -315,111 +332,20 @@ class PrcedureCodeListController extends Controller
                                         ]);
 
 
-                                        $proc_code_list = DB::table('PROC_CODE_LISTS')
-                            ->where('proc_code_list_id', $request->proc_code_list_id)
-                            ->where('procedure_code', $request->procedure_code)
-                            ->where('effective_date', $request->effective_date)
-                            ->first();
-                        $record_snap = json_encode($proc_code_list);
-                        $save_audit = $this->auditMethod('UP', $record_snap, 'PROC_CODE_LISTS');
+                    $child = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', $request->proc_code_list_id)->where('procedure_code', $request->procedure_code)
+                                ->where('effective_date', $request->effective_date)
+                                ->first();
+                    if($child){
+                        $record_snap = json_encode($child);
+                        $save_audit = $this->auditMethod('IN', $record_snap, 'PROC_CODE_LISTS');
+                    }
 
-                        $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                    $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
 
                 }
                 
-            }
-
-
-                // $update_names = DB::table('PROC_CODE_LIST_NAMES')
-                // ->where('proc_code_list_id', $request->proc_code_list_id )
-                // ->first();
-                    
-    
-                // $checkGPI = DB::table('PROC_CODE_LISTS')
-                // ->where('proc_code_list_id', $request->proc_code_list_id )
-                // ->where('procedure_code',$request->procedure_code)
-                // ->where('effective_date',$request->effective_date)
-                // ->get()
-                // ->count();
-
-
-                // $effective_date_check = DB::table('PROC_CODE_LISTS')
-                // ->where('proc_code_list_id', $request->proc_code_list_id )
-                // ->where('procedure_code',$request->procedure_code)
-                // ->where('effective_date',$request->effective_date)
-                // ->where('termination_date',$request->termination_date)
-                // ->get()
-                // ->count();
-
-
-                
-
-
-                
-                //     // dd($checkGPI);
-                // // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                // //if result 0 then add NDC_EXCEPTION_LISTS record
-
-                // if($effective_date_check == 1){
-
-                //     $add_names = DB::table('PROC_CODE_LIST_NAMES')
-                //     ->where('proc_code_list_id',$request->proc_code_list_id)
-                //     ->update(
-                //         [
-                //             'description'=>$request->description,
-                            
-                //         ]
-                //     );
-
-                //     $update = DB::table('PROC_CODE_LISTS' )
-                //     ->where('proc_code_list_id', $request->proc_code_list_id )
-                //     ->where('procedure_code',$request->procedure_code)
-                //     ->where('effective_date',$request->effective_date)
-                //     ->update(
-                //         [
-                //             'TERMINATION_DATE'=>$request->termination_date,
-                            
-        
-                //         ]
-                //     );
-                //     $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
-                //     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-                   
-
-
-                // }else if($checkGPI == 1)
-                // {
-
-                //     return $this->respondWithToken($this->token(), 'Record Already  Exists',$checkGPI);
-
-
-                // }
-                // else{
-
-                //     if ($checkGPI <= "0") {
-                //         $update = DB::table('PROC_CODE_LISTS')
-                //         ->insert(
-                //             [
-                //                 'PROC_CODE_LIST_ID'=>$request->proc_code_list_id,
-                //                 'PROCEDURE_CODE'=>$request->procedure_code,
-                //                 'EFFECTIVE_DATE'=>$request->effective_date,
-                //                 'TERMINATION_DATE'=>$request->termination_date,
-                //                 'DATE_TIME_CREATED'=>$createddate,
-                                
-                                
-                //             ]);
-                        
-    
-                //     $update = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', 'like', '%' . $request->proc_code_list_id . '%')->first();
-                //     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-    
-      
-    
-                        
-                //     }
-
-                // }
+            } 
 
             }
            
@@ -487,6 +413,14 @@ class PrcedureCodeListController extends Controller
     {
         // return $request->all();
         if (isset($request->proc_code_list_id) && isset($request->procedure_code)  && isset($request->effective_date) ) {
+            $child =  DB::table('PROC_CODE_LISTS')
+                                        ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+                                        ->where('procedure_code',$request->procedure_code)
+                                        ->where('effective_date',$request->effective_date)->first();
+            if($child){
+                $record_snap = json_encode($child);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'PROC_CODE_LISTS');
+            }                           
             $all_exceptions_lists =  DB::table('PROC_CODE_LISTS')
                                         ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
                                         ->where('procedure_code',$request->procedure_code)
@@ -501,9 +435,23 @@ class PrcedureCodeListController extends Controller
             }
         } elseif(isset($request->proc_code_list_id)) {
 
+            $parent = DB::table('PROC_CODE_LIST_NAMES')->where('proc_code_list_id',$request->proc_code_list_id)->first();
+            if($parent){
+                $record_snap = json_encode($parent);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'PROC_CODE_LIST_NAMES'); 
+            }
+
             $exception_delete =  DB::table('PROC_CODE_LIST_NAMES')
                                     ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
                                     ->delete();
+
+            $childs =  DB::table('PROC_CODE_LISTS')->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)->get();
+            if($childs){
+                foreach($childs as $rec){
+                    $record_snap = json_encode($rec);
+                    $save_audit = $this->auditMethod('DE', $record_snap, 'PROC_CODE_LISTS');
+                }
+            }                             
             $all_exceptions_lists =  DB::table('PROC_CODE_LISTS')
                                     ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
                                     ->delete();

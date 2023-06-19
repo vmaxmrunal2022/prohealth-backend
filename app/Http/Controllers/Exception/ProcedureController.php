@@ -245,7 +245,12 @@ use AuditTrait;
                         
                     ]
                 );
-    
+
+                $parent = DB::table('PROCEDURE_EXCEPTION_NAMES')->where('procedure_exception_list',$request->procedure_exception_list)->first();
+                if($parent){
+                    $record_snap = json_encode($parent);
+                    $save_audit = $this->auditMethod('IN', $record_snap, 'PROCEDURE_EXCEPTION_NAMES');
+                }
                 $add = DB::table('PROCEDURE_EXCEPTION_LISTS')
                 ->insert(
                     [
@@ -282,6 +287,19 @@ use AuditTrait;
                         'max_qty_over_time'=>$request->max_qty_over_time,
                         'ucr'=>$request->ucr,
                     ]);
+                $child = DB::table('PROCEDURE_EXCEPTION_LISTS' )
+                        ->where('procedure_exception_list',$request->procedure_exception_list)
+                        ->where('proc_code_list_id',$request->proc_code_list_id)
+                        ->where('service_modifier',$request->service_modifier)
+                        ->where('benefit_code',$request->benefit_code)
+                        ->where('diagnosis_id',$request->diagnosis_id)
+                        ->where('provider_type',$request->provider_type)
+                        ->where('service_type',$request->service_type)
+                        ->where('effective_date',$request->effective_date)->first();
+                if($child){
+                    $record_snap = json_encode($child);
+                    $save_audit = $this->auditMethod('IN', $record_snap, 'PROCEDURE_EXCEPTION_LISTS');
+                }            
                    
     
                 $add = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('procedure_exception_list', 'like', '%' . $request->procedure_exception_list . '%')->first();
@@ -390,6 +408,11 @@ use AuditTrait;
                             
                         ]
                     );
+                    $parent = DB::table('PROCEDURE_EXCEPTION_NAMES')->where('procedure_exception_list',$request->procedure_exception_list)->first();
+                    if($parent){
+                        $record_snap = json_encode($parent);
+                        $save_audit = $this->auditMethod('UP', $record_snap, 'PROCEDURE_EXCEPTION_NAMES');
+                    }
 
                     $update = DB::table('PROCEDURE_EXCEPTION_LISTS' )
                     ->where('procedure_exception_list',$request->procedure_exception_list)
@@ -431,6 +454,21 @@ use AuditTrait;
                             
                         ]
                     );
+
+                    $child = DB::table('PROCEDURE_EXCEPTION_LISTS' )
+                        ->where('procedure_exception_list',$request->procedure_exception_list)
+                        ->where('proc_code_list_id',$request->proc_code_list_id)
+                        ->where('service_modifier',$request->service_modifier)
+                        ->where('benefit_code',$request->benefit_code)
+                        ->where('diagnosis_id',$request->diagnosis_id)
+                        ->where('provider_type',$request->provider_type)
+                        ->where('service_type',$request->service_type)
+                        ->where('effective_date',$request->effective_date)->first();
+                    if($child){
+                        $record_snap = json_encode($child);
+                        $save_audit = $this->auditMethod('UP', $record_snap, 'PROCEDURE_EXCEPTION_LISTS');
+                    }
+
                     $update = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('procedure_exception_list', 'like', '%' . $request->ndc_exception_list . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
 
@@ -512,6 +550,20 @@ use AuditTrait;
                                 'max_qty_over_time'=>$request->max_qty_over_time,
                                 'ucr'=>$request->ucr,
                             ]);
+
+                        $child = DB::table('PROCEDURE_EXCEPTION_LISTS' )
+                            ->where('procedure_exception_list',$request->procedure_exception_list)
+                            ->where('proc_code_list_id',$request->proc_code_list_id)
+                            ->where('service_modifier',$request->service_modifier)
+                            ->where('benefit_code',$request->benefit_code)
+                            ->where('diagnosis_id',$request->diagnosis_id)
+                            ->where('provider_type',$request->provider_type)
+                            ->where('service_type',$request->service_type)
+                            ->where('effective_date',$request->effective_date)->first();
+                        if($child){
+                            $record_snap = json_encode($child);
+                            $save_audit = $this->auditMethod('IN', $record_snap, 'PROCEDURE_EXCEPTION_LISTS');
+                        }
                         
     
                     $update = DB::table('PROCEDURE_EXCEPTION_LISTS')->where('procedure_exception_list', 'like', '%' . $request->procedure_exception_list . '%')->first();
@@ -741,6 +793,24 @@ use AuditTrait;
     public function delete_procedure_code(Request $request)
     {
         if (isset($request->procedure_exception_list) && isset($request->proc_code_list_id) && isset($request->service_modifier) && isset($request->benefit_code) && isset($request->diagnosis_id) && isset($request->provider_type) && isset($request->service_type) && isset($request->effective_date)) {
+            $child = DB::table('PROCEDURE_EXCEPTION_LISTS' )
+                    ->where('procedure_exception_list',$request->procedure_exception_list)
+                    ->where('proc_code_list_id',$request->proc_code_list_id)
+                    ->where('service_modifier',$request->service_modifier)
+                    ->where('benefit_code',$request->benefit_code)
+                    ->where('diagnosis_id',$request->diagnosis_id)
+                    ->where('provider_type',$request->provider_type)
+                    ->where('service_type',$request->service_type)
+                    ->where('effective_date',$request->effective_date)->first();
+            if($child){
+                $record_snap = json_encode($child);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'PROCEDURE_EXCEPTION_LISTS');
+            }
+         
+         
+         
+         
+         
             $all_exceptions_lists = DB::table('PROCEDURE_EXCEPTION_LISTS')
                                         ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
                                         ->where('proc_code_list_id',$request->proc_code_list_id)
@@ -761,11 +831,26 @@ use AuditTrait;
             }
             
         }elseif(isset($request->procedure_exception_list)) {
+               $parent = DB::table('PROCEDURE_EXCEPTION_NAMES')->where('procedure_exception_list',$request->procedure_exception_list)->first();
+                if($parent){
+                    $record_snap = json_encode($parent);
+                    $save_audit = $this->auditMethod('DE', $record_snap, 'PROCEDURE_EXCEPTION_NAMES');
+                }
               
                 $exception_delete = DB::table('PROCEDURE_EXCEPTION_NAMES')
                                         ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
                                         ->delete();
-            
+
+
+                $childs = DB::table('PROCEDURE_EXCEPTION_LISTS' )
+                                        ->where('procedure_exception_list',$request->procedure_exception_list)
+                                        ->get();
+                if($childs){
+                    foreach($childs as $child){
+                        $record_snap = json_encode($child);
+                        $save_audit = $this->auditMethod('DE', $record_snap, 'PROCEDURE_EXCEPTION_LISTS');
+                    }
+                }  
                 $all_exceptions_lists = DB::table('PROCEDURE_EXCEPTION_LISTS')
                                             ->where('PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)
                                             ->delete();
