@@ -325,7 +325,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/pricingstrategy/delete', [PricingStrategyController::class, 'delete'])->name('pricingstrategy.delete'); // SEARCH
 
 
-
         Route::get('/copay/search', [CopayStrategyController::class, 'search'])->name('copay.search'); // SEARCH
         Route::get('/copay/get/{ndcid}', [CopayStrategyController::class, 'getList'])->name('copay.list.get'); // LIST ITEMS
         Route::get('/copay/details/{ndcid}/{id2}/{id3}', [CopayStrategyController::class, 'getDetails'])->name('copay.details.get'); // DETAIL
@@ -1046,6 +1045,8 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
 
     Route::get('/gpiExclusion/get/{ndcid}', [GpiExclusionController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
     Route::get('/gpi/dropdowns', [GpiExclusionController::class, 'GPIS'])->name('gpi.search'); // SEARCH
+    Route::get('/gpi/dropdowns/new', [GpiExclusionController::class, 'GPISNEW'])->name('gpi.search'); // SEARCH
+
     Route::get('/gpiExclusion/details/{ndcid}/{ndcid2}', [GpiExclusionController::class, 'getDetails'])->name('gpiExclusion.get'); // DETAIL
     Route::post('/gpiExclusion/add', [GpiExclusionController::class, 'add'])->name('gpiExclusion.add'); // ADD
     Route::get('/gpi/exclusions/dropdowns', [GpiExclusionController::class, 'allGpiExclusions'])->name('gpi.search'); // SEARCH

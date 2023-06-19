@@ -723,6 +723,8 @@ class PlanEditController extends Controller
             ->get();
         return $this->respondWithToken($this->token(), '', $procedure_list);
     }
+
+
     public function planeditDelete(Request $request){
         if(isset($request->plan_id)) {
             $plan_benefit_delete = DB::table('PLAN_BENEFIT_TABLE')->where('PLAN_ID', $request->plan_id)->delete();

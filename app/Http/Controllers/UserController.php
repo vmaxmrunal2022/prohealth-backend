@@ -54,7 +54,6 @@ class UserController extends Controller
     }
     public function login(Request $request)
     {
-
         //return Session::get('user');
         // return FacadesAuth::user();
         $prefix = '$2y$';
@@ -65,7 +64,7 @@ class UserController extends Controller
         $hash = crypt($password, $blowfishPrefix);
         $hashToThirdParty = substr($hash, -32);
         $hashFromThirdParty = $hashToThirdParty;
-        // dd($blowfishPrefix);
+        // dd($hashFromThirdParty);
         // $pw = $request->USER_PASSWORD;
         $hashed = Hash::make($hashFromThirdParty);
         $check_password = Hash::check($hashFromThirdParty, $hashed);
@@ -137,12 +136,11 @@ class UserController extends Controller
             $responseMessage = "Login Successful";
             Session::put('user', auth()->user()->user_id);
             $userid = auth()->user()->user_id;
-            // $a = getUserData($userid);
+            $a = getUserData($userid);
+            // dd(getUserData());
             // app()->instance('my_global_data', $userid);
             // $usersData =
             $usersData = auth()->user()->user_id;
-            // $usersData = auth()->user();
-
             Cache::put('userId', $usersData, 86400);
             // return Cache::get('users.active');
 
@@ -152,9 +150,8 @@ class UserController extends Controller
 
             // return auth()->user()->user_id;
 
-            // return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
-            return $this->respondWithToken($accessToken, $responseMessage, $usersData);
-
+            //return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
+            return $this->respondWithToken($accessToken, $responseMessage, $user);
         } else {
             $responseMessage = "Sorry, this user does not exist";
             return response()->json([

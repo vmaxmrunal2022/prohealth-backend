@@ -1094,6 +1094,7 @@ class MemberController extends Controller
         }
     }
 
+   
     public function delete(Request $request){
         
 
@@ -1120,7 +1121,4 @@ class MemberController extends Controller
                 }
         }
     }
-
 }
-
-    

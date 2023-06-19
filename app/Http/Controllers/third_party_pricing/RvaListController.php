@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Traits\AuditTrait;
 
 class RvaListController extends Controller
 {
+    use AuditTrait;
     public function get(Request $request)
     {
         // return "hi";
@@ -514,6 +516,11 @@ class RvaListController extends Controller
                     'USER_ID' => $request->user_id,
                     'FORM_ID' => $request->form_id,
                 ]);
+            $child_rec =    DB::table('RVA_LIST')->where('RVA_LIST_ID', $request->rva_list_id)->where('EFFECTIVE_DATE', $effective_date)->first();
+            if($child_rec){
+                $record_snapshot = json_encode($child_rec);
+                $save_audit = $this->auditMethod('IN', $record_snapshot, 'RVA_LIST'); 
+            }
 
             $add1 = DB::table('RVA_NAMES')
                 ->insert([
@@ -522,6 +529,12 @@ class RvaListController extends Controller
                     'USER_ID' => $request->user_id,
                     'FORM_ID' => $request->form_id,
                 ]);
+
+            $parent_rec = DB::table('RVA_NAMES')->where('RVA_LIST_ID', $request->rva_list_id)->first();
+            if($parent_rec){
+                $record_snapshot = json_encode($parent_rec);
+                $save_audit = $this->auditMethod('IN', $record_snapshot, 'RVA_NAMES');
+            }    
 
             // $add = DB::table('mac_table')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
             return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
@@ -553,8 +566,8 @@ class RvaListController extends Controller
 
                 if ($checkGPI) {
 
-                    // $effectiveDate=$request->effective_date;
-                    // $terminationDate=$request->termination_date;
+                    $effectiveDate=$request->effective_date;
+                    $terminationDate=$request->termination_date;
                     // $overlapExists = DB::table('RVA_LIST')
                     // ->where('RVA_LIST_ID', $request->rva_list_id)
                     // // ->where('RVA_VALUE', $request->rva_value)
@@ -586,6 +599,11 @@ class RvaListController extends Controller
                                 'FORM_ID' => $request->form_id,
                             ]
                         );
+                    $child_rec =    DB::table('RVA_LIST')->where('RVA_LIST_ID', $request->rva_list_id)->where('EFFECTIVE_DATE', $effective_date)->first();
+                    if($child_rec){
+                        $record_snapshot = json_encode($child_rec);
+                        $save_audit = $this->auditMethod('UP', $record_snapshot, 'RVA_LIST'); 
+                    }    
                     $update1 = DB::table('RVA_NAMES')->where('RVA_LIST_ID', $request->rva_list_id)
                         ->update([
                             // 'RVA_LIST_ID' => strtoupper($request->rva_list_id),
@@ -593,6 +611,11 @@ class RvaListController extends Controller
                             'USER_ID' => $request->user_id,
                             'FORM_ID' => $request->form_id,
                         ]);
+                    $parent_rec = DB::table('RVA_NAMES')->where('RVA_LIST_ID', $request->rva_list_id)->first();
+                    if($parent_rec){
+                        $record_snapshot = json_encode($parent_rec);
+                        $save_audit = $this->auditMethod('UP', $record_snapshot, 'RVA_NAMES');
+                    }      
 
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updatecode);
                 } else {
@@ -655,10 +678,20 @@ class RvaListController extends Controller
     public function delete_rav(Request $request)
     {
         if (isset($request->rva_list_id) && isset($request->effective_date)) {
+
+            $child_rec =    DB::table('RVA_LIST')->where('RVA_LIST_ID', $request->rva_list_id)
+                           ->where('EFFECTIVE_DATE', $request->effective_date)->first();
+            if($child_rec){
+                $record_snapshot = json_encode($child_rec);
+                $save_audit = $this->auditMethod('DE', $record_snapshot, 'RVA_LIST'); 
+            } 
+
             $all_exceptions_lists = DB::table('RVA_LIST')
                 ->where('RVA_LIST_ID', $request->rva_list_id)
                 ->where('EFFECTIVE_DATE', $request->effective_date)
                 ->delete();
+
+                  
 
             if ($all_exceptions_lists) {
 
@@ -672,9 +705,24 @@ class RvaListController extends Controller
             }
         } else if (isset($request->rva_list_id)) {
 
+            $parent_rec = DB::table('RVA_NAMES')->where('RVA_LIST_ID', $request->rva_list_id)->first();
+            if($parent_rec){
+                $record_snapshot = json_encode($parent_rec);
+                $save_audit = $this->auditMethod('DE', $record_snapshot, 'RVA_NAMES');
+            }
+
             $exception_delete = DB::table('RVA_NAMES')
                 ->where('RVA_LIST_ID', $request->rva_list_id)
                 ->delete();
+
+
+            $child_recs = DB::table('RVA_LIST')->where('RVA_LIST_ID', $request->rva_list_id)->get();
+            if($child_recs){
+                foreach($child_recs as $rec){
+                    $record_snapshot = json_encode($rec);
+                    $save_audit = $this->auditMethod('DE', $record_snapshot, 'RVA_LIST');
+                }
+            }    
 
             $all_exceptions_lists = DB::table('RVA_LIST')
                 ->where('RVA_LIST_ID', $request->rva_list_id)

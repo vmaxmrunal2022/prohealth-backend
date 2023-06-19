@@ -26,6 +26,8 @@ class PrescriberValidationController extends Controller
             $physicianExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
                 // ->where('PHYSICIAN_LIST', 'like', '%' . $request->search . '%')
                 ->whereRaw('LOWER(PHYSICIAN_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                // ->where('PHYSICIAN_LIST', 'like', '%' . $request->search . '%')
+                ->whereRaw('LOWER(PHYSICIAN_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
                 ->orderBy('PHYSICIAN_LIST', 'ASC')
                 ->get();
@@ -152,10 +154,52 @@ class PrescriberValidationController extends Controller
     public function addPrescriberData(Request $request)
     {
 
+
         $createddate = date('d-M-y');
         $validation = DB::table('PHYSICIAN_EXCEPTIONS')
             ->where('physician_list', $request->physician_list)
             ->get();
+        /**below code is for copy parent record and add all child to the destination record*/
+        // if ($request->copy && $request->new) {
+        //     $get_child_records = DB::table('PHYSICIAN_VALIDATIONS')
+        //         ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->physician_list))
+        //         ->get();
+        //     $copy_parent = DB::table('PHYSICIAN_EXCEPTIONS')
+        //         ->insert(
+        //             [
+        //                 'physician_list' => $request->destination_id,
+        //                 'EXCEPTION_NAME' => $request->destination_name,
+        //                 'date_time_created' => date('d-M-y'),
+        //                 'user_id' => Cache::get('userId'),
+        //                 'date_time_modified' => date('d-M-y'),
+        //                 'form_id' => ''
+        //             ]
+        //         );
+        //     // return count($get_child_records);
+        //     foreach ($get_child_records as $child) {
+        //         // for ($i = 0; $i < count($get_child_records); $i++) {
+        //         $add = DB::table('PHYSICIAN_VALIDATIONS')
+        //             ->insert([
+        //                 'PHYSICIAN_LIST' => $child->physician_list,
+        //                 'PHYSICIAN_ID' => $child->physician_id,
+        //                 'PHYSICIAN_STATUS' => $child->physician_status,
+        //                 'date_time_created' => date('d-M-y'),
+        //                 'user_id' => Cache::get('userId'),
+        //                 'date_time_modified' => date('d-M-y'),
+        //                 'form_id' => ''
+        //             ]);
+        //         echo $child->physician_id;
+        //     }
+        //     return "dasdsa";
+        //     $parent = DB::table('PHYSICIAN_EXCEPTIONS')
+        //         ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->destination_id))
+        //         ->first();
+        //     $child = DB::table('PHYSICIAN_VALIDATIONS')
+        //         ->where(DB::raw('UPPER(physician_list)'), strtoupper($request->destination_id))
+        //         ->get();
+
+        //     return $this->respondWithToken($this->token(), "Copied and Merged Successfully", [$parent, $child]);
+        // }
         /**below code is for copy parent record and add all child to the destination record*/
         // if ($request->copy && $request->new) {
         //     $get_child_records = DB::table('PHYSICIAN_VALIDATIONS')
@@ -216,6 +260,7 @@ class PrescriberValidationController extends Controller
                 // })],
 
                 "exception_name" => ['required', 'max:36'],
+                "physician_id" => ['required_if:copy,0', 'max:10'],
                 "physician_id" => ['required_if:copy,0', 'max:10'],
                 "physician_status" => ['max:10'],
                 "DATE_TIME_CREATED" => ['max:10'],
@@ -355,6 +400,7 @@ class PrescriberValidationController extends Controller
 
                         // $add = DB::table('PHYSICIAN_VALIDATIONS')->where('physician_list', 'like', '%' . $request->physician_list . '%')->first();
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', [[], []]);
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', [[], []]);
                     } else {
                         $updateProviderExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
                             ->where('PHYSICIAN_LIST', $request->physician_list)
@@ -425,6 +471,7 @@ class PrescriberValidationController extends Controller
                             return $this->respondWithToken(
                                 $this->token(),
                                 'Record Added successfully',
+                                [[], []],
                                 [[], []],
                             );
                         }
@@ -646,6 +693,7 @@ class PrescriberValidationController extends Controller
             }
         }
     }
+
 
 
 }

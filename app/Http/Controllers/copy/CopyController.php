@@ -23,15 +23,19 @@ class CopyController extends Controller
             ->whereIn('index_name', function ($query) use ($table_name) {
                 $query->select('index_name')
                     ->from('all_indexes')
-                    //->where('table_name', $table_name)
+                    // ->where('table_name', $table_name)
                     ->where(DB::raw('UPPER(table_name)'), strtoupper($table_name))
                     ->where('uniqueness', 'UNIQUE');
             })
+            // ->where('table_name', $table_name)
             ->where(DB::raw('UPPER(table_name)'), strtoupper($table_name))
             ->orderBy('column_position', 'desc')
             // ->latest()
             ->first();
-
+        if (empty($uniqueColumns)) {
+            return $this->respondWithToken($this->token(), 'Unique Source ID Not Found', '', false);
+        }
+        // return $uniqueColumns;
         // $selectedColumns = [];
         // $selectedColumns[] = DB::raw($column->column_name . ' AS `' . $column->column_name . '`');
         $selectedColumns = DB::raw($uniqueColumns->column_name . ' AS ' . 'source_id' . '');
