@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\validationlists;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -10,7 +11,7 @@ use Illuminate\Validation\Rule;
 
 class EligibilityValidationListController extends Controller
 {
-
+    use AuditTrait;
     public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -212,6 +213,7 @@ class EligibilityValidationListController extends Controller
 
         $updated_list = DB::table('ELIG_VALIDATION_LISTS')
             ->get();
+        $save_audit  = $this->auditMethod('DE', json_encode($updated_list), 'ELIG_VALIDATION_LISTS');
 
         return $this->respondWithToken($this->token(), 'Record Deleted Successfully', '');
     }

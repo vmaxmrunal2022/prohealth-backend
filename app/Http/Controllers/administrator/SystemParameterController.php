@@ -54,8 +54,8 @@ class SystemParameterController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         }
 
-          
-       
+
+
         // $getusersData = DB::table('GLOBAL_PARAMS')
         //     ->where('user_id', $request->user_id)
         //     ->first();

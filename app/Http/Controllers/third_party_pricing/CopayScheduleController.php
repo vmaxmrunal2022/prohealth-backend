@@ -283,6 +283,10 @@ class CopayScheduleController extends Controller
                     'gen_copay_modification'=> $request->gen_copay_modification,
                     'bga1_4_daw'=>$request->bga1_4_daw,
                 ]);
+            $parent_record = DB::table('copay_schedule')
+                ->where(DB::raw('UPPER(copay_schedule)'), strtoupper($request->copay_schedule))
+                ->first();
+            $save_audit_parent = $this->auditMethod('IN', json_encode($parent_record), 'COPAY_SCHEDULE');
 
             return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_copay_schedule);
                 
@@ -471,8 +475,11 @@ class CopayScheduleController extends Controller
 
                     
                 ]);
-
-            return $this->respondWithToken($this->token(), 'Record Update Successfully', $update_copay_schedule);
+            $update_copay_schedule_record = DB::table('copay_schedule')
+                ->where('copay_schedule', $request->copay_schedule)
+                ->first();
+            $save_audit = $this->auditMethod('UP', json_encode($update_copay_schedule_record), 'COPAY_SCHEDULE');
+            return $this->respondWithToken($this->token(), 'Update successfully!', $update_copay_schedule);
         }
     }
 
