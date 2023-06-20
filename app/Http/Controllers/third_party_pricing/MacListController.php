@@ -15,7 +15,20 @@ class MacListController extends Controller
             ->where('MAC_LIST', 'like', '%' . strtoupper($request->search). '%')
             ->orWhere('MAC_LIST', 'like', '%' . $request->search. '%')
             ->orWhere('MAC_DESC', 'like', '%' . strtoupper($request->search) . '%')
+            ->orderBy('MAC_LIST', 'asc') // Replace 'column_name' with the column you want to order by
+
             ->get();
+
+        return $this->respondWithToken($this->token(), '', $macList);
+    }
+
+    public function get_New(Request $request)
+    {
+        $macList = DB::table('MAC_LIST')
+            ->where('MAC_LIST', 'like', '%' . strtoupper($request->search). '%')
+            ->orWhere('MAC_LIST', 'like', '%' . $request->search. '%')
+            ->orWhere('MAC_DESC', 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $macList);
     }
@@ -29,6 +42,21 @@ class MacListController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
+    public function Details(Request $request)
+    
+    {
+        $data = DB::table('MAC_LIST')
+        ->join('MAC_TABLE', 'mac_list.mac_list', '=', 'mac_table.mac_list')
+        ->where('mac_table.mac_list', $request->mac_list)
+        ->where('mac_table.gpi', $request->gpi)
+        ->where('mac_table.effective_date', $request->effective_date)
+        ->get();
+    return $this->respondWithToken($this->token(), '', $data);
+
+        
+
+
+    }
     public function getPriceSource(Request $request)
     {
         $priceSource = [
@@ -468,27 +496,29 @@ class MacListController extends Controller
     {
         
         if (isset($request->mac_list) && isset($request->gpi) && isset($request->effective_date)) {
-            return "test1";
             $all_exceptions_lists =  DB::table('MAC_TABLE')
-                ->where('MAC_LIST', $request->mac_list)
-                ->where('EFFECTIVE_DATE',$request->effective_date)
-                ->where('GPI',$request->gpi)
-                ->delete();
+                                        ->where('MAC_LIST', $request->mac_list)
+                                        ->where('EFFECTIVE_DATE',$request->effective_date)
+                                        ->where('GPI',$request->gpi)
+                                        ->delete();
 
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                $val = DB::table('MAC_TABLE')
+                // ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+                ->where('mac_list', $request->mac_list)
+                ->count();
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$val);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         } elseif(isset($request->mac_list)) {
-            return "test2";
             $exception_delete =  DB::table('mac_list')
-                ->where('MAC_LIST', $request->mac_list)
-                ->delete();
+                                    ->where('MAC_LIST', $request->mac_list)
+                                    ->delete();
 
             $all_exceptions_lists =  DB::table('MAC_TABLE')
-            ->where('MAC_LIST', $request->mac_list)
-            ->delete();
+                                        ->where('MAC_LIST', $request->mac_list)
+                                        ->delete();
     
 
             if ($exception_delete) {

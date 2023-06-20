@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\AccumLatedBenifits;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
-use DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class AccumlatedBenifitController extends Controller
 {
+    use AuditTrait;
     public function add(Request $request)
     {
         $createddate = date('Ymd');
@@ -103,6 +105,11 @@ class AccumlatedBenifitController extends Controller
                     ]
                 );
 
+                $accum_bene  = DB::table('PLAN_ACCUM_DEDUCT_TABLE')
+                    ->where('plan_accum_deduct_id', $request->plan_accum_deduct_id)
+                    ->first();
+                $record_snap = json_encode($accum_bene);
+                $save_audit = $this->auditMethod('IN', $record_snap, 'PLAN_ACCUM_DEDUCT_TABLE');
                 return $this->respondWithToken($this->token(), 'Record Added Succesfully', $accum_benfit_stat);
             }
         } else {
@@ -183,11 +190,13 @@ class AccumlatedBenifitController extends Controller
                         'ndc_exclusion_list_mop' => $request->ndc_exclusion_list_mop,
                         'DATE_TIME_MODIFIED' => $createddate,
                         'USER_ID' => Cache::get('userId'),
-
-
-
                     ]
                 );
+            $accum_bene  = DB::table('PLAN_ACCUM_DEDUCT_TABLE')
+                ->where('plan_accum_deduct_id', $request->plan_accum_deduct_id)
+                ->first();
+            $record_snap = json_encode($accum_bene);
+            $save_audit = $this->auditMethod('UP', $record_snap, 'PLAN_ACCUM_DEDUCT_TABLE');
             return $this->respondWithToken($this->token(), 'Record Updated Succesfully', $createddate);
         }
     }
@@ -195,6 +204,11 @@ class AccumlatedBenifitController extends Controller
     public function delete(Request $request)
     {
         if (isset($request->plan_accum_deduct_id)) {
+            $to_delete =  DB::table('PLAN_ACCUM_DEDUCT_TABLE')
+                ->where('plan_accum_deduct_id', $request->plan_accum_deduct_id)
+                ->first();
+            $save_audit_delete  = $this->auditMethod('DE', json_encode($to_delete), 'PLAN_ACCUM_DEDUCT_TABLE');
+
             $delete_plan_accum_deduct_id =  DB::table('PLAN_ACCUM_DEDUCT_TABLE')
                 ->where('plan_accum_deduct_id', $request->plan_accum_deduct_id)
                 ->delete();
@@ -206,6 +220,18 @@ class AccumlatedBenifitController extends Controller
         } else {
             return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
         }
+    }
+
+    public function searchNew(Request $request)
+
+    {
+        $ndc = DB::table('PLAN_ACCUM_DEDUCT_TABLE')
+            //     ->where('PLAN_ACCUM_DEDUCT_ID', 'like', '%' . $request->search . '%')
+            ->whereRaw('LOWER(PLAN_ACCUM_DEDUCT_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhere('PLAN_ACCUM_DEDUCT_NAME', 'like', '%' . $request->search . '%')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 
 
@@ -220,6 +246,10 @@ class AccumlatedBenifitController extends Controller
             return $this->respondWithToken($this->token(), 'Data Not Found', $accumlated_benefit_names);
         }
     }
+
+
+
+
 
 
     public function search(Request $request)

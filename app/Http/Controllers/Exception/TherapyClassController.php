@@ -19,6 +19,13 @@ class TherapyClassController extends Controller
 
     }
 
+    public function TherapyClassList_New(Request $request){
+
+        $ndc = DB::table('TC_EXCEPTIONS')->paginate(100);
+        return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
+
     public function addcopy( Request $request ) {
 
         $createddate = date( 'y-m-d' );
@@ -567,6 +574,12 @@ class TherapyClassController extends Controller
                         return $this->respondWithToken($this->token(), [['For same Therapy Class,dates cannot overlap']], '', 'false');
                     }
 
+                    $add_names = DB::table('TC_EXCEPTIONS')
+                                ->where('ther_class_exception_list',$request->ther_class_exception_list)
+                                ->update([
+                                        'exception_name'=>$request->exception_name,
+                                        ]);
+
 
                     $update = DB::table('TC_EXCEPTION_LISTS' )
                     ->where('therapy_class',$request->therapy_class)
@@ -681,6 +694,12 @@ class TherapyClassController extends Controller
                         if ($overlapExists) {
                             return $this->respondWithToken($this->token(), [['For same Therapy Class,dates cannot overlap']], '', 'false');
                         }
+
+                        $add_names = DB::table('TC_EXCEPTIONS')
+                        ->where('ther_class_exception_list',$request->ther_class_exception_list)
+                        ->update([
+                                'exception_name'=>$request->exception_name,
+                                ]);
 
                         $update = DB::table('TC_EXCEPTION_LISTS')->insert(
                             [
@@ -978,14 +997,15 @@ class TherapyClassController extends Controller
         $ndclist = DB::table('TC_EXCEPTION_LISTS')
                 // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
                 ->join('TC_EXCEPTIONS','TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
-                ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
+                ->whereRaw('LOWER(TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($ndcid) . '%'])
+                // ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST', 'like', '%' . strtoupper($ndcid) . '%')
                 // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
                 ->get();
 
         return $this->respondWithToken($this->token(), '', $ndclist);
     }
 
-    public function getTCItemDetails($ndcid,$ncdid2)
+    public function getTCItemDetails(Request $request)
     {
         $ndc = DB::table('TC_EXCEPTION_LISTS')
         ->select('TC_EXCEPTION_LISTS.*', 'TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST as exception_list', 'TC_EXCEPTIONS.EXCEPTION_NAME as exception_name',
@@ -998,8 +1018,9 @@ class TherapyClassController extends Controller
         ->leftjoin('DRUG_MASTER as DRUG_MASTER2','DRUG_MASTER2.NDC','=','TC_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
         ->leftjoin('TC_EXCEPTIONS','TC_EXCEPTIONS.THER_CLASS_EXCEPTION_LIST','=','TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST')
 
-        ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST',strtoupper($ndcid))
-        ->where('TC_EXCEPTION_LISTS.THERAPY_CLASS',strtoupper($ncdid2))
+        ->where('TC_EXCEPTION_LISTS.THER_CLASS_EXCEPTION_LIST',$request->ther_class_exception_list)
+        ->where('TC_EXCEPTION_LISTS.THERAPY_CLASS',$request->therapy_class)
+        ->where('TC_EXCEPTION_LISTS.EFFECTIVE_DATE',$request->effective_date) 
         ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -1007,21 +1028,25 @@ class TherapyClassController extends Controller
     }
     public function delete_therapy(Request $request)
     {
-        if (isset($request->ther_class_exception_list) && ($request->therapy_class)) {
+        if (isset($request->ther_class_exception_list) && isset($request->therapy_class)&& isset($request->effective_date)) {
             $all_exceptions_lists =  DB::table('TC_EXCEPTION_LISTS')
-                ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
-                ->delete();
-
+                                        ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
+                                        ->where('therapy_class',$request->therapy_class)
+                                        ->where('effective_date',$request->effective_date)
+                                        ->delete();
+            $childcount =  DB::table('TC_EXCEPTION_LISTS')->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)->count(); 
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else if (isset($request->ther_class_exception_list)) {
+        }elseif (isset($request->ther_class_exception_list)) {
             $exception_delete =  DB::table('TC_EXCEPTIONS')
-                ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
-                ->delete();
-
+                                    ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
+                                    ->delete();
+            $all_exceptions_lists =  DB::table('TC_EXCEPTION_LISTS')
+                                        ->where('THER_CLASS_EXCEPTION_LIST', $request->ther_class_exception_list)
+                                        ->delete(); 
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {

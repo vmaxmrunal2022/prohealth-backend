@@ -108,10 +108,9 @@ class Controller extends BaseController
                         'AGE_LIMIT_OPT' => $request->age_limit_opt,
                         'AGE_LIMIT_MMDD' => $request->agelimit_month
                     ]);
-                $record = DB::table('ELIG_VALIDATION_LISTS')
-                    ->where('ELIG_VALIDATION_ID', $request->elig_validation_id)
-                    ->first();
-                return $this->respondWithToken($this->token(), 'Added Successfully...!!!', $addData);
+                $updateData_new = DB::table('ELIG_VALIDATION_LISTS')
+                    ->get();
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $updateData_new);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -143,10 +142,9 @@ class Controller extends BaseController
                         'AGE_LIMIT_MMDD' => $request->agelimit_month
                     ]);
 
-                $record = DB::table('ELIG_VALIDATION_LISTS')
-                    ->where('ELIG_VALIDATION_ID', $request->elig_validation_id)
-                    ->first();
-                return $this->respondWithToken($this->token(), 'Updated Successfully...!!!', $record);
+                $updateData_new = DB::table('ELIG_VALIDATION_LISTS')
+                    ->get();
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData_new);
             }
         }
     }
@@ -227,6 +225,17 @@ class Controller extends BaseController
             $states = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(STATE_CODE)'), 'like', '%' . strtoupper($state_code) . '%')->get();
         } else {
             $states = DB::table('COUNTRY_STATES')->get();
+        }
+        return $this->respondWithToken($this->token(), '', $states);
+    }
+
+    public function getStatesOfCountrySearchNew(Request $request)
+    {
+        $state_code = $request->search;
+        if (!empty($state_code)) {
+            $states = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(STATE_CODE)'), 'like', '%' . strtoupper($state_code) . '%')->paginate(100);
+        } else {
+            $states = DB::table('COUNTRY_STATES')->paginate(100);
         }
         return $this->respondWithToken($this->token(), '', $states);
     }

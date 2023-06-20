@@ -74,10 +74,16 @@ class DrugClassController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+
     public function DrugCategoryList(Request $request)
     {
         $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')->get();
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
 
+    public function DrugCategoryList_New(Request $request)
+    {
+        $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')->paginate(100);
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
@@ -103,7 +109,7 @@ class DrugClassController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-    public function getNDCItemDetails($DRUG_CATGY_EXCEPTION_LIST,$scategory,$stype,$new_drug_status,$process_rule,$effective_date)
+    public function getNDCItemDetails(Request $request)
     {
 
         // $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
@@ -132,6 +138,7 @@ class DrugClassController extends Controller
 
 
             $ndc = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
+
             // ->select(
             //     'DRUG_CATGY_EXCEPTION_NAMES.*',
             //     'PLAN_DRUG_CATGY_EXCEPTIONS.*',
@@ -145,12 +152,25 @@ class DrugClassController extends Controller
             // ->leftjoin('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
 
             // ->where('DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST',$DRUG_CATGY_EXCEPTION_LIST)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST',$DRUG_CATGY_EXCEPTION_LIST)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY',$scategory)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.STYPE',$stype)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.NEW_DRUG_STATUS',$new_drug_status)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.process_rule',$process_rule)
-            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.EFFECTIVE_DATE',$effective_date)
+
+
+            ->select('PLAN_DRUG_CATGY_EXCEPTIONS.*','FE_SYSTEM_CATEGORIES.SDESCRIPTION', 'DRUG_MASTER1.LABEL_NAME as preferd_ndc_description',
+            'DRUG_MASTER2.LABEL_NAME as conversion_ndc_description',
+            'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_NAME',)
+            ->leftjoin('FE_SYSTEM_CATEGORIES', function ($join) {
+                $join->on('FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
+                     ->on('FE_SYSTEM_CATEGORIES.SQUAL', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.STYPE');
+            })
+            ->leftjoin('DRUG_MASTER as DRUG_MASTER1', 'DRUG_MASTER1.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.PREFERRED_PRODUCT_NDC')
+            ->leftjoin('DRUG_MASTER as DRUG_MASTER2', 'DRUG_MASTER2.NDC', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.CONVERSION_PRODUCT_NDC')
+            ->leftjoin('DRUG_CATGY_EXCEPTION_NAMES', 'DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST')
+
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST',$request->drug_ctgy_exception_list)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY',$request->scategory)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.STYPE',$request->stype)
+            // ->where('PLAN_DRUG_CATGY_EXCEPTIONS.NEW_DRUG_STATUS',$new_drug_status)
+            // ->where('PLAN_DRUG_CATGY_EXCEPTIONS.process_rule',$process_rule)
+            ->where('PLAN_DRUG_CATGY_EXCEPTIONS.EFFECTIVE_DATE',$request->effective_date)
             // ->where('PLAN_DRUG_CATGY_EXCEPTIONS.DIAGNOSIS_LIST',$diagnosis_list)
 
             ->first();
@@ -887,7 +907,7 @@ class DrugClassController extends Controller
                                 ->where('EFFECTIVE_DATE', $request->effective_date)
                                 // ->where('termination_date', date('Ymd', strtotime($request->termination_date)))
                                 ->get();
-// return $checkGPI;
+             // return $checkGPI;
                        
                     if(count($checkGPI) >= 1){
                         return $this->respondWithToken($this->token(), [["For same Drug Class, dates cannot overlap."]], '', 'false');
@@ -1197,8 +1217,13 @@ class DrugClassController extends Controller
     public function getDetailsList($id)
     {
         $data_list = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+            ->select('PLAN_DRUG_CATGY_EXCEPTIONS.*','DRUG_CATGY_EXCEPTION_NAMES.*','FE_SYSTEM_CATEGORIES.SDESCRIPTION')
             ->join('PLAN_DRUG_CATGY_EXCEPTIONS','DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST','=','PLAN_DRUG_CATGY_EXCEPTIONS.DRUG_CATGY_EXCEPTION_LIST')
-            // ->join('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
+            // ->leftjoin('FE_SYSTEM_CATEGORIES', 'FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
+            ->leftjoin('FE_SYSTEM_CATEGORIES', function ($join) {
+                $join->on('FE_SYSTEM_CATEGORIES.STYPE', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.SCATEGORY')
+                     ->on('FE_SYSTEM_CATEGORIES.SQUAL', '=', 'PLAN_DRUG_CATGY_EXCEPTIONS.STYPE');
+            })
             ->where('DRUG_CATGY_EXCEPTION_NAMES.DRUG_CATGY_EXCEPTION_LIST', $id)
             ->get();
         return $this->respondWithToken($this->token(), '', $data_list);
@@ -1208,34 +1233,34 @@ class DrugClassController extends Controller
     public function drugclassDelete(Request $request)
     {
         // return $request->all();
-        if (isset($request->drug_catgy_exception_list) && isset($request->scategory) && isset($request->drug_catgy_exception_list) && isset($request->stype) && isset($request->new_drug_status) && isset($request->process_rule) && isset($request->effective_date)) {
+        if (isset($request->drug_catgy_exception_list) && isset($request->scategory) && isset($request->stype) && isset($request->effective_date)) {
 
        
 
              $exception_delete =  DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
-                    ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
-                    ->where('SCATEGORY', $request->scategory)
-                    ->where('STYPE', $request->stype)
-                    ->where('NEW_DRUG_STATUS', $request->new_drug_status)
-                    ->where('PROCESS_RULE', $request->process_rule)
-                    // ->where('EFFECTIVE_DATE', $request->effective_date)
-                    ->delete();
-                    
+                                        ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
+                                        ->where('SCATEGORY', $request->scategory)
+                                        ->where('STYPE', $request->stype)
+                                        // ->where('NEW_DRUG_STATUS', $request->new_drug_status)
+                                        // ->where('PROCESS_RULE', $request->process_rule)
+                                        ->where('EFFECTIVE_DATE', $request->effective_date)
+                                        ->delete();
+            $childcount =    DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)->count();
             if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } else if (isset($request->drug_catgy_exception_list)) {
+        } elseif(isset($request->drug_catgy_exception_list)) {
            
 
                 $all_exceptions_lists =  DB::table('DRUG_CATGY_EXCEPTION_NAMES')
-                ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
-                ->delete();
+                                            ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
+                                            ->delete();
 
                 $exception_delete =  DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
-                    ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
-                    ->delete();
+                                        ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
+                                        ->delete();
 
             if ($all_exceptions_lists) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');

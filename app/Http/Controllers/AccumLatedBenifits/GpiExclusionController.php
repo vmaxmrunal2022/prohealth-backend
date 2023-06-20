@@ -15,6 +15,14 @@ class GpiExclusionController extends Controller
         return $this->respondWithToken($this->token(), 'data fetched successfully ', $gpis);
     }
 
+    public function GPISNEW(Request $request)
+    {
+        $gpis =  DB::table('DRUG_MASTER')
+        ->select('generic_product_id as gpi')
+        ->paginate(100);
+        return $this->respondWithToken($this->token(), 'data fetched successfully ', $gpis);
+    }
+
 
     public function add(Request $request)
     {

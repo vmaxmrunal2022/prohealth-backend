@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ProviderDataProviderController extends Controller
 {
@@ -95,8 +96,114 @@ class ProviderDataProviderController extends Controller
         // dd($request->all());
 
         if ($request->add_new == 1) {
-            if ($getEligibilityData) {
-                return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
+            // if ($getEligibilityData) {
+            //     return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
+            // } 
+            $validator = Validator::make($request->all(), [
+                'pharmacy_nabp' => [
+                    'required', 'max:10',
+                    Rule::unique('PHARMACY_TABLE')->where(function ($q) use ($request) {
+                        $q->whereNotNull('PHARMACY_NABP');
+                    })
+                ],
+                "pharmacy_name" => ['required', 'max:35'],
+                'effective_date_1' => [
+                    'nullable', 'date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate2 = $request->effective_date_2;
+                        $effdate3 = $request->effective_date_3;
+                        if ($value <= $effdate3) {
+                            $fail('Effective date 1 must be greater than Effective date 3.');
+                        }
+                        if ($value <= $effdate2) {
+                            $fail('Effective date 1 must be greater than Effective date 2.');
+                        }
+                    }
+                ],
+                'effective_date_2' => [
+                    'nullable', 'date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate3 = $request->effective_date_3;
+                        $termdate1 = $request->termination_date_1;
+                        if ($value <= $effdate3) {
+                            $fail('Effective date 2 must be greater than Effective date 3.');
+                        }
+                        if ($value >= $termdate1) {
+                            $fail('Effective date 2 must be less than Termination date 1.');
+                        }
+                    }
+                ],
+                'effective_date_3' => [
+                    'nullable', 'date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $termdate2 = $request->termination_date_2;
+                        $termdate1 = $request->termination_date_1;
+
+                        if ($value >= $termdate1) {
+                            $fail('Effective date 3 must be less than Termination date 1.');
+                        }
+                        if ($value >= $termdate2) {
+                            $fail('Effective date 3 must be  less than Termination date 2.');
+                        }
+                    }
+                ],
+                'tax_effective_date_1' => [
+                    'nullable', 'date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate2 = $request->tax_effective_date_2;
+                        $effdate3 = $request->tax_effective_date_3;
+                        if ($value <= $effdate3) {
+                            $fail('Tax Effective date 1 must be greater than Tax Effective date 3.');
+                        }
+                        if ($value <= $effdate2) {
+                            $fail('Tax Effective date 1 must be greater than Tax Effective date 2.');
+                        }
+                    }
+                ],
+                'tax_effective_date_2' => [
+                    'nullable', 'date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate3 = $request->tax_effective_date_3;
+                        $termdate1 = $request->tax_termination_date_1;
+                        if ($value <= $effdate3) {
+                            $fail('Tax Effective date 2 must be greater than Tax Effective date 3.');
+                        }
+                        if ($value >= $termdate1) {
+                            $fail('Tax Effective date 2 must be less than Tax Termination date 1.');
+                        }
+                    }
+                ],
+                'tax_effective_date_3' => [
+                    'nullable', 'date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $termdate2 = $request->tax_termination_date_2;
+                        $termdate1 = $request->tax_termination_date_1;
+
+                        if ($value >= $termdate1) {
+                            $fail('Tax Effective date 3 must be less than Tax Termination date 1.');
+                        }
+                        if ($value >= $termdate2) {
+                            $fail('Tax Effective date 3 must be  less than Tax Termination date 2.');
+                        }
+                    }
+                ],
+                "termination_date_1" => ['nullable', 'after:effective_date_1'],
+                "termination_date_2" => ['nullable', 'after:effective_date_2'],
+                "termination_date_3" => ['nullable', 'after:effective_date_3'],
+                "tax_termination_date_1" => ['nullable', 'after:tax_effective_date_1'],
+                "tax_termination_date_2" => ['nullable', 'after:tax_effective_date_2'],
+                "tax_termination_date_3" => ['nullable', 'after:tax_effective_date_3'],
+            ], [
+                'termination_date_1.after' => 'Termination date 1 must be greater than Effective date 1',
+                'termination_date_2.after' => 'Termination date 2 must be greater than Effective date 2',
+                'termination_date_3.after' => 'Termination date 3 must be greater than Effective date 3',
+                'tax_termination_date_1.after' => 'Tax Termination date 1 must be greater than Tax Effective date 1',
+                'tax_termination_date_2.after' => 'Tax Termination date 2 must be greater than Tax Effective date 2',
+                'tax_termination_date_3.after' => 'Tax Termination date 3 must be greater than Tax Effective date 3',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
             } else {
 
                 $addData = DB::table('PHARMACY_TABLE')
@@ -158,10 +265,11 @@ class ProviderDataProviderController extends Controller
                         'WITHHOLD_ACTIVE_FLAG' => $request->withhold_active_flag,
                         'EFFECTIVE_DATE_1' => $request->effective_date_1,
                         'EFFECTIVE_DATE_2' => $request->effective_date_2,
-                        'EFFECTIVE_DATE_3' => $request->effective_date_3,
 
                         'TERMINATION_DATE_1' => $request->termination_date_1,
                         'TERMINATION_DATE_2' => $request->termination_date_2,
+
+                        'EFFECTIVE_DATE_3' => $request->effective_date_3,
                         'TERMINATION_DATE_3' => $request->termination_date_3,
                         'PHARMACY_STATUS' => $request->pharmacy_status,
                         'DISPENSER_CLASS' => $request->dispenser_class,
@@ -171,7 +279,15 @@ class ProviderDataProviderController extends Controller
                         'MAILING_COUNTRY' => $request->mailing_country,
                         'COUNTRY_CODE' => $request->country_code,
                         'MAILING_COUNTRY_CODE' => $request->mailing_country_code,
+
+
                     ]);
+
+                $get_provider = DB::table('PHARMACY_TABLE')
+                    ->where(DB::raw('UPPER(pharmacy_nabp)'), strtoupper($request->pharmacy_nabp))
+                    ->first();
+
+                $save_adit = $this->auditmethod('IN', json_encode($get_provider), 'PHARMACY_TABLE');
 
                 $traditional_list_obj = json_decode(json_encode($request->traditional_form, true));
 
@@ -193,36 +309,24 @@ class ProviderDataProviderController extends Controller
 
                             ]
                         );
-                    }
-                }
+                        $rx_networksnames = DB::table('RX_NETWORK_NAMES')
+                            ->where('NETWORK_ID', $traditional_list->network_id,)
+                            ->update(
+                                [
+                                    // 'NETWORK_ID' => $traditional_list->network_id,
+                                    'NETWORK_NAME' => $traditional_list->network_name,
 
-
-                $flexible_network_list = json_decode(json_encode($request->flexible_form, true));
-
-                if (!empty($request->flexible_form)) {
-                    $flexible_list = $flexible_network_list[0];
-
-                    foreach ($flexible_network_list as $key => $flexible_list) {
-
-                        $Network_rules = DB::table('RX_NETWORK_RULES')->insert(
-                            [
-                                'RX_NETWORK_RULE_ID' => $request->rx_network_rule_id,
-                                'RX_NETWORK_RULE_ID_NUMBER' => $flexible_list->rx_network_rule_id_number,
-                                'PHARMACY_CHAIN' => $flexible_list->pharmacy_chain,
-                                'STATE' => $flexible_list->state,
-                                'COUNTY' => $flexible_list->county,
-                                'ZIP_CODE' => $flexible_list->zip_code,
-                                'AREA_CODE' => $flexible_list->area_code,
-                                'EXCHANGE_CODE' => $flexible_list->exchange_code,
-                                'PRICE_SCHEDULE_OVRD' => $flexible_list->price_schedule_ovrd,
-                                'EXCLUDE_RULE' => $flexible_list->exclude_rule,
-                                'DATE_TIME_CREATED' => $createddate,
-                                'DATE_TIME_MODIFIED' => $createddate,
-                                'PHARMACY_STATUS' => $flexible_list->pharmacy_status,
-                                'EFFECTIVE_DATE' => $flexible_list->effective_date,
-                                'TERMINATION_DATE' => $flexible_list->termination_date,
-                            ]
-                        );
+                                ]
+                            );
+                        $get_parent = DB::table('RX_NETWORK_NAMES')
+                            ->where(DB::raw('UPPER(network_id)'), strtoupper($traditional_list->network_id))
+                            ->where(DB::raw('UPPER(pharmacy_nabp)'), strtoupper($traditional_list->pharmacy_nabp))
+                            ->first();
+                        $get_child = DB::table('RX_NETWORKS')
+                            ->where(DB::raw('UPPER(network_id)'), strtoupper($traditional_list->network_id))
+                            ->first();
+                        $save_audit_parent = $this->auditMethod('IN', json_encode($get_parent), 'RX_NETWORK_NAMES');
+                        $save_audit_child = $this->auditMethod('UP', json_encode($get_child), 'RX_NETWORKS');
                     }
                 }
             }
@@ -231,8 +335,231 @@ class ProviderDataProviderController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
             }
         } else if ($request->add_new == 0) {
+            $validator = Validator::make($request->all(), [
+                'pharmacy_nabp' => [
+                    'required', 'max:10',
+                    Rule::unique('PHARMACY_TABLE')->where(function ($q) use ($request) {
+                        $q->whereNotNull('PHARMACY_NABP');
+                        $q->where('PHARMACY_NABP', '!=', $request->pharmacy_nabp);
+                    })
+                ],
+                "pharmacy_name" => ['required', 'max:35'],
+                'effective_date_1' => [
+                    'nullable', 'date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate2 = $request->effective_date_2;
+                        $effdate3 = $request->effective_date_3;
+                        if ($value <= $effdate3) {
+                            $fail('Effective date 1 must be greater than Effective date 3.');
+                        }
+                        if ($value <= $effdate2) {
+                            $fail('Effective date 1 must be greater than Effective date 2.');
+                        }
+                    }
+                ],
+                'effective_date_2' => [
+                    'nullable', 'date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate3 = $request->effective_date_3;
+                        $termdate1 = $request->termination_date_1;
+                        if ($value <= $effdate3) {
+                            $fail('Effective date 2 must be greater than Effective date 3.');
+                        }
+                        if ($value >= $termdate1) {
+                            $fail('Effective date 2 must be less than Termination date 1.');
+                        }
+                    }
+                ],
+                'effective_date_3' => [
+                    'nullable', 'date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $termdate2 = $request->termination_date_2;
+                        $termdate1 = $request->termination_date_1;
+
+                        if ($value >= $termdate1) {
+                            $fail('Effective date 3 must be less than Termination date 1.');
+                        }
+                        if ($value >= $termdate2) {
+                            $fail('Effective date 3 must be  less than Termination date 2.');
+                        }
+                    }
+                ],
+                'tax_effective_date_1' => [
+                    'nullable', 'date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate2 = $request->tax_effective_date_2;
+                        $effdate3 = $request->tax_effective_date_3;
+                        if ($value <= $effdate3) {
+                            $fail('Tax Effective date 1 must be greater than Tax Effective date 3.');
+                        }
+                        if ($value <= $effdate2) {
+                            $fail('Tax Effective date 1 must be greater than Tax Effective date 2.');
+                        }
+                    }
+                ],
+                'tax_effective_date_2' => [
+                    'nullable', 'date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate3 = $request->tax_effective_date_3;
+                        $termdate1 = $request->tax_termination_date_1;
+                        if ($value <= $effdate3) {
+                            $fail('Tax Effective date 2 must be greater than Tax Effective date 3.');
+                        }
+                        if ($value >= $termdate1) {
+                            $fail('Tax Effective date 2 must be less than Tax Termination date 1.');
+                        }
+                    }
+                ],
+                'tax_effective_date_3' => [
+                    'nullable', 'date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $termdate2 = $request->tax_termination_date_2;
+                        $termdate1 = $request->tax_termination_date_1;
+
+                        if ($value >= $termdate1) {
+                            $fail('Tax Effective date 3 must be less than Tax Termination date 1.');
+                        }
+                        if ($value >= $termdate2) {
+                            $fail('Tax Effective date 3 must be  less than Tax Termination date 2.');
+                        }
+                    }
+                ],
+                "termination_date_1" => ['nullable', 'after:effective_date_1'],
+                "termination_date_2" => ['nullable', 'after:effective_date_2'],
+                "termination_date_3" => ['nullable', 'after:effective_date_3'],
+                "tax_termination_date_1" => ['nullable', 'after:tax_effective_date_1'],
+                "tax_termination_date_2" => ['nullable', 'after:tax_effective_date_2'],
+                "tax_termination_date_3" => ['nullable', 'after:tax_effective_date_3'],
+            ], [
+                'termination_date_1.after' => 'Termination date 1 must be greater than Effective date 1',
+                'termination_date_2.after' => 'Termination date 2 must be greater than Effective date 2',
+                'termination_date_3.after' => 'Termination date 3 must be greater than Effective date 3',
+                'tax_termination_date_1.after' => 'Tax Termination date 1 must be greater than Tax Effective date 1',
+                'tax_termination_date_2.after' => 'Tax Termination date 2 must be greater than Tax Effective date 2',
+                'tax_termination_date_3.after' => 'Tax Termination date 3 must be greater than Tax Effective date 3',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+            }
+
+            // dd($request->mailing_country);
+        } else if ($request->add_new == 0) {
+            $validator = Validator::make($request->all(), [
+                'pharmacy_nabp' => ['required', 'max:10',
+                 Rule::unique('PHARMACY_TABLE')->where(function ($q) use($request) {
+                    $q->whereNotNull('PHARMACY_NABP');
+                    $q->where('PHARMACY_NABP','!=',$request->pharmacy_nabp);
+                })], 
+                "pharmacy_name" => ['required', 'max:35'],
+                'effective_date_1' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate2 = $request->effective_date_2;
+                        $effdate3 = $request->effective_date_3;
+                        if ($value <= $effdate3) {
+                            $fail('Effective date 1 must be greater than Effective date 3.');
+                        }
+                        if ($value <= $effdate2) {
+                            $fail('Effective date 1 must be greater than Effective date 2.');
+                        }
+                        
+                    }
+                ],
+                'effective_date_2' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate3 = $request->effective_date_3;
+                        $termdate1 = $request->termination_date_1;
+                        if ($value <= $effdate3) {
+                            $fail('Effective date 2 must be greater than Effective date 3.');
+                        } 
+                        if ($value >= $termdate1) {
+                            $fail('Effective date 2 must be less than Termination date 1.');
+                        }
+                       
+                    }
+                ],
+                'effective_date_3' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $termdate2 = $request->termination_date_2;
+                        $termdate1 = $request->termination_date_1;
+                       
+                        if ($value >= $termdate1) {
+                            $fail('Effective date 3 must be less than Termination date 1.');
+                        }
+                        if ($value >= $termdate2) {
+                            $fail('Effective date 3 must be  less than Termination date 2.');
+                        } 
+                       
+                    }
+                ],
+                'tax_effective_date_1' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate2 = $request->tax_effective_date_2;
+                        $effdate3 = $request->tax_effective_date_3;
+                        if ($value <= $effdate3) {
+                            $fail('Tax Effective date 1 must be greater than Tax Effective date 3.');
+                        }
+                        if ($value <= $effdate2) {
+                            $fail('Tax Effective date 1 must be greater than Tax Effective date 2.');
+                        }
+                        
+                    }
+                ],
+                'tax_effective_date_2' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $effdate3 = $request->tax_effective_date_3;
+                        $termdate1 = $request->tax_termination_date_1;
+                        if ($value <= $effdate3) {
+                            $fail('Tax Effective date 2 must be greater than Tax Effective date 3.');
+                        } 
+                        if ($value >= $termdate1) {
+                            $fail('Tax Effective date 2 must be less than Tax Termination date 1.');
+                        }
+                       
+                    }
+                ],
+                'tax_effective_date_3' => [
+                    'nullable','date',
+                    function ($attribute, $value, $fail) use ($request) {
+                        $termdate2 = $request->tax_termination_date_2;
+                        $termdate1 = $request->tax_termination_date_1;
+                       
+                        if ($value >= $termdate1) {
+                            $fail('Tax Effective date 3 must be less than Tax Termination date 1.');
+                        }
+                        if ($value >= $termdate2) {
+                            $fail('Tax Effective date 3 must be  less than Tax Termination date 2.');
+                        } 
+                       
+                    }
+                ],
+                "termination_date_1" => ['nullable','after:effective_date_1'],
+                "termination_date_2" => ['nullable','after:effective_date_2'],
+                "termination_date_3" => ['nullable','after:effective_date_3'],
+                "tax_termination_date_1" => ['nullable','after:tax_effective_date_1'],
+                "tax_termination_date_2" => ['nullable','after:tax_effective_date_2'],
+                "tax_termination_date_3" => ['nullable','after:tax_effective_date_3'],
+                ],[
+                    'termination_date_1.after' => 'Termination date 1 must be greater than Effective date 1',
+                    'termination_date_2.after' => 'Termination date 2 must be greater than Effective date 2',
+                    'termination_date_3.after' => 'Termination date 3 must be greater than Effective date 3',
+                    'tax_termination_date_1.after' => 'Tax Termination date 1 must be greater than Tax Effective date 1',
+                    'tax_termination_date_2.after' => 'Tax Termination date 2 must be greater than Tax Effective date 2',
+                    'tax_termination_date_3.after' => 'Tax Termination date 3 must be greater than Tax Effective date 3',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), false);
+            } 
+
+            // dd($request->mailing_country);
             $updateData = DB::table('PHARMACY_TABLE')
-                ->where('pharmacy_nabp', $request->pharmacy_nabp)
+                ->where('pharmacy_nabp',$request->pharmacy_nabp)
                 ->update([
                     'PHARMACY_NAME' => ($request->pharmacy_name),
                     'ADDRESS_1' => $request->address_1,
@@ -270,7 +597,7 @@ class ProviderDataProviderController extends Controller
                     'REIMB_PREFERENCE' => $request->reimb_preference,
                     'RECORD_USAGE' => $request->record_usage,
                     'BASE_PHARMACY_NABP' => $request->base_pharmacy_nabp,
-                    'COUNTY' => $request->country,
+                    'COUNTY' => $request->county,
                     'TAX_SCHEDULE_ID_1' => $request->tax_schedule_id_1,
                     'TAX_EFFECTIVE_DATE_1' => $request->tax_effective_date_1,
                     'TAX_TERMINATION_DATE_1' => $request->tax_termination_date_1,
@@ -291,6 +618,7 @@ class ProviderDataProviderController extends Controller
                     'EFFECTIVE_DATE_1' => $request->effective_date_1,
                     'EFFECTIVE_DATE_2' => $request->effective_date_2,
                     'TERMINATION_DATE_1' => $request->termination_date_1,
+                    'TERMINATION_DATE_1' => $request->termination_date_1,
                     'TERMINATION_DATE_2' => $request->termination_date_2,
                     'EFFECTIVE_DATE_3' => $request->effective_date_3,
                     'TERMINATION_DATE_3' => $request->termination_date_3,
@@ -303,9 +631,106 @@ class ProviderDataProviderController extends Controller
                     'COUNTRY_CODE' => $request->country_code,
                     'MAILING_COUNTRY_CODE' => $request->mailing_country_code,
 
+
                 ]);
 
-            $data = DB::table('RX_NETWORKS')->where('NETWORK_ID', $request->network_id)->delete();
+                $data = DB::table('RX_NETWORKS')->where('pharmacy_nabp', $request->pharmacy_nabp)->delete();
+
+
+                $traditional_list_obj = json_decode(json_encode($request->traditional_form, true));
+    
+                if (!empty($request->traditional_form)) {
+                    $traditional_list = $traditional_list_obj[0];
+
+                  
+    
+                    foreach ($traditional_list_obj as $key => $traditional_list) {
+
+
+                      
+                        $update_rx_networks = DB::table('RX_NETWORKS')->insert(
+                            [
+                                'NETWORK_ID' => $traditional_list->network_id,
+                                'PHARMACY_NABP' => $traditional_list->pharmacy_nabp,
+                                'PRICE_SCHEDULE_OVRD' => $traditional_list->price_schedule_ovrd,
+                                'PARTICIPATION_OVRD' => $traditional_list->participation_ovrd,
+                                'DATE_TIME_CREATED' => $createddate,
+                                'DATE_TIME_MODIFIED' => $createddate,
+                                'EFFECTIVE_DATE' => $traditional_list->effective_date,
+                                'TERMINATION_DATE' => $traditional_list->termination_date,
+            
+                            ]
+                        );
+
+
+                // $data = DB::table('RX_NETWORK_NAMES')
+                // ->where('network_id', $traditional_list->network_id)
+                // ->delete();
+                // if($data){
+                     $rx_networksnames = DB::table('RX_NETWORK_NAMES')
+                     ->where('network_id', $traditional_list->network_id)
+                     ->update(
+                    [
+                        // 'NETWORK_ID' => $traditional_list->network_id,
+                        'NETWORK_NAME' => $traditional_list->network_name,
+                        
+    
+                    ]
+                );
+
+
+                // }
+
+                      
+    
+    
+                    }
+    
+                   
+    
+                }
+
+                $data = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID', $request->rx_network_rule_id)->delete();
+
+                $flixible_list_obj = json_decode(json_encode($request->flexible_form, true));
+    
+                if (!empty($request->flexible_form)) {
+                    $flixible_list = $flixible_list_obj[0];
+    
+                    foreach ($flixible_list_obj as $key => $flixible_list) {
+    
+                      
+                        $Network_rules = DB::table('RX_NETWORK_RULES')->insert(
+                            [
+                                'RX_NETWORK_RULE_ID' => $request->rx_network_rule_id,
+                                // 'RX_NETWORK_RULE_ID_NUMBER' => $flixible_list->rx_network_rule_id_number,
+                                // 'PHARMACY_CHAIN' => $flixible_list->pharmacy_chain,
+                                // 'STATE' => $flixible_list->state,
+                                // 'COUNTY' => $flixible_list->county,
+                                // 'ZIP_CODE' => $flixible_list->zip_code,
+                                // 'AREA_CODE' => $flixible_list->area_code,
+                                // 'EXCHANGE_CODE'=>$flixible_list->exchange_code,
+                                'PRICE_SCHEDULE_OVRD' => $flixible_list->price_schedule_ovrd,
+                                'EXCLUDE_RULE' => $flixible_list->exclude_rule,
+                                // 'DATE_TIME_CREATED'=>$createddate,
+                                // 'DATE_TIME_MODIFIED'=>$createddate,
+                                // 'PHARMACY_STATUS' => $flixible_list->pharmacy_status,
+                                // 'EFFECTIVE_DATE' => $flixible_list->effective_date,
+                                // 'TERMINATION_DATE' =>$flixible_list->termination_date,
+                            ]
+                        );
+    
+                    }
+    
+                   
+    
+                }
+
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
+
+            $save_adit = $this->auditmethod('UP', json_encode($get_provider), 'PHARMACY_TABLE');
+
+            $data = DB::table('RX_NETWORKS')->where('pharmacy_nabp', $request->pharmacy_nabp)->delete();
 
 
             $traditional_list_obj = json_decode(json_encode($request->traditional_form, true));
@@ -313,11 +738,15 @@ class ProviderDataProviderController extends Controller
             if (!empty($request->traditional_form)) {
                 $traditional_list = $traditional_list_obj[0];
 
+
+
                 foreach ($traditional_list_obj as $key => $traditional_list) {
+
+
 
                     $update_rx_networks = DB::table('RX_NETWORKS')->insert(
                         [
-                            'NETWORK_ID' => $request->network_id,
+                            'NETWORK_ID' => $traditional_list->network_id,
                             'PHARMACY_NABP' => $traditional_list->pharmacy_nabp,
                             'PRICE_SCHEDULE_OVRD' => $traditional_list->price_schedule_ovrd,
                             'PARTICIPATION_OVRD' => $traditional_list->participation_ovrd,
@@ -328,6 +757,28 @@ class ProviderDataProviderController extends Controller
 
                         ]
                     );
+
+                    $rx_networksnames = DB::table('RX_NETWORK_NAMES')
+                        ->where('network_id', $traditional_list->network_id)
+                        ->update(
+                            [
+                                // 'NETWORK_ID' => $traditional_list->network_id,
+                                'NETWORK_NAME' => $traditional_list->network_name,
+                            ]
+                        );
+
+
+                    // }
+
+                    $get_parent = DB::table('RX_NETWORK_NAMES')
+                        ->where(DB::raw('UPPER(network_id)'), strtoupper($traditional_list->network_id))
+                        ->where(DB::raw('UPPER(pharmacy_nabp)'), strtoupper($traditional_list->pharmacy_nabp))
+                        ->first();
+                    $get_child = DB::table('RX_NETWORKS')
+                        ->where(DB::raw('UPPER(network_id)'), strtoupper($traditional_list->network_id))
+                        ->first();
+                    $save_audit_parent = $this->auditMethod('IN', json_encode($get_parent), 'RX_NETWORK_NAMES');
+                    $save_audit_child = $this->auditMethod('UP', json_encode($get_child), 'RX_NETWORKS');
                 }
             }
 
@@ -344,22 +795,27 @@ class ProviderDataProviderController extends Controller
                     $Network_rules = DB::table('RX_NETWORK_RULES')->insert(
                         [
                             'RX_NETWORK_RULE_ID' => $request->rx_network_rule_id,
-                            'RX_NETWORK_RULE_ID_NUMBER' => $flixible_list->rx_network_rule_id_number,
-                            'PHARMACY_CHAIN' => $flixible_list->pharmacy_chain,
-                            'STATE' => $flixible_list->state,
-                            'COUNTY' => $flixible_list->county,
-                            'ZIP_CODE' => $flixible_list->zip_code,
-                            'AREA_CODE' => $flixible_list->area_code,
-                            'EXCHANGE_CODE' => $flixible_list->exchange_code,
+                            // 'RX_NETWORK_RULE_ID_NUMBER' => $flixible_list->rx_network_rule_id_number,
+                            // 'PHARMACY_CHAIN' => $flixible_list->pharmacy_chain,
+                            // 'STATE' => $flixible_list->state,
+                            // 'COUNTY' => $flixible_list->county,
+                            // 'ZIP_CODE' => $flixible_list->zip_code,
+                            // 'AREA_CODE' => $flixible_list->area_code,
+                            // 'EXCHANGE_CODE'=>$flixible_list->exchange_code,
                             'PRICE_SCHEDULE_OVRD' => $flixible_list->price_schedule_ovrd,
                             'EXCLUDE_RULE' => $flixible_list->exclude_rule,
-                            'DATE_TIME_CREATED' => $createddate,
-                            'DATE_TIME_MODIFIED' => $createddate,
-                            'PHARMACY_STATUS' => $flixible_list->pharmacy_status,
-                            'EFFECTIVE_DATE' => $flixible_list->effective_date,
-                            'TERMINATION_DATE' => $flixible_list->termination_date,
+                            // 'DATE_TIME_CREATED'=>$createddate,
+                            // 'DATE_TIME_MODIFIED'=>$createddate,
+                            // 'PHARMACY_STATUS' => $flixible_list->pharmacy_status,
+                            // 'EFFECTIVE_DATE' => $flixible_list->effective_date,
+                            // 'TERMINATION_DATE' =>$flixible_list->termination_date,
                         ]
                     );
+
+                    $get_net_rules = DB::table('RX_NETWORK_RULES')
+                        ->where(DB::raw('UPPER(rx_network_rule_id)'), strtoupper($request->rx_network_rule_id))
+                        ->first();
+                    $save_audit_net_rule = $this->auditMethod('IN', json_encode($get_net_rules), 'RX_NETWORK_RULES');
                 }
             }
 
@@ -391,13 +847,15 @@ class ProviderDataProviderController extends Controller
     public function search(Request $request)
     {
         $ndc = DB::table('PHARMACY_TABLE')
+            ->where(DB::raw('UPPER(PHARMACY_NABP)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere('PHARMACY_NAME', 'like', '%' . $request->search . '%')
+            // ->Where('PHARMACY_NABP', 'like', '%' .$request->search. '%')
 
-            ->where('PHARMACY_NAME', 'like', '%' . $request->search . '%')
-            ->orWhere('PHARMACY_NABP', 'like', '%' . $request->search . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
+
     public function getAll(Request $request)
     {
         $ndc = DB::table('PHARMACY_TABLE')->get();
@@ -445,7 +903,7 @@ class ProviderDataProviderController extends Controller
 
 
                     ]);
-                return $this->respondWithToken($this->token(), 'Added Successfully...!!!', $addData);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
             } else {
                 return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
             }
@@ -461,7 +919,7 @@ class ProviderDataProviderController extends Controller
                     'TERMINATION_DATE' => $request->termination_date,
 
                 ]);
-            return $this->respondWithToken($this->token(), 'Updated Successfully...!!!', $updateData);
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
         }
     }
 
@@ -482,7 +940,7 @@ class ProviderDataProviderController extends Controller
 
 
                     ]);
-                return $this->respondWithToken($this->token(), 'Added Successfully...!!!', $addData);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
             } else {
                 return $this->respondWithToken($this->token(), 'This record is already exists ..!!!');
             }
@@ -495,7 +953,7 @@ class ProviderDataProviderController extends Controller
                     'TERMINATION_DATE' => $request->termination_date,
 
                 ]);
-            return $this->respondWithToken($this->token(), 'Updated Successfully...!!!', $updateData);
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData);
         }
     }
 
@@ -511,12 +969,43 @@ class ProviderDataProviderController extends Controller
     public function getCombileNetworks(Request $request)
     {
 
-        $traditional_network_data = DB::table('RX_NETWORKS')->where('NETWORK_ID', $request->id)->get();
+        $traditional_network_data = DB::table('RX_NETWORKS')
+            ->select('RX_NETWORKS.*', 'RX_NETWORK_NAMES.NETWORK_NAME')
+            ->join('RX_NETWORK_NAMES', 'RX_NETWORK_NAMES.NETWORK_ID', '=', 'RX_NETWORKS.NETWORK_ID')
+
+            ->where('RX_NETWORKS.pharmacy_nabp', $request->pharmacy_nabp)
+            ->get();
+        //    ->pluck('pharmacy_nabp');
+
         $flexible_network_data = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID', $request->id)->get();
         $merged = [
             'traditional_network_data' => $traditional_network_data,
-            'flexible_network_data' => $flexible_network_data
+            // 'flexible_network_data' => $flexible_network_data
         ];
         return $this->respondWithToken($this->token(), '', $merged);
     }
+
+    public function providerdataDelete(Request $request)
+    {
+        if (isset($request->pharmacy_nabp)) {
+            $pharmacy_nabp = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', $request->pharmacy_nabp)->delete();
+
+            $Network_rules = DB::table('RX_NETWORKS')->where('pharmacy_nabp', $request->pharmacy_nabp)->delete();
+
+            if ($pharmacy_nabp) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }       
+            
+    public function getProviderNetworksNew(Request $request)
+    {
+
+        $traditional_network_data = DB::table('RX_NETWORKS')->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $traditional_network_data);
+    }
+
 }

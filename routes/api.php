@@ -315,6 +315,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/accumulated/details/{ndcid}', [AccumlatedController::class, 'getDetails'])->name('accumulated.details.get'); // DETAIL
         Route::post('/accumulated/add', [AccumlatedController::class, 'add'])->name('accumulated.add'); // SEARCH
         Route::get('/accumulated/drop-down', [AccumlatedController::class, 'AccumlatedDropDown'])->name('accumulated.dropdown'); // SEARCH
+        Route::post('/accumulated/delete', [AccumlatedController::class, 'delete'])->name('accumulated.dropdown'); // SEARCH
 
 
 
@@ -959,6 +960,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('clientgroup/get/{client}', [MajorMedicalController::class, 'getClientGroup']);
 
     Route::get('clientgroup/details/{client}', [MajorMedicalController::class, 'getDetails']);
+    Route::get('major-medical-maximum/get/{customer_id}/{client_id}', [MajorMedicalController::class, 'getMajorMedicalMaximum']);
     Route::post('major/medical/add', [MajorMedicalController::class, 'add']);
 
     Route::post('clientgroup/add', [ClientGroupController::class, 'add']);
@@ -1159,6 +1161,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
     Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
     Route::post('rva-list/submit', [RvaListController::class, 'submitRva']);
     Route::get('rva-list/dropdown', [RvaListController::class, 'RvaListDropdown']);
+    Route::post('rva-list/delete', [RvaListController::class, 'delete_rav']);
 });
 
 

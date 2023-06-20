@@ -19,7 +19,8 @@ class ReasonsController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('REASON_CODES')
-                ->where('REASON_CODE', 'like', '%' . strtoupper($request->search) . '%')
+                // ->where('REASON_CODE', 'like', '%' . strtoupper($request->search) . '%')
+                ->whereRaw('LOWER(REASON_CODE) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere('REASON_DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
@@ -99,10 +100,10 @@ class ReasonsController extends Controller
             if ($delete_reason_code) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+                return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         } else {
-            return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
 

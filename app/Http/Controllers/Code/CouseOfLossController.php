@@ -21,9 +21,12 @@ class CouseOfLossController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('CAUSE_OF_LOSS_CODES')
-                ->where(DB::raw('UPPER(CAUSE_OF_LOSS_CODE)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
+
+                ->whereRaw('LOWER(CAUSE_OF_LOSS_CODE) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                // ->where(DB::raw('UPPER(CAUSE_OF_LOSS_CODE)'), 'like', '%' . $request->search . '%')
+                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . $request->search . '%')
                 ->get();
+
             return  $this->respondWithToken($this->token(), '', $procedurecodes);
         }
     }
@@ -32,7 +35,7 @@ class CouseOfLossController extends Controller
     {
         if ($request->new) {
             $validator = Validator::make($request->all(), [
-                "cause_of_loss_code" => ['required', 'max:8', Rule::unique('CAUSE_OF_LOSS_CODES')->where(function ($q) {
+                'cause_of_loss_code' => ['required', 'max:8', Rule::unique('CAUSE_OF_LOSS_CODES')->where(function ($q) {
                     $q->whereNotNull('cause_of_loss_code');
                 })],
                 "description" => ['max:36'],
@@ -71,7 +74,7 @@ class CouseOfLossController extends Controller
             } else {
                 $procedurecode = DB::table('CAUSE_OF_LOSS_CODES')
                     // ->where('CAUSE_OF_LOSS_CODES', 'like', strtoupper($request->benefit_code))
-                    ->where(DB::raw('UPPER(CAUSE_OF_LOSS_CODE)'), strtoupper($request->cause_of_loss_code))
+                    ->where('cause_of_loss_code',$request->cause_of_loss_code)
                     ->update(
                         [
                             // 'CAUSE_OF_LOSS_CODE' => strtoupper($request->cause_of_loss_code),
@@ -99,10 +102,10 @@ class CouseOfLossController extends Controller
             if ($delete_cause_of_loss) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+                return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         } else {
-            return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Code;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BenifitController extends Controller
 {
+    use AuditTrait;
     public function get(Request $request)
     {
         // dd($request->all());
@@ -21,7 +23,9 @@ class BenifitController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $benefitcodes = DB::table('benefit_codes')
-                ->where(DB::raw('UPPER(benefit_code)'), 'like', '%' .  strtoupper($request->search) . '%')
+
+                ->whereRaw('LOWER(benefit_code) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                // ->where(DB::raw('UPPER(benefit_code)'), 'like', '%' .  strtoupper($request->search) . '%')
                 ->orWhere(DB::raw('UPPER(description)'), 'like', '%' .  strtoupper($request->search) . '%')
                 ->get();
 
@@ -70,7 +74,11 @@ class BenifitController extends Controller
                         'FORM_ID' => ''
                     ]
                 );
-                $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', '%' . $request->benefit_code . '%')->first();
+                $benefitcode_get = DB::table('BENEFIT_CODES')
+                    ->where(DB::raw('UPPER(benefit_code)'), strtoupper($request->benefit_code))
+                    ->first();
+                $save_audit = $this->auditMethod('IN', json_encode($benefitcode_get), 'BENEFIT_CODES');
+                return $this->respondWithToken($this->token(), 'Record Added Successfully 1', $benefitcode_get);
             }
             return $this->respondWithToken($this->token(), 'Record Added Successfully ', $benefitcode);
 
@@ -83,7 +91,7 @@ class BenifitController extends Controller
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
-                $benefitcode = DB::table('benefit_codes')
+                $benefitcode = DB::table('BENEFIT_CODES')
                     ->where('benefit_code', $request->benefit_code)
                     ->update(
                         [
@@ -97,8 +105,9 @@ class BenifitController extends Controller
                         ]
                     );
             }
-            $benefitcode = DB::table('benefit_codes')->where('benefit_code', 'like', $request->benefit_code)->first();
-            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode);
+            $benefitcode_get = DB::table('benefit_codes')->where('benefit_code', 'like', $request->benefit_code)->first();
+            $save_audit = $this->auditMethod('UP', json_encode($benefitcode_get), 'BENEFIT_CODES');
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $benefitcode_get);
         }
     }
 
@@ -107,16 +116,23 @@ class BenifitController extends Controller
     public function delete(Request $request)
     {
         if (isset($request->benefit_code)) {
+
+            $all_records =  DB::table('BENEFIT_CODES')->get();
+
+            $to_delete =  DB::table('BENEFIT_CODES')
+                ->where('benefit_code', $request->benefit_code)
+                ->first();
             $delete_benefit_code =  DB::table('BENEFIT_CODES')
                 ->where('benefit_code', $request->benefit_code)
                 ->delete();
             if ($delete_benefit_code) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                $save_audit = $this->auditMethod('DE', json_encode($to_delete), 'BENEFIT_CODES');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $all_records, 'true');
             } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+                return $this->respondWithToken($this->token(), 'Record Not Found', '', 'false');
             }
         } else {
-            return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
 

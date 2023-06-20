@@ -8,16 +8,43 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Cache;
+use App\Traits\AuditTrait;
+
 
 class PricingStrategyController extends Controller
 {
+    use AuditTrait;
+
+
     public function search(Request $request)
     {
         $ndc = DB::table('PRICING_STRATEGY_NAMES')
-            ->select('PRICING_STRATEGY_NAMES.PRICING_STRATEGY_ID', 'PRICING_STRATEGY_NAMES.PRICING_STRATEGY_NAME as pricing_strategy_name')
-            ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.PRICING_STRATEGY_ID)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->select('PRICING_STRATEGY_NAMES.pricing_strategy_id', 'PRICING_STRATEGY_NAMES.PRICING_STRATEGY_NAME as pricing_strategy_name')
+            ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere(DB::raw('UPPER(PRICING_STRATEGY_NAMES.PRICING_STRATEGY_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+    public function searchNew(Request $request)
+    {
+        $ndc = DB::table('PRICING_STRATEGY_NAMES')
+            ->select('PRICING_STRATEGY_NAMES.pricing_strategy_id', 'PRICING_STRATEGY_NAMES.PRICING_STRATEGY_NAME as pricing_strategy_name')
+            ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(PRICING_STRATEGY_NAMES.PRICING_STRATEGY_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+    public function search_New(Request $request)
+    {
+        $ndc = DB::table('PRICING_STRATEGY_NAMES')
+            ->select('PRICING_STRATEGY_NAMES.pricing_strategy_id', 'PRICING_STRATEGY_NAMES.PRICING_STRATEGY_NAME as pricing_strategy_name')
+            ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(PRICING_STRATEGY_NAMES.PRICING_STRATEGY_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -37,14 +64,28 @@ class PricingStrategyController extends Controller
         }
     }
 
+    public function get_allNew(Request $request)
+    {
+
+        $pricing_strategies = DB::table('PRICING_STRATEGY_NAMES')->paginate(100);
+
+        if ($pricing_strategies) {
+
+            return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $pricing_strategies);
+        } else {
+
+            return $this->respondWithToken($this->token(), 'something Went Wrong', $pricing_strategies);
+        }
+    }
+
 
 
     public function getProviderList($ndcid)
     {
         $ndclist = DB::table('PRICING_STRATEGY')
             // ->select('DIAGNOSIS_LIST', 'DIAGNOSIS_ID','PRIORITY')
-            // ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.PRICING_STRATEGY_ID', '=', 'PRICING_STRATEGY_NAMES.PRICING_STRATEGY_ID')
-            ->where('PRICING_STRATEGY.PRICING_STRATEGY_ID', $ndcid)
+            // ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+            ->where('PRICING_STRATEGY.pricing_strategy_id', $ndcid)
             // ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($ndcid) . '%')
             ->get();
 
@@ -54,8 +95,8 @@ class PricingStrategyController extends Controller
     public function getNDCItemDetails($pricing_strategy_id, $effective_date, $price_schedule)
     {
         $ndc = DB::table('PRICING_STRATEGY')
-            ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.PRICING_STRATEGY_ID', '=', 'PRICING_STRATEGY_NAMES.PRICING_STRATEGY_ID')
-            ->where('PRICING_STRATEGY.PRICING_STRATEGY_ID', $pricing_strategy_id)
+            ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+            ->where('PRICING_STRATEGY.pricing_strategy_id', $pricing_strategy_id)
             ->where('PRICING_STRATEGY.EFFECTIVE_DATE', date('Ymd', strtotime($effective_date)))
             ->where('PRICING_STRATEGY.PRICE_SCHEDULE', $price_schedule)
             ->first();
@@ -67,7 +108,7 @@ class PricingStrategyController extends Controller
     {
         $createddate = date('Ymd');
         $checkPricingStrategyNamesRecord  = DB::table('PRICING_STRATEGY_NAMES')
-            ->where(DB::raw('UPPER(PRICING_STRATEGY_ID)'), strtoupper($request->pricing_strategy_id))->count();
+            ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))->count();
 
         if ($request->new == 1) {
             $validator = Validator::make($request->all(), [
@@ -87,7 +128,7 @@ class PricingStrategyController extends Controller
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 if ($checkPricingStrategyNamesRecord) {
-                    return $this->respondWithToken($this->token(), 'Pricing Strategy ID already exists', $checkPricingStrategyNamesRecord, false);
+                    return $this->respondWithToken($this->token(), [['Pricing Strategy ID already exists']], $checkPricingStrategyNamesRecord, false);
                 } else {
                     $accum_benfit_stat_names = DB::table('PRICING_STRATEGY_NAMES')->insert(
                         [
@@ -100,6 +141,14 @@ class PricingStrategyController extends Controller
                             'USER_ID_CREATED' => Cache::get('userId'),
                         ]
                     );
+
+                    $parent  = DB::table('PRICING_STRATEGY_NAMES')
+                                ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))->first();
+
+                    if($parent){
+                        $record_snap = json_encode($parent);
+                        $save_audit = $this->auditMethod('IN', $record_snap, 'PRICING_STRATEGY_NAMES');
+                    }        
 
                     $accum_benfit_stat = DB::table('PRICING_STRATEGY')->insert(
                         [
@@ -117,15 +166,29 @@ class PricingStrategyController extends Controller
                             'module_exit' => $request->module_exit,
                             'price_schedule' => $request->price_schedule,
                             'mac_list' => $request->mac_list,
-                        ]
-                    );
+                        ]);
+                    $child = DB::table('PRICING_STRATEGY')
+                        ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                        ->where('EFFECTIVE_DATE', $request->effective_date)
+                        ->where('PRICE_SCHEDULE', $request->price_schedule)->first();
+                    if($child){
+                        $record_snap = json_encode($child);
+                        $save_audit = $this->auditMethod('IN', $record_snap, 'PRICING_STRATEGY'); 
+                    }        
+                    $val = DB::table('PRICING_STRATEGY')
+                        ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+                        ->where('PRICING_STRATEGY.pricing_strategy_id', $request->pricing_strategy_id)
+                        ->get();
 
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $accum_benfit_stat);
+                    $exp = DB::table('PRICING_STRATEGY_NAMES')
+                        ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->pricing_strategy_id) . '%')
+                        ->get();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', [$val, $exp]);
                 }
             }
         } else {
             $checkPricingStrategyRecord  = DB::table('PRICING_STRATEGY')
-                ->where(DB::raw('UPPER(PRICING_STRATEGY.PRICING_STRATEGY_ID)'), strtoupper($request->pricing_strategy_id))
+                ->where(DB::raw('UPPER(PRICING_STRATEGY.pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))
                 ->where('EFFECTIVE_DATE', $request->effective_date)
                 ->where('PRICE_SCHEDULE', $request->price_schedule)
                 ->count();
@@ -147,20 +210,34 @@ class PricingStrategyController extends Controller
             } else {
                 if ($checkPricingStrategyRecord) {
                     if ($request->addUpdate == 0) {
-                        return $this->respondWithToken($this->token(), 'Pricing Schedule ID already exists', $checkPricingStrategyRecord, false);
+                        $val = DB::table('PRICING_STRATEGY')
+                            ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+                            ->where('PRICING_STRATEGY.pricing_strategy_id', $request->pricing_strategy_id)
+                            ->get();
+
+                        $exp = DB::table('PRICING_STRATEGY_NAMES')
+                            ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->pricing_strategy_id) . '%')
+                            ->get();
+                        return $this->respondWithToken($this->token(), [['Pricing Schedule ID already exists']], [$val, $exp], false);
                     }
                     $benefitcode = DB::table('PRICING_STRATEGY_NAMES')
                         ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))
                         ->update(
                             ['pricing_strategy_name' => $request->pricing_strategy_name, 'user_id' => Cache::get('userId'), 'DATE_TIME_MODIFIED' => date('Ymd')]
                         );
+                    $parent  = DB::table('PRICING_STRATEGY_NAMES')
+                        ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))->first();
+
+                    if($parent){
+                        $record_snap = json_encode($parent);
+                        $save_audit = $this->auditMethod('UP', $record_snap, 'PRICING_STRATEGY_NAMES');
+                    }       
 
                     $accum_benfit_stat = DB::table('PRICING_STRATEGY')
                         ->where('pricing_strategy_id', $request->pricing_strategy_id)
                         ->where('EFFECTIVE_DATE', $request->effective_date)
                         ->where('PRICE_SCHEDULE', $request->price_schedule)
-                        ->update(
-                            [
+                        ->update([
                                 // 'pricing_strategy_id' => strtoupper($request->pricing_strategy_id),
                                 'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
                                 'formulary_variation_ind' => $request->formulary_variation_ind,
@@ -174,9 +251,26 @@ class PricingStrategyController extends Controller
                                 'module_exit' => $request->module_exit,
                                 'price_schedule' => $request->price_schedule,
                                 'mac_list' => $request->mac_list,
-                            ]
-                        );
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $accum_benfit_stat);
+                            ]);
+
+                    $child = DB::table('PRICING_STRATEGY')
+                            ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                            ->where('EFFECTIVE_DATE', $request->effective_date)
+                            ->where('PRICE_SCHEDULE', $request->price_schedule)->first();
+                    if($child){
+                        $record_snap = json_encode($child);
+                        $save_audit = $this->auditMethod('UP', $record_snap, 'PRICING_STRATEGY'); 
+                    }     
+
+                    $val = DB::table('PRICING_STRATEGY')
+                        ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+                        ->where('PRICING_STRATEGY.pricing_strategy_id', $request->pricing_strategy_id)
+                        ->get();
+
+                    $exp = DB::table('PRICING_STRATEGY_NAMES')
+                        ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->pricing_strategy_id) . '%')
+                        ->get();
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', [$val, $exp]);
                 } else {
 
                     $benefitcode = DB::table('PRICING_STRATEGY_NAMES')
@@ -205,16 +299,30 @@ class PricingStrategyController extends Controller
                             'module_exit' => $request->module_exit,
                             'price_schedule' => $request->price_schedule,
                             'mac_list' => $request->mac_list,
-                        ]
-                    );
+                        ]);
+                    $child = DB::table('PRICING_STRATEGY')
+                        ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                        ->where('EFFECTIVE_DATE', $request->effective_date)
+                        ->where('PRICE_SCHEDULE', $request->price_schedule)->first();
+                    if($child){
+                        $record_snap = json_encode($child);
+                        $save_audit = $this->auditMethod('IN', $record_snap, 'PRICING_STRATEGY'); 
+                    }
+                    $val = DB::table('PRICING_STRATEGY')
+                        ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+                        ->where('PRICING_STRATEGY.pricing_strategy_id', $request->pricing_strategy_id)
+                        ->get();
 
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $accum_benfit_stat);
+                    $exp = DB::table('PRICING_STRATEGY_NAMES')
+                        ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->pricing_strategy_id) . '%')
+                        ->get();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', [$val, $exp]);
                 }
             }
         }
     }
 
-    public function delete(Request $request)
+    public function deleteold(Request $request)
     {
         if (isset($request->pricing_strategy_id) && isset($request->effective_date) && isset($request->price_schedule)) {
             $all_pricing_strategy = DB::table('PRICING_STRATEGY')
@@ -237,13 +345,96 @@ class PricingStrategyController extends Controller
             }
 
             if ($pricing_strategy) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                $val = DB::table('PRICING_STRATEGY')
+                    ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+                    ->where('PRICING_STRATEGY.pricing_strategy_id', $request->pricing_strategy_id)
+                    ->get();
+
+                $exp = DB::table('PRICING_STRATEGY_NAMES')
+                    ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->pricing_strategy_id) . '%')
+                    ->get();
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', [$val, $exp]);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }
-            return $this->respondWithToken($this->token(), 'Record deleted Successfully', $pricing_strategy);
+            return $this->respondWithToken($this->token(), 'Record deleted Successfully ', $pricing_strategy);
         } else {
+            if (isset($request->pricing_strategy_id)) {
+                $all_accum_bene_strategy_names = DB::table('PRICING_STRATEGY_NAMES')
+                    ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                    ->delete();
+                $val = DB::table('PRICING_STRATEGY')
+                    ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+                    ->where('PRICING_STRATEGY.pricing_strategy_id', $request->pricing_strategy_id)
+                    ->get();
+
+                $exp = DB::table('PRICING_STRATEGY_NAMES')
+                    ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->pricing_strategy_id) . '%')
+                    ->get();
+
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', [$val, $exp], false);
+            }
             return $this->respondWithToken($this->token(), 'Record Not found', 'false');
+        }
+    }
+
+    public function delete(Request $request)
+    {
+        if (isset($request->pricing_strategy_id) && isset($request->effective_date) && isset($request->price_schedule)) {
+            $all_pricing_strategy = DB::table('PRICING_STRATEGY')
+                ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                ->where('price_schedule', $request->price_schedule)
+                ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                ->first();
+                   
+            if ($all_pricing_strategy) {
+                $record_snap = json_encode($all_pricing_strategy);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'PRICING_STRATEGY'); 
+
+                $pricing_strategy = DB::table('PRICING_STRATEGY')
+                    ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                    ->where('price_schedule', $request->price_schedule)
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->delete();
+                if ($pricing_strategy) {
+                    $val = DB::table('PRICING_STRATEGY')
+                        // ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
+                        ->where('PRICING_STRATEGY.pricing_strategy_id', $request->pricing_strategy_id)
+                        ->count();
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', $val);
+                }
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            }
+        } elseif (isset($request->pricing_strategy_id)) {
+            $parent  = DB::table('PRICING_STRATEGY_NAMES')
+                        ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))->first();
+            if($parent){
+                $record_snap = json_encode($parent);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'PRICING_STRATEGY_NAMES');
+            }
+            $all_accum_bene_strategy_names = DB::table('PRICING_STRATEGY_NAMES')
+                ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                ->delete();
+
+            $childs = DB::table('PRICING_STRATEGY')
+                     ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))
+                     ->get();
+            if($childs){
+                foreach($childs as $rec){
+                    $record_snap = json_encode($rec);
+                    $save_audit = $this->auditMethod('DE', $record_snap, 'PRICING_STRATEGY'); 
+                } 
+            }     
+                
+            $copay_strategy = DB::table('PRICING_STRATEGY')
+                ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                ->delete();
+            if ($all_accum_bene_strategy_names) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not found', 'false');
+            }
         }
     }
 }

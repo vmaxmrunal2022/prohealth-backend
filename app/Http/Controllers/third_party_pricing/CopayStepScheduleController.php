@@ -237,6 +237,15 @@ class CopayStepScheduleController extends Controller
             } else if ($request->add_new == 0) {
 
 
+                $addCopaylist1 = DB::table('COPAY_LIST')
+                ->where('COPAY_LIST',$request->copay_list)
+                ->update([
+                    'COPAY_DESC' => $request->copay_desc,
+                    'DATE_TIME_CREATED' => '',
+                    'DATE_TIME_MODIFIED' => ''
+                ]);
+
+
 
                 if (!empty($request->cost_max_form)) {
 
@@ -315,6 +324,13 @@ class CopayStepScheduleController extends Controller
                     }
 
 
+
+                   
+
+
+
+
+
                     if ($addCopaymatrix1) {
                         return $this->respondWithToken($this->token(), 'Record Updated Successfully', $addCopaymatrix1);
                     }
@@ -338,5 +354,61 @@ class CopayStepScheduleController extends Controller
             ->where('copay_list', $request->copay_list)
             ->count();
         return $this->respondWithToken($this->token(), '', $exist);
+    }
+
+    public function delete(Request $request)
+    {
+        if (!empty($request->cost_max)) {
+
+            if(isset($request->copay_list)){
+
+
+               $copay_matrix_delete= DB::table('COPAY_MATRIX')
+                ->where('copay_list', $request->copay_list)
+                ->delete();
+
+                $copay_list_delete= DB::table('COPAY_LIST')
+                ->where('copay_list', $request->copay_list)
+                ->delete();
+
+                if($copay_list_delete){
+
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+
+                }
+
+
+            }
+
+        }
+
+        if (!empty($request->days_supply)) {
+
+            if(isset($request->copay_list)){
+
+
+               $copay_matrix_delete= DB::table('COPAY_MATRIX')
+                ->where('copay_list', $request->copay_list)
+                ->delete();
+
+                $copay_list_delete= DB::table('COPAY_LIST')
+                ->where('copay_list', $request->copay_list)
+                ->delete();
+
+                if($copay_list_delete){
+
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+
+                }
+
+
+            }
+
+        }
+
+        
+
+
+
     }
 }

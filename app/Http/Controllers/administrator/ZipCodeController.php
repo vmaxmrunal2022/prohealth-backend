@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -107,5 +109,21 @@ class ZipCodeController extends Controller
         }
                 
             
+  }
+
+  public function delete(Request $request){
+    if(isset($request->zip_code)){
+
+        $zip_code_delete = DB::table('ZIP_CODES')
+        ->where('ZIP_CODE',$request->zip_code)
+        ->delete();
+
+        if($zip_code_delete){
+            return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+        }else{
+            return $this->respondWithToken($this->token(), 'Record Not Found!');
+        }
+
+    }
   }
 }

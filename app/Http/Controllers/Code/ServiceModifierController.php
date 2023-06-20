@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Validator as ValidationValidator;
+use App\Traits\AuditTrait;
 
 class ServiceModifierController extends Controller
 {
+    
+    use AuditTrait;
     public function get(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -21,7 +24,8 @@ class ServiceModifierController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('SERVICE_MODIFIERS')
-                ->where(DB::raw('UPPER(SERVICE_MODIFIER)'), 'like', '%' . strtoupper($request->search) . '%')
+                // ->where(DB::raw('UPPER(SERVICE_MODIFIER)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->whereRaw('LOWER(SERVICE_MODIFIER) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
@@ -65,6 +69,13 @@ class ServiceModifierController extends Controller
                         // 'COMPLETE_CODE_IND' => ''
                     ]
                 );
+                $record = DB::table('SERVICE_MODIFIERS')
+                    ->where(DB::raw('UPPER(SERVICE_MODIFIER)'), strtoupper($request->service_modifier))
+                    ->first();
+                if($record){
+                        $record_snap = json_encode($record);
+                        $save_audit = $this->auditMethod('IN', $record_snap, 'SERVICE_MODIFIERS');
+                }
                 return  $this->respondWithToken($this->token(), 'Record Added Successfully ', $procedurecode);
             }
         } else {
@@ -92,6 +103,14 @@ class ServiceModifierController extends Controller
                         ]
                     );
 
+                $record = DB::table('SERVICE_MODIFIERS')
+                            ->where(DB::raw('UPPER(SERVICE_MODIFIER)'), strtoupper($request->service_modifier))
+                            ->first();
+                if($record){
+                        $record_snap = json_encode($record);
+                        $save_audit = $this->auditMethod('UP', $record_snap, 'SERVICE_MODIFIERS');
+                }
+
                 return  $this->respondWithToken($this->token(), 'Record Updated Successfully', $procedurecode);
             }
         }
@@ -102,16 +121,24 @@ class ServiceModifierController extends Controller
     public function delete(Request $request)
     {
         if (isset($request->service_modifier)) {
+            $record = DB::table('SERVICE_MODIFIERS')
+                        ->where(DB::raw('UPPER(SERVICE_MODIFIER)'), strtoupper($request->service_modifier))
+                        ->first();
+            if($record){
+                    $record_snap = json_encode($record);
+                    $save_audit = $this->auditMethod('DE', $record_snap, 'SERVICE_MODIFIERS');
+            }
             $delete_service_modifier =  DB::table('SERVICE_MODIFIERS')
-                ->where('SERVICE_MODIFIER', $request->service_modifier)
+                // ->where('SERVICE_MODIFIER', $request->service_modifier)
+                ->where(DB::raw('UPPER(SERVICE_MODIFIER)'), strtoupper($request->service_modifier))
                 ->delete();
             if ($delete_service_modifier) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+                return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         } else {
-            return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
 

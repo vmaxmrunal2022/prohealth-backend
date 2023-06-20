@@ -325,6 +325,12 @@ class GPIExceptionController extends Controller
                         return $this->respondWithToken($this->token(),  [['For same GPI, dates cannot overlap.']], '', 'false');
                     }
 
+                    $add_names = DB::table('GPI_EXCEPTIONS')
+                                 ->where('gpi_exception_list', $request->gpi_exception_list)
+                                 ->update([
+                                        'exception_name' => $request->exception_name,
+                                        ]);
+
 
                     $update = DB::table('GPI_EXCEPTION_LISTS')
                     ->where('generic_product_id', $request->generic_product_id)
@@ -441,7 +447,11 @@ class GPIExceptionController extends Controller
                             return $this->respondWithToken($this->token(),  [['For same GPI Exception, dates cannot overlap.']], '', 'false');
                         }
 
-
+                        $add_names = DB::table('GPI_EXCEPTIONS')
+                        ->where('gpi_exception_list', $request->gpi_exception_list)
+                        ->update([
+                               'exception_name' => $request->exception_name,
+                               ]);
 
                         $update = DB::table('GPI_EXCEPTION_LISTS')->insert([
                             'GPI_EXCEPTION_LIST' => $request->gpi_exception_list,
@@ -734,6 +744,15 @@ class GPIExceptionController extends Controller
     }
 
 
+    public function GpiList_New(Request $request)
+    {
+
+        $benefitcode = DB::table('GPI_EXCEPTIONS')->paginate(100);
+        return $this->respondWithToken($this->token(), 'Successfully Fetched Data', $benefitcode);
+    }
+
+
+
 
     public function search(Request $request)
     {
@@ -761,7 +780,7 @@ class GPIExceptionController extends Controller
     }
 
 
-    public function getNDCItemDetails($ndcid, $ncdid2)
+    public function getNDCItemDetails(Request $request)
     {
         $ndc = DB::table('GPI_EXCEPTION_LISTS')
             ->select(
@@ -776,9 +795,9 @@ class GPIExceptionController extends Controller
             ->leftjoin('DRUG_MASTER as DRUG_MASTER1', 'DRUG_MASTER1.NDC', '=', 'GPI_EXCEPTION_LISTS.PREFERRED_PRODUCT_NDC')
             ->leftjoin('DRUG_MASTER as DRUG_MASTER2', 'DRUG_MASTER2.NDC', '=', 'GPI_EXCEPTION_LISTS.CONVERSION_PRODUCT_NDC')
             ->leftjoin('DRUG_MASTER as DRUG_MASTER3', 'DRUG_MASTER3.GENERIC_PRODUCT_ID', '=', 'GPI_EXCEPTION_LISTS.GENERIC_PRODUCT_ID')
-            ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST', $ncdid2)
-
-            ->where('GPI_EXCEPTION_LISTS.generic_product_id', $ndcid)
+            ->where('GPI_EXCEPTION_LISTS.GPI_EXCEPTION_LIST', $request->gpi_exception_list)
+            ->where('GPI_EXCEPTION_LISTS.generic_product_id', $request->generic_product_id)
+            ->where('GPI_EXCEPTION_LISTS.effective_date', $request->effective_date)
             ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -796,32 +815,39 @@ class GPIExceptionController extends Controller
     public function gpi_delete(Request $request)
     {
 
-        if (isset($request->gpi_exception_list) && ($request->generic_product_id)) {
+        if(isset($request->gpi_exception_list) && ($request->generic_product_id) && ($request->effective_date)) {
 
             $exception_delete = DB::table('GPI_EXCEPTION_LISTS')
-
-                ->where('GENERIC_PRODUCT_ID', $request->generic_product_id)
-
-                ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
-
-                ->delete();
-
-
-
-
+                                ->where('GENERIC_PRODUCT_ID', $request->generic_product_id)
+                                ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
+                                ->where('effective_date', $request->effective_date)
+                                ->delete();
+            $childcount = DB::table('GPI_EXCEPTION_LISTS')->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)->count();
             if ($exception_delete) {
-
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
-
                 return $this->respondWithToken($this->token(), 'Record Not Found');
-
             }
 
         }
+        elseif(isset($request->gpi_exception_list)){
+
+            $Exception = DB::table('GPI_EXCEPTIONS')
+                            ->where('gpi_exception_list', $request->gpi_exception_list)
+                            ->delete();
+
+            $exception_delete = DB::table('GPI_EXCEPTION_LISTS')
+                                ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
+                                ->delete();
+            if ($Exception) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
 
     }
+
 
 
 }

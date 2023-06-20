@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use PDO;
 
+use function PHPUnit\Framework\isEmpty;
+
 class AuditTrailController extends Controller
 {
     public function getTables(Request $request)
@@ -35,9 +37,13 @@ class AuditTrailController extends Controller
             ->where('date_created', date('Ymd', strtotime($request->date_created)))
             ->get();
 
+        $table_name = $request->table_name;
+        if ($request->table_name == 'PH_CUSTOMER') {
+            $table_name = 'CUSTOMER';
+        }
         $results = DB::table('PHIDBA.FE_RECORD_LOG')
             ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 30) . "%'")
-            ->where('table_name', $request->table_name)
+            ->where(DB::raw('UPPER(table_name)'), strtoupper($request->table_name))
             ->orderBy(
                 'DATE_CREATED',
                 'DESC'
@@ -45,22 +51,96 @@ class AuditTrailController extends Controller
             ->orderBy('TIME_CREATED', 'DESC')
             ->take(2000)
             ->get();
+        // return $results;
 
-        $table_name = $request->table_name;
+
         $customer_id = isset(json_decode($request->record_snapshot)->customer_id) ? json_decode($request->record_snapshot)->customer_id : null;
         $client_id = isset(json_decode($request->record_snapshot)->client_id)  ? json_decode($request->record_snapshot)->client_id : null;
         $client_group_id = isset(json_decode($request->record_snapshot)->client_group_id)  ? json_decode($request->record_snapshot)->client_group_id : null;
-        $record = DB::table($request->table_name)
+        $user_id = isset(json_decode($request->record_snapshot)->user_id)  ? json_decode($request->record_snapshot)->user_id : null;
+        $member_id = isset(json_decode($request->record_snapshot)->member_id)  ? json_decode($request->record_snapshot)->member_id : null;
+        $prior_auth_code_num = isset(json_decode($request->record_snapshot)->prior_auth_code_num)  ? json_decode($request->record_snapshot)->prior_auth_code_num : null;
+        $plan_id = isset(json_decode($request->record_snapshot)->plan_id)  ? json_decode($request->record_snapshot)->plan_id : null;
+        $pharmacy_nabp = isset(json_decode($request->record_snapshot)->pharmacy_nabp)  ? json_decode($request->record_snapshot)->pharmacy_nabp : null;
+        $benefit_derivation_id = isset(json_decode($request->record_snapshot)->benefit_derivation_id)  ? json_decode($request->record_snapshot)->benefit_derivation_id : null;
+        $proc_code_list_id = isset(json_decode($request->record_snapshot)->proc_code_list_id)  ? json_decode($request->record_snapshot)->proc_code_list_id : null;
+        $benefit_list_id = isset(json_decode($request->record_snapshot)->benefit_list_id)  ? json_decode($request->record_snapshot)->benefit_list_id : null;
+        $super_benefit_list_id = isset(json_decode($request->record_snapshot)->super_benefit_list_id)  ? json_decode($request->record_snapshot)->super_benefit_list_id : null;
+        $ndc_exception_list = isset(json_decode($request->record_snapshot)->ndc_exception_list)  ? json_decode($request->record_snapshot)->ndc_exception_list : null;
+        $accum_bene_strategy_id = isset(json_decode($request->record_snapshot)->accum_bene_strategy_id)  ? json_decode($request->record_snapshot)->accum_bene_strategy_id : null;
+        $plan_accum_deduct_id = isset(json_decode($request->record_snapshot)->plan_accum_deduct_id)  ? json_decode($request->record_snapshot)->plan_accum_deduct_id : null;
+        $prov_type_list_id = isset(json_decode($request->record_snapshot)->prov_type_list_id)  ? json_decode($request->record_snapshot)->prov_type_list_id : null;
+        $prov_type_proc_assoc_id = isset(json_decode($request->record_snapshot)->prov_type_proc_assoc_id)  ? json_decode($request->record_snapshot)->prov_type_proc_assoc_id : null;
+
+
+        // return $table_name;
+        $record = DB::table($table_name)
             ->when($customer_id, function ($query) use ($customer_id) {
                 return $query->where('customer_id', 'like', '%' . $customer_id . '%');
             })
-            ->when($client_id, function ($query) use ($client_id) {
-                return $query->where('client_id', 'like', '%' . $client_id . '%');
+            ->when($customer_id, function ($query) use ($client_id, $customer_id) {
+                $result =  $query->where('customer_id', 'like', '%' . $customer_id . '%');
+                // ->where('client_id', 'like', '%' . $client_id . '%');
+                return $result;
             })
-            ->when($client_group_id, function ($query) use ($client_group_id) {
-                return $query->where('client_group_id', 'like', '%' . $client_group_id . '%');
+            ->when($client_group_id, function ($query) use ($client_group_id, $customer_id, $client_id) {
+                $result =  $query->where('client_group_id', 'like', '%' . $client_group_id . '%');
+                return $result;
+            })
+            ->when($user_id, function ($query) use ($user_id) {
+                return $query->where('user_id', 'like', '%' . $user_id . '%');
+            })
+            ->when($member_id, function ($query) use (
+                $customer_id,
+                $client_id,
+                $client_group_id,
+                $member_id
+            ) {
+                $result = $query->where('customer_id', 'like', '%' . $customer_id . '%');
+                $query->where('client_id', 'like', '%' . $client_id . '%');
+                $query->where('client_group_id', 'like', '%' . $client_group_id . '%');
+                $query->where('member_id', 'like', '%' . $member_id . '%');
+                return $result;
+            })
+            ->when($prior_auth_code_num, function ($query) use ($prior_auth_code_num) {
+                return $query->where('prior_auth_code_num', 'like', '%' . $prior_auth_code_num . '%');
+            })
+
+            ->when($plan_id, function ($query) use ($plan_id) {
+                return $query->where('plan_id', 'like', '%' . $plan_id . '%');
+            })
+            ->when($pharmacy_nabp, function ($query) use ($pharmacy_nabp) {
+                return $query->where('pharmacy_nabp', 'like', '%' . $pharmacy_nabp . '%');
+            })
+            ->when($benefit_derivation_id, function ($query) use ($benefit_derivation_id) {
+                return $query->where('benefit_derivation_id', 'like', '%' . $benefit_derivation_id . '%');
+            })
+            ->when($proc_code_list_id, function ($query) use ($proc_code_list_id) {
+                return $query->where('proc_code_list_id', 'like', '%' . $proc_code_list_id . '%');
+            })
+            ->when($benefit_list_id, function ($query) use ($benefit_list_id) {
+                return $query->where('benefit_list_id', 'like', '%' . $benefit_list_id . '%');
+            })
+            ->when($super_benefit_list_id, function ($query) use ($super_benefit_list_id) {
+                return $query->where('super_benefit_list_id', 'like', '%' . $super_benefit_list_id . '%');
+            })
+            ->when($ndc_exception_list, function ($query) use ($ndc_exception_list) {
+                return $query->where('ndc_exception_list', 'like', '%' . $ndc_exception_list . '%');
+            })
+            ->when($accum_bene_strategy_id, function ($query) use ($accum_bene_strategy_id) {
+                return $query->where('accum_bene_strategy_id', 'like', '%' . $accum_bene_strategy_id . '%');
+            })
+            ->when($plan_accum_deduct_id, function ($query) use ($plan_accum_deduct_id) {
+                return $query->where('plan_accum_deduct_id', 'like', '%' . $plan_accum_deduct_id . '%');
+            })
+            ->when($prov_type_list_id, function ($query) use ($prov_type_list_id) {
+                return $query->where('prov_type_list_id', 'like', '%' . $prov_type_list_id . '%');
+            })
+            ->when($prov_type_proc_assoc_id, function ($query) use ($prov_type_proc_assoc_id) {
+                return $query->where('prov_type_proc_assoc_id', 'like', '%' . $prov_type_proc_assoc_id . '%');
             })
             ->get();
+        // return $results;
 
         $old_column_arr = [];
         $old_value_arr = [];
@@ -71,36 +151,68 @@ class AuditTrailController extends Controller
             array_push($old_column_arr, $arr2);
             // array_push($old_value_arr, $value);
         }
-        $old_value_arr = count($results) > 1 ? json_decode($results[1]->record_snapshot) : null;
-
-        $new_column_arr = [];
-        $new_value_arr = [];
-        foreach (json_decode($results[0]->record_snapshot) as $key => $val) {
-            $arr2 = $key;
-            $value = $val;
-            array_push($new_column_arr, $arr2);
-            array_push($new_value_arr, $value);
+        if ($request->record_action != 'DE') {
+            $old_value_arr = count($results) > 1 ? json_decode($results[1]->record_snapshot) : null;
+            $new_column_arr = [];
+            $new_value_arr = [];
+            foreach (json_decode($results[0]->record_snapshot) as $key => $val) {
+                $arr2 = $key;
+                $value = $val;
+                array_push($new_column_arr, $arr2);
+                array_push($new_value_arr, $value);
+            }
+        } else {
+            $old_value_arr = count($results) > 1 ? json_decode($results[0]->record_snapshot) : null;
+            $new_column_arr = [];
+            $new_value_arr = [];
+            foreach (json_decode($results[0]->record_snapshot) as $key => $val) {
+                $arr2 = $key;
+                $value = $val;
+                array_push($new_column_arr, $arr2);
+                array_push($new_value_arr, $value);
+            }
         }
-
 
         /***************************** */
 
 
-        $get_column = DB::table($request->table_name)->get();
+        $get_column = DB::table($table_name)->get();
         $column_arr = [];
         foreach ($get_column[0] as $key => $val) {
             $arr2 = $key;
             array_push($column_arr, $arr2);
         }
-
+        // if (empty($record)) {
+        //     return "empty";
+        // } else {
+        //     return "not empty";
+        // }
         $current_record = [];
-        foreach ($record[0] as $key => $val) {
-            $ar = $val;
-            array_push($current_record, $ar);
+        //if (empty($record)) {
+        // if (isEmpty($record)) {
+        //     $record[0] = ["This record is deleted"];
+        // } else {
+        // return $record[0]->date_time_created;
+        if (!empty($record[0]->date_time_created)) {
+            foreach ($record[0] as $key => $val) {
+                $ar = $val;
+                array_push($current_record, $ar);
+            }
+        } else {
+            $record[0] = ["This record is deleted"];
         }
+        // foreach ($record[0] as $key => $val) {
+        //     $ar = $val;
+        //     array_push($current_record, $ar);
+        // }
 
+        // return $column_arr;
         // $data = ['user_record' => $user_record[0], 'record_snapshot' => $current_record, 'old_record' => $old_value_arr, 'columns' => $old_column_arr];
-        $data = ['user_record' => $user_record[0], 'record_snapshot' => $record[0], 'old_record' => $old_value_arr, 'columns' => $old_column_arr];
+        $data = [
+            'user_record' => $user_record[0], 'record_snapshot' => $record[0], 'old_record' => $old_value_arr,
+            'columns' => $old_column_arr
+            // 'columns' => $column_arr
+        ];
         return $this->respondWithToken($this->token(), '', $data);
     }
 
@@ -263,9 +375,13 @@ class AuditTrailController extends Controller
         }
         // print_r($toDate);
         // print_r($request->to_date, "todate");
+        $table_name = $request->table_name['value'];
+        if ($request->table_name['value'] == 'CUSTOMER') {
+            $table_name = 'PH_CUSTOMER';
+        }
 
         $search = DB::table('FE_RECORD_LOG')
-            ->where('table_name', $request->table_name['value'])
+            ->where(DB::raw('UPPER(table_name)'), strtoupper($table_name))
             ->when($user_id, function ($query) use ($user_id) {
                 return $query->where('user_id', 'like', '%' . $user_id . '%');
             })
@@ -284,7 +400,7 @@ class AuditTrailController extends Controller
 
             ->orderBy('date_created', 'desc')
             ->get();
-
+        // return $search;
         return $this->respondWithToken($this->token(), '', $search);
     }
 

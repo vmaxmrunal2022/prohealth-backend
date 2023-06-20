@@ -47,9 +47,9 @@ class TaxScheduleController extends Controller
 
         if ($request->add_new == 1) {
 
-            if ($validation->count() > 0) {
-                return $this->respondWithToken($this->token(), [['Tax Schedule ID is Already Exists']], $validation, 'false', 200, 1);
-            }
+            // if ($validation->count() > 0) {
+            //     return $this->respondWithToken($this->token(), [['Tax Schedule ID is Already Exists']], $validation, 'false', 200, 1);
+            // }
             $validator = Validator::make($request->all(), [
                 'tax_schedule_id' => ['required', 'max:10', Rule::unique('tax_schedule')->where(function ($q) {
                     $q->whereNotNull('tax_schedule_id');
@@ -69,7 +69,7 @@ class TaxScheduleController extends Controller
                     'RX_TAX_CALCULATION' => $request->rx_tax_calculation,
                     'RX_TAX_BASE_PRICE' => $request->rx_tax_base_price,
                     'OTC_TAX_PERCENTAGE' => $request->otc_tax_percentage,
-                    'OTC_FLAT_TAX_AMOUNT' => $request->otc_flat_tx_amount,
+                    'OTC_FLAT_TAX_AMOUNT' => $request->otc_flat_tax_amount,
                     'OTC_TAX_CALCULATION' => $request->otc_tax_calculation,
                     'OTC_TAX_BASE_PRICE' => $request->otc_tax_base_price,
                 ]);
@@ -101,11 +101,28 @@ class TaxScheduleController extends Controller
                     'RX_TAX_CALCULATION' => $request->rx_tax_calculation,
                     'RX_TAX_BASE_PRICE' => $request->rx_tax_base_price,
                     'OTC_TAX_PERCENTAGE' => $request->otc_tax_percentage,
-                    'OTC_FLAT_TAX_AMOUNT' => $request->otc_flat_tx_amount,
+                    'OTC_FLAT_TAX_AMOUNT' => $request->otc_flat_tax_amount,
                     'OTC_TAX_CALCULATION' => $request->otc_tax_calculation,
                     'OTC_TAX_BASE_PRICE' => $request->otc_tax_base_price,
                 ]);
             return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_tax_schedule);
         }
+    }
+
+
+    public function tax_schedule_delete(Request $request)
+    {
+        if(isset($request->tax_schedule_id)){
+            $all_exceptions_lists =  DB::table('tax_schedule')
+                                        ->where('TAX_SCHEDULE_ID', $request->tax_schedule_id)
+                                        ->delete();
+
+            if ($all_exceptions_lists) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+        
     }
 }

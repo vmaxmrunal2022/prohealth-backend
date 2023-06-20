@@ -20,7 +20,8 @@ class ServiceTypeController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('SERVICE_TYPES')
-                ->where(DB::raw('UPPER(SERVICE_TYPE)'), 'like', '%' . strtoupper($request->search) . '%')
+                // ->where(DB::raw('UPPER(SERVICE_TYPE)'), 'like', '%' . strtoupper($request->search) . '%')
+                ->whereRaw('LOWER(SERVICE_TYPE) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
             return  $this->respondWithToken($this->token(), '', $procedurecodes);
@@ -104,10 +105,10 @@ class ServiceTypeController extends Controller
             if ($delete_service_type) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+                return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         } else {
-            return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
 

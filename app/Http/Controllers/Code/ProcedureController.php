@@ -19,7 +19,8 @@ class ProcedureController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $procedurecodes = DB::table('PROCEDURE_CODES')
-                ->where(DB::raw('UPPER(PROCEDURE_CODE)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('LOWER(PROCEDURE_CODE) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                // ->where(DB::raw('UPPER(PROCEDURE_CODE)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
@@ -66,6 +67,11 @@ class ProcedureController extends Controller
                         'FORM_ID' => ''
                     ]
                 );
+                $record = DB::table('PROCEDURE_CODES')->where(DB::raw('UPPER(procedure_code)'), strtoupper($request->procedure_code))->first();
+                if($record){
+                    $record_snap = json_encode($record);
+                    $save_audit = $this->auditMethod('IN', $record_snap, 'PROCEDURE_CODES');
+                }
                 // $procedurecodes = DB::table('PROCEDURE_CODES')
                 // ->where('PROCEDURE_CODE', 'like', '%' . strtoupper($request->procedure_code) . '%')
                 // ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
@@ -92,8 +98,12 @@ class ProcedureController extends Controller
                             'USER_ID' => '',
                             'DATE_TIME_MODIFIED' => '',
                             'FORM_ID' => ''
-                        ]
-                    );
+                        ]);
+                $record = DB::table('PROCEDURE_CODES')->where(DB::raw('UPPER(procedure_code)'), strtoupper($request->procedure_code))->first();
+                if($record){
+                    $record_snap = json_encode($record);
+                    $save_audit = $this->auditMethod('UP', $record_snap, 'PROCEDURE_CODES');
+                }       
                 return $this->respondWithToken($this->token(), 'Record Updated successfully !', $procedurecode);
             }
         }
@@ -103,6 +113,11 @@ class ProcedureController extends Controller
     public function delete(Request $request)
     {
         if (isset($request->procedure_code)) {
+            $record = DB::table('PROCEDURE_CODES')->where(DB::raw('UPPER(procedure_code)'), strtoupper($request->procedure_code))->first();
+            if($record){
+                $record_snap = json_encode($record);
+                $save_audit = $this->auditMethod('DE', $record_snap, 'PROCEDURE_CODES');
+            }
             $delete_procedure_code =  DB::table('PROCEDURE_CODES')
                 ->where('PROCEDURE_CODE', $request->procedure_code)
                 ->delete();
@@ -110,10 +125,10 @@ class ProcedureController extends Controller
             if ($delete_procedure_code) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+                return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         } else {
-            return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
+            return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
 

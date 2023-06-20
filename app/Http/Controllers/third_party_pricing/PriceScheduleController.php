@@ -31,6 +31,23 @@ class PriceScheduleController extends Controller
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }
 
+    public function getAllNew(Request $request)
+    {
+        $priceShedule = DB::table('PRICE_SCHEDULE')
+        ->select('price_schedule','price_schedule_name')
+        ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $priceShedule);
+    }
+
+
+    public function getAll_New(Request $request)
+    {
+        $priceShedule = DB::table('PRICE_SCHEDULE')
+        ->select('price_schedule','price_schedule_name')
+        ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $priceShedule);
+    }
+
 
     public function getPriceScheduleDetails(Request $erquest)
     {
@@ -427,9 +444,13 @@ class PriceScheduleController extends Controller
                         'GEN_COMPARISON'    => $request->gen_comparison,
                     ]);
 
-                $price_schedule = DB::table('price_schedule')
+                $price_schedule = DB::table('PRICE_SCHEDULE')
                     ->where('price_schedule', $request->price_schedule)
                     ->first();
+                if($price_schedule){
+                    $record_snap = json_encode($price_schedule);
+                    $save_audit = $this->auditMethod('IN', $record_snap, 'PRICE_SCHEDULE');
+                } 
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_price_schedule);
             }
         } else {
@@ -628,11 +649,36 @@ class PriceScheduleController extends Controller
                         'GEN_COMPARISON'    => $request->gen_comparison,
                     ]);
 
-                $price_schedule = DB::table('price_schedule')
+                $price_schedule = DB::table('PRICE_SCHEDULE')
                     ->where('price_schedule', $request->price_schedule)
                     ->first();
+                if($price_schedule){
+                    $record_snap = json_encode($price_schedule);
+                    $save_audit = $this->auditMethod('UP', $record_snap, 'PRICE_SCHEDULE');
+                }
                 return $this->respondWithToken($this->token(), 'Record  Updated Successfully', $price_schedule);
             }
+        }
+    }
+
+
+    public function priceschedultdelete(Request $request)
+    {
+        $price_schedule = DB::table('PRICE_SCHEDULE')
+            ->where('price_schedule', $request->price_schedule)
+            ->first();
+        if($price_schedule){
+            $record_snap = json_encode($price_schedule);
+            $save_audit = $this->auditMethod('DE', $record_snap, 'PRICE_SCHEDULE');
+        }
+        $all_exceptions_lists =  DB::table('PRICE_SCHEDULE')
+                                ->where('PRICE_SCHEDULE', $request->price_schedule)
+                                ->delete();
+
+        if ($all_exceptions_lists) {
+            return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
 
