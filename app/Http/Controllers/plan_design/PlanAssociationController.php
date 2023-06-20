@@ -156,7 +156,8 @@ class PlanAssociationController extends Controller
             ->select('customer_id', 'CUSTOMER_NAME')
             ->where(DB::raw('UPPER(customer_id)'), 'like', '%' . strtoupper($rqeuest->sarch) . '%')
             ->orWhere(DB::raw('UPPER(CUSTOMER_NAME)'), 'like', '%' . strtoupper($rqeuest->sarch) . '%')
-            ->get();
+            //->get();
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $customers);
     }
 
@@ -171,12 +172,16 @@ class PlanAssociationController extends Controller
 
     public function getClientCustomer(Request $request)
     {
-        // dd($request->customerData);
-        $cust_id = strtoupper($request->customerData);
+
+        // return ;
+        // dd($request->all());
+        $cust_id = strtoupper(explode("?", $request->customerData)[0]);
         // dd($cust_id);
         $clients = DB::table('client')
-            ->where(DB::raw('UPPER(customer_id)'), $cust_id)
-            ->get();
+            ->where(DB::raw('UPPER(customer_id)'), strtoupper($cust_id))
+            //->get();
+            ->distinct()
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $clients);
     }
 
