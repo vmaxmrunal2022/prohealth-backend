@@ -264,14 +264,19 @@ class MemberController extends Controller
     }
 
 
-    public function getMembersDropDownList()
+    public function getMembersDropDownList(Request $request)
     {
-
-        $member_data_list = DB::table('MEMBER')
-            ->select('member_id')->get();
-
+        if(isset($request->client_id) && isset($request->client_group_id) && isset($request->customer_id)){
+            $member_data_list = DB::table('MEMBER')
+            ->select('member_id')
+            ->where('client_id', $request->client_id)
+            ->where('client_group_id',$request->client_group_id)
+            ->where('customer_id',$request->customer_id)
+            ->paginate(100);
+        }else{
+            $member_data_list = DB::table('MEMBER')->select('member_id')->paginate(100);
+        }
         // dd($member_data_list);
-
         return $this->respondWithToken($this->token(), '', $member_data_list);
     }
 
@@ -1173,16 +1178,16 @@ class MemberController extends Controller
         // dd($member_form_data_effe);
 
 
-        $merged = [
-            'member_form_data' => $member_form_data,
-            'member_form_data_effective_dates'=>$member_form_data_effe,
-            "member_coverages"=>$member_coverages,
-            "member_coverage_history"=>$member_coverage_history,
-            "member_diagnosis"=>$member_diagnosis,
-            "prior_authorizations"=>$prior_authorizations,
-            "change_log"=>$change_log,
-            "claim_history"=>$claim_history,
-          ];
+            $merged = [
+                'member_form_data' => $member_form_data,
+                'member_form_data_effective_dates'=>$member_form_data_effe,
+                "member_coverages"=>$member_coverages,
+                "member_coverage_history"=>$member_coverage_history,
+                "member_diagnosis"=>$member_diagnosis,
+                "prior_authorizations"=>$prior_authorizations,
+                "change_log"=>$change_log,
+                "claim_history"=>$claim_history,
+            ];
 
           return $this->respondWithToken($this->token(), 'data fetched successfully', $merged);
 

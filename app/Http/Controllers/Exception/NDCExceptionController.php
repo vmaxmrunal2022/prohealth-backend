@@ -1554,4 +1554,9 @@ class NDCExceptionController extends Controller
         $data = DB::table('NDC_EXCEPTIONS')->get();
         return $this->respondWithToken($this->token(), '', $data);
     }
+    public function getNdcDropDownNew()
+    {
+        $data = DB::table('NDC_EXCEPTIONS')->paginate(100);
+        return $this->respondWithToken($this->token(), '', $data);
+    }
 }
