@@ -8,9 +8,13 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use SebastianBergmann\CodeUnit\FunctionUnit;
+use App\Traits\AuditTrait;
+
 
 class ProcedureUcrList extends Controller
 {
+    use AuditTrait;
+
     public function get(Request $request)
     {
         $ucrName = DB::table('procedure_ucr_names')
