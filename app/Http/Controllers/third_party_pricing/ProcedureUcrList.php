@@ -21,6 +21,8 @@ class ProcedureUcrList extends Controller
             ->where('PROCEDURE_UCR_ID', 'like', '%' . $request->search . '%')
             ->orWhere('PROCEDURE_UCR_ID', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
+            ->orderBy('PROCEDURE_UCR_ID', 'asc') // Replace 'column_name' with the column you want to order by
+
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ucrName);

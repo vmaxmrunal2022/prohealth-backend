@@ -8,9 +8,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Cache;
+use App\Traits\AuditTrait;
+
 
 class PricingStrategyController extends Controller
 {
+    use AuditTrait;
+
+
     public function search(Request $request)
     {
         $ndc = DB::table('PRICING_STRATEGY_NAMES')

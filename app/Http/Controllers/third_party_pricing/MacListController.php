@@ -15,6 +15,8 @@ class MacListController extends Controller
             ->where('MAC_LIST', 'like', '%' . strtoupper($request->search). '%')
             ->orWhere('MAC_LIST', 'like', '%' . $request->search. '%')
             ->orWhere('MAC_DESC', 'like', '%' . strtoupper($request->search) . '%')
+            ->orderBy('MAC_LIST', 'asc') // Replace 'column_name' with the column you want to order by
+
             ->get();
 
         return $this->respondWithToken($this->token(), '', $macList);

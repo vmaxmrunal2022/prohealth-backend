@@ -548,6 +548,15 @@ class PlanEditController extends Controller
             ->orWhere('PLAN_BENEFIT_TABLE.PLAN_NAME', 'like', '%' . strtoupper($request->search) . '%')
             ->paginate(100);
 
+            // ->join('plan_table_extensions', 'plan_table_extensions.plan_id', '=', 'PLAN_BENEFIT_TABLE.plan_id')
+            // ->whereRaw('LOWER(PLAN_BENEFIT_TABLE.PLAN_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            // // ->where('PLAN_BENEFIT_TABLE.PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
+            // ->orWhere('PLAN_BENEFIT_TABLE.PLAN_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            // // ->paginate(100);
+            // ->get();
+            // ->where('PLAN_BENEFIT_TABLE.PLAN_ID', $request->search)
+            // ->get();
+        // return $request->search;
         $system_limits = DB::table('GLOBAL_PARAMS')->select(['sys_date_written_to_first_fill', 'sys_date_filled_to_sub_online', 'sys_date_filled_to_sub_dmr', 'sys_date_sub_to_filled_future', 'sys_days_for_reversals'])->first();
 
         foreach ($planEdit as $key => $plan) {
