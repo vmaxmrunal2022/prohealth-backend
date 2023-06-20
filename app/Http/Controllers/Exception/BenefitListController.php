@@ -18,6 +18,13 @@ class BenefitListController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function indexNew(Request $request)
+    {
+        $ndc = DB::table('BENEFIT_CODES')->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
     public function BenefitLists(Request $request){
 
         $ndc = DB::table('BENEFIT_LIST_NAMES')->get();

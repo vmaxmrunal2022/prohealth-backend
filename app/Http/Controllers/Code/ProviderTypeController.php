@@ -26,6 +26,18 @@ class ProviderTypeController extends Controller
         return $this->respondWithToken($this->token(), '', $procedurecodes);
     }
 
+    public function getNew(Request $request)
+    {
+
+        $procedurecodes = DB::table('PROVIDER_TYPES')
+            // ->where(DB::raw('UPPER(PROVIDER_TYPE)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('LOWER(PROVIDER_TYPE) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $procedurecodes);
+    }
+
 
     public function IdSearch(Request $request)
     {

@@ -264,14 +264,19 @@ class MemberController extends Controller
     }
 
 
-    public function getMembersDropDownList()
+    public function getMembersDropDownList(Request $request)
     {
-
-        $member_data_list = DB::table('MEMBER')
-            ->select('member_id')->get();
-
+        if(isset($request->client_id) && isset($request->client_group_id) && isset($request->customer_id)){
+            $member_data_list = DB::table('MEMBER')
+            ->select('member_id')
+            ->where('client_id', $request->client_id)
+            ->where('client_group_id',$request->client_group_id)
+            ->where('customer_id',$request->customer_id)
+            ->paginate(100);
+        }else{
+            $member_data_list = DB::table('MEMBER')->select('member_id')->paginate(100);
+        }
         // dd($member_data_list);
-
         return $this->respondWithToken($this->token(), '', $member_data_list);
     }
 
@@ -1141,7 +1146,53 @@ class MemberController extends Controller
         }
     }
 
-   
+    public function memberDetails(Request $request){
+
+        $member_form_data=DB::table('member')
+        ->select('member.*','CUSTOMER.CUSTOMER_NAME','CUSTOMER.EFFECTIVE_DATE as cust_eff_date','CUSTOMER.TERMINATION_DATE as cust_term_date',
+        'CLIENT.CLIENT_NAME as client_name','CLIENT.EFFECTIVE_DATE as client_eff_date','CLIENT.TERMINATION_DATE as client_term_date',
+        'CLIENT_GROUP.GROUP_NAME','CLIENT_GROUP.GROUP_EFFECTIVE_DATE as client_group_eff_date','CLIENT_GROUP.GROUP_TERMINATION_DATE as client_group_term_date')
+        ->join('CUSTOMER','CUSTOMER.CUSTOMER_ID','=','member.CUSTOMER_ID')
+        ->join('CLIENT','CLIENT.CLIENT_ID','=','member.CLIENT_ID')
+        ->join('CLIENT_GROUP','CLIENT_GROUP.CLIENT_GROUP_ID','=','member.CLIENT_GROUP_ID')
+        ->where('member.member_id',$request->member_id)->first();
+
+
+
+
+
+        $member_form_data_effe=DB::table('MEMBER_COVERAGE')->where('member_id',$request->member_id)->get()->last();
+        $member_coverages=DB::table('MEMBER_COVERAGE')->where('member_id',$request->member_id)->get();
+        $member_coverage_history=DB::table('MEMBER_HIST')->where('member_id',$request->member_id)->get();
+        $member_coverage_history=DB::table('MEMBER_HIST')->where('member_id',$request->member_id)->get();
+        $member_diagnosis=DB::table('MEMBER_DIAGNOSIS')->where('member_id',$request->member_id)->get();
+        $prior_authorizations=DB::table('PRIOR_AUTHORIZATIONS')->where('member_id',$request->member_id)->get();
+        $change_log=DB::table('MEMBER_CHANGE_LOG')->where('member_id',$request->member_id)->get();
+        $claim_history=DB::table('RX_TRANSACTION_LOG')->join('RX_TRANSACTION_DETAIL', 'RX_TRANSACTION_DETAIL.PHARMACY_NABP', '=', 'RX_TRANSACTION_LOG.PHARMACY_NABP')
+        ->select('RX_TRANSACTION_LOG.PHARMACY_NABP')
+                        ->where('RX_TRANSACTION_LOG.MEMBER_ID',$request->member_id)
+                        ->get();
+
+        // dd($member_form_data_effe);
+
+
+            $merged = [
+                'member_form_data' => $member_form_data,
+                'member_form_data_effective_dates'=>$member_form_data_effe,
+                "member_coverages"=>$member_coverages,
+                "member_coverage_history"=>$member_coverage_history,
+                "member_diagnosis"=>$member_diagnosis,
+                "prior_authorizations"=>$prior_authorizations,
+                "change_log"=>$change_log,
+                "claim_history"=>$claim_history,
+            ];
+
+          return $this->respondWithToken($this->token(), 'data fetched successfully', $merged);
+
+
+
+    }
+
     public function delete(Request $request){
         
 

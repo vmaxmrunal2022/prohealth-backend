@@ -808,6 +808,11 @@ class GPIExceptionController extends Controller
         $data = DB::table('GPI_EXCEPTIONS')->get();
         return $this->respondWithToken($this->token(), '', $data);
     }
+    public function getGpiDropDownNew()
+    {
+        $data = DB::table('GPI_EXCEPTIONS')->paginate(100);
+        return $this->respondWithToken($this->token(), '', $data);
+    }
 
 
 

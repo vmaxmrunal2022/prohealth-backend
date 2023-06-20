@@ -161,6 +161,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         // PROVIDER TYPE
         Route::get('/provider-type', [ProviderTypeController::class, 'get'])->name('providertype.get'); // SEARCH
+        Route::get('/provider-type-new', [ProviderTypeController::class, 'getNew'])->name('providertype.get.new'); // SEARCH
         Route::post('/provider-type/submit', [ProviderTypeController::class, 'add'])->name('providertype.submit');  // add
         Route::post('/provider-type/delete', [ProviderTypeController::class, 'delete'])->name('providertype.delete'); // DELETE
         Route::get('/provider/id/search', [ProviderTypeController::class, 'IdSearch'])->name('providertype.search'); // SEARCH
@@ -182,7 +183,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/service-type/delete', [ServiceTypeController::class, 'delete'])->name('servicetype.delete'); // DELETE
         Route::get('/check-service-type-exist', [ServiceTypeController::class, 'checkServiceTypeExist']);
         Route::get('/service-type/all', [ServiceTypeController::class, 'getallServicetypes'])->name('servicetype.all.servicetypes'); // SEARCH
-
+        Route::get('/service-type/all-new', [ServiceTypeController::class, 'getallServicetypesNew'])->name('servicetype.all.servicetypes.new'); // SEARCH
 
 
 
@@ -221,6 +222,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //REASON-CODE-EXCEPTION
         Route::get('/ndc/ndc-drop-down', [NDCExceptionController::class, 'getNdcDropDown']); // drop down
+        Route::get('/ndc/ndc-drop-down-new', [NDCExceptionController::class, 'getNdcDropDownNew']);
 
         Route::get('/reason/exception/search', [ReasonCodeExceptionController::class, 'search'])->name('reason.exception.search'); // SEARCH
         Route::get('/reason/exception/details/', [ReasonCodeExceptionController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAILS
@@ -868,6 +870,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/gpi/details', [GPIExceptionController::class, 'getNDCItemDetails'])->name('gpi.details.get'); // DETAILS
     Route::post('/gpi/add', [GPIExceptionController::class, 'add'])->name('gpi.add'); // add
     Route::get('/gpi/gpi-drop-down', [GPIExceptionController::class, 'getGpiDropDown']);
+    Route::get('/gpi/gpi-drop-down-new', [GPIExceptionController::class, 'getGpiDropDownNew']);
     Route::get('/gpi/list', [GPIExceptionController::class, 'GpiList'])->name('gpi.search'); // SEARCH
     Route::get('/gpi/list/new', [GPIExceptionController::class, 'GpiList_New'])->name('gpi.search'); // SEARCH
 
@@ -911,6 +914,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/benefitderivation/details', [BenefitDerivationController::class, 'getBLItemDetails'])->name('benefit.details.get'); // DETAILS
     Route::post('/benefitderivation/add', [BenefitDerivationController::class, 'add'])->name('benefit.search'); // SEARCH
     Route::get('/benifitcodes/all', [BenefitListController::class, 'index']);
+    Route::get('/benifitcodes/all-new', [BenefitListController::class, 'indexNew']);
     Route::post('benefitlist/derivation/delete', [BenefitDerivationController::class, 'benefitderivationdelete'])->name('benefitderivationdelete');
 
     Route::get('/benifitcodes/list/all', [BenefitListController::class, 'BenefitLists']);
@@ -939,6 +943,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::post('/procedure-code-list/add', [PrcedureCodeListController::class, 'add'])->name('procedure-code-add');
 
     Route::get('/procedure-code-list/getAll', [PrcedureCodeListController::class, 'getAll'])->name('procedure-code-list-getAll');
+    Route::get('/procedure-code-list/getAll-new', [PrcedureCodeListController::class, 'getAllNew'])->name('procedure-code-list-getAll');
 
     Route::get('/procedure-code-list/details', [PrcedureCodeListController::class, 'getDetails'])->name('procedure-code-details');
     Route::post('/procedure-code-list/delete', [PrcedureCodeListController::class, 'produrecodelistdelete'])->name('produrecodelistdelete');
@@ -1236,6 +1241,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
 
     //Copay Schedule
     Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
+    Route::get('copay-schedule/get-new', [CopayScheduleController::class, 'getNew'])->name('get.copay.new');
     Route::get('copay-schedule/get-copay-data', [CopayScheduleController::class, 'getCopayData'])->name('get.copay.single');
     Route::get('copay-schedule/get-source', [CopayScheduleController::class, 'getSourceOptions']);
     Route::get('copay-schedule/get-factor', [CopayScheduleController::class, 'getFactor']);
