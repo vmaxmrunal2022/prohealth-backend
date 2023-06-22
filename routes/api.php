@@ -470,7 +470,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
     // COMMOM
     Route::get('/countries', [Controller::class, 'Contries'])->name('countries');
-    Route::get('/countries/search/{c_id?}', [Controller::class, 'ContriesSearch'])->name('countries.search');
+    Route::get('/countries/search', [Controller::class, 'ContriesSearch'])->name('countries.search');
     Route::get('/states/{countryid}', [Controller::class, 'getStatesOfCountry'])->name('states');
     //Route::get('/state/search/{stateid?}', [Controller::class, 'getStatesOfCountrySearch'])->name('state.search');
     Route::get('/state/search', [Controller::class, 'getStatesOfCountrySearch'])->name('state.search');
@@ -663,7 +663,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
         Route::get('memberdata/dropdown', [MemberController::class, 'getMembersDropDownList']);
 
-        Route::get('memberdata/delete', [MemberController::class, 'delete']);
+        Route::post('memberdata/delete', [MemberController::class, 'delete']);
 
         //tab table routes
         Route::get('memberdata/get-coverage-information-table', [MemberController::class, 'getCoverageInformationTable']);

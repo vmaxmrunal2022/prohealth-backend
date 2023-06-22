@@ -502,7 +502,7 @@ class UserDefinationController extends Controller
                         'user_last_name' => $request->user_last_name,
                         'group_id' => $request->group_id,
                         'user_id_created' => $request->session()->get('user'),
-                        'privs' => $request->default_system_user,
+                        'privs' => $request->privs,
                         'restrict_security_flag' => $request->restrict_security_flag,
                         'user_profile' => $updated_user_profile,
                     ]);

@@ -188,13 +188,11 @@ class Controller extends BaseController
         return $this->respondWithToken($this->token(), '', $countries);
     }
 
-    public function ContriesSearch($c_id = '')
+    public function ContriesSearch(Request $request)
     {
-        if (!empty($c_id)) {
-            $countries = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($c_id) . '%')->get();
-        } else {
-            $countries = DB::table('COUNTRY_STATES')->get();
-        }
+    
+            $countries = DB::table('COUNTRY_STATES')->paginate('10');
+      
 
         return $this->respondWithToken($this->token(), '', $countries);
         // return $countries;
