@@ -56,7 +56,7 @@ class ReasonCodeExceptionController extends Controller
 
 
 
-            $createddate = FacadesDB::table('REASON_CODE_LISTS')
+            $createddate = DB::table('REASON_CODE_LISTS')
                 ->where('reason_code_list_id', $request->reason_code_list_id)
                 ->update(
                     [

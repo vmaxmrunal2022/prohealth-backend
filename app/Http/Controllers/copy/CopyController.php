@@ -279,15 +279,27 @@ class CopyController extends Controller
             ->where($uniqueColumns->column_name, $sourceCustomer)
             ->first();
 
+
         $newRecord = (array) $record;
         $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+        $newRecord['form_id'] = 'COPY';
+        $newRecord['date_time_modified'] = date('d-F-y');
+        $newRecord['date_time_created'] = date('d-F-y');
 
-        $excludedColumns = [$uniqueColumns->column_name]; // Add any other duplicate column names here
+        // return $newRecord;
+        $excludedColumns = [
+            $uniqueColumns->column_name, 'form_id' => 'COPY', 'date_time_modified' => date('d-F-y'),
+            'date_time_created' => date('d-F-y')
+        ]; // Add any other duplicate column names here
 
-        $columns = array_diff(array_keys($newRecord), [strtolower($excludedColumns[0])]);
+        // return $excludedColumns;
+
+        $columns = array_diff(array_keys($newRecord), [
+            strtolower($excludedColumns[0]), $excludedColumns['form_id'],
+            $excludedColumns['date_time_modified'], $excludedColumns['date_time_created']
+        ]);
 
         // to insert data  into db PARENT
-
         $copy_source_to_dest = DB::table($request->table_name)
             ->insert(array_intersect_key($newRecord, array_flip($columns)));
 

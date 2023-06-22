@@ -12,7 +12,7 @@ class ProcedureUcrList extends Controller
     public function get(Request $request)
     {
         $ucrName = DB::table('procedure_ucr_names')
-            ->where('PROCEDURE_UCR_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('UPPER(PROCEDURE_UCR_ID) LIKE ?', ['%' . strtoupper($request->search) . '%'])
             ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
