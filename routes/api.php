@@ -264,6 +264,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/provider/getAll', [ProviderDataProviderController::class, 'getAll'])->name('exception.provider.getAll');
 
         //exception Price Schedule list
+        Route::get('/provider/getAll/new', [ProviderDataProviderController::class, 'getAllNew'])->name('exception.provider.getAll');
+
 
         //exception speciality list
         Route::get('/speciality/getAll', [SpecialityController::class, 'getAll'])->name('exception.speciality.getAll');

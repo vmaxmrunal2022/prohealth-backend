@@ -43,6 +43,7 @@ class MemberController extends Controller
                 'MEMBER.ADDRESS_1',
                 'MEMBER.ADDRESS_2',
                 'MEMBER.CITY',
+                'MEMBER.PERSON_CODE',
                 'MEMBER.COUNTRY',
                 'MEMBER.DATE_OF_BIRTH',
                 'MEMBER.RELATIONSHIP',
@@ -583,7 +584,7 @@ class MemberController extends Controller
 
                         'CITY' => $request->city,
                         'STATE' => $request->state,
-                        'ZIP_CODE' => $request->zipcode,
+                        'ZIP_CODE' => $request->zip_code,
                         'PHONE' => $request->phone,
                         'ANNIV_DATE' => $request->anniv_date,
                         'DATE_OF_BIRTH' => $request->date_of_birth,
@@ -639,9 +640,9 @@ class MemberController extends Controller
                         'ACCUM_BENE_EFF_DATE_1' => $request->accum_bene_eff_date_1,
                         'ACCUM_BENE_EFF_DATE_2' => $request->accum_bene_eff_date_2,
                         'ACCUM_BENE_EFF_DATE_3' => $request->accum_bene_eff_date_3,
-                        'ACCUM_BENE_TERM_DATE_1' => $request->ACCUM_BENE_TERM_DATE_1,
-                        'ACCUM_BENE_TERM_DATE_2' => $request->ACCUM_BENE_TERM_DATE_2,
-                        'ACCUM_BENE_TERM_DATE_3' => $request->ACCUM_BENE_TERM_DATE_3,
+                        'ACCUM_BENE_TERM_DATE_1' => $request->accum_bene_term_date_1,
+                        'ACCUM_BENE_TERM_DATE_2' => $request->accum_bene_term_date_2,
+                        'ACCUM_BENE_TERM_DATE_3' => $request->accum_bene_term_date_3,
 
 
                         'ACCUM_ADJMNT_MBR_PAID_AMT_2' => $request->accum_adjmnt_mbr_paid_amt_2,
@@ -660,7 +661,11 @@ class MemberController extends Controller
                         'USER_DEFINED_CODE_1' => $request->user_defined_code_1,
                         'USER_DEFINED_CODE_2' => $request->user_defined_code_2,
                         'COUNTRY' => $request->country,
-                        // 'COUNTRY_CODE'=>$request->country_code,
+                        'COUNTRY_CODE'=>$request->country_code,
+                        // 'accum_bene_term_date_3'=>$request->accum_bene_term_date_3,
+                        // 'accum_bene_term_date_2'=>$request->accum_bene_term_date_2,
+                        // 'accum_bene_plan_ov'=>$request->accum_bene_plan_ov,
+                        'accum_adjmnt_plan_paid_amt'=>$request->accum_adjmnt_plan_paid_amt
 
                     ]);
 
@@ -679,6 +684,7 @@ class MemberController extends Controller
                 if (!empty($request->coverage_form)) {
                     $coverage_list = $coverage_list_array[0];
                     foreach ($coverage_list_array as $key => $coverage_list) {
+
                         $add_member_coverage = DB::table('MEMBER_COVERAGE')
                             ->insert([
                                 'customer_id' => $coverage_list->customer_id,
@@ -728,9 +734,9 @@ class MemberController extends Controller
                                 'MEMBER_ID' => $coverage_history->member_id,
                                 "DATE_TIME_MODIFIED" => date('Y-m-d H:i:s'),
 
-                                // 'PERSON_CODE'=>$coverage_history->person_code,
-                                // 'FROM_EFFECTIVE_DATE'=>$coverage_history->effective_date,
-                                // 'FROM_TERMINATION_DATE'=>$coverage_history->termination_date,
+                                'PERSON_CODE'=>$request->person_code,
+                                'FROM_EFFECTIVE_DATE'=>$coverage_history->effective_date,
+                                'FROM_TERMINATION_DATE'=>$coverage_history->termination_date,
                                 // 'FROM_PLAN_ID'=>$coverage_history->from_plan_id,
                                 'TO_EFFECTIVE_DATE' => $coverage_history->effective_date,
                                 'TO_TERMINATION_DATE' => $coverage_history->termination_date,
@@ -779,6 +785,7 @@ class MemberController extends Controller
 
                     foreach ($diagnosis_list_array as $key => $diagnosis_list) {
 
+
                         $add_diagnosis = DB::table('MEMBER_DIAGNOSIS')
                             ->insert([
                                 'customer_id' => $diagnosis_list->customer_id,
@@ -801,7 +808,7 @@ class MemberController extends Controller
                             ->first();
 
                         $record_snap_mem_diag = json_encode($member_diag);
-                        $save_audit_mem_diag = $this->auditMethod('IN', $member_diag, 'MEMBER_DIAGNOSIS');
+                        $save_audit_mem_diag = $this->auditMethod('IN', $record_snap_mem_diag, 'MEMBER_DIAGNOSIS');
 
 
                         $add_diagnosis_history = DB::table('MEMBER_DIAGNOSIS_HISTORY')
@@ -860,6 +867,8 @@ class MemberController extends Controller
                     'city' => $request->city,
                     'state' => $request->state,
                     'country' => $request->country,
+                    'COUNTRY_CODE'=>$request->country_code,
+                    'ZIP_CODE' => $request->zip_code,
                     'date_of_birth' => $request->date_of_birth,
                     'relationship' => $request->relationship,
                     'anniv_date' => $request->anniv_date,
@@ -875,9 +884,9 @@ class MemberController extends Controller
                     'ACCUM_BENE_EFF_DATE_1' => $request->accum_bene_eff_date_1,
                     'ACCUM_BENE_EFF_DATE_2' => $request->accum_bene_eff_date_2,
                     'ACCUM_BENE_EFF_DATE_3' => $request->accum_bene_eff_date_3,
-                    'ACCUM_BENE_TERM_DATE_1' => $request->ACCUM_BENE_TERM_DATE_1,
-                    'ACCUM_BENE_TERM_DATE_2' => $request->ACCUM_BENE_TERM_DATE_2,
-                    'ACCUM_BENE_TERM_DATE_3' => $request->ACCUM_BENE_TERM_DATE_3,
+                    'ACCUM_BENE_TERM_DATE_1' => $request->accum_bene_term_date_1,
+                    'ACCUM_BENE_TERM_DATE_2' => $request->accum_bene_term_date_2,
+                    'ACCUM_BENE_TERM_DATE_3' => $request->accum_bene_term_date_3,
                     // 'provider_id' => $request->provider_id,
                     'PRIMARY_PRESCRIBER' => $request->prescriber_id,
                     'MISC_GROUPING_1' => $request->misc_grouping_1,
@@ -885,6 +894,9 @@ class MemberController extends Controller
                     'misc_id' => $request->misc_id,
                     'USER_DEFINED_CODE_1' => $request->user_defined_code_1,
                     'USER_DEFINED_CODE_2' => $request->user_defined_code_2,
+
+                    'accum_adjmnt_plan_paid_amt'=>$request->accum_adjmnt_plan_paid_amt
+
                 ]);
 
             //Bellow code is for adding member in audit
@@ -1082,7 +1094,7 @@ class MemberController extends Controller
 
                 if ($add_diagnosis_history) {
                     $new = $add_diagnosis_history;
-                    $new = DB::table('MEMBER_HIST')
+                    $new = DB::table('MEMBER_DIAGNOSIS_HISTORY')
                         ->where('CUSTOMER_ID', $diagnosis_list->customer_id)
                         ->where('CLIENT_ID', $diagnosis_list->client_id)
                         ->where('CLIENT_GROUP_ID', $diagnosis_list->client_group_id)
@@ -1092,8 +1104,8 @@ class MemberController extends Controller
                             "PERSON_CODE" => "0",
                             "CHG_TYPE_IND" => "A",
                             "BATCH_SEQUENCE_NUMBER" => '0',
-                            // 'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
-                            // 'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
+                            'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
+                            'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
                             "TO_EFFECTIVE_DATE" => $diagnosis_list->effective_date,
                             "TO_TERMINATION_DATE" => $diagnosis_list->termination_date,
                             "USER_ID_CREATED" => "",

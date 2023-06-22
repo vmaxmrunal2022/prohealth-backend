@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Faker\Extension\Helper;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Traits\AuditTrait;
 
 class PriceScheduleController extends Controller
 {
+    use AuditTrait;
+
     public function get(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')
