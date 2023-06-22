@@ -134,8 +134,8 @@ class GPIExceptionController extends Controller
     {
         $ndc = DB::table('GPI_EXCEPTIONS')
             ->select('GPI_EXCEPTION_LIST', 'EXCEPTION_NAME')
-            ->where('GPI_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->where(DB::raw('UPPER(GPI_EXCEPTION_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

@@ -43,8 +43,8 @@ class DrugClassController extends Controller
     {
         $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
             ->select('DRUG_CATGY_EXCEPTION_LIST', 'DRUG_CATGY_EXCEPTION_NAME')
-            ->where('DRUG_CATGY_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('DRUG_CATGY_EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->where(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
         return $this->respondWithToken($this->token(), '', $ndc);
     }

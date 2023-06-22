@@ -10,7 +10,9 @@ class RvaListController extends Controller
 {
     public function get(Request $request)
     {
-        $rvaNames = DB::table('rva_names')->get();
+        $rvaNames = DB::table('rva_names')
+            ->whereRaw('LOWER(RVA_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $rvaNames);
     }
@@ -18,10 +20,10 @@ class RvaListController extends Controller
     public function getRvaList(Request $request)
     {
         $rvaLists = DB::table('rva_names')
-                    ->join('rva_list', 'rva_names.rva_list_id', 'rva_list.rva_list_id')
-                    ->where('rva_list.rva_list_id', $request->search)
-                    ->get();
+            ->join('rva_list', 'rva_names.rva_list_id', 'rva_list.rva_list_id')
+            ->where('rva_list.rva_list_id', $request->search)
+            ->get();
 
-       return $this->respondWithToken($this->token(), '', $rvaLists);
+        return $this->respondWithToken($this->token(), '', $rvaLists);
     }
 }

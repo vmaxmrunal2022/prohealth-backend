@@ -15,6 +15,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\Exception\BenefitListController;
 use App\Http\Controllers\Exception\ReasonCodeExceptionController;
 use App\Http\Controllers\user_access\UserAccessControl;
+use App\Http\Controllers\Exception\ProviderTypeProcController;
 
 
 
@@ -75,6 +76,7 @@ use App\Http\Controllers\Exception\ProviderTypeValidationController;
 use App\Http\Controllers\plan_design\PlanAssociationController;
 use App\Http\Controllers\Exception\SuperBenefitControler;
 use App\Http\Controllers\Exception\DrugClassController;
+use App\Http\Controllers\Exception\LimitationsController;
 use App\Http\Controllers\membership\MemberController;
 use App\Http\Controllers\membership\PlanValidationController;
 use App\Http\Controllers\membership\PriorAuthController;
@@ -254,6 +256,12 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/provider/details/{provider_list}/{provider_nabp}', [ProviderController::class, 'getProviderDetails'])->name('ndsc.details.get'); // DETAIL
         Route::post('/provider/submit-provider-form', [ProviderController::class, 'addProviderData']);
         Route::get('/provider/provider-list-drop-down/', [ProviderController::class, 'searchDropDownProviderList']);
+
+        //PROVIDER TYPE PROCEDURE
+        Route::get('/providertype-proc/search', [ProviderTypeProcController::class, 'search']);
+
+        //LIMITATIONS 
+        Route::get('/limitations/search', [LimitationsController::class, 'search']);
 
 
         //DIAGNOSIS VALIDATION LIST

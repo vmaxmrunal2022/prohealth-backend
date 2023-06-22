@@ -11,7 +11,7 @@ class MacListController extends Controller
     public function get(Request $request)
     {
         $macList = DB::table('MAC_LIST')
-            ->where('MAC_LIST', 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('UPPER(MAC_LIST) LIKE ?', ['%' . strtoupper($request->search) . '%'])
             ->orWhere('MAC_DESC', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 

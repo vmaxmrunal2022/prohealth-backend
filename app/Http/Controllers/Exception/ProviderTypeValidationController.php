@@ -398,7 +398,7 @@ class ProviderTypeValidationController extends Controller
             // $providerTypeValidations = DB::table('PROVIDER_TYPE_VALIDATIONS')
             // ->where('effective_date', 'like', '%'.$request->search.'%')
             // ->Where('prov_type_list_id', 'like', '%' . $request->search . '%')
-            ->whereRaw('LOWER(prov_type_list_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->whereRaw(DB::raw('LOWER(prov_type_list_id) LIKE ?'), ['%' . strtolower($request->search) . '%'])
             // ->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
         // dd($request->all());

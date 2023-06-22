@@ -16,9 +16,9 @@ class ProviderTypeProcController extends Controller
     {
         $data = DB::table('PROV_TYPE_PROC_ASSOC_NAMES')
             ->select('PROV_TYPE_PROC_ASSOC_ID', 'DESCRIPTION')
-            // ->where('PROV_TYPE_PROC_ASSOC_ID', 'like', '%' . $request->search . '%')
+            ->where(DB::raw('UPPER(PROV_TYPE_PROC_ASSOC_ID)'), 'like', '%' . strtoupper($request->search) . '%')
 
-            ->whereRaw('LOWER(PROV_TYPE_PROC_ASSOC_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            // ->whereRaw('LOWER(PROV_TYPE_PROC_ASSOC_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('DESCRIPTION', 'like', '%' . $request->search . '%')
             ->get();
 

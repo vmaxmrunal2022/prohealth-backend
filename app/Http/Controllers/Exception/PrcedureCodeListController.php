@@ -401,10 +401,11 @@ class PrcedureCodeListController extends Controller
 
     public function get(Request $request)
     {
-        $providerCodeList = DB::table('PROC_CODE_LIST_NAMES')
-            // ->where( 'PROC_CODE_LIST_ID', 'like', '%'.$request->search.'%' )
-            ->whereRaw('LOWER(PROC_CODE_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
-            ->orWhere('DESCRIPTION', 'like', '%' . $request->search . '%')
+        // $providerCodeList = DB::table('PROC_CODE_LIST_NAMES')
+        $providerCodeList = DB::table('PROC_CODE_LISTS')
+            ->where(DB::raw('UPPER(PROC_CODE_LIST_ID)'), 'like', '%' . strtoupper($request->search) . '%')
+            // ->whereRaw('LOWER(PROC_CODE_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            // ->orWhere('DESCRIPTION', 'like', '%' . $request->search . '%')
             ->get();
         return $this->respondWithToken($this->token(), '', $providerCodeList);
     }
