@@ -117,9 +117,10 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
     Route::group(['prefix' => 'users'], function ($router) {
         Route::post('/register', [UserController::class, 'register'])->name('register.user');
-        Route::post('/login', [UserController::class, 'login'])->name('login.user');
+        Route::post('/login', [UserController::class, 'login'])->name('login.user'); //->middleware('throttle:api')
         Route::get('/view-profile', [UserController::class, 'viewProfile'])->name('profile.user');
         Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
+        Route::post('/change-password', [UserController::class, 'changePassword'])->name('user.change-password')->middleware('throttle:loginAttempt');
     });
 
     Route::group(['prefix' => 'codes'], function ($router) {

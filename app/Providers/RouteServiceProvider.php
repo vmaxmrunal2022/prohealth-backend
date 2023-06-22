@@ -48,5 +48,19 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+
+        RateLimiter::for('loginAttempt', function (Request $request) {
+            return Limit::perMinute(3)
+                ->by(optional($request->user())->id ?: $request->ip())
+                ->response(function () {
+                    $responseMessage = "Too many Invalid Attempts. Please try again later.";
+                    return response()->json([
+                        "success" => true,
+                        "message" => $responseMessage,
+                        "error" => $responseMessage
+                    ], 422);
+                    // return response()->json(['otpfail' => 'Too many requests. Please try again later.'], 202);
+                });
+        });
     }
 }

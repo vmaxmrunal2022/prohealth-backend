@@ -160,6 +160,8 @@ class UserController extends Controller
             ], 422);
         }
     }
+
+   
     public function viewProfile()
     {
         $responseMessage = "user profile";

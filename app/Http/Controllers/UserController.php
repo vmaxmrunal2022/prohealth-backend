@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Validator as FacadesValidator;
 use Illuminate\Support\Facades\Cache;
 
 use Illuminate\Redis\Connections\Connection;
-
+use DB;
 
 class UserController extends Controller
 {
@@ -23,7 +23,7 @@ class UserController extends Controller
     protected $redis;
     public function __construct()
     {
-        $this->middleware("auth:api", ["except" => ["login", "register"]]);
+        $this->middleware("auth:api", ["except" => ["login", "register", "changePassword"]]);
         $this->user = new User;
     }
 
@@ -54,108 +54,91 @@ class UserController extends Controller
     }
     public function login(Request $request)
     {
-        //return Session::get('user');
-        // return FacadesAuth::user();
-        $prefix = '$2y$';
-        $cost = '10';
-        $salt = '$thisisahardcodedsalt$';
-        $blowfishPrefix = $prefix . $cost . $salt;
         $password = $request->USER_PASSWORD;
-        $hash = crypt($password, $blowfishPrefix);
-        $hashToThirdParty = substr($hash, -32);
-        $hashFromThirdParty = $hashToThirdParty;
-        // dd($hashFromThirdParty);
-        // $pw = $request->USER_PASSWORD;
-        $hashed = Hash::make($hashFromThirdParty);
-        $check_password = Hash::check($hashFromThirdParty, $hashed);
-        if ($check_password) {
-            $user_password = $hashFromThirdParty;
-        } else {
-            $user_password = null;
-        }
-        // print_r($hashFromThirdParty);
         $validator = FacadesValidator::make($request->all(), [
             'USER_ID' => 'required|string',
-            'USER_PASSWORD' => 'required',
+            'USER_PASSWORD' => 'required|min:8',
         ]);
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => $validator->messages()->toArray()
-            ], 500);
+            ], 422);
         }
-
-
-        $credentials = $request->only(["USER_ID", "USER_PASSWORD"]);
-        // $user = User::where('USER_ID', $credentials['USER_ID'])->first();
-
-
-
-        $user = User::where('USER_ID', $request->USER_ID)
-            // ->where('USER_PASSWORD', $request->USER_PASSWORD)
-            ->where('USER_PASSWORD', $user_password)
-            ->first();
-        //return $user;
-        // dd($user);
-        // exit();
-        // return response()->json([
-        //     'data' => Auth::check(),
-        //     "success" => false,
-        //     "message" => '',
-        //     "error" => ''
-        // ], 422);
-
-        // if ($user) {
-        //     Auth::loginUsingId($user->id);
-        //     // -- OR -- //
-        //     Auth::login($user);
-        //     return redirect()->route('account');
-        // } else {
-        //     return redirect()->back()->withInput();
-        // }
-
-        if ($user) {
-            FacadesAuth::login($user);
-
-            // FacadesAuth::loginUsingId($user->id);
-            // print_r(Auth::login($user));
-            if (!FacadesAuth::check()) {
-
-                $responseMessage = "Invalid username or password";
+        $userCheck = User::where('USER_ID', $request->USER_ID)->first();
+        if ($userCheck) {
+            if ($userCheck && Hash::check($password, $userCheck->user_password)) {
+                FacadesAuth::login($userCheck);
+                if (!FacadesAuth::check()) {
+                    $responseMessage = "Invalid username or password";
+                    return response()->json([
+                        "success" => false,
+                        "message" => $responseMessage,
+                        "error" => $responseMessage
+                    ], 422);
+                }
+                $accessToken = '';
+                $user = FacadesAuth::user();
+                $responseMessage = "Login Successful";
+                Session::put('user', auth()->user()->user_id);
+                $userid = auth()->user()->user_id;
+                $a = getUserData($userid);
+                $usersData = auth()->user()->user_id;
+                Cache::put('userId', $usersData, 86400);
+                return $this->respondWithToken($accessToken, $responseMessage, $user);
+            } else {
+                $responseMessage = "Password does not match";
                 return response()->json([
-                    "success" => false,
+                    "success" => true,
                     "message" => $responseMessage,
                     "error" => $responseMessage
                 ], 422);
             }
-
-            //$accessToken = auth()->user()->createToken('authToken')->accessToken;
-            $accessToken = '';
-            $user1 = FacadesAuth::user();
-            //return $user1;
-            $responseMessage = "Login Successful";
-            Session::put('user', auth()->user()->user_id);
-            $userid = auth()->user()->user_id;
-            $a = getUserData($userid);
-            // dd(getUserData());
-            // app()->instance('my_global_data', $userid);
-            // $usersData =
-            $usersData = auth()->user()->user_id;
-            Cache::put('userId', $usersData, 86400);
-            // return Cache::get('users.active');
-
-            // Session::put('login_id', auth()->user()->user_id);
-            // define('USER_ID', auth()->user()->user_id);
-            //config(['user_id' => auth()->user()->user_id]);
-
-            // return auth()->user()->user_id;
-
-            //return $this->respondWithToken($accessToken, $responseMessage, ['name' => auth()->user()->user_id]);
-            return $this->respondWithToken($accessToken, $responseMessage, $user);
         } else {
             $responseMessage = "Sorry, this user does not exist";
             return response()->json([
-                "success" => false,
+                "success" => true,
+                "message" => $responseMessage,
+                "error" => $responseMessage
+            ], 422);
+        }
+    }
+
+    public function changePassword(Request $request)
+    {
+        // return $request->all();
+        $validator = FacadesValidator::make($request->all(), [
+            'user_id' => 'required',
+            'user_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+            'confirm_password' => 'required|string|min:8|same:user_password',
+        ], [
+            'user_password.regex' => 'Password must contain alphanumeric characters and at least one special character, one uppercase letter, and one lowercase letter.'
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->messages()->toArray(),
+                'error' => $validator->messages()->toArray()
+            ], 422);
+        }
+
+        $password = $request->user_password;
+        $userCheck = User::where('USER_ID', $request->user_id)->first();
+        if ($userCheck) {
+            $accessToken = '';
+            $user = $userCheck;
+            $responseMessage = "Successfully password changed";
+            $hashed = Hash::make($password);
+
+            $update = DB::table('FE_USERS')->update(['USER_PASSWORD' => $hashed]);
+
+            if ($update) {
+                return $this->respondWithToken($accessToken, $responseMessage, $user);
+            }
+        } else {
+            $responseMessage = "Sorry, this user does not exist";
+            return response()->json([
+                "success" => true,
                 "message" => $responseMessage,
                 "error" => $responseMessage
             ], 422);
