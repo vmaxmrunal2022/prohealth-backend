@@ -52,7 +52,7 @@ class UserController extends Controller
             'message' => $responseMessage
         ], 200);
     }
-    public function login(Request $request)
+    public function login_old(Request $request)
     {
         //return Session::get('user');
         // return FacadesAuth::user();
@@ -160,6 +160,103 @@ class UserController extends Controller
             ], 422);
         }
     }
+
+    public function login(Request $request)
+
+    {
+
+        $password = $request->USER_PASSWORD;
+
+        $validator = FacadesValidator::make($request->all(), [
+
+            'USER_ID' => 'required|string',
+
+            'USER_PASSWORD' => 'required|min:8',
+
+        ]);
+
+        if ($validator->fails()) {
+
+            return response()->json([
+
+                'success' => false,
+
+                'message' => $validator->messages()->toArray()
+
+            ], 422);
+        }
+
+        $userCheck = User::where('USER_ID', $request->USER_ID)->first();
+
+        if ($userCheck) {
+
+            if ($userCheck && Hash::check($password, $userCheck->user_password)) {
+
+                FacadesAuth::login($userCheck);
+
+                if (!FacadesAuth::check()) {
+
+                    $responseMessage = "Invalid username or password";
+
+                    return response()->json([
+
+                        "success" => false,
+
+                        "message" => $responseMessage,
+
+                        "error" => $responseMessage
+
+                    ], 422);
+                }
+
+                $accessToken = '';
+
+                $user = FacadesAuth::user();
+
+                $responseMessage = "Login Successful";
+
+                Session::put('user', auth()->user()->user_id);
+
+                $userid = auth()->user()->user_id;
+
+                $a = getUserData($userid);
+
+                $usersData = auth()->user()->user_id;
+
+                Cache::put('userId', $usersData, 86400);
+
+                return $this->respondWithToken($accessToken, $responseMessage, $user);
+            } else {
+
+                $responseMessage = "Password does not match";
+
+                return response()->json([
+
+                    "success" => true,
+
+                    "message" => $responseMessage,
+
+                    "error" => $responseMessage
+
+                ], 422);
+            }
+        } else {
+
+            $responseMessage = "Sorry, this user does not exist";
+
+            return response()->json([
+
+                "success" => true,
+
+                "message" => $responseMessage,
+
+                "error" => $responseMessage
+
+            ], 422);
+        }
+    }
+
+
     public function viewProfile()
     {
         $responseMessage = "user profile";
