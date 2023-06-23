@@ -130,7 +130,12 @@ class UserController extends Controller
             $responseMessage = "Successfully password changed";
             $hashed = Hash::make($password);
 
-            $update = DB::table('FE_USERS')->update(['USER_PASSWORD' => $hashed]);
+            $update = DB::table('FE_USERS')->where('USER_ID', $request->user_id)->update([
+                'USER_PASSWORD' => $hashed,
+                'USER_ID_MODIFIED' => Cache::get('userId'),
+                'DATE_TIME_MODIFIED' => date('Ymd'),
+                'PSWD_LAST_CHG_DATE' => date('Ymd'),
+            ]);
 
             if ($update) {
                 return $this->respondWithToken($accessToken, $responseMessage, $user);
@@ -144,7 +149,7 @@ class UserController extends Controller
             ], 422);
         }
     }
-    public function viewProfile()
+    public function viewProfile() 
     {
         $responseMessage = "user profile";
         $data = FacadesAuth::guard("api")->user();
