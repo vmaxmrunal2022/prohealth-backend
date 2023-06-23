@@ -409,6 +409,8 @@ class ReasonCodeExceptionController extends Controller
 
 
 
+
+
     public function search(Request $request)
     {
         $ndc = DB::table('REASON_CODE_LIST_NAMES')
@@ -418,6 +420,7 @@ class ReasonCodeExceptionController extends Controller
             // ->orWhere('REASON_CODE_LISTS.REASON_CODE_LIST_ID', 'like', '%' . $request->search. '%')
             ->get();
 
+        return $this->respondWithToken($this->token(), '', $ndc);
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 

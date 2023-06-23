@@ -531,8 +531,8 @@ class BenefitListController extends Controller
     public function search(Request $request)
     {
         $ndc = DB::table('BENEFIT_LIST_NAMES')
-            // ->where('BENEFIT_LIST_ID', 'like', '%' .$request->search. '%')
-            ->whereRaw('LOWER(BENEFIT_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->where(DB::raw('UPPER(BENEFIT_LIST_ID)'), 'like', '%' . $request->search . '%')
+            // ->whereRaw('LOWER(BENEFIT_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

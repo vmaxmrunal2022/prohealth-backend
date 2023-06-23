@@ -489,10 +489,7 @@ class UserDefinationController extends Controller
                 for ($i = 0; $i < count($d); $i++) {
                     $user_profile[$d[$i]] = 'D';
                 }
-
-
                 $updated_user_profile = implode('', $user_profile);
-
                 // dd($updated_user_profile);
                 $updateUser = DB::table('FE_USERS')
                     ->where('user_id', $request->user_id)
@@ -506,7 +503,6 @@ class UserDefinationController extends Controller
                         'restrict_security_flag' => $request->restrict_security_flag,
                         'user_profile' => $updated_user_profile,
                     ]);
-
                 $record_snapshot = json_encode($user_data);
                 $save_audit =  $this->auditMethod('UP', $record_snapshot, 'FE_USERS');
                 if ($updateUser) {

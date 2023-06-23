@@ -170,10 +170,13 @@ class GpiExclusionController extends Controller
 
     public function search(Request $request)
     {
+        // $ndc = DB::table('GPI_EXCLUSION_LISTS')
+        //     ->join('GPI_EXCLUSIONS', 'GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST', '=', 'GPI_EXCLUSIONS.GPI_EXCLUSION_LIST')
+        //     ->whereRaw('LOWER(GPI_EXCLUSIONS.GPI_EXCLUSION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+        //     ->orWhere('GPI_EXCLUSIONS.EXCLUSION_NAME', 'like', '%' . $request->search . '%')
+        //     ->get();
         $ndc = DB::table('GPI_EXCLUSIONS')
-            // ->join('GPI_EXCLUSIONS', 'GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST', '=', 'GPI_EXCLUSIONS.GPI_EXCLUSION_LIST')
-            ->where(DB::raw('UPPER(GPI_EXCLUSIONS.GPI_EXCLUSION_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere(DB::raw('UPPER(GPI_EXCLUSIONS.EXCLUSION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('LOWER(GPI_EXCLUSION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->get();
         return $this->respondWithToken($this->token(), '', $ndc);
     }

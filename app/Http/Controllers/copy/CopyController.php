@@ -32,6 +32,7 @@ class CopyController extends Controller
             ->orderBy('column_position', 'desc')
             // ->latest()
             ->first();
+        // return $unsiqueColumns;
         if (empty($uniqueColumns)) {
             return $this->respondWithToken($this->token(), 'Unique Source ID Not Found', '', false);
         }
@@ -39,9 +40,6 @@ class CopyController extends Controller
         // $selectedColumns = [];
         // $selectedColumns[] = DB::raw($column->column_name . ' AS `' . $column->column_name . '`');
         $selectedColumns = DB::raw($uniqueColumns->column_name . ' AS ' . 'source_id' . '');
-
-
-
         $table_data = DB::table($table_name)
             ->select($selectedColumns)
             ->get();
@@ -72,8 +70,8 @@ class CopyController extends Controller
             'PLAN_BENEFIT_TABLE' => 'Plan Edit',
             // accumulated benedfits
             'PLAN_ACCUM_DEDUCT_TABLE' => 'Accumulated Benefits',
-            'GPI_EXCLUSION_LISTS' => 'GPI Exclusion List',
-            'NDC_EXCLUSION_LISTS' => 'NDC Exclusion List',
+            'GPI_EXCLUSIONS' => 'GPI Exclusion List',
+            'NDC_EXCLUSIONS' => 'NDC Exclusion List',
             // 'MM_LIFE_MAX' => 'Major Medical Maximus',
             //Provider module
             // 'PHARMACY_CHAIN' => 'Pharmacy Chain', 
@@ -85,13 +83,13 @@ class CopyController extends Controller
             'PRICE_SCHEDULE' => 'Price Schedule',
             'COPAY_SCHEDULE' => 'Copay Schedule',
             'COPAY_LIST' => 'Copay Step Schedule',
-            'mac_list' => 'MAC List',
+            'MAC_LIST' => 'MAC List',
             'tax_schedule' => 'Tax Schedule',
             'procedure_ucr_names' => 'Procedure UCR List',
             'rva_names' => 'RVA List',
             //Exception 
             'NDC_EXCEPTIONS' => 'NDC Exception',
-            'GPI_EXCEPTION_LISTS' => 'GPI Exception',
+            'GPI_EXCEPTIONS' => 'GPI Exception',
             'TC_EXCEPTIONS' => 'Therapy Class',
             'DRUG_CATGY_EXCEPTION_NAMES' => 'Drug Classification Exception',
             'PROC_CODE_LIST_NAMES' => 'Procedure Code List Exception',
@@ -101,7 +99,7 @@ class CopyController extends Controller
             'BENEFIT_DERIVATION_NAMES' => 'Benefit Derivation Exception',
             'PROV_TYPE_PROC_ASSOC_NAMES' => 'Provider Type Procedure Exception',
             'PROVIDER_TYPE_VALIDATION_NAMES' => 'Provider Type Validations Exception',
-            'PROC_CODE_LISTS' => 'Procedure Code Exception',
+            'PROCEDURE_EXCEPTION_LISTS' => 'Procedure Code Exception',
             'SUPER_BENEFIT_LIST_NAMES' => 'Super Benefit Exception ',
             'ENTITY_NAMES' => 'Procedure Cross Reference',
             'LIMITATIONS_LIST' => 'Limitations Exception'
@@ -115,7 +113,7 @@ class CopyController extends Controller
         $all_table_names = [
             //exception list
             'NDC_EXCEPTION_LISTS',
-            'gpi_exception_list',
+            'GPI_EXCEPTIONS',
             'TC_EXCEPTIONS',
             'DRUG_CATGY_EXCEPTION_NAMES',
             'PROCEDURE_EXCEPTION_NAMES',
@@ -124,7 +122,7 @@ class CopyController extends Controller
             'BENEFIT_DERIVATION_NAMES',
             'PROV_TYPE_PROC_ASSOC_NAMES',
             'PROVIDER_TYPE_VALIDATION_NAMES',
-            'PROC_CODE_LISTS',
+            'PROC_CODE_LIST_NAMES',
             'SUPER_BENEFIT_LIST_NAMES',
             'ENTITY_NAMES',
             'LIMITATIONS_LIST',
@@ -143,8 +141,8 @@ class CopyController extends Controller
             'SUPER_RX_NETWORK_NAMES',
             //Accumulated Benefit
             'PLAN_ACCUM_DEDUCT_TABLE',
-            'GPI_EXCLUSION_LISTS',
-            'NDC_EXCLUSION_LISTS',
+            'GPI_EXCLUSIONS',
+            'NDC_EXCLUSIONS',
             'MM_LIFE_MAX',
             //Plan Association
             'PLAN_LOOKUP_TABLE',
@@ -157,7 +155,7 @@ class CopyController extends Controller
             'PRICE_SCHEDULE',
             'COPAY_SCHEDULE',
             'COPAY_LIST',
-            'mac_list',
+            'MAC_LIST',
             'TAX_SCHEDULE',
             'PROCEDURE_UCR_NAMES',
             'RVA_NAMES',
@@ -225,27 +223,25 @@ class CopyController extends Controller
         $parent_table_name = [
             'DIAGNOSIS_EXCEPTIONS', 'PHYSICIAN_EXCEPTIONS', 'PHARMACY_EXCEPTIONS', 'SPECIALTY_EXCEPTIONS',
             'PRICING_STRATEGY_NAMES', 'COPAY_STRATEGY_NAMES',
-            'ACCUM_BENE_STRATEGY_NAMES', 'GPI_EXCLUSION_LISTS', 'NDC_EXCLUSION_LISTS',
+            'ACCUM_BENE_STRATEGY_NAMES', 'GPI_EXCLUSIONS', 'NDC_EXCLUSIONS',
             'PHARMACY_TABLE', 'RX_NETWORK_NAMES', 'RX_NETWORK_RULE_NAMES', 'SUPER_RX_NETWORK_NAMES', 'SUPER_RX_NETWORK_NAMES',
             'COPAY_LIST', 'procedure_ucr_names', 'rva_names',
             //exception list module
             'NDC_EXCEPTIONS', 'GPI_EXCEPTIONS', 'TC_EXCEPTIONS', 'DRUG_CATGY_EXCEPTION_NAMES', 'PROCEDURE_EXCEPTION_NAMES',
             'REASON_CODE_LIST_NAMES', 'BENEFIT_LIST_NAMES', 'BENEFIT_DERIVATION_NAMES', 'PROV_TYPE_PROC_ASSOC_NAMES', 'PROVIDER_TYPE_VALIDATION_NAMES',
-            'PROCEDURE_EXCEPTION_NAMES', 'SUPER_BENEFIT_LIST_NAMES', 'ENTITY_NAMES', 'mac_list',
+            'PROCEDURE_EXCEPTION_NAMES', 'SUPER_BENEFIT_LIST_NAMES', 'ENTITY_NAMES', 'MAC_LIST', 'PROC_CODE_LIST_NAMES',
         ];
         $child_table_names = [
             'DIAGNOSIS_VALIDATIONS', 'PHYSICIAN_VALIDATIONS', 'PHARMACY_VALIDATIONS', 'SPECIALTY_VALIDATIONS',
             'PRICING_STRATEGY', 'COPAY_STRATEGY',
-            'ACCUM_BENEFIT_STRATEGY', 'GPI_EXCLUSIONS', 'NDC_EXCLUSIONS',
+            'ACCUM_BENEFIT_STRATEGY', 'GPI_EXCLUSION_LISTS', 'NDC_EXCLUSION_LISTS',
             'PHARMACY_VALIDATIONS', 'RX_NETWORKS', 'RX_NETWORK_RULES', 'SUPER_RX_NETWORKS', 'SUPER_RX_NETWORKS',
             'COPAY_MATRIX', 'PROCEDURE_UCR_LIST', 'rva_list',
             //exception list module
             'NDC_EXCEPTION_LISTS', 'GPI_EXCEPTION_LISTS', 'TC_EXCEPTION_LISTS', 'PLAN_DRUG_CATGY_EXCEPTIONS', 'PROCEDURE_EXCEPTION_LISTS',
             'REASON_CODE_LISTS', 'BENEFIT_LIST', 'BENEFIT_DERIVATION', 'PROV_TYPE_PROC_ASSOC', 'PROVIDER_TYPE_VALIDATIONS',
-            'PROCEDURE_EXCEPTION_LISTS', 'SUPER_BENEFIT_LISTS', 'PROCEDURE_XREF', 'MAC_TABLE',
+            'PROCEDURE_EXCEPTION_LISTS', 'SUPER_BENEFIT_LISTS', 'PROCEDURE_XREF', 'MAC_TABLE', 'PROC_CODE_LISTS'
         ];
-
-
 
         $uniqueColumns = DB::table('all_ind_columns')
             ->select('column_name')
@@ -265,7 +261,7 @@ class CopyController extends Controller
         $modify_url = $table_url[$current_table];
 
         $ifExists = DB::table($request->table_name)
-            ->where($uniqueColumns->column_name, $request->destination_id)
+            ->where(DB::raw('UPPER(' . $uniqueColumns->column_name . ')'), strtoupper($request->destination_id))
             ->get()
             ->count();
         if (strtoupper($request->source_id) == strtoupper($request->destination_id) || $ifExists >= 1) {
@@ -283,12 +279,25 @@ class CopyController extends Controller
             ->where($uniqueColumns->column_name, $sourceCustomer)
             ->first();
 
+
         $newRecord = (array) $record;
         $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+        $newRecord['form_id'] = 'COPY';
+        $newRecord['date_time_modified'] = date('d-F-y');
+        $newRecord['date_time_created'] = date('d-F-y');
 
-        $excludedColumns = [$uniqueColumns->column_name]; // Add any other duplicate column names here
+        // return $newRecord;
+        $excludedColumns = [
+            $uniqueColumns->column_name, 'form_id' => 'COPY', 'date_time_modified' => date('d-F-y'),
+            'date_time_created' => date('d-F-y')
+        ]; // Add any other duplicate column names here
 
-        $columns = array_diff(array_keys($newRecord), [strtolower($excludedColumns[0])]);
+        // return $excludedColumns;
+
+        $columns = array_diff(array_keys($newRecord), [
+            strtolower($excludedColumns[0]), $excludedColumns['form_id'],
+            $excludedColumns['date_time_modified'], $excludedColumns['date_time_created']
+        ]);
 
         // to insert data  into db PARENT
         $copy_source_to_dest = DB::table($request->table_name)
@@ -310,7 +319,7 @@ class CopyController extends Controller
             $child_table_name = $child_table_names[$parent_key]; //to get child table name
 
             $child_records = DB::table($child_table_name)
-                ->where($uniqueColumns->column_name, $sourceCustomer)
+                ->where(DB::raw('UPPER(' . $uniqueColumns->column_name . ')'), strtoupper($sourceCustomer))
                 ->get();
             foreach ($child_records as $child) {
                 $newRecord = (array)$child;
@@ -334,6 +343,7 @@ class CopyController extends Controller
         // To redirect URL to Modify
         $current_table =  array_search(strtoupper($request->table_name), $all_table_names);
         $modify_url = $table_url[$current_table];
+        // return $modify_url;
         return $this->respondWithToken($this->token(), 'Record Cloned Successfully', [$get_dest_record, $modify_url]);
     }
 }
