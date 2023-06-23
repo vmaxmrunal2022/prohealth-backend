@@ -12,24 +12,17 @@ use App\Traits\AuditTrait;
 class RvaListController extends Controller
 {
     use AuditTrait;
+
     public function get(Request $request)
     {
-<<<<<<< HEAD
-        // return "hi";
-        $rvaNames = DB::table('rva_names')
-            // ->when($request->search, function ($query) use ($request) {
-            //     return $query->where('rva_list_id', 'like', "%$request->search%");
-            // })
-            ->where(DB::raw('lower(rva_list_id)'), 'like', '%' . strtolower($request->search) . '%')
-            // ->where('rva_list_id', 'like', "%$request->search%")
-=======
+
         $rvaNames = DB::table('rva_names')
             ->whereRaw('LOWER(RVA_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
->>>>>>> origin/mrunal
             ->get();
 
         return $this->respondWithToken($this->token(), '', $rvaNames);
     }
+    
 
     public function RvaListDropdown(Request $request)
     {
@@ -44,7 +37,6 @@ class RvaListController extends Controller
 
     public function getRvaList(Request $request)
     {
-<<<<<<< HEAD
 
         if (isset($request->search)) {
 
@@ -677,14 +669,6 @@ class RvaListController extends Controller
             }
 
         }
-=======
-        $rvaLists = DB::table('rva_names')
-            ->join('rva_list', 'rva_names.rva_list_id', 'rva_list.rva_list_id')
-            ->where('rva_list.rva_list_id', $request->search)
-            ->get();
-
-        return $this->respondWithToken($this->token(), '', $rvaLists);
->>>>>>> origin/mrunal
     }
 
 

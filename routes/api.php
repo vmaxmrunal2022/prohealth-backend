@@ -16,44 +16,21 @@ use App\Http\Controllers\Exception\BenefitListController;
 use App\Http\Controllers\Exception\ReasonCodeExceptionController;
 use App\Http\Controllers\Exception\ProviderTypeProcController;
 use App\Http\Controllers\Exception\ProcedureCrossReferenceController;
-
-
-
 use App\Http\Controllers\user_access\UserAccessControl;
-use App\Http\Controllers\Exception\ProviderTypeProcController;
-
-
-
-
-
 use App\Http\Controllers\Exception\BenefitDerivationController;
-
-
 use App\Http\Controllers\Exception\GPIExceptionController;
 use App\Http\Controllers\Exception\NDCExceptionController;
 use App\Http\Controllers\Exception\LimitationsController;
 
-
-
 // use App\Http\Controllers\membership\PlanValidationController;
 // use App\Http\Controllers\membership\PriorAuthController;
 use App\Http\Controllers\ValidationLists\ValidationListsController;
-
 use App\Http\Controllers\ValidationLists\PrescriberValidationController;
-
-
-
-
 use App\Http\Controllers\Speciality\SpecialityController;
-
 use App\Http\Controllers\ValidationLists\EligibilityValidationListController;
-
 use App\Http\Controllers\ValidationLists\ProviderController;
-
-
 use App\Http\Controllers\ValidationLists\DiagnosisValidationListController;
 use App\Http\Controllers\Strategies\PricingStrategyController;
-
 use App\Http\Controllers\Strategies\CopayStrategyController;
 use App\Http\Controllers\Strategies\AccumlatedController;
 use App\Http\Controllers\AccumLatedBenifits\AccumlatedBenifitController;
@@ -78,13 +55,11 @@ use App\Http\Controllers\Exception\ProcedureController as ExceptionProcedureCont
 use App\Http\Controllers\Exception\TherapyClassController;
 use App\Http\Controllers\drug_information\DrugDatabaseController;
 use App\Http\Controllers\drug_information\NdcGpiController;
-
 use App\Http\Controllers\Exception\PrcedureCodeListController;
 use App\Http\Controllers\Exception\ProviderTypeValidationController;
 use App\Http\Controllers\plan_design\PlanAssociationController;
 use App\Http\Controllers\Exception\SuperBenefitControler;
 use App\Http\Controllers\Exception\DrugClassController;
-use App\Http\Controllers\Exception\LimitationsController;
 use App\Http\Controllers\membership\MemberController;
 use App\Http\Controllers\membership\PlanValidationController;
 use App\Http\Controllers\membership\PriorAuthController;
@@ -123,8 +98,9 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
     Route::group(['prefix' => 'users'], function ($router) {
         Route::post('/register', [UserController::class, 'register'])->name('register.user');
-        Route::post('/login', [UserController::class, 'login'])->name('login.user');
+        Route::post('/login', [UserController::class, 'login'])->name('login.user')->middleware('throttle:loginAttempt');
         Route::get('/view-profile', [UserController::class, 'viewProfile'])->name('profile.user');
+        Route::post('/change-password', [UserController::class, 'changePassword'])->name('user.change-password')->middleware('throttle:loginAttempt');
         Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
     });
 
