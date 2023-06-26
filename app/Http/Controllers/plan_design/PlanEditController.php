@@ -703,7 +703,7 @@ class PlanEditController extends Controller
     {
         $super_provider_network = DB::table('SUPER_RX_NETWORKS')
             ->join('SUPER_RX_NETWORK_NAMES', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
-            ->get();
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $super_provider_network);
     }
 

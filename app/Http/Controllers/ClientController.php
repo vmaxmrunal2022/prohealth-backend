@@ -326,9 +326,9 @@ class ClientController extends Controller
                 'client.EFFECTIVE_DATE as clienteffectivedate',
                 'client.TERMINATION_DATE as clientterminationdate'
             )
-            ->where(DB::raw('UPPER(client.CLIENT_ID)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->where('CLIENT_ID', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere(DB::raw('UPPER(client.CLIENT_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('customer.CUSTOMER_ID', strtoupper($request->search) . '%')
+            ->orWhere('customer.CUSTOMER_ID','like','%'. strtoupper($request->search) . '%')
             ->orWhere('customer.CUSTOMER_NAME', strtoupper($request->search) . '%')
             ->get();
 

@@ -18,7 +18,7 @@ class RvaListController extends Controller
 
         $rvaNames = DB::table('rva_names')
             ->whereRaw('LOWER(RVA_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
-            ->get();
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $rvaNames);
     }
@@ -29,7 +29,7 @@ class RvaListController extends Controller
         // return "hi";
         $rvaNames = DB::table('rva_names')
 
-            ->get();
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $rvaNames);
     }
