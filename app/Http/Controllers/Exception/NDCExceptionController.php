@@ -1368,6 +1368,35 @@ class NDCExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function get_Pharmacy_Lists(Request $request){
+        $ndc = DB::table('PHARMACY_EXCEPTIONS')
+        ->select('PHARMACY_LIST', 'EXCEPTION_NAME')
+        ->get();
+
+    return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+    public function get_Physician_Lists(Request $request){
+        $ndc = DB::table('PHYSICIAN_EXCEPTIONS')
+        ->select('PHYSICIAN_LIST', 'EXCEPTION_NAME')
+        ->get();
+
+    return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+
+    public function get_Diagnosis_Lists(Request $request){
+        $ndc = DB::table('DIAGNOSIS_EXCEPTIONS')
+        ->select('DIAGNOSIS_LIST', 'EXCEPTION_NAME')
+        ->get();
+
+    return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+    
+
+    
+
     public function getAllNDCSNew()
     {
 

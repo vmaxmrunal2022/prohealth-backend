@@ -15,7 +15,7 @@ class DiagnosisController extends Controller
 
         $benefitcodes = DB::table('DIAGNOSIS_CODES')
                             ->select('diagnosis_id','description')
-                            ->get();
+                            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $benefitcodes);
     }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\third_party_pricing;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use LDAP\Result;
@@ -11,7 +12,7 @@ use Illuminate\Validation\Rule;
 
 class CopayScheduleController extends Controller
 {
-
+ use AuditTrait;
     public function get(Request $request)
     {
         $copayList = DB::table('COPAY_SCHEDULE')           

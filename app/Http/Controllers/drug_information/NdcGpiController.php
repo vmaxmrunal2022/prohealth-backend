@@ -20,6 +20,7 @@ class NdcGpiController extends Controller
             $data = DB::table('DRUG_MASTER')
             ->where('NDC',$request->ndc)
             ->get();
+            
 
         }
 
@@ -53,7 +54,7 @@ class NdcGpiController extends Controller
     public function GpiDropDown(Request $request){
         $data = DB::table('DRUG_MASTER')
         ->select('NDC','GENERIC_PRODUCT_ID','LABEL_NAME')
-        ->get();
+        ->paginate(100);
         return $this->respondWithToken($this->token(),'',$data);
     }
     

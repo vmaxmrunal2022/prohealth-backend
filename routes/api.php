@@ -150,7 +150,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/diagnosis', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
         Route::post('/diagnosis/submit', [DiagnosisController::class, 'add'])->name('diagnosis.submit'); // add
         Route::post('/diagnosis/delete', [DiagnosisController::class, 'delete'])->name('diagnosis.delete'); // DELETE
-        Route::get('/diagnosis/all', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
+        // Route::get('/diagnosis/all', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
         Route::get('/check-diagnosis-exist', [DiagnosisController::class, 'checkDiagnosisCodeExist']);
         Route::get('/diagnosis/all', [DiagnosisController::class, 'all'])->name('diagnosis.get'); // SEARCH
 
@@ -191,12 +191,11 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/ndc/list', [NDCExceptionController::class, 'ndcList'])->name('ndsc.search'); // SEARCH
         Route::get('/ndc/list/new', [NDCExceptionController::class, 'ndcList_New'])->name('ndsc.search'); // SEARCH
 
-
+        Route::get('/ndc/pharmacy-list', [NDCExceptionController::class, 'get_Pharmacy_Lists'])->name('pharmacylists'); // SEARCH
+        Route::get('/ndc/physician-list', [NDCExceptionController::class, 'get_Physician_Lists'])->name('physicianlists'); // SEARCH
+        Route::get('/ndc/diagnosis-list', [NDCExceptionController::class, 'get_Diagnosis_Lists'])->name('diagnosislists'); // SEARCH
 
         Route::post('/ndc/delete', [NDCExceptionController::class, 'ndcdelete'])->name('ndsc.search'); // add
-
-
-
 
         //REASON-CODE-EXCEPTION
         Route::get('/ndc/ndc-drop-down', [NDCExceptionController::class, 'getNdcDropDown']); // drop down
@@ -444,6 +443,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
     Route::get('client/get', [ClientController::class, 'searchClient']);
     Route::get('client/get/{clientid}', [ClientController::class, 'GetOneClient']);
     Route::post('client/add', [ClientController::class, 'add']);
+    Route::post('client/delete-client', [ClientController::class, 'deleteClient']);
+
 
 
     Route::get('clientgroup/get', [ClientGroupController::class, 'searchClientgroup']);

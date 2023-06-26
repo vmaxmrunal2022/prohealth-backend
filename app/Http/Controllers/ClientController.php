@@ -17,15 +17,23 @@ class ClientController extends Controller
         $customer_data = DB::table('CUSTOMER')
             ->where(DB::raw('UPPER(CUSTOMER_ID)'), strtoupper($request->customer_id))
             ->first();
+
+            // dd($customer_data);
+
+
         $errorMsg = ["Client effective date must be greater than customer effective date"];
-        if ((date('Y-m-d', strtotime($request->effective_date))) < (date('Y-m-d', strtotime($customer_data->effective_date)))) {
-            return $this->respondWithToken(
-                $this->token(),
-                [$errorMsg],
-                '',
-                false
-            );
+
+        if(!empty($customer_data)){
+            if ((date('Y-m-d', strtotime($request->effective_date))) < (date('Y-m-d', strtotime($customer_data->effective_date)))) {
+                return $this->respondWithToken(
+                    $this->token(),
+                    [$errorMsg],
+                    '',
+                    false
+                );
+            }
         }
+        
 
         $createddate = date('y-m-d');
         if ($request->add_new) {
@@ -316,6 +324,8 @@ class ClientController extends Controller
     public function searchClient(Request $request)
     {
         // return $request->search;
+
+        
         $client = DB::table('client')
             ->join('customer', 'client.CUSTOMER_ID', '=', 'customer.CUSTOMER_ID')
             ->select(
@@ -326,8 +336,8 @@ class ClientController extends Controller
                 'client.EFFECTIVE_DATE as clienteffectivedate',
                 'client.TERMINATION_DATE as clientterminationdate'
             )
-            ->where('CLIENT_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere(DB::raw('UPPER(client.CLIENT_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->where('CLIENT_ID', 'like', '%' .$request->search . '%')
+            ->orWhere(DB::raw('client.CLIENT_NAME'), 'like', '%' . $request->search . '%')
             ->orWhere('customer.CUSTOMER_ID','like','%'. strtoupper($request->search) . '%')
             ->orWhere('customer.CUSTOMER_NAME', strtoupper($request->search) . '%')
             ->get();

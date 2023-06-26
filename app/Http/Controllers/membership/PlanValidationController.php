@@ -22,12 +22,12 @@ class PlanValidationController extends Controller
       return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
     } else {
       $planValidation = DB::table('PLAN_VALIDATION_LISTS')
-        ->join('CUSTOMER', 'CUSTOMER.customer_id', '=', 'PLAN_VALIDATION_LISTS.customer_id')
+      // ->select('PLAN_VALIDATION_LISTS.customer_id','PLAN_VALIDATION_LISTS.client_id')
+        // ->join('CUSTOMER', 'CUSTOMER.customer_id', '=', 'PLAN_VALIDATION_LISTS.customer_id')
         // ->where('CUSTOMER.customer_id', 'like', '%' . $request->search. '%')
-        ->whereRaw('LOWER(CUSTOMER.CUSTOMER_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
-
-        //   ->orWhere('PLAN_VALIDATION_LISTS.client_id', 'like', '%'. strtoupper($request->search) .'%')
-        ->orWhere('CUSTOMER.customer_name', 'like', '%' . $request->search . '%')
+        ->whereRaw('LOWER(PLAN_VALIDATION_LISTS.CUSTOMER_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+          ->orWhere('PLAN_VALIDATION_LISTS.client_id', 'like', '%'. strtoupper($request->search) .'%')
+        // ->orWhere('CUSTOMER.customer_name', 'like', '%' . $request->search . '%')
         ->get();
       return $this->respondWithToken($this->token(), '', $planValidation);
     }
