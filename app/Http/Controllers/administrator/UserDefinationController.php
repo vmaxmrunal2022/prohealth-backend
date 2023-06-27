@@ -24,7 +24,7 @@ class UserDefinationController extends Controller
 
     public function addUserDefinition(Request $request)
     {
-
+        return $request->privs;
         $getusersData = DB::table('FE_USERS')
             ->where('user_id', $request->user_id)
             ->first();
@@ -168,7 +168,7 @@ class UserDefinationController extends Controller
                     'user_last_name' => $request->user_last_name,
                     'group_id' => $request->group_id,
                     'user_id_created' => $request->session()->get('user'),
-                    'privs' => $request->default_system_user,
+                    'privs' => $request->defaultSystemUser,
                     'restrict_security_flag' => $request->restrict_security_flag
                 ]);
 
@@ -213,7 +213,7 @@ class UserDefinationController extends Controller
                         'user_last_name' => $request->user_last_name,
                         'group_id' => $request->group_id,
                         'user_id_created' => $request->session()->get('user'),
-                        'privs' => $request->default_system_user,
+                        'privs' => $request->defaultSystemUser,
                         'restrict_security_flag' => $request->restrict_security_flag
                     ]);
             //TODO
@@ -315,8 +315,15 @@ class UserDefinationController extends Controller
 
     public function submitFormData(Request $request)
     {
-        // dd($request->all());
-        
+        // return ($request->all());
+        // $prefix = '$2y$';
+        // $cost = '10';
+        // $salt = '$thisisahardcodedsalt$';
+        // $blowfishPrefix = $prefix . $cost . $salt;
+        // $password = $request->user_password;
+        // $hash = crypt($password, $blowfishPrefix);
+        // $hashToThirdParty = substr($hash, -32);
+        // $hashFromThirdParty = $hashToThirdParty;
 
 
         if ($request->new) {
@@ -409,10 +416,8 @@ class UserDefinationController extends Controller
                     'user_first_name' => $request->user_first_name,
                     'user_last_name' => $request->user_last_name,
                     'group_id' => $request->group_id,
-                    'user_id_created' => $request->session()->get('user'),
-                    // 'privs' => $request->defaultSystemUser,
-                        'privs' => '1',
-
+                    'user_id_created' => Cache::get('userId'),
+                    'privs' => $request->defaultSystemUser != null ? $request->defaultSystemUser : "1",
                     'restrict_security_flag' => $request->restrict_security_flag,
                     'user_profile' => $updated_user_profile,
                 ]);
@@ -508,10 +513,8 @@ class UserDefinationController extends Controller
                         'user_first_name' => $request->user_first_name,
                         'user_last_name' => $request->user_last_name,
                         'group_id' => $request->group_id,
-                        'user_id_created' => $request->session()->get('user'),
-                        // 'privs' => $request->default_system_user,
-                        'privs' => '1',
-
+                        'user_id_created' => Cache::get('userId'),
+                        'privs' => $request->defaultSystemUser != null ? $request->defaultSystemUser : "1",
                         'restrict_security_flag' => $request->restrict_security_flag,
                         'user_profile' => $updated_user_profile,
                     ]);
