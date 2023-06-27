@@ -1205,6 +1205,7 @@ Route::group(['prefix' => 'membership/'], function () {
     //Plan Validation
     Route::get('plan-validation/get', [PlanValidationController::class, 'get']);
     Route::get('plan-validation/get-client-details', [PlanValidationController::class, 'getClientDetails']);
+    Route::get('plan-validation/get-plan-id-new', [PlanValidationController::class, 'getPlanId']);
     Route::get('plan-validation/get-plan-id', [PlanValidationController::class, 'getPlanId']);
     Route::post('plan-validation/add-plan-validaion', [PlanValidationController::class, 'addPlanValidation']);
 });

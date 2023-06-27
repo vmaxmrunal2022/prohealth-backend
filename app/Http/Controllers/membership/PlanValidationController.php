@@ -131,7 +131,7 @@ class PlanValidationController extends Controller
     $plan_ids = DB::table('PLAN_TABLE_EXTENSIONS')
       ->join('PLAN_BENEFIT_TABLE', 'PLAN_TABLE_EXTENSIONS.PLAN_ID', '=', 'PLAN_BENEFIT_TABLE.PLAN_ID')
       // ->select('id')
-      ->get();
+      ->paginate(100);
     return $this->respondWithToken($this->token(), '', $plan_ids);
   }
 }

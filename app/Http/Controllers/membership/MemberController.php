@@ -5,6 +5,7 @@ namespace App\Http\Controllers\membership;
 use App\Http\Controllers\Controller;
 use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 // use DB;
 use Illuminate\Support\Facades\DB;
@@ -295,6 +296,24 @@ class MemberController extends Controller
             ['eligibility_id' => '7', 'eligibility_name' => 'Spouse only'],
             ['eligibility_id' => '8', 'eligibility_name' => 'Spouse & childern'],
         ];
+        $perPage = 3; // Number of items per page
+        $currentPage = 1; // Current page number
+
+        // Calculate the offset
+        $offset = ($currentPage - 1) * $perPage;
+
+        // Get the items for the current page
+        $currentPageItems = array_slice($eligibility, $offset, $perPage, true);
+
+        // Create a LengthAwarePaginator instance
+        $paginator = new LengthAwarePaginator($currentPageItems, count($eligibility), $perPage, $currentPage);
+
+        // Optional: Customize the paginator's URL path
+        // $paginator->setPath('/your-custom-path');
+
+        // Access the paginated items using `$paginator->items()`
+        // Access other paginator information using `$paginator->links()`, `$paginator->currentPage()`, etc.
+
         return $this->respondWithToken($this->token(), '', $eligibility);
     }
 

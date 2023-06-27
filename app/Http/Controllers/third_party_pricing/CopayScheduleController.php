@@ -20,7 +20,7 @@ class CopayScheduleController extends Controller
         $copayList = DB::table('COPAY_SCHEDULE')
             ->where('copay_schedule', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('copay_schedule_name', 'like', '%' . strtoupper($request->search) . '%')
-            ->get();
+            ->paginate(100  );
 
         return $this->respondWithToken($this->token(), '', $copayList);
     }

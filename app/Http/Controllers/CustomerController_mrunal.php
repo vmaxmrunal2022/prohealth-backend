@@ -448,9 +448,9 @@ class CustomerController extends Controller
     {
         $customer = DB::table('customer')
             ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
-            ->where(DB::raw('UPPER(CUSTOMER_ID)'), 'like', '%' . strtoupper($request->customerid) . '%')
-            ->orWhere(DB::raw('UPPER(CUSTOMER_NAME)'), 'like', '%' . strtoupper($request->customerid) . '%')
-            ->get();
+            ->where(DB::raw('UPPER(CUSTOMER_ID)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(CUSTOMER_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $customer);
     }
@@ -493,10 +493,18 @@ class CustomerController extends Controller
 
     public function ALLSuperProviderNetworkIdS(Request $request)
     {
-        $data = DB::table('super_rx_network_names')->paginate(100);
+        $customer = DB::table('super_rx_network_names')->get();
+        $newarray = [];
+        foreach ($customer as $row) {
+
+            $new['value'] = $row->super_rx_network_id;
+            $new['label'] = $row->super_rx_network_id_name;
+            array_push($newarray, $new);
+        }
 
 
-        return $this->respondWithToken($this->token(), '', $data);
+
+        return $this->respondWithToken($this->token(), '', $newarray);
     }
 
 
