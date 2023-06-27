@@ -227,7 +227,7 @@ class TraditionalNetworkController extends Controller
                     );
                 }
                 $child_recs = DB::table('RX_NETWORKS')->where( 'NETWORK_ID', $request->network_id)->get();
-                if($child_recs){
+                if(!empty($child_recs)){
                     foreach($child_recs as $rec){
                         $record_snapshot = json_encode($rec);
                         $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORKS');
