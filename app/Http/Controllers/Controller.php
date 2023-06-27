@@ -190,9 +190,11 @@ class Controller extends BaseController
 
     public function ContriesSearch(Request $request)
     {
-    
-            $countries = DB::table('COUNTRY_STATES')->paginate('10');
-      
+        if (!empty($c_id)) {
+            $countries = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($c_id) . '%')->paginate(100);
+        } else {
+            $countries = DB::table('COUNTRY_STATES')->paginate(100);
+        }
 
         return $this->respondWithToken($this->token(), '', $countries);
         // return $countries;
@@ -202,7 +204,7 @@ class Controller extends BaseController
     public function getStatesOfCountry(Request $request)
     {
 
-        $states = DB::table('COUNTRY_STATES')->whereNot('state_code', '**')->get();
+        $states = DB::table('COUNTRY_STATES')->whereNot('state_code', '**')->paginate(100);
         return $this->respondWithToken($this->token(), '', $states);
 
         // $states = DB::table('COUNTRY_STATES')

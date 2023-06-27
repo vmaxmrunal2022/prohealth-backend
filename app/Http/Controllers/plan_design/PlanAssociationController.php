@@ -336,7 +336,7 @@ class PlanAssociationController extends Controller
     {
         $planIds = DB::table('plan_table')
             // ->select('id')
-            ->get();
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $planIds);
     }
