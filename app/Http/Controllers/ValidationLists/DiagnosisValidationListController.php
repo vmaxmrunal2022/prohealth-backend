@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ValidationLists;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,7 @@ use Illuminate\Validation\Rule;
 
 class DiagnosisValidationListController extends Controller
 {
+    use AuditTrait;
     public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [

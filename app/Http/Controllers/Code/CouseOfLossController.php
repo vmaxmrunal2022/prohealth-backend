@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Code;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -12,6 +13,7 @@ use function PHPUnit\Framework\returnSelf;
 
 class CouseOfLossController extends Controller
 {
+    use AuditTrait;
     public function get(Request $request)
     {
         $validator = Validator::make($request->all(), [

@@ -3,12 +3,15 @@
 namespace App\Http\Controllers\Provider;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Validator;
 
 class ChainController extends Controller
 {
+
+    use AuditTrait;
     public function search(Request $request)
     {
         $ndc = DB::table('PHARMACY_CHAIN')

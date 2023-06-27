@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Provider;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use DB;
 class PrioritiseNetworkController extends Controller
 {
-
+use AuditTrait;
 
     public function add( Request $request ) {
         $createddate = date( 'y-m-d' );

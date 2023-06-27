@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\administrator;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,7 @@ use Illuminate\Validation\Rule;
 
 class VerifyDrugVCoverage extends Controller
 {
+    use AuditTrait;
     public function getPharmacyVarInd(Request $request)
     {
         $pharmacy_var_ind = [

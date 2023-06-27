@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -11,7 +12,7 @@ use Illuminate\Validation\Rule;
 class GPIExceptionController extends Controller
 {
 
-
+use AuditTrait;
 
     public function add(Request $request)
     {

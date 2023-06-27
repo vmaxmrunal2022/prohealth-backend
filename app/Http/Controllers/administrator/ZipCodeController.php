@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\administrator;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,8 @@ use Illuminate\Contracts\Encryption\DecryptException;
 
 class ZipCodeController extends Controller
 {
+
+    use AuditTrait;
     public function search(Request $request)
     {
         $zip_code_list = DB::table('ZIP_CODES')

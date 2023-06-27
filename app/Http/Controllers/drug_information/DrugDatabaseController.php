@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\drug_information;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DrugDatabaseController extends Controller
 {
-
+use AuditTrait;
 
     public function add(Request $request)
     {

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\drug_information;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use DB;
 
 class NdcGpiController extends Controller
 {
+    use AuditTrait;
     /**
      * Display a listing of the resource.
      *

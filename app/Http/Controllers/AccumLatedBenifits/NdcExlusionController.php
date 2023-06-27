@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\AccumlatedBenifits;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Validator;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Cache;
 
 class NdcExlusionController extends Controller
 {
+
+    use AuditTrait;
 
 
     public function add(Request $request)
@@ -203,8 +206,9 @@ class NdcExlusionController extends Controller
     public function getDetails($ndcid, $ndc_exclusion_list)
     {
         $ndc = DB::table('NDC_EXCLUSION_LISTS')
-            ->join('NDC_EXCLUSIONS', 'NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', '=', 'NDC_EXCLUSIONS.NDC_EXCLUSION_LIST')
-            // ->join('DRUG_MASTER', 'NDC_EXCLUSION_LISTS.NDC', '=', 'DRUG_MASTER.NDC')
+        ->select('NDC_EXCLUSION_LISTS.*','DRUG_MASTER.LABEL_NAME')
+            ->leftjoin('NDC_EXCLUSIONS', 'NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', '=', 'NDC_EXCLUSIONS.NDC_EXCLUSION_LIST')
+            ->leftjoin('DRUG_MASTER', 'NDC_EXCLUSION_LISTS.NDC', '=', 'DRUG_MASTER.NDC')
             ->where('NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', $ndcid)
             ->where('NDC_EXCLUSION_LISTS.NDC', $ndc_exclusion_list)
             ->first();

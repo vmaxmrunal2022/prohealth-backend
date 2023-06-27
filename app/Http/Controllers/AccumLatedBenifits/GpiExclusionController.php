@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\AccumlatedBenifits;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
 class GpiExclusionController extends Controller
 {
+    use AuditTrait;
     public function GPIS(Request $request)
     {
         $gpis =  DB::table('DRUG_MASTER')->get();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\plan_design;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -10,6 +11,7 @@ use Illuminate\Validation\Rule;
 
 class PlanAssociationController extends Controller
 {
+    use AuditTrait;
     public function getDetails($binnumber,$process_control_number,$group_number)
     {
 

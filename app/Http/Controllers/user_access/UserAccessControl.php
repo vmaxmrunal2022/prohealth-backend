@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\user_access;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 
 class UserAccessControl extends Controller
 {
+    use AuditTrait;
     public function getUserAccessMenus(Request $request)
     {
         $menus = [

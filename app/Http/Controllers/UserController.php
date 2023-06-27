@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 // use Auth;
 use Illuminate\Support\Facades\Auth as FacadesAuth;
@@ -20,6 +21,7 @@ use DB;
 
 class UserController extends Controller
 {
+    use AuditTrait;
     protected $user;
     protected $redis;
     public function __construct()

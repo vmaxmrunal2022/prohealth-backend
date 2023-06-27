@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\third_party_pricing;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 class MacListController extends Controller
 {
+    use AuditTrait;
     public function get(Request $request)
     {
         $macList = DB::table('MAC_LIST')

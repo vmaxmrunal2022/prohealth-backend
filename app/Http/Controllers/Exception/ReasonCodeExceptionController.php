@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -11,7 +12,7 @@ class ReasonCodeExceptionController extends Controller
 {
 
 
-
+use AuditTrait;
     // public function addcopy(Request $request)
     // {
 

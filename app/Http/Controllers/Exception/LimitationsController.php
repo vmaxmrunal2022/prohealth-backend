@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use DB;
 
 class LimitationsController extends Controller
 {
+    use AuditTrait;
     public function search(Request $request)
     {
         $ndc = DB::table('LIMITATIONS_LIST')
@@ -230,3 +232,4 @@ class LimitationsController extends Controller
         } 
     }
 }
+
