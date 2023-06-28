@@ -22,10 +22,13 @@ class PriceScheduleController extends Controller
             ->orWhere('COPAY_SCHEDULE', $request->search)
             ->orWhere('PRICE_SCHEDULE_NAME',$request->search)
             ->orWhere('PRICE_SCHEDULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
-
             ->get();
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }
+
+  
+
+    
     public function getAll(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')

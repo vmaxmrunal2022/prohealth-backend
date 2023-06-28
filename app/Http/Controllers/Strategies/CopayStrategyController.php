@@ -243,7 +243,7 @@ class CopayStrategyController extends Controller
     public function CopayDropDown(Request $request)
     {
         $ndc = DB::table('COPAY_STRATEGY_NAMES')
-            ->get();
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
     }

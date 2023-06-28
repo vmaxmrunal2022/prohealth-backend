@@ -296,7 +296,7 @@ class TraditionalNetworkController extends Controller
     {
         $ndc = DB::table('RX_NETWORK_NAMES')
             ->select('NETWORK_ID', 'NETWORK_NAME')
-            ->get();
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }

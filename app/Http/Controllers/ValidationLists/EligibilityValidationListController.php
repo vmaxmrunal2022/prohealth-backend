@@ -33,7 +33,9 @@ class EligibilityValidationListController extends Controller
     public function DropDown(Request $request)
     {
 
-        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')->get();
+        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')
+            //->get();
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
     public function DropDownNew(Request $request){

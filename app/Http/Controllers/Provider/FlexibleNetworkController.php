@@ -402,7 +402,7 @@ class FlexibleNetworkController extends Controller
 
     public function flexibledropdown(Request $request)
     {
-        $ndc = DB::table('RX_NETWORK_RULE_NAMES')->get();
+        $ndc = DB::table('RX_NETWORK_RULE_NAMES')->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }

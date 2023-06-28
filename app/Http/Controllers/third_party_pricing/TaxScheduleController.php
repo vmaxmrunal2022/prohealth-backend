@@ -18,7 +18,7 @@ class TaxScheduleController extends Controller
         $taxData = DB::table('tax_schedule')
         // ->where('tax_schedule_id', 'like', '%' . $request->search. '%')
         ->whereRaw('LOWER(tax_schedule_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
-        ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->get();
+        ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $taxData);
     }

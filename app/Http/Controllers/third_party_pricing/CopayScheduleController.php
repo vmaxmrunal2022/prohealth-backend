@@ -20,7 +20,7 @@ class CopayScheduleController extends Controller
             // ->where('copay_schedule', 'like', '%' . strtoupper($request->search) . '%')
             ->whereRaw('LOWER(copay_schedule) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('copay_schedule_name', 'like', '%' . strtoupper($request->search) . '%')
-            ->paginate(100  );
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $copayList);
     }

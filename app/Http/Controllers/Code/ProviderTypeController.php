@@ -23,7 +23,7 @@ class ProviderTypeController extends Controller
             // ->where(DB::raw('UPPER(PROVIDER_TYPE)'), 'like', '%' . strtoupper($request->search) . '%')
             ->whereRaw('LOWER(PROVIDER_TYPE) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->get();
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $procedurecodes);
     }

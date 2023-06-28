@@ -1399,7 +1399,6 @@ class NDCExceptionController extends Controller
 
     public function getAllNDCSNew()
     {
-
         $ndc = DB::table('DRUG_MASTER')
             ->select('NDC', 'LABEL_NAME')
             ->paginate(100);

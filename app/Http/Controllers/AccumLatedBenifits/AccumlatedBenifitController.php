@@ -238,7 +238,11 @@ class AccumlatedBenifitController extends Controller
     public function get_all(Request $request)
 
     {
-        $accumlated_benefit_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')->get();
+        $accumlated_benefit_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+        // ->where('ACCUM_BENE_STRATEGY_ID',$request->search)
+        ->whereRaw('LOWER(ACCUM_BENE_STRATEGY_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+
+        ->get();
 
         if ($accumlated_benefit_names) {
             return $this->respondWithToken($this->token(), 'Data fetched Successfully', $accumlated_benefit_names);

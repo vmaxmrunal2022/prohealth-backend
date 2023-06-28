@@ -174,7 +174,7 @@ class PlanAssociationController extends Controller
     {
         $pharmacy_chain = DB::table('PHARMACY_CHAIN')
             ->where(DB::raw('UPPER(pharmacy_chain)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->get();
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $pharmacy_chain);
     }
 
