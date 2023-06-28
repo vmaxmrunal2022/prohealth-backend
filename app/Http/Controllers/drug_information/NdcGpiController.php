@@ -15,20 +15,18 @@ class NdcGpiController extends Controller
      */
     public function search(Request $request)
     {
-        if($request->ndc){
+        if ($request->ndc) {
 
             $data = DB::table('DRUG_MASTER')
-            ->where('NDC',$request->ndc)
-            ->get();
-
+                ->where('NDC', $request->ndc)
+                ->get();
         }
 
-        if($request->gpi){
+        if ($request->gpi) {
 
             $data = DB::table('DRUG_MASTER')
-           ->Where('GENERIC_PRODUCT_ID',$request->gpi)
-            ->get();
-
+                ->Where('GENERIC_PRODUCT_ID', $request->gpi)
+                ->get();
         }
 
         return $this->respondWithToken($this->token(), '', $data);
@@ -41,22 +39,22 @@ class NdcGpiController extends Controller
     public function getDetails($ndcid)
     {
 
-        $ndc =DB::table('DRUG_MASTER')
-                ->where('NDC', $ndcid)
-                ->first();
+        $ndc = DB::table('DRUG_MASTER')
+            ->where('NDC', $ndcid)
+            ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
-
     }
 
 
-    public function GpiDropDown(Request $request){
+    public function GpiDropDown(Request $request)
+    {
+
         $data = DB::table('DRUG_MASTER')
-        ->select('NDC','GENERIC_PRODUCT_ID','LABEL_NAME')
-        ->get();
-        return $this->respondWithToken($this->token(),'',$data);
+            ->select('NDC', 'GENERIC_PRODUCT_ID', 'LABEL_NAME', 'GENERIC_NAME')
+            ->whereRaw('LOWER(GENERIC_PRODUCT_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhereRaw('LOWER(NDC) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $data);
     }
-    
-    
-  
 }

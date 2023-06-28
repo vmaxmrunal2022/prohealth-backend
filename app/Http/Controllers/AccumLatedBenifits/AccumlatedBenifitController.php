@@ -110,7 +110,7 @@ class AccumlatedBenifitController extends Controller
                     ->first();
                 $record_snap = json_encode($accum_bene);
                 $save_audit = $this->auditMethod('IN', $record_snap, 'PLAN_ACCUM_DEDUCT_TABLE');
-                return $this->respondWithToken($this->token(), 'Record Added Succesfully', $accum_benfit_stat);
+                return $this->respondWithToken($this->token(), 'Record Added Succesfully', $accum_bene);
             }
         } else {
 
@@ -197,7 +197,7 @@ class AccumlatedBenifitController extends Controller
                 ->first();
             $record_snap = json_encode($accum_bene);
             $save_audit = $this->auditMethod('UP', $record_snap, 'PLAN_ACCUM_DEDUCT_TABLE');
-            return $this->respondWithToken($this->token(), 'Record Updated Succesfully', $createddate);
+            return $this->respondWithToken($this->token(), 'Record Updated Succesfully', $accum_bene);
         }
     }
 

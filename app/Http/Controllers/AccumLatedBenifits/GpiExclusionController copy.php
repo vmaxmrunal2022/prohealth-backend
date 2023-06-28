@@ -61,13 +61,10 @@ class GpiExclusionController extends Controller
                         'DATE_TIME_MODIFIED' => date('Ymd'),
                     ]
                 );
-
-                $getRecord =   DB::table('GPI_EXCLUSIONS')
-                    ->where('gpi_exclusion_list', $request->gpi_exclusion_list)->first();
             }
 
             if ($insert) {
-                return $this->respondWithToken($this->token(), 'Recored Added Successfully', $getRecord);
+                return $this->respondWithToken($this->token(), 'Recored Added Successfully', $insert);
             }
         } else {
             if ($recordCheckGpiList) {
@@ -104,7 +101,7 @@ class GpiExclusionController extends Controller
                             ]
                         );
                     if ($createGpiList) {
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update, true, 201);
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $createGpiList, true, 201);
                     }
                 } else {
                     return $this->respondWithToken($this->token(), 'Please Select GPI List ID', $recordCheckGpiList, false);
@@ -121,27 +118,26 @@ class GpiExclusionController extends Controller
     public function delete(Request $request)
     {
         if (isset($request->gpi_exclusion_list) && isset($request->generic_product_id)) {
-
-            // if ($all_gpi_exclusions_list == 1) {
-            //     $delete_gpi_exclusions =  DB::table('GPI_EXCLUSIONS')
-            //         ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
-            //         ->delete();
-
-            //     $delete_gpi_exclusions_list =  DB::table('GPI_EXCLUSION_LISTS')
-            //         ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
-            //         ->delete();
-            // } 
-            // else {
             $all_gpi_exclusions_list =  DB::table('GPI_EXCLUSION_LISTS')
                 ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
-                ->where('generic_product_id', $request->generic_product_id)
-                ->delete();
-            $child_count =  DB::table('GPI_EXCLUSION_LISTS')
-                ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
                 ->count();
-            // }
-            if ($all_gpi_exclusions_list) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $child_count);
+            if ($all_gpi_exclusions_list == 1) {
+                $delete_gpi_exclusions =  DB::table('GPI_EXCLUSIONS')
+                    ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
+                    ->delete();
+
+                $delete_gpi_exclusions_list =  DB::table('GPI_EXCLUSION_LISTS')
+                    ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
+                    ->delete();
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully', '', true, 201);
+            } else {
+                $delete_gpi_exclusions_list =  DB::table('GPI_EXCLUSION_LISTS')
+                    ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
+                    ->where('generic_product_id', $request->generic_product_id)
+                    ->delete();
+            }
+            if ($delete_gpi_exclusions_list) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }
@@ -155,7 +151,7 @@ class GpiExclusionController extends Controller
                 ->delete();
 
             if ($delete_gpi_exclusions) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $delete_gpi_exclusions, true, 201);
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', '', true, 201);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }

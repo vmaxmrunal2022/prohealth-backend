@@ -530,6 +530,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('drug-database/get', [DrugDatabaseController::class, 'get']);
         Route::get('drug-database/get-drug-prices', [DrugDatabaseController::class, 'getDrugPrices']);
         Route::post('drug-price/add', [DrugDatabaseController::class, 'addDrugPrice']);
+        Route::get('ndc-gpi/details/{ndcid}', [NdcGpiController::class, 'getDetails']);
+        Route::get('ndc-gpi/drop-down', [NdcGpiController::class, 'GpiDropDown']);
     });
 
 
@@ -1197,6 +1199,9 @@ Route::group(['prefix' => 'plan-design/'], function () {
     Route::get('plan-association/get-transaction-association', [PlanAssociationController::class, 'getTransactionAssociation']);
     Route::get('plan-association/get-client-group-label', [PlanAssociationController::class, 'getClientGroupLabel']);
     Route::get('plan-association/get-plan-id', [PlanAssociationController::class, 'getPlanId']);
+    Route::get('plan-association/get-customer-new', [PlanAssociationController::class, 'getCustomerNew']);
+    Route::get('plan-association/get-client-new', [PlanAssociationController::class, 'getClientNew']);
+    Route::get('plan-association/get-client-group-new', [PlanAssociationController::class, 'getClientGroupNew']);
 });
 
 //Membership

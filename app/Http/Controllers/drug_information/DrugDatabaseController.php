@@ -26,8 +26,6 @@ class DrugDatabaseController extends Controller
             if ($getData) {
 
                 return $this->respondWithToken($this->token(), 'NDC ID Already Exists', $getData);
-
-
             } else {
 
 
@@ -116,9 +114,6 @@ class DrugDatabaseController extends Controller
 
 
                             ]);
-
-
-
                     }
                 }
 
@@ -130,12 +125,7 @@ class DrugDatabaseController extends Controller
                 if ($addData) {
                     return $this->respondWithToken($this->token(), 'Record Added Successfully', $addData);
                 }
-
-
-
-
             }
-
         } else { {
                 $updateData = DB::table('DRUG_MASTER')
                     ->where('NDC', $request->ndc)
@@ -222,9 +212,6 @@ class DrugDatabaseController extends Controller
 
 
                             ]);
-
-
-
                     }
                 }
 
@@ -238,9 +225,6 @@ class DrugDatabaseController extends Controller
                 }
             }
         }
-
-
-
     }
 
 
@@ -251,6 +235,7 @@ class DrugDatabaseController extends Controller
             ->orWhere('LABEL_NAME', 'like', '%' . $request->search . '%')
             ->orWhere('GENERIC_NAME', 'like', '%' . $request->search . '%')
             ->orWhere('PACKAGE_SIZE', 'like', '%' . $request->search . '%')
+            ->orWhere('GENERIC_PRODUCT_ID', 'like', '%' . $request->search . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $data);
@@ -293,7 +278,6 @@ class DrugDatabaseController extends Controller
                 if ($updateUser) {
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully !!!', $updateUser);
                 }
-
             } else if ($request->add_price == 0 || $request->add_drug_price == 1) {
 
 
@@ -317,12 +301,8 @@ class DrugDatabaseController extends Controller
                 if ($addData) {
                     return $this->respondWithToken($this->token(), 'Record Added Successfully!!!', $addData);
                 }
-
-
             }
-
         }
-
     }
     public function drugdatabaseDelete(Request $request)
     {
@@ -339,6 +319,4 @@ class DrugDatabaseController extends Controller
             }
         }
     }
-
-
 }
