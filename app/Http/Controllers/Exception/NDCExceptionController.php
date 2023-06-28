@@ -1368,6 +1368,48 @@ class NDCExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function get_Pharmacy_Lists(Request $request)
+    {
+        $ndc = DB::table('PHARMACY_EXCEPTIONS')
+            ->select('PHARMACY_LIST', 'EXCEPTION_NAME')
+            ->get();
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+    public function get_Physician_Lists(Request $request)
+    {
+        $ndc = DB::table('PHYSICIAN_EXCEPTIONS')
+            ->select('PHYSICIAN_LIST', 'EXCEPTION_NAME')
+            ->get();
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+
+    public function get_Diagnosis_Lists(Request $request)
+    {
+        $ndc = DB::table('DIAGNOSIS_EXCEPTIONS')
+            ->select('DIAGNOSIS_LIST', 'EXCEPTION_NAME')
+            ->get();
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
+
+
+
+
+    public function getAllNDCSNew()
+    {
+
+        $ndc = DB::table('DRUG_MASTER')
+            ->select('NDC', 'LABEL_NAME')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
     public function ndcdelete(Request $request)
     {
 
@@ -1393,32 +1435,9 @@ class NDCExceptionController extends Controller
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
-        } elseif (isset($request->ndc_exception_list)) {
-
-            $get_exception_delete =  DB::table('NDC_EXCEPTIONS')
-                ->where('ndc_exception_list', $request->ndc_exception_list)
-                ->first();
-            $save_audit_delete = $this->auditMethod('DE', json_encode($get_exception_delete), 'NDC_EXCEPTIONS');
-            $get_exceptions_lists =  DB::table('NDC_EXCEPTION_LISTS')
-                ->where('ndc_exception_list', $request->ndc_exception_list)
-                ->first();
-            $save_audit_delete = $this->auditMethod('DE', json_encode($get_exceptions_lists), 'NDC_EXCEPTION_LISTS');
-
-            $exception_delete =  DB::table('NDC_EXCEPTIONS')
-                ->where('ndc_exception_list', $request->ndc_exception_list)
-                ->delete();
-
-            $all_exceptions_lists =  DB::table('NDC_EXCEPTION_LISTS')
-                ->where('ndc_exception_list', $request->ndc_exception_list)
-                ->delete();
-
-            if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
-            }
         }
     }
+
 
 
 
@@ -1430,32 +1449,61 @@ class NDCExceptionController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function ndcList_New(Request $request)
+    {
+        $ndc = DB::table('NDC_EXCEPTIONS')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
 
 
 
     public function search(Request $request)
     {
 
-        $validator = Validator::make($request->all(), [
-            "search" => ['required']
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     "search" => ['required']
+        // ]);
 
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        // if ($validator->fails()) {
+        //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        // } else {
+
+        $ndc = DB::table('NDC_EXCEPTIONS')
+            ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
+            // ->where('NDC_EXCEPTION_LIST', 'like', '%' .$request->search. '%')
+            ->whereRaw('LOWER(NDC_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
+            // ->paginate(10);
+            ->get();
+
+        if ($ndc->count() < 1) {
+            return $this->respondWithToken($this->token(), 'No Data Found', $ndc);
         } else {
+            return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
+        }
+        // }
+    }
 
-            $ndc = DB::table('NDC_EXCEPTIONS')
-                ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
-                // ->where('NDC_EXCEPTION_LIST', 'like', '%' .$request->search. '%')
-                ->whereRaw('LOWER(NDC_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
-                ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
-                ->get();
 
-            if ($ndc->count() < 1) {
-                return $this->respondWithToken($this->token(), 'No Data Found', $ndc);
-            } else {
-                return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
-            }
+    public function allData(Request $request)
+    {
+
+
+
+        $ndc = DB::table('NDC_EXCEPTIONS')
+            ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
+            // ->where('NDC_EXCEPTION_LIST', 'like', '%' .$request->search. '%')
+            ->whereRaw('LOWER(NDC_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
+            ->paginate(2);
+
+        if ($ndc->count() < 1) {
+            return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
+        } else {
+            return $this->respondWithToken($this->token(), 'No Data Found', $ndc);
         }
     }
 
@@ -1514,6 +1562,11 @@ class NDCExceptionController extends Controller
     public function getNdcDropDown()
     {
         $data = DB::table('NDC_EXCEPTIONS')->get();
+        return $this->respondWithToken($this->token(), '', $data);
+    }
+    public function getNdcDropDownNew()
+    {
+        $data = DB::table('NDC_EXCEPTIONS')->paginate(100);
         return $this->respondWithToken($this->token(), '', $data);
     }
 }
