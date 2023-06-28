@@ -34,7 +34,7 @@ class ProcedureController extends Controller
     public function getCodes(Request $request)
     {
 
-        $procedurecodes = DB::table('PROCEDURE_CODES')->get();
+        $procedurecodes = DB::table('PROCEDURE_CODES')->paginate(100);
 
         if ($procedurecodes) {
 
