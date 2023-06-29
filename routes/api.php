@@ -124,6 +124,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/login', [UserController::class, 'login'])->name('login.user');
         Route::get('/view-profile', [UserController::class, 'viewProfile'])->name('profile.user');
         Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
+        Route::post('users/reset-password', [UserController::class, 'resetPassword'])->name('user.forget-password');
     });
 
     Route::group(['prefix' => '/copy-item'], function ($router) {
@@ -262,6 +263,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //exception provider list
         Route::get('/provider/getAll', [ProviderDataProviderController::class, 'getAll'])->name('exception.provider.getAll');
+        Route::get('/provider/getAll/new', [ProviderDataProviderController::class, 'getAllNew'])->name('exception.provider.getAllNew');
 
         //exception Price Schedule list
 

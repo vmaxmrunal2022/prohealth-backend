@@ -43,6 +43,7 @@ class MemberController extends Controller
                 'MEMBER.ADDRESS_1',
                 'MEMBER.ADDRESS_2',
                 'MEMBER.CITY',
+                'MEMBER.PERSON_CODE',
                 'MEMBER.COUNTRY',
                 'MEMBER.DATE_OF_BIRTH',
                 'MEMBER.RELATIONSHIP',
@@ -729,9 +730,9 @@ class MemberController extends Controller
                                 'MEMBER_ID' => $coverage_history->member_id,
                                 "DATE_TIME_MODIFIED" => date('Y-m-d H:i:s'),
 
-                                // 'PERSON_CODE'=>$coverage_history->person_code,
-                                // 'FROM_EFFECTIVE_DATE'=>$coverage_history->effective_date,
-                                // 'FROM_TERMINATION_DATE'=>$coverage_history->termination_date,
+                                'PERSON_CODE'=>$request->person_code,
+                                'FROM_EFFECTIVE_DATE'=>$coverage_history->effective_date,
+                                'FROM_TERMINATION_DATE'=>$coverage_history->termination_date,
                                 // 'FROM_PLAN_ID'=>$coverage_history->from_plan_id,
                                 'TO_EFFECTIVE_DATE' => $coverage_history->effective_date,
                                 'TO_TERMINATION_DATE' => $coverage_history->termination_date,
@@ -803,7 +804,7 @@ class MemberController extends Controller
                             ->first();
 
                         $record_snap_mem_diag = json_encode($member_diag);
-                        $save_audit_mem_diag = $this->auditMethod('IN', $member_diag, 'MEMBER_DIAGNOSIS');
+                        $save_audit_mem_diag = $this->auditMethod('IN', $record_snap_mem_diag, 'MEMBER_DIAGNOSIS');
 
 
                         $add_diagnosis_history = DB::table('MEMBER_DIAGNOSIS_HISTORY')

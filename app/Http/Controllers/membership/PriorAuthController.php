@@ -22,7 +22,6 @@ class PriorAuthController extends Controller
             ->orWhere('client_id', 'like', '%' . $request->search . '%')
             ->orWhere('client_group_id', 'like', '%' . $request->search . '%')
             ->orWhere('prior_auth_code_num', 'like', '%' . $request->search . '%')
-
             ->get();
 
 
@@ -92,7 +91,7 @@ class PriorAuthController extends Controller
                 'termination_date' => ['required', 'after:effective_date'],
                 'prior_auth_type'=> ['required'],
                 'relationship'=> ['required'],
-                'max_daily_dose'=>['required','max:2'],
+                // 'max_daily_dose'=>['required','max:2'],
                 'member_id'=> ['required'],
                 'ndc' => ['nullable',
                     function ($attribute, $value, $fail) use ($request) {
