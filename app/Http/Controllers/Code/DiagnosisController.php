@@ -29,7 +29,8 @@ class DiagnosisController extends Controller
             $benefitcodes = DB::table('DIAGNOSIS_CODES')
                 ->where(DB::raw('UPPER(diagnosis_id)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . $request->search . '%')
-                ->get();
+                // ->get();
+                ->paginate(100);
 
             return $this->respondWithToken($this->token(), '', $benefitcodes);
         }

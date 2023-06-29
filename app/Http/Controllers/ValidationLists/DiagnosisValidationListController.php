@@ -778,7 +778,7 @@ class DiagnosisValidationListController extends Controller
             ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
             ->where(DB::raw('UPPER(diagnosis_id)'), strtoupper($request->diagnosis_id))
             ->where('effective_date', date('Ymd', strtotime($request->effective_date)))
-            ->get();
+            ->delete();
         return $this->respondWithToken($this->token(), 'Limitation Deleted', $delete_limitation);
     }
 
