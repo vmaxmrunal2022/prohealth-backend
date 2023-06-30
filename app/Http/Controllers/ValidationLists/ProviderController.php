@@ -369,13 +369,16 @@ class ProviderController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function searchDropDownProviderListNew($pharmacy_list = '')
+    public function searchDropDownProviderListNew(Request $request)
     {
+        $searchQuery = $request->search;
         $data = DB::table('PHARMACY_TABLE')
-        ->whereRaw('LOWER(PHARMACY_NABP) LIKE ?', ['%' . strtolower($pharmacy_list) . '%'])
-        // ->where('PHARMACY_NABP', 'LIKE', '%' . strtoupper($pharmacy_list) . '%')
-            ->orWhere('PHARMACY_NAME', 'LIKE', '%' . strtoupper($pharmacy_list) . '%')
-            ->paginate(100);
+        // ->whereRaw('LOWER(PHARMACY_NABP) LIKE ?', ['%' . strtolower($searchQuery) . '%'])
+        // ->orWhere('PHARMACY_NAME', 'LIKE', '%' . strtoupper($searchQuery) . '%')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(PHARMACY_NABP)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(PHARMACY_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $data);
     }

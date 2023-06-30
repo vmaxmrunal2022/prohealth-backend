@@ -446,12 +446,15 @@ class PrescriberValidationController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function searchDropDownPrescriberListNew()
+    public function searchDropDownPrescriberListNew(Request $request)
     {
+        $searchQuery = $request->search;
         $data = DB::table('PHYSICIAN_TABLE')
-            ->orWhere('PHYSICIAN_LAST_NAME', 'LIKE', '%' . strtoupper('campB') . '%')
-            ->paginate(100);
-
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(PHYSICIAN_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(PHYSICIAN_LAST_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(PHYSICIAN_FIRST_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+        })->paginate(100);
         return $this->respondWithToken($this->token(), '', $data);
     }
 

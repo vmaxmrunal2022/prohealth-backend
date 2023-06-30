@@ -20,6 +20,21 @@ class TaxScheduleController extends Controller
 
         return $this->respondWithToken($this->token(), '', $taxData);
     }
+    public function getNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $taxData = DB::table('tax_schedule')
+        // ->where('tax_schedule_id', 'like', '%' . $request->search. '%')
+        // ->whereRaw('LOWER(tax_schedule_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
+        // ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->get();
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(tax_schedule_id)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(tax_schedule_name)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })
+        ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $taxData);
+    }
 
     public function getCalculations(Request $request)
     {

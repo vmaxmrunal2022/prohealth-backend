@@ -351,8 +351,13 @@ class FlexibleNetworkController extends Controller
     }
     public function NdcExceptionNamesNew(Request $request)
     {
-
-        $ndcnames = DB::table('NDC_EXCEPTIONS')->paginate(100);
+        $searchQuery = $request->search;
+        $ndcnames = DB::table('NDC_EXCEPTIONS') 
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(NDC_EXCEPTION_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })
+        ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $ndcnames);
 
@@ -367,9 +372,13 @@ class FlexibleNetworkController extends Controller
     }
     public function GpiExceptionNamesNew(Request $request)
     {
-
-        $gpinames = DB::table('GPI_EXCEPTIONS')->paginate(100);
-
+        $searchQuery = $request->search;
+        $gpinames = DB::table('GPI_EXCEPTIONS')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(GPI_EXCEPTION_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })
+        ->paginate(100);
         return $this->respondWithToken($this->token(), '', $gpinames);
 
     }
@@ -415,6 +424,18 @@ class FlexibleNetworkController extends Controller
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
+
+    public function flexibledropdownNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $ndc = DB::table('RX_NETWORK_RULE_NAMES')->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(RX_NETWORK_RULE_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(RX_NETWORK_RULE_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })
+        ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+    
 
 
 

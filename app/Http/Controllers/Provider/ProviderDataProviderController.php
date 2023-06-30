@@ -699,8 +699,13 @@ class ProviderDataProviderController extends Controller
     }
 
     public function getAllNew(Request $request)
-    {
-        $ndc = DB::table('PHARMACY_TABLE')->paginate(100);
+    {   
+        $searchQuery = $request->search;
+        $ndc = DB::table('PHARMACY_TABLE')
+                ->when($searchQuery, function ($query) use ($searchQuery) {
+                    $query->where(DB::raw('UPPER(PHARMACY_NABP)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                    $query->orWhere(DB::raw('UPPER(PHARMACY_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                })->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -844,10 +849,15 @@ class ProviderDataProviderController extends Controller
             
     public function getProviderNetworksNew(Request $request)
     {
-       
-           $traditional_network_data=DB::table('RX_NETWORKS')->paginate(100);
+        $searchQuery = $request->search;
+        $traditional_network_data= DB::table('RX_NETWORKS')
+                                        ->when($searchQuery, function ($query) use ($searchQuery) {
+                                            $query->where(DB::raw('UPPER(RX_NETWORKS.pharmacy_nabp)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                                            $query->orWhere(DB::raw('UPPER(RX_NETWORKS.NETWORK_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                                        })
+                                  ->paginate(100);
            
-           return $this->respondWithToken($this->token(), '', $traditional_network_data);
+        return $this->respondWithToken($this->token(), '', $traditional_network_data);
     }
 
 }

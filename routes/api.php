@@ -158,6 +158,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/procedure/delete', [ProcedureController::class, 'delete'])->name('procedure.delete'); // DELETE
         Route::get('/check-procedure-exist', [ProcedureController::class, 'checkProcedureCodeExist']);
         Route::get('/procedure/codes', [ProcedureController::class, 'getCodes'])->name('procedure.get'); // SEARCH
+        Route::get('/procedure/codes-new', [ProcedureController::class, 'getCodesNew'])->name('procedure.get-new'); // SEARCH
 
 
         // PROVIDER TYPE
@@ -536,6 +537,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::post('flexiblenetwork/add', [FlexibleNetworkController::class, 'add']);
         Route::get('flexiblenetwork/dropdown', [FlexibleNetworkController::class, 'flexibledropdown']);
+        Route::get('flexiblenetwork/dropdown-new', [FlexibleNetworkController::class, 'flexibledropdownNew']);
 
         Route::get('flexiblenetwork/getflixibleNetworks', [FlexibleNetworkController::class, 'getflixibleNetworks']);
 
@@ -1190,6 +1192,8 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('traditionalnetwork/all', [TraditionalNetworkController::class, 'all']);
 
     Route::get('traditionalnetworks/dropdowns', [TraditionalNetworkController::class, 'TraditionalNetworkIdsDropdwon']);
+    Route::get('traditionalnetworks/dropdowns-new', [TraditionalNetworkController::class, 'TraditionalNetworkIdsDropdwonNew']);
+    
 
 
 
@@ -1283,6 +1287,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
 
     //Tax Schedule
     Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
+    Route::get('tax-schedule/get-new', [TaxScheduleController::class, 'getNew']);
     Route::get('tax-schedule/get-calculations', [TaxScheduleController::class, 'getCalculations']);
     Route::get('tax-schedule/get-base-prices', [TaxScheduleController::class, 'getBasePrices']);
     Route::post('tax-schedule/submit', [TaxScheduleController::class, 'submitTaxSchedule']);

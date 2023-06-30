@@ -56,11 +56,13 @@ class VerifyDrugVCoverage extends Controller
             // 'group_id' => ['required', Rule::unique('FE_USER_GROUPS')->where(function ($q) {
             //     $q->whereNotNull('group_id');
             // })],
-            'ndc' => ['required'],
+            'ndc' => ['required','max:10'],
             'date_of_service' => ['required'],
             'member_id' => ['required']
         ]);
-
+        if ($validator->fails()) {
+            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        }
         //TODO -> functionality not clear
         if ($request->add_new) {
             $add_newVerify_drug = [

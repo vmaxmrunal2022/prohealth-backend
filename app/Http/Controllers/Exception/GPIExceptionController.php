@@ -746,8 +746,11 @@ class GPIExceptionController extends Controller
 
     public function GpiList_New(Request $request)
     {
-
-        $benefitcode = DB::table('GPI_EXCEPTIONS')->paginate(100);
+        $searchQuery = $request->search;
+        $benefitcode = DB::table('GPI_EXCEPTIONS') ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(GPI_EXCEPTION_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
         return $this->respondWithToken($this->token(), 'Successfully Fetched Data', $benefitcode);
     }
 
@@ -808,9 +811,14 @@ class GPIExceptionController extends Controller
         $data = DB::table('GPI_EXCEPTIONS')->get();
         return $this->respondWithToken($this->token(), '', $data);
     }
-    public function getGpiDropDownNew()
+    public function getGpiDropDownNew(Request $request)
     {
-        $data = DB::table('GPI_EXCEPTIONS')->paginate(100);
+        $searchQuery = $request->search;
+        $data = DB::table('GPI_EXCEPTIONS')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(GPI_EXCEPTION_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
         return $this->respondWithToken($this->token(), '', $data);
     }
 

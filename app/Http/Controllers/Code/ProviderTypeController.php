@@ -28,12 +28,18 @@ class ProviderTypeController extends Controller
 
     public function getNew(Request $request)
     {
-
+        $searchQuery = $request->search;
         $procedurecodes = DB::table('PROVIDER_TYPES')
             // ->where(DB::raw('UPPER(PROVIDER_TYPE)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->whereRaw('LOWER(PROVIDER_TYPE) LIKE ?', ['%' . strtolower($request->search) . '%'])
-            ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
+            // ->whereRaw('LOWER(PROVIDER_TYPE) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            // ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
+           
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where(DB::raw('UPPER(PROVIDER_TYPE)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                $query->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($searchQuery) . '%');
+             })
             ->paginate(100);
+        
 
         return $this->respondWithToken($this->token(), '', $procedurecodes);
     }

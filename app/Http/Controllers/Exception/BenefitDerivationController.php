@@ -534,9 +534,13 @@ use AuditTrait;
     public function getAll_New(Request $request)
     {
 
-
+        $searchQuery = $request->search;
         $data = DB::table('BENEFIT_DERIVATION_NAMES')
             ->where('BENEFIT_DERIVATION_ID', 'LIKE', '%' . strtoupper($request->benefit_derivation_id) . '%')
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where(DB::raw('UPPER(BENEFIT_DERIVATION_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                $query->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($searchQuery) . '%');
+             })
             ->paginate(100);
 
         return $this->respondWithToken($this->token(), 'data fetched Successfully', $data);

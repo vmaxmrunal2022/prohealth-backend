@@ -1441,8 +1441,15 @@ class NDCExceptionController extends Controller
 
     public function ndcList_New(Request $request)
     {
+        $searchQuery = $request->search;
         $ndc = DB::table('NDC_EXCEPTIONS')
-            ->paginate(100);
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(NDC_EXCEPTION_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
+
+            
+     
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -1554,9 +1561,14 @@ class NDCExceptionController extends Controller
         $data = DB::table('NDC_EXCEPTIONS')->get();
         return $this->respondWithToken($this->token(), '', $data);
     }
-    public function getNdcDropDownNew()
+    public function getNdcDropDownNew(Request $request)
     {
-        $data = DB::table('NDC_EXCEPTIONS')->paginate(100);
+        $searchQuery = $request->search;
+        $data = DB::table('NDC_EXCEPTIONS')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(NDC_EXCEPTION_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
         return $this->respondWithToken($this->token(), '', $data);
     }
 }

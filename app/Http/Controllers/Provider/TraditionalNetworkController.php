@@ -257,10 +257,15 @@ class TraditionalNetworkController extends Controller
 
     }
     public function dropdownNew (Request $request){
+        $searchQuery = $request->search;
+        $data=  DB::table('RX_NETWORK_NAMES')
+                    ->select('NETWORK_ID','NETWORK_NAME')
+                    ->when($searchQuery, function ($query) use ($searchQuery) {
+                        $query->where(DB::raw('UPPER(NETWORK_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                        $query->orWhere(DB::raw('UPPER(NETWORK_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                    })
+                    ->paginate(100);
 
-        $data=DB::table('RX_NETWORK_NAMES')
-        ->select('NETWORK_ID','NETWORK_NAME')
-        ->paginate(100);
         return $this->respondWithToken($this->token(), 'Data fetched successfully', $data);
 
     }
@@ -305,6 +310,19 @@ class TraditionalNetworkController extends Controller
         $ndc = DB::table('RX_NETWORK_NAMES')
             ->select('NETWORK_ID', 'NETWORK_NAME')
             ->get();
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+    public function TraditionalNetworkIdsDropdwonNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $ndc = DB::table('RX_NETWORK_NAMES')
+            ->select('NETWORK_ID', 'NETWORK_NAME')
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where(DB::raw('UPPER(NETWORK_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                $query->orWhere(DB::raw('UPPER(NETWORK_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+             })
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }

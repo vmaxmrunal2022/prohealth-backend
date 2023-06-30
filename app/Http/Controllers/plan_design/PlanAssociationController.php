@@ -178,8 +178,13 @@ class PlanAssociationController extends Controller
 
     public function getPharmacyChain_New(Request $request)
     {
+        $searchQuery = $request->search;
         $pharmacy_chain = DB::table('PHARMACY_CHAIN')
-            ->where(DB::raw('UPPER(pharmacy_chain)'), 'like', '%' . strtoupper($request->search) . '%')
+            // ->where(DB::raw('UPPER(pharmacy_chain)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where(DB::raw('UPPER(pharmacy_chain)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                $query->orWhere(DB::raw('UPPER(PHARMACY_CHAIN_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+             })
             ->paginate(100);
         return $this->respondWithToken($this->token(), '', $pharmacy_chain);
     }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\membership;
 use App\Http\Controllers\Controller;
 use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 // use DB;
 use Illuminate\Support\Facades\DB;
@@ -269,16 +268,12 @@ class MemberController extends Controller
     public function getMembersDropDownList(Request $request)
     {
         if(isset($request->client_id) && isset($request->client_group_id) && isset($request->customer_id)){
-            $searchQuery = $request->search;
             $member_data_list = DB::table('MEMBER')
             ->select('member_id')
             ->where('client_id', $request->client_id)
             ->where('client_group_id',$request->client_group_id)
             ->where('customer_id',$request->customer_id)
-            ->when($searchQuery, function ($query) use ($searchQuery) {
-                $query->where(DB::raw('UPPER(member_id)'), 'like', '%' . strtoupper($searchQuery) . '%');
-            })->paginate(100);
-            
+            ->paginate(100);
         }else{
             $member_data_list = DB::table('MEMBER')->select('member_id')->paginate(100);
         }
@@ -308,24 +303,6 @@ class MemberController extends Controller
             ['eligibility_id' => '7', 'eligibility_name' => 'Spouse only'],
             ['eligibility_id' => '8', 'eligibility_name' => 'Spouse & childern'],
         ];
-        $perPage = 3; // Number of items per page
-        $currentPage = 1; // Current page number
-
-        // Calculate the offset
-        $offset = ($currentPage - 1) * $perPage;
-
-        // Get the items for the current page
-        $currentPageItems = array_slice($eligibility, $offset, $perPage, true);
-
-        // Create a LengthAwarePaginator instance
-        $paginator = new LengthAwarePaginator($currentPageItems, count($eligibility), $perPage, $currentPage);
-
-        // Optional: Customize the paginator's URL path
-        // $paginator->setPath('/your-custom-path');
-
-        // Access the paginated items using `$paginator->items()`
-        // Access other paginator information using `$paginator->links()`, `$paginator->currentPage()`, etc.
-
         return $this->respondWithToken($this->token(), '', $eligibility);
     }
 
@@ -425,12 +402,8 @@ class MemberController extends Controller
     }
     public function getAccumulatedBenifitStrategyNew(Request $request)
     {
-        $searchQuery = $request->search;
         $acc_beni_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
-        ->when($searchQuery, function ($query) use ($searchQuery) {
-            $query->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
-          })
-        ->paginate(100);
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $acc_beni_strategy);
     }
@@ -611,7 +584,7 @@ class MemberController extends Controller
 
                         'CITY' => $request->city,
                         'STATE' => $request->state,
-                        'ZIP_CODE' => $request->zip_code,
+                        'ZIP_CODE' => $request->zipcode,
                         'PHONE' => $request->phone,
                         'ANNIV_DATE' => $request->anniv_date,
                         'DATE_OF_BIRTH' => $request->date_of_birth,
@@ -667,9 +640,9 @@ class MemberController extends Controller
                         'ACCUM_BENE_EFF_DATE_1' => $request->accum_bene_eff_date_1,
                         'ACCUM_BENE_EFF_DATE_2' => $request->accum_bene_eff_date_2,
                         'ACCUM_BENE_EFF_DATE_3' => $request->accum_bene_eff_date_3,
-                        'ACCUM_BENE_TERM_DATE_1' => $request->accum_bene_term_date_1,
-                        'ACCUM_BENE_TERM_DATE_2' => $request->accum_bene_term_date_2,
-                        'ACCUM_BENE_TERM_DATE_3' => $request->accum_bene_term_date_3,
+                        'ACCUM_BENE_TERM_DATE_1' => $request->ACCUM_BENE_TERM_DATE_1,
+                        'ACCUM_BENE_TERM_DATE_2' => $request->ACCUM_BENE_TERM_DATE_2,
+                        'ACCUM_BENE_TERM_DATE_3' => $request->ACCUM_BENE_TERM_DATE_3,
 
 
                         'ACCUM_ADJMNT_MBR_PAID_AMT_2' => $request->accum_adjmnt_mbr_paid_amt_2,
@@ -688,11 +661,7 @@ class MemberController extends Controller
                         'USER_DEFINED_CODE_1' => $request->user_defined_code_1,
                         'USER_DEFINED_CODE_2' => $request->user_defined_code_2,
                         'COUNTRY' => $request->country,
-                        'COUNTRY_CODE'=>$request->country_code,
-                        // 'accum_bene_term_date_3'=>$request->accum_bene_term_date_3,
-                        // 'accum_bene_term_date_2'=>$request->accum_bene_term_date_2,
-                        // 'accum_bene_plan_ov'=>$request->accum_bene_plan_ov,
-                        'accum_adjmnt_plan_paid_amt'=>$request->accum_adjmnt_plan_paid_amt
+                        // 'COUNTRY_CODE'=>$request->country_code,
 
                     ]);
 
@@ -894,8 +863,6 @@ class MemberController extends Controller
                     'city' => $request->city,
                     'state' => $request->state,
                     'country' => $request->country,
-                    'COUNTRY_CODE'=>$request->country_code,
-                    'ZIP_CODE' => $request->zip_code,
                     'date_of_birth' => $request->date_of_birth,
                     'relationship' => $request->relationship,
                     'anniv_date' => $request->anniv_date,
@@ -911,9 +878,9 @@ class MemberController extends Controller
                     'ACCUM_BENE_EFF_DATE_1' => $request->accum_bene_eff_date_1,
                     'ACCUM_BENE_EFF_DATE_2' => $request->accum_bene_eff_date_2,
                     'ACCUM_BENE_EFF_DATE_3' => $request->accum_bene_eff_date_3,
-                    'ACCUM_BENE_TERM_DATE_1' => $request->accum_bene_term_date_1,
-                    'ACCUM_BENE_TERM_DATE_2' => $request->accum_bene_term_date_2,
-                    'ACCUM_BENE_TERM_DATE_3' => $request->accum_bene_term_date_3,
+                    'ACCUM_BENE_TERM_DATE_1' => $request->ACCUM_BENE_TERM_DATE_1,
+                    'ACCUM_BENE_TERM_DATE_2' => $request->ACCUM_BENE_TERM_DATE_2,
+                    'ACCUM_BENE_TERM_DATE_3' => $request->ACCUM_BENE_TERM_DATE_3,
                     // 'provider_id' => $request->provider_id,
                     'PRIMARY_PRESCRIBER' => $request->prescriber_id,
                     'MISC_GROUPING_1' => $request->misc_grouping_1,
@@ -921,9 +888,6 @@ class MemberController extends Controller
                     'misc_id' => $request->misc_id,
                     'USER_DEFINED_CODE_1' => $request->user_defined_code_1,
                     'USER_DEFINED_CODE_2' => $request->user_defined_code_2,
-
-                    'accum_adjmnt_plan_paid_amt'=>$request->accum_adjmnt_plan_paid_amt
-
                 ]);
 
             //Bellow code is for adding member in audit
@@ -1121,7 +1085,7 @@ class MemberController extends Controller
 
                 if ($add_diagnosis_history) {
                     $new = $add_diagnosis_history;
-                    $new = DB::table('MEMBER_DIAGNOSIS_HISTORY')
+                    $new = DB::table('MEMBER_HIST')
                         ->where('CUSTOMER_ID', $diagnosis_list->customer_id)
                         ->where('CLIENT_ID', $diagnosis_list->client_id)
                         ->where('CLIENT_GROUP_ID', $diagnosis_list->client_group_id)
@@ -1131,8 +1095,8 @@ class MemberController extends Controller
                             "PERSON_CODE" => "0",
                             "CHG_TYPE_IND" => "A",
                             "BATCH_SEQUENCE_NUMBER" => '0',
-                            'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
-                            'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
+                            // 'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
+                            // 'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
                             "TO_EFFECTIVE_DATE" => $diagnosis_list->effective_date,
                             "TO_TERMINATION_DATE" => $diagnosis_list->termination_date,
                             "USER_ID_CREATED" => "",
