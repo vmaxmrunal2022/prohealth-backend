@@ -261,7 +261,7 @@ class ClientController extends Controller
                     ->where(DB::raw('UPPER(client.CLIENT_ID)'), 'like', '%' . strtoupper($request->client_id) . '%')
                     // ->orWhere(DB::raw('UPPER(client.CLIENT_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
                     ->orWhere('customer.CUSTOMER_ID', 'like', '%' . strtoupper($request->customer_id) . '%')
-                    ->get();
+                    ->first();
                 $benefitcode_audit = DB::table('CLIENT')->where('client_id', 'like', '%' . $request->client_id . '%')
                     ->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
                 // $record_snapshot = implode('|', (array) $benefitcode);
