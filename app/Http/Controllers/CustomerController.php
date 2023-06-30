@@ -192,8 +192,9 @@ class CustomerController extends Controller
             ]);
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
+                $update_data = DB::table('CUSTOMER')->get();
                 // dd($fieldsWithErrorMessagesArray);
-                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
+                return $this->respondWithToken($this->token(), $fieldsWithErrorMessagesArray, $update_data, false);
             } else {
                 $accum_benfit_stat_names = DB::table('CUSTOMER')->insert(
                     [
@@ -297,7 +298,7 @@ class CustomerController extends Controller
                 // $record_snapshot = implode('|', (array) $benefitcode);
                 $record_snapshot = json_encode($benefitcode);
                 $save_audit = $this->auditMethod('IN', $record_snapshot, 'PH_CUSTOMER');
-                return $this->respondWithToken($this->token(), 'RecordAdded Successfully', $updated_data);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $updated_data);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -312,8 +313,9 @@ class CustomerController extends Controller
                 'termination_date' => ['max:10', 'after:effective_date'],
             ]);
             if ($validator->fails()) {
+                $update_data = DB::table('CUSTOMER')->get();
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
-                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
+                return $this->respondWithToken($this->token(), $fieldsWithErrorMessagesArray, $update_data,  false);
             } else {
                 $accum_benfit_stat = DB::table('CUSTOMER')
                     ->where(DB::raw('UPPER(CUSTOMER_ID)'), strtoupper($request->customer_id))
@@ -449,7 +451,7 @@ class CustomerController extends Controller
         $customer = DB::table('customer')
             ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
             ->where(DB::raw('UPPER(CUSTOMER_ID)'), 'like', '%' . strtoupper($request->customerid) . '%')
-            ->orWhere(DB::raw('UPPER(CUSTOMER_NAME)'), 'like', '%' . strtoupper($request->customerid) . '%')
+            // ->orWhere(DB::raw('UPPER(CUSTOMER_NAME)'), 'like', '%' . strtoupper($request->customerid) . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $customer);
