@@ -99,8 +99,6 @@ class EligibilityValidationListController extends Controller
         } else {
             $elig_list_data->adult_dep_covd = false;
         }
-
-
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
 

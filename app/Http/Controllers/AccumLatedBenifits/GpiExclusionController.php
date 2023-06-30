@@ -184,6 +184,7 @@ class GpiExclusionController extends Controller
         //     ->get();
         $ndc = DB::table('GPI_EXCLUSIONS')
             ->whereRaw('LOWER(GPI_EXCLUSION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orderBy('GPI_EXCLUSION_LIST', 'ASC')
             ->get();
         return $this->respondWithToken($this->token(), '', $ndc);
     }

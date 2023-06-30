@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\drug_information;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class DrugDatabaseController extends Controller
 {
-
+    use AuditTrait;
 
     public function add(Request $request)
     {
@@ -235,7 +236,6 @@ class DrugDatabaseController extends Controller
             ->orWhere('LABEL_NAME', 'like', '%' . $request->search . '%')
             ->orWhere('GENERIC_NAME', 'like', '%' . $request->search . '%')
             ->orWhere('PACKAGE_SIZE', 'like', '%' . $request->search . '%')
-            ->orWhere('GENERIC_PRODUCT_ID', 'like', '%' . $request->search . '%')
             ->get();
 
         return $this->respondWithToken($this->token(), '', $data);
