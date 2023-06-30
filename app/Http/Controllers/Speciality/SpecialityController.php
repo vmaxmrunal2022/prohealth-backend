@@ -148,6 +148,7 @@ class SpecialityController extends Controller
 
     public function addSpeciality(Request $request)
     {
+
         $createddate = date('d-M-y');
 
         $validation = DB::table('SPECIALTY_EXCEPTIONS')
@@ -282,6 +283,8 @@ class SpecialityController extends Controller
                                 $this->token(),
                                 'Record Added successfully',
                                 [$diag_validation, $diag_exception],
+                                true,
+                                201
                             );
                         }
                     }
@@ -318,6 +321,8 @@ class SpecialityController extends Controller
                 $this->token(),
                 'Record Updated successfully',
                 [$diag_validation, $diag_exception],
+                true,
+                201
             );
         }
     }
@@ -340,7 +345,7 @@ class SpecialityController extends Controller
                 ->delete();
             $diagnosis_exception =
                 DB::table('SPECIALTY_EXCEPTIONS')
-                ->where('specialty_list',$request->specialty_list)
+                ->where('specialty_list', $request->specialty_list)
                 ->count();
             return $this->respondWithToken($this->token(), "Record Deleted Successfully", $diagnosis_exception);
         } else        
@@ -358,7 +363,7 @@ class SpecialityController extends Controller
                         ->where(DB::raw('UPPER(specialty_list)'), strtoupper($request->specialty_list))
                         ->delete();
                     $diagnosis_validation1 = DB::table('SPECIALTY_EXCEPTIONS')
-                        ->where('specialty_list',$request->specialty_list)
+                        ->where('specialty_list', $request->specialty_list)
                         ->count();
                     return $this->respondWithToken($this->token(), "Parent and Child Deleted Successfully", $diagnosis_validation1, true);
                 }
@@ -389,9 +394,9 @@ class SpecialityController extends Controller
                 ->first();
             if ($all_copay_strategy) {
                 $copay_strategy = DB::table('SPECIALTY_VALIDATIONS')
-                ->where('specialty_list', $request->specialty_list)
-                ->where('specialty_id', $request->specialty_id)
-                // ->where('specialty_status',$request->specialty_status)
+                    ->where('specialty_list', $request->specialty_list)
+                    ->where('specialty_id', $request->specialty_id)
+                    // ->where('specialty_status',$request->specialty_status)
                     ->delete();
                 if ($copay_strategy) {
                     $val = DB::table('SPECIALTY_VALIDATIONS')
@@ -411,11 +416,10 @@ class SpecialityController extends Controller
                 ->where('specialty_list', $request->specialty_list)
                 ->delete();
             if ($all_accum_bene_strategy_names) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $all_accum_bene_strategy_names, false);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not found', 'false');
             }
         }
     }
-
 }
