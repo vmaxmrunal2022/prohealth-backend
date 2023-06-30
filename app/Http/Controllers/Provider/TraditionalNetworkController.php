@@ -256,6 +256,14 @@ class TraditionalNetworkController extends Controller
 
 
     }
+    public function dropdownNew (Request $request){
+
+        $data=DB::table('RX_NETWORK_NAMES')
+        ->select('NETWORK_ID','NETWORK_NAME')
+        ->paginate(100);
+        return $this->respondWithToken($this->token(), 'Data fetched successfully', $data);
+
+    }
 
 
     public function all(Request $request)
@@ -301,9 +309,7 @@ class TraditionalNetworkController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-
-
-
+    
     public function ProviderIdsearch(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')

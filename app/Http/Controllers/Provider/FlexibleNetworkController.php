@@ -349,11 +349,26 @@ class FlexibleNetworkController extends Controller
         return $this->respondWithToken($this->token(), '', $ndcnames);
 
     }
+    public function NdcExceptionNamesNew(Request $request)
+    {
 
+        $ndcnames = DB::table('NDC_EXCEPTIONS')->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndcnames);
+
+    }
     public function GpiExceptionNames(Request $request)
     {
 
         $gpinames = DB::table('GPI_EXCEPTIONS')->get();
+
+        return $this->respondWithToken($this->token(), '', $gpinames);
+
+    }
+    public function GpiExceptionNamesNew(Request $request)
+    {
+
+        $gpinames = DB::table('GPI_EXCEPTIONS')->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $gpinames);
 

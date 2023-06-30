@@ -23,6 +23,18 @@ class PriceScheduleController extends Controller
             ->get();
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }
+    public function getNew(Request $request)
+    {
+        $priceShedule = DB::table('PRICE_SCHEDULE')
+            // ->where('PRICE_SCHEDULE',  $request->search)
+            ->whereRaw('LOWER(PRICE_SCHEDULE) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhere('COPAY_SCHEDULE', $request->search)
+            ->orWhere('PRICE_SCHEDULE_NAME',$request->search)
+            ->orWhere('PRICE_SCHEDULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
+
+            ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $priceShedule);
+    }
     public function getAll(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')
