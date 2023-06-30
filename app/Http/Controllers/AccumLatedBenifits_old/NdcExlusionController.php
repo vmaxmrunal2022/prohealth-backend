@@ -60,10 +60,8 @@ class NdcExlusionController extends Controller
                         'DATE_TIME_MODIFIED' => date('Ymd'),
                     ]
                 );
-                $getRecord =   DB::table('NDC_EXCLUSIONS')
-                    ->where('ndc_exclusion_list', $request->ndc_exclusion_list)->first();
                 if ($insert) {
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $getRecord);
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $insert);
                 }
             }
         } else {
@@ -103,7 +101,7 @@ class NdcExlusionController extends Controller
                         );
 
                     if ($createdNdcList) {
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully',  $update, true, 201);
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
                     }
                 }
             }
@@ -117,29 +115,26 @@ class NdcExlusionController extends Controller
     public function delete(Request $request)
     {
         if (isset($request->ndc_exclusion_list) && isset($request->ndc)) {
-            // $all_ndc_exclusion_list =  DB::table('NDC_EXCLUSION_LISTS')
-            //     ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
-            //     ->count();
-
-            // if ($all_ndc_exclusion_list == 1) {
-            //     $delete_ndc_exclusions =  DB::table('NDC_EXCLUSIONS')
-            //         ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
-            //         ->delete();
-
-            //     $delete_ndc_exclusion_list =  DB::table('NDC_EXCLUSION_LISTS')
-            //         ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
-            //         ->delete();
-            // } else {
-            $delete_ndc_exclusion_list =  DB::table('NDC_EXCLUSION_LISTS')
-                ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
-                ->where('ndc', $request->ndc)
-                ->delete();
-            $child_count =  DB::table('NDC_EXCLUSION_LISTS')
+            $all_ndc_exclusion_list =  DB::table('NDC_EXCLUSION_LISTS')
                 ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
                 ->count();
-            // }
+
+            if ($all_ndc_exclusion_list == 1) {
+                $delete_ndc_exclusions =  DB::table('NDC_EXCLUSIONS')
+                    ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
+                    ->delete();
+
+                $delete_ndc_exclusion_list =  DB::table('NDC_EXCLUSION_LISTS')
+                    ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
+                    ->delete();
+            } else {
+                $delete_ndc_exclusion_list =  DB::table('NDC_EXCLUSION_LISTS')
+                    ->where('ndc_exclusion_list', $request->ndc_exclusion_list)
+                    ->where('ndc', $request->ndc)
+                    ->delete();
+            }
             if ($delete_ndc_exclusion_list) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $child_count);
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found',);
             }
@@ -153,7 +148,7 @@ class NdcExlusionController extends Controller
                 ->delete();
 
             if ($delete_ndc_exclusions) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $delete_ndc_exclusions, true, 201);
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
@@ -211,7 +206,7 @@ class NdcExlusionController extends Controller
     public function getDetails($ndcid, $ndc_exclusion_list)
     {
         $ndc = DB::table('NDC_EXCLUSION_LISTS')
-            ->select('NDC_EXCLUSION_LISTS.*', 'DRUG_MASTER.LABEL_NAME')
+        ->select('NDC_EXCLUSION_LISTS.*','DRUG_MASTER.LABEL_NAME')
             ->leftjoin('NDC_EXCLUSIONS', 'NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', '=', 'NDC_EXCLUSIONS.NDC_EXCLUSION_LIST')
             ->leftjoin('DRUG_MASTER', 'NDC_EXCLUSION_LISTS.NDC', '=', 'DRUG_MASTER.NDC')
             ->where('NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', $ndcid)

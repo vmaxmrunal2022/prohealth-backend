@@ -30,7 +30,7 @@ class PrescriberController extends Controller
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
-   
+
 
     public function getDetails($ndcid)
     {
@@ -44,10 +44,10 @@ class PrescriberController extends Controller
     public function add(Request $request)
     {
 
-       
+
         $validator = Validator::make($request->all(), [
             "physician_id" => ['required', 'max:10'],
-            "phys_file_srce_id" => ['required','max:35'],
+            "phys_file_srce_id" => ['required', 'max:35'],
             "physician_first_name" => ['max:35'],
             "physician_last_name" => ['max:20'],
             "physician_specialty" => ['max:6'],
@@ -67,26 +67,53 @@ class PrescriberController extends Controller
 
 
         $check = DB::table('PHYSICIAN_TABLE')
-        ->where('physician_id',strtoupper($request->physician_id))
-        ->first();
+            ->where('physician_id', strtoupper($request->physician_id))
+            ->first();
 
-        if($request->new==1){
+        if ($request->new == 1) {
 
-            if($check){
+            if ($check) {
 
                 return $this->respondWithToken($this->token(), 'This record already exists in the system..!!!', $check);
-
-
-            }
-            else{
+            } else {
 
 
                 $insert = DB::table('PHYSICIAN_TABLE')
-                  ->insert([
-                    'physician_id' => strtoupper($request->physician_id),
+                    ->insert([
+                        'physician_id' => strtoupper($request->physician_id),
+                        'physician_last_name' => $request->physician_last_name,
+                        'phys_file_srce_id' => $request->phys_file_srce_id,
+                        'physician_first_name' => $request->physician_first_name,
+                        'address_1' => $request->address_1,
+                        'city' => $request->city,
+                        'country' => $request->country,
+                        'license_number' => $request->license_number,
+                        'medical_group' => $request->medical_group,
+                        'phone' => $request->phone,
+                        'physician_dea' => $request->physician_dea,
+                        'physician_specialty' => $request->physician_specialty,
+                        'physician_title' => $request->physician_title,
+                        'spin_number' => $request->spin_number,
+                        'state' => $request->state,
+                        'user_id' => $request->user_id,
+                        'zip_code' => $request->zip_code,
+                    ]);
+
+
+                if ($insert) {
+                    $getUpdated = DB::table('PHYSICIAN_TABLE')->where('physician_id', $request->physician_id)->first();
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $getUpdated);
+                }
+            }
+        } else {
+
+            $update = DB::table('PHYSICIAN_TABLE')
+                ->where('PHYSICIAN_ID', $request->physician_id)
+                ->update([
+                    'physician_id' => $request->physician_id,
                     'physician_last_name' => $request->physician_last_name,
-                    'phys_file_srce_id'=>$request->phys_file_srce_id,
                     'physician_first_name' => $request->physician_first_name,
+                    'phys_file_srce_id' => $request->phys_file_srce_id,
                     'address_1' => $request->address_1,
                     'city' => $request->city,
                     'country' => $request->country,
@@ -100,56 +127,13 @@ class PrescriberController extends Controller
                     'state' => $request->state,
                     'user_id' => $request->user_id,
                     'zip_code' => $request->zip_code,
-                  ]);
+                ]);
 
-
-                  if($insert)
-                  {
-                      $getUpdated = DB::table('PHYSICIAN_TABLE')->where('physician_id', $request->physician_id)->first();
-                      return $this->respondWithToken($this->token(), 'Record Added Successfully', $getUpdated);
-                  }
-
-            }
-
-            
-
-        }
-        
-       
-
-        else{
-
-            $update = DB::table('PHYSICIAN_TABLE')
-            ->where('PHYSICIAN_ID', $request->physician_id)
-            ->update([
-              'physician_id' => $request->physician_id,
-              'physician_last_name' => $request->physician_last_name,
-              'physician_first_name' => $request->physician_first_name,
-              'phys_file_srce_id'=>$request->phys_file_srce_id,
-              'address_1' => $request->address_1,
-              'city' => $request->city,
-              'country' => $request->country,
-              'license_number' => $request->license_number,
-              'medical_group' => $request->medical_group,
-              'phone' => $request->phone,
-              'physician_dea' => $request->physician_dea,
-              'physician_specialty' => $request->physician_specialty,
-              'physician_title' => $request->physician_title,
-              'spin_number' => $request->spin_number,
-              'state' => $request->state,
-              'user_id' => $request->user_id,
-              'zip_code' => $request->zip_code,
-            ]);
-
-            if($update)
-            {
+            if ($update) {
                 $getUpdated = DB::table('PHYSICIAN_TABLE')->where('physician_id', $request->physician_id)->first();
                 return $this->respondWithToken($this->token(), 'Record Updated Successfully', $getUpdated);
             }
-            
         }
-
-       
     }
 
     public function delete(Request $request)
@@ -168,6 +152,4 @@ class PrescriberController extends Controller
             return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
-
-    
 }

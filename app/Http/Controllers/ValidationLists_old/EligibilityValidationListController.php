@@ -38,11 +38,11 @@ class EligibilityValidationListController extends Controller
             ->paginate(100);
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
-    public function DropDownNew(Request $request)
-    {
+    public function DropDownNew(Request $request){
 
         $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')->paginate(100);
         return $this->respondWithToken($this->token(), '', $elig_list_data);
+
     }
 
 
@@ -99,6 +99,8 @@ class EligibilityValidationListController extends Controller
         } else {
             $elig_list_data->adult_dep_covd = false;
         }
+
+
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
 
@@ -218,3 +220,4 @@ class EligibilityValidationListController extends Controller
         return $this->respondWithToken($this->token(), 'Record Deleted Successfully', '');
     }
 }
+

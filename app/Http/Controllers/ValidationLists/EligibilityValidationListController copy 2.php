@@ -99,11 +99,14 @@ class EligibilityValidationListController extends Controller
         } else {
             $elig_list_data->adult_dep_covd = false;
         }
+
+
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
 
     public function addEligiblityData(Request $request)
     {
+        // return $request->all();
         if ($request->new == 1) {
             $validator = Validator::make($request->all(), [
                 "elig_validation_id" => ['required', 'max:10', Rule::unique('ELIG_VALIDATION_LISTS')->where(function ($q) {

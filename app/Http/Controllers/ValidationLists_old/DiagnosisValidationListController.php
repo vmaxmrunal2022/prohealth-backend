@@ -554,10 +554,12 @@ class DiagnosisValidationListController extends Controller
                             ->get();
 
                         $limitation_list_obj = json_decode(json_encode($request->limitations_form, true));
+                        $data = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')->where('diagnosis_list', $request->diagnosis_list)->delete();
+
                         if (!empty($request->limitations_form)) {
                             $limitation_list = $limitation_list_obj[0];
                             foreach ($limitation_list_obj as $key => $limitation_list) {
-                                if (isset($limitation_list->limitations_list)) {
+                                if ($limitation_list->has('limitations_list')) {
                                     $LIMITATION_LIST = $limitation_list->limitations_list;
                                 } else {
                                     $LIMITATION_LIST = '';
@@ -577,8 +579,6 @@ class DiagnosisValidationListController extends Controller
                             $this->token(),
                             'Record Added successfully',
                             [$diag_validation, $diag_exception],
-                            true,
-                            201
                         );
                     }
                 }
@@ -595,7 +595,7 @@ class DiagnosisValidationListController extends Controller
                 $countValidation = DB::table('DIAGNOSIS_VALIDATIONS')
                     ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
                     ->where(DB::raw('UPPER(diagnosis_id)'), strtoupper($request->diagnosis_id))
-                    // ->where('pharmacy_status', $request->pharmacy_status)
+                    // ->where('diagnosis_status', $request->diagnosis_status)
                     ->update([
                         'diagnosis_list' => $request->diagnosis_list,
                         'date_time_modified' => date('d-M-y'),
@@ -612,10 +612,8 @@ class DiagnosisValidationListController extends Controller
 
                 return $this->respondWithToken(
                     $this->token(),
-                    'Record Updated Successfully',
+                    'Record Updated successfully',
                     [$diag_validation, $diag_exception],
-                    true,
-                    201
                 );
             }
         } else {
@@ -632,7 +630,7 @@ class DiagnosisValidationListController extends Controller
             $countValidation = DB::table('DIAGNOSIS_VALIDATIONS')
                 ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
                 ->where(DB::raw('UPPER(diagnosis_id)'), strtoupper($request->diagnosis_id))
-                // ->where('pharmacy_status', $request->pharmacy_status)
+                // ->where('diagnosis_status', $request->diagnosis_status)
                 ->update([
                     'diagnosis_status' => $request->diagnosis_status,
                     'diagnosis_list' => $request->diagnosis_list,
@@ -679,8 +677,6 @@ class DiagnosisValidationListController extends Controller
                 $this->token(),
                 'Record Updated successfully',
                 [$diag_validation, $diag_exception],
-                true,
-                201
             );
         }
     }
@@ -786,7 +782,7 @@ class DiagnosisValidationListController extends Controller
             ->where(DB::raw('UPPER(diagnosis_list)'), strtoupper($request->diagnosis_list))
             ->where(DB::raw('UPPER(diagnosis_id)'), strtoupper($request->diagnosis_id))
             ->where('effective_date', date('Ymd', strtotime($request->effective_date)))
-            ->delete();
+            ->get();
         return $this->respondWithToken($this->token(), 'Limitation Deleted', $delete_limitation);
     }
 
@@ -838,15 +834,15 @@ class DiagnosisValidationListController extends Controller
                 ->first();
             if ($all_copay_strategy) {
                 $copay_strategy = DB::table('DIAGNOSIS_VALIDATIONS')
-                    ->where('diagnosis_list', $request->diagnosis_list)
-                    ->where('diagnosis_id', $request->diagnosis_id)
-                    // ->where('diagnosis_status',$request->diagnosis_status)
+                ->where('diagnosis_list', $request->diagnosis_list)
+                ->where('diagnosis_id', $request->diagnosis_id)
+                // ->where('diagnosis_status',$request->diagnosis_status)
                     ->delete();
 
 
-                $limitations_delete = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                    $limitations_delete=DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
                     ->where('diagnosis_list', $request->diagnosis_list)
-                    ->delete();
+                        ->delete();
 
 
                 if ($copay_strategy) {
@@ -854,7 +850,7 @@ class DiagnosisValidationListController extends Controller
                         // ->join('SPECIALTY_EXCEPTIONS', 'DIAGNOSIS_VALIDATIONS.copay_strategy_id', '=', 'SPECIALTY_EXCEPTIONS.copay_strategy_id')
                         ->where('DIAGNOSIS_VALIDATIONS.diagnosis_list', $request->diagnosis_list)
                         ->count();
-                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', $val, true, 201);
+                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', $val);
                 }
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
@@ -866,9 +862,9 @@ class DiagnosisValidationListController extends Controller
             $copay_strategy = DB::table('DIAGNOSIS_VALIDATIONS')
                 ->where('diagnosis_list', $request->diagnosis_list)
                 ->delete();
-            $limitations_delete = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
+                $limitations_delete=DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
                 ->where('diagnosis_list', $request->diagnosis_list)
-                ->delete();
+                    ->delete();
             if ($all_accum_bene_strategy_names) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {

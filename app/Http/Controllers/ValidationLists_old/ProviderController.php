@@ -16,7 +16,7 @@ class ProviderController extends Controller
     public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            // "search" => ['required'],
+            "search" => ['required'],
         ]);
 
         if ($validator->fails()) {
@@ -250,7 +250,7 @@ class ProviderController extends Controller
 
                         return $this->respondWithToken(
                             $this->token(),
-                            'Record Added Successfully',
+                            'Record Added successfully',
                             [[], []],
                         );
                     } else {
@@ -313,8 +313,6 @@ class ProviderController extends Controller
                                 $this->token(),
                                 'Record Added successfully',
                                 [$diag_validation, $diag_exception],
-                                true,
-                                201
                             );
                         }
                     }
@@ -358,8 +356,6 @@ class ProviderController extends Controller
                 $this->token(),
                 'Record Updated successfully',
                 [$diag_validation, $diag_exception],
-                true,
-                201
             );
         }
     }
@@ -375,13 +371,12 @@ class ProviderController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function searchDropDownProviderListNew(Request $request)
+    public function searchDropDownProviderListNew($pharmacy_list = '')
     {
-
         $data = DB::table('PHARMACY_TABLE')
-            ->whereRaw('LOWER(PHARMACY_NABP) LIKE ?', ['%' . strtolower($request->search) . '%'])
-            // ->where('PHARMACY_NABP', 'LIKE', '%' . strtoupper($pharmacy_list) . '%')
-            ->orWhere('PHARMACY_NAME', 'LIKE', '%' . strtoupper($request->search) . '%')
+        ->whereRaw('LOWER(PHARMACY_NABP) LIKE ?', ['%' . strtolower($pharmacy_list) . '%'])
+        // ->where('PHARMACY_NABP', 'LIKE', '%' . strtoupper($pharmacy_list) . '%')
+            ->orWhere('PHARMACY_NAME', 'LIKE', '%' . strtoupper($pharmacy_list) . '%')
             ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $data);
@@ -504,8 +499,8 @@ class ProviderController extends Controller
                 ->first();
             if ($all_copay_strategy) {
                 $copay_strategy = DB::table('PHARMACY_VALIDATIONS')
-                    ->where('pharmacy_list', $request->pharmacy_list)
-                    ->where('pharmacy_nabp', $request->pharmacy_nabp)
+                ->where('pharmacy_list', $request->pharmacy_list)
+                ->where('pharmacy_nabp', $request->pharmacy_nabp)
                     ->delete();
                 if ($copay_strategy) {
                     $val = DB::table('PHARMACY_VALIDATIONS')
@@ -525,7 +520,7 @@ class ProviderController extends Controller
                 ->where('pharmacy_list', $request->pharmacy_list)
                 ->delete();
             if ($all_accum_bene_strategy_names) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $all_accum_bene_strategy_names, true, 201);
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not found', 'false');
             }

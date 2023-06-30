@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\ValidationLists;
 
 use App\Http\Controllers\Controller;
-use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +11,6 @@ use Illuminate\Validation\Rule;
 
 class DiagnosisValidationListController extends Controller
 {
-    use AuditTrait;
     public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -790,7 +788,7 @@ class DiagnosisValidationListController extends Controller
         return $this->respondWithToken($this->token(), 'Limitation Deleted', $delete_limitation);
     }
 
-    public function deleteRecordold(Request $request)
+    public function deleteRecord(Request $request)
     {
         if ($request->diagnosis_list) {
             if ($request->diagnosis_id) {
@@ -823,56 +821,7 @@ class DiagnosisValidationListController extends Controller
                     DB::table('DIAGNOSIS_EXCEPTIONS')
                     ->where(DB::raw('UPPER(diagnosis_list)'), 'like', '%' . strtoupper($request->diagnosis_list) . '%')
                     ->get();
-                return $this->respondWithToken($this->token(), "Record Deleted Successfully ", '');
-            }
-        }
-    }
-
-    public function deleteRecord(Request $request)
-    {
-        if (isset($request->diagnosis_list) && isset($request->diagnosis_id)) {
-            $all_copay_strategy = DB::table('DIAGNOSIS_VALIDATIONS')
-                ->where('diagnosis_list', $request->diagnosis_list)
-                ->where('diagnosis_id', $request->diagnosis_id)
-                // ->where('diagnosis_status',$request->diagnosis_status)
-                ->first();
-            if ($all_copay_strategy) {
-                $copay_strategy = DB::table('DIAGNOSIS_VALIDATIONS')
-                    ->where('diagnosis_list', $request->diagnosis_list)
-                    ->where('diagnosis_id', $request->diagnosis_id)
-                    // ->where('diagnosis_status',$request->diagnosis_status)
-                    ->delete();
-
-
-                $limitations_delete = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-                    ->where('diagnosis_list', $request->diagnosis_list)
-                    ->delete();
-
-
-                if ($copay_strategy) {
-                    $val = DB::table('DIAGNOSIS_VALIDATIONS')
-                        // ->join('SPECIALTY_EXCEPTIONS', 'DIAGNOSIS_VALIDATIONS.copay_strategy_id', '=', 'SPECIALTY_EXCEPTIONS.copay_strategy_id')
-                        ->where('DIAGNOSIS_VALIDATIONS.diagnosis_list', $request->diagnosis_list)
-                        ->count();
-                    return $this->respondWithToken($this->token(), 'Record Deleted Successfully ', $val, true, 201);
-                }
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
-            }
-        } elseif (isset($request->diagnosis_list)) {
-            $all_accum_bene_strategy_names = DB::table('DIAGNOSIS_EXCEPTIONS')
-                ->where('diagnosis_list', $request->diagnosis_list)
-                ->delete();
-            $copay_strategy = DB::table('DIAGNOSIS_VALIDATIONS')
-                ->where('diagnosis_list', $request->diagnosis_list)
-                ->delete();
-            $limitations_delete = DB::table('DIAGNOSIS_LIMITATIONS_ASSOC')
-                ->where('diagnosis_list', $request->diagnosis_list)
-                ->delete();
-            if ($all_accum_bene_strategy_names) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not found', 'false');
+                return $this->respondWithToken($this->token(), "Record Deleted Successfully ", '', true, 201);
             }
         }
     }

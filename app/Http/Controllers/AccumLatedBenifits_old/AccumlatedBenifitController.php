@@ -110,7 +110,7 @@ class AccumlatedBenifitController extends Controller
                     ->first();
                 $record_snap = json_encode($accum_bene);
                 $save_audit = $this->auditMethod('IN', $record_snap, 'PLAN_ACCUM_DEDUCT_TABLE');
-                return $this->respondWithToken($this->token(), 'Record Added Succesfully', $accum_bene);
+                return $this->respondWithToken($this->token(), 'Record Added Succesfully', $accum_benfit_stat);
             }
         } else {
 
@@ -197,7 +197,7 @@ class AccumlatedBenifitController extends Controller
                 ->first();
             $record_snap = json_encode($accum_bene);
             $save_audit = $this->auditMethod('UP', $record_snap, 'PLAN_ACCUM_DEDUCT_TABLE');
-            return $this->respondWithToken($this->token(), 'Record Updated Succesfully', $accum_bene);
+            return $this->respondWithToken($this->token(), 'Record Updated Succesfully', $createddate);
         }
     }
 
@@ -226,7 +226,7 @@ class AccumlatedBenifitController extends Controller
 
     {
         $ndc = DB::table('PLAN_ACCUM_DEDUCT_TABLE')
-            //     ->where('PLAN_ACCUM_DEDUCT_ID', 'like', '%' . $request->search . '%')
+        //     ->where('PLAN_ACCUM_DEDUCT_ID', 'like', '%' . $request->search . '%')
             ->whereRaw('LOWER(PLAN_ACCUM_DEDUCT_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('PLAN_ACCUM_DEDUCT_NAME', 'like', '%' . $request->search . '%')
             ->paginate(100);
@@ -238,7 +238,11 @@ class AccumlatedBenifitController extends Controller
     public function get_all(Request $request)
 
     {
-        $accumlated_benefit_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')->get();
+        $accumlated_benefit_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+        // ->where('ACCUM_BENE_STRATEGY_ID',$request->search)
+        ->whereRaw('LOWER(ACCUM_BENE_STRATEGY_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+
+        ->get();
 
         if ($accumlated_benefit_names) {
             return $this->respondWithToken($this->token(), 'Data fetched Successfully', $accumlated_benefit_names);
