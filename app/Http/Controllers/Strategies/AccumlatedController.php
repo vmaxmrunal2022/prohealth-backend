@@ -244,8 +244,13 @@ class AccumlatedController extends Controller
 
     public function AccumlatedDropDown_New(Request $request)
     {
+        $searchQuery = $request->search;
         $ndc = DB::table('ACCUM_BENE_STRATEGY_NAMES')
-            ->paginate(100);
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(ACCUM_BENE_STRATEGY_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })
+        ->paginate(100);
         return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
     }
 

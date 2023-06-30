@@ -709,9 +709,15 @@ class PlanEditController extends Controller
 
     public function getSuperProviderNetwork_New(Request  $request)
     {
+        $searchQuery = $request->search;
         $super_provider_network = DB::table('SUPER_RX_NETWORKS')
             ->join('SUPER_RX_NETWORK_NAMES', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
-            ->paginate(100);
+
+             ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
+
         return $this->respondWithToken($this->token(), '', $super_provider_network);
     }
 
@@ -733,6 +739,18 @@ class PlanEditController extends Controller
         return $this->respondWithToken($this->token(), '', $procedure_list);
     }
 
+    public function getProcedureException_New(Request $request)
+    {
+        $searchQuery = $request->search;
+        $procedure_list = DB::table('PROCEDURE_EXCEPTION_LISTS')
+            ->join('PROCEDURE_EXCEPTION_NAMES', 'PROCEDURE_EXCEPTION_NAMES.PROCEDURE_EXCEPTION_LIST', '=', 'PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST')
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where(DB::raw('UPPER(PROCEDURE_EXCEPTION_NAMES.PROCEDURE_EXCEPTION_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                $query->orWhere(DB::raw('UPPER(PROCEDURE_EXCEPTION_NAMES.EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+             })->paginate(100);
+           
+        return $this->respondWithToken($this->token(), '', $procedure_list);
+    }
 
     public function planeditDelete(Request $request){
         if(isset($request->plan_id)) {

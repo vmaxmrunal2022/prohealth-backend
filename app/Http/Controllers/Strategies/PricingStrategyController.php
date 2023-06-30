@@ -67,8 +67,13 @@ class PricingStrategyController extends Controller
 
     public function get_allNew(Request $request)
     {
-
-        $pricing_strategies = DB::table('PRICING_STRATEGY_NAMES')->paginate(100);
+        
+        $searchQuery = $request->search;
+        $pricing_strategies = DB::table('PRICING_STRATEGY_NAMES')
+          ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(PRICING_STRATEGY_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(PRICING_STRATEGY_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+          })->paginate(100);
 
         if ($pricing_strategies) {
 

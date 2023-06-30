@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\validationlists;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -11,6 +12,7 @@ use Illuminate\Validation\Rule;
 class EligibilityValidationListController extends Controller
 {
 
+    use AuditTrait;
     public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -164,7 +166,7 @@ class EligibilityValidationListController extends Controller
     public function DropDown(Request $request)
     {
 
-        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')->get();
+        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')->paginate(100);
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
 }

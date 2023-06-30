@@ -86,7 +86,12 @@ class DrugClassController extends Controller
 
     public function DrugCategoryList_New(Request $request)
     {
-        $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')->paginate(100);
+        $searchQuery = $request->search;
+        $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 

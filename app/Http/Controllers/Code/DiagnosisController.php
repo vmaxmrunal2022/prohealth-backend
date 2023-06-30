@@ -24,10 +24,13 @@ class DiagnosisController extends Controller
 
     public function allNew(Request $request)
     {
-
+        $searchQuery = $request->search;
         $benefitcodes = DB::table('DIAGNOSIS_CODES')
                             ->select('diagnosis_id','description')
-                            ->paginate(100);
+                            ->when($searchQuery, function ($query) use ($searchQuery) {
+                                $query->where(DB::raw('UPPER(DIAGNOSIS_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                                $query->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                             })->paginate(100);
         return $this->respondWithToken($this->token(), '', $benefitcodes);
     }
 

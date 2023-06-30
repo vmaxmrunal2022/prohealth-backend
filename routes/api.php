@@ -102,6 +102,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/view-profile', [UserController::class, 'viewProfile'])->name('profile.user');
         Route::post('/change-password', [UserController::class, 'changePassword'])->name('user.change-password')->middleware('throttle:loginAttempt');
         Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
+        Route::post('users/reset-password', [UserController::class, 'resetPassword'])->name('user.forget-password');
     });
 
     Route::group(['prefix' => '/copy-item'], function ($router) {
@@ -135,6 +136,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/procedure/delete', [ProcedureController::class, 'delete'])->name('procedure.delete'); // DELETE
         Route::get('/check-procedure-exist', [ProcedureController::class, 'checkProcedureCodeExist']);
         Route::get('/procedure/codes', [ProcedureController::class, 'getCodes'])->name('procedure.get'); // SEARCH
+        Route::get('/procedure/codes-new', [ProcedureController::class, 'getCodesNew'])->name('procedure.get-new'); // SEARCH
 
 
         // PROVIDER TYPE
@@ -239,6 +241,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //exception provider list
         Route::get('/provider/getAll', [ProviderDataProviderController::class, 'getAll'])->name('exception.provider.getAll');
+        Route::get('/provider/getAll/new', [ProviderDataProviderController::class, 'getAllNew'])->name('exception.provider.getAllNew');
 
         //exception Price Schedule list
         Route::get('/provider/getAll/new', [ProviderDataProviderController::class, 'getAllNew'])->name('exception.provider.getAll');
@@ -509,7 +512,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::get('traditionalnetwork/dropdown', [TraditionalNetworkController::class, 'dropdown']);
 
-        Route::get('traditionalnetwork/dropdown', [TraditionalNetworkController::class, 'dropdown']);
+        Route::get('traditionalnetwork/dropdown-new', [TraditionalNetworkController::class, 'dropdownNew']);
         Route::post('traditionalnetwork/delete', [TraditionalNetworkController::class, 'traditionalNetworkDelete']);
 
         //Flexible Network
@@ -521,11 +524,14 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         Route::post('flexiblenetwork/add', [FlexibleNetworkController::class, 'add']);
         Route::get('flexiblenetwork/dropdown', [FlexibleNetworkController::class, 'flexibledropdown']);
+        Route::get('flexiblenetwork/dropdown-new', [FlexibleNetworkController::class, 'flexibledropdownNew']);
 
         Route::get('flexiblenetwork/getflixibleNetworks', [FlexibleNetworkController::class, 'getflixibleNetworks']);
 
         Route::get('flexiblenetwork/ndcnames/dropdown', [FlexibleNetworkController::class, 'NdcExceptionNames']);
+        Route::get('flexiblenetwork/ndcnames/dropdown-new', [FlexibleNetworkController::class, 'NdcExceptionNamesNew']);
         Route::get('flexiblenetwork/gpinames/dropdown', [FlexibleNetworkController::class, 'GpiExceptionNames']);
+        Route::get('flexiblenetwork/gpinames/dropdown-new', [FlexibleNetworkController::class, 'GpiExceptionNamesNew']);
 
 
         
@@ -585,7 +591,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('plan-association/submit-form', [PlanAssociationController::class, 'submitPlanAssociation']);
         Route::get('plan-association/get-pharmacy-chain', [PlanAssociationController::class, 'getPharmacyChain']);
         Route::get('plan-association/get-pharmacy-chain/new', [PlanAssociationController::class, 'getPharmacyChain_New']);
-
         Route::get('plan-association/get-form-id', [PlanAssociationController::class, 'getFormId']);
         Route::get('plan-association/get-membership-process-flag', [PlanAssociationController::class, 'getMemProcFlag']);
         Route::get('plan-association/get-customer', [PlanAssociationController::class, 'getCustomer']);
@@ -647,9 +652,9 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('memberdata/view-limitations-new', [MemberController::class, 'getViewLimitationsNew']);
         Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
         Route::get('memberdata/dropdown', [MemberController::class, 'getMembersDropDownList']);
-
-        Route::post('memberdata/delete', [MemberController::class, 'delete']);
-
+        Route::get('memberdata/delete', [MemberController::class, 'delete']);
+        
+        
         //tab table routes
         Route::get('memberdata/get-coverage-information-table', [MemberController::class, 'getCoverageInformationTable']);
         Route::get('memberdata/get-health-conditions-diagnosis-table', [MemberController::class, 'getDiagnosisTable']);
@@ -1176,6 +1181,8 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
     Route::get('traditionalnetwork/all', [TraditionalNetworkController::class, 'all']);
 
     Route::get('traditionalnetworks/dropdowns', [TraditionalNetworkController::class, 'TraditionalNetworkIdsDropdwon']);
+    Route::get('traditionalnetworks/dropdowns-new', [TraditionalNetworkController::class, 'TraditionalNetworkIdsDropdwonNew']);
+    
 
 
 
@@ -1216,6 +1223,7 @@ Route::get('/provider-type-validation/getFormData', [ProviderTypeValidationContr
 Route::group(['prefix' => 'third-party-pricing/'], function () {
     //Price Schedule
     Route::get('price-schedule/get', [PriceScheduleController::class, 'get']);
+    Route::get('price-schedule/get-new', [PriceScheduleController::class, 'getNew']);
     Route::get('price-schedule/get-price-schedule-data', [PriceScheduleController::class, 'getPriceScheduleDetails']);
     // Route::post('price-schedule/update', [PriceScheduleController::class, 'updateBrandItem'])->name('price_schedule_update');
     Route::get('price-schedule/get-brand-type', [PriceScheduleController::class, 'getBrandType']);
@@ -1268,6 +1276,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
 
     //Tax Schedule
     Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
+    Route::get('tax-schedule/get-new', [TaxScheduleController::class, 'getNew']);
     Route::get('tax-schedule/get-calculations', [TaxScheduleController::class, 'getCalculations']);
     Route::get('tax-schedule/get-base-prices', [TaxScheduleController::class, 'getBasePrices']);
     Route::post('tax-schedule/submit', [TaxScheduleController::class, 'submitTaxSchedule']);

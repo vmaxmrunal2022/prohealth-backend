@@ -7,8 +7,6 @@ use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
@@ -39,94 +37,34 @@ class ZipCodeController extends Controller
     public function submitFormData(Request $request)
     {
         // dd($request->all());
-        $record = DB::table('ZIP_CODES')
-        ->where('ZIP_CODE', $request->zip_code)
-        ->first();
-
-
         if ($request->has('new')) {
-
-            $validator = Validator::make($request->all(), [
-                'zip_code' => ['required','max:9'],
-                'city' => ['max:18'],
-                'state' => ['max:2'],
-                'user_id' => ['max:10'],
-                'form_id' => ['max:10'],
-                'county' => ['max:20'],
-                'country_code' => ['max:4'],
-            ]);
-            if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            }
-
-            if($record){
-
-                return $this->respondWithToken($this->token(), 'ZipCode Already Exists', $record);
-
-
-            }
-            
-            else{
-
-                $addUser = DB::table('ZIP_CODES')
+            $addUser = DB::table('ZIP_CODES')
                 ->insert([
                     'ZIP_CODE' => $request->zip_code,
                     'CITY' => $request->city,
-                    'STATE' => $request->state,
+                    'STATE' => $request->state_code['value'],
                     'COUNTY' => $request->county,
-                    'COUNTRY_CODE' => $request->country_code,
+                    'COUNTRY_CODE' => $request->country_code['value'],
                     'USER_ID' => $request->user_name
                 ]);
 
             if ($addUser) {
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $addUser);
+                return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addUser);
             }
-        }
-          } else {
-
-            $validator = Validator::make($request->all(), [
-                'zip_code' => ['required','max:9'],
-                'city' => ['max:18'],
-                'state' => ['max:2'],
-                'user_id' => ['max:10'],
-                'form_id' => ['max:10'],
-                'county' => ['max:20'],
-                'country_code' => ['max:4'],
-            ]);
-            if ($validator->fails()) {
-                return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-            }
+        } else {
             $updateUser = DB::table('ZIP_CODES')
                 ->where('ZIP_CODE', $request->zip_code)
                 ->update([
                     'CITY' => $request->city,
-                    'STATE' => $request->state,
+                    'STATE' => $request->state_code['value'],
                     'COUNTY' => $request->county,
-                    'COUNTRY_CODE' => $request->country_code,
+                    'COUNTRY_CODE' => $request->country_code['value'],
                     'USER_ID' => $request->user_name
                 ]);
 
             if ($updateUser) {
-                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateUser);
+                return $this->respondWithToken($this->token(), 'Updated Successfully !!!', $updateUser);
             }
         }
-                
-            
-  }
-
-  public function delete(Request $request){
-    if(isset($request->zip_code)){
-
-        $zip_code_delete = DB::table('ZIP_CODES')
-        ->where('ZIP_CODE',$request->zip_code)
-        ->delete();
-
-        if($zip_code_delete){
-            return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-        }else{
-            return $this->respondWithToken($this->token(), 'Record Not Found!');
-        }
-
     }
-  }
 }

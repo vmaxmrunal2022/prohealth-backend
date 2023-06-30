@@ -458,6 +458,7 @@ class PrescriberValidationController extends Controller
 
     public function searchDropDownPrescriberListNew(Request $request)
     {
+        $searchQuery = $request->search;
         $data = DB::table('PHYSICIAN_TABLE')
             ->whereRaw('LOWER(PHYSICIAN_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhereRaw('LOWER(PHYSICIAN_LAST_NAME) LIKE ?', ['%' . strtolower($request->search) . '%'])

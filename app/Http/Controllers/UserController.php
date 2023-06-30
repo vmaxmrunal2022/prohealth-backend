@@ -12,11 +12,12 @@ use Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator as FacadesValidator;
+use Illuminate\Support\Facades\DB;
 // use App\getUserData;
+
 use Illuminate\Support\Facades\Cache;
 
 use Illuminate\Redis\Connections\Connection;
-use DB;
 
 
 class UserController extends Controller
@@ -26,8 +27,9 @@ class UserController extends Controller
     protected $redis;
     public function __construct()
     {
-        $this->middleware("auth:api", ["except" => ["login", "register","changePassword"]]);
+        $this->middleware("auth:api", ["except" => ["login", "register",'resetPassword']]);
         $this->user = new User;
+        $this->middleware('throttle:3,1')->only('login');
     }
 
     public function register(Request $request)
@@ -352,5 +354,26 @@ class UserController extends Controller
             'success' => true,
             'message' => $responseMessage
         ], 200);
+    }
+
+    public function resetPassword(Request $request){
+        $validator = FacadesValidator::make($request->all(), [
+            'user_id' => 'required',
+            'new_password' => 'required|string|min:8',
+            'confirm_new_password' => 'required|string|min:8|same:new_password',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
+        $user = User::where('USER_ID', $request->user_id)->first();
+        if($user){
+            $passwordUpdate = DB::table('FE_USERS')->where('USER_ID', $request->user_id)->update([
+                'USER_PASSWORD' => Hash::make($request->new_password),
+            ]);
+            return response()->json(['success' => true,'message' => 'Password has been changed successful'],200);
+        } elseif (!$user) {
+            return response()->json(['success' => false,'message' => 'Sorry, this user does not exist'], 422);
+        }
     }
 }

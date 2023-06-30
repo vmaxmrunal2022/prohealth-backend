@@ -44,6 +44,23 @@ class ProcedureController extends Controller
             return $this->respondWithToken($this->token(), 'There Was an Error', $procedurecodes);
         }
     }
+    public function getCodesNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $procedurecodes = DB::table('PROCEDURE_CODES')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(PROCEDURE_CODE)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
+
+        if ($procedurecodes) {
+
+            return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $procedurecodes);
+        } else {
+
+            return $this->respondWithToken($this->token(), 'There Was an Error', $procedurecodes);
+        }
+    }
 
     public function add(Request $request)
     {
