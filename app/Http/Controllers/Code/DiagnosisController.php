@@ -14,8 +14,8 @@ class DiagnosisController extends Controller
     {
 
         $benefitcodes = DB::table('DIAGNOSIS_CODES')
-                            ->select('diagnosis_id','description')
-                            ->get();
+            ->select('diagnosis_id', 'description')
+            ->get();
         return $this->respondWithToken($this->token(), '', $benefitcodes);
     }
 
@@ -23,8 +23,8 @@ class DiagnosisController extends Controller
     {
 
         $benefitcodes = DB::table('DIAGNOSIS_CODES')
-                            ->select('diagnosis_id','description')
-                            ->paginate(100);
+            ->select('diagnosis_id', 'description')
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $benefitcodes);
     }
 
@@ -42,9 +42,9 @@ class DiagnosisController extends Controller
                 ->whereRaw('LOWER(DIAGNOSIS_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])                // ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . $request->search . '%')
                 // ->where(DB::raw('UPPER(diagnosis_id)'), 'like', '%' . strtoupper($request->search) . '%')
 
-                ->get();
+                ->paginate(100);
 
-            return $this->respondWithToken($this->token(),'', $benefitcodes);
+            return $this->respondWithToken($this->token(), '', $benefitcodes);
         }
     }
 
@@ -72,10 +72,10 @@ class DiagnosisController extends Controller
             //         $q->whereNotNull('diagnosis_id');
             //     })],
 
-                $validator = Validator::make($request->all(), [
-                    'diagnosis_id' => ['required', 'max:8', Rule::unique('DIAGNOSIS_CODES')->where(function ($q) {
-                        $q->whereNotNull('diagnosis_id');
-                    })],
+            $validator = Validator::make($request->all(), [
+                'diagnosis_id' => ['required', 'max:8', Rule::unique('DIAGNOSIS_CODES')->where(function ($q) {
+                    $q->whereNotNull('diagnosis_id');
+                })],
                 "description" => ['max:35'],
                 // 'complete_code_ind' => ['required'],
             ]);

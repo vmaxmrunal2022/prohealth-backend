@@ -106,6 +106,7 @@ class EligibilityValidationListController extends Controller
 
     public function addEligiblityData(Request $request)
     {
+        // return $request->all();
         if ($request->new == 1) {
             $validator = Validator::make($request->all(), [
                 "elig_validation_id" => ['required', 'max:10', Rule::unique('ELIG_VALIDATION_LISTS')->where(function ($q) {
