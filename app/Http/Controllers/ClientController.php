@@ -48,8 +48,10 @@ class ClientController extends Controller
             ]);
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
+                $benefitcode = DB::table('CLIENT')
+                    ->get();
                 // dd($fieldsWithErrorMessagesArray);
-                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
+                return $this->respondWithToken($this->token(), $fieldsWithErrorMessagesArray, $benefitcode,  false);
             } else {
                 $accum_benfit_stat_names = DB::table('CLIENT')->insert(
                     [
@@ -98,7 +100,7 @@ class ClientController extends Controller
                         'overlap_coverage_tie_breaker' => $request->overlap_coverage_tie_breaker,
                         'elig_date_edit_ovr_flag' => $request->elig_date_edit_ovr_flag,
                         // 'rule_id' => $request->rule_id,
-                        'auth_xfer_ind' => $request->auth_xfer_ind,
+                        'auth_xfer_ind' => (int)$request->auth_xfer_ind,
                         'member_change_log_opt' => $request->member_change_log_opt,
                         'rva_list_id' => $request->rva_list_id,
                         'elig_validation_id' => $request->elig_validation_id,
@@ -170,8 +172,10 @@ class ClientController extends Controller
             ]);
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
+                $benefitcode = DB::table('CLIENT')
+                    ->get();
                 // dd($fieldsWithErrorMessagesArray);
-                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
+                return $this->respondWithToken($this->token(), $fieldsWithErrorMessagesArray, $benefitcode, false);
             } else {
                 $accum_benfit_stat = DB::table('CLIENT')
                     ->where('CLIENT_ID', $request->client_id)
@@ -215,7 +219,7 @@ class ClientController extends Controller
                             'overlap_coverage_tie_breaker' => $request->overlap_coverage_tie_breaker,
                             'elig_date_edit_ovr_flag' => $request->elig_date_edit_ovr_flag,
                             // 'rule_id' => $request->rule_id,
-                            'auth_xfer_ind' => $request->auth_xfer_ind,
+                            'auth_xfer_ind' => (int)$request->auth_xfer_ind,
                             'member_change_log_opt' => $request->member_change_log_opt,
                             'rva_list_id' => $request->rva_list_id,
                             'elig_validation_id' => $request->elig_validation_id,
@@ -271,7 +275,7 @@ class ClientController extends Controller
                         'record_snapshot' => $record_snapshot,
                     ]);
 
-                return $this->respondWithToken($this->token(), 'Updated Successfully!', [$benefitcode]);
+                return $this->respondWithToken($this->token(), 'Updated Successfully!', [$benefitcode_audit]);
             }
         }
     }
@@ -306,7 +310,8 @@ class ClientController extends Controller
     {
         $client = DB::table('client')
             // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
-            ->where(DB::raw('UPPER(CLIENT_ID)'),  strtoupper($clientid))
+            ->join('CUSTOMER', 'CUSTOMER.CUSTOMER_ID', '=', 'CLIENT.CUSTOMER_ID')
+            ->where(DB::raw('UPPER(CLIENT.CLIENT_ID)'),  strtoupper($clientid))
             // ->orWhere('CLIENT_NAME', 'like', '%' . strtoupper($clientid) . '%')
             // ->orWhere('CUSTOMER_ID', 'like', '%' . strtoupper($clientid) . '%')
             ->first();
@@ -318,21 +323,33 @@ class ClientController extends Controller
         // return $request->search;
         $client = DB::table('client')
             ->join('customer', 'client.CUSTOMER_ID', '=', 'customer.CUSTOMER_ID')
-            ->select(
-                'client.CLIENT_ID',
-                'client.CLIENT_NAME',
-                'customer.CUSTOMER_NAME as customername',
-                'client.CUSTOMER_ID as customerid',
-                'client.EFFECTIVE_DATE as clienteffectivedate',
-                'client.TERMINATION_DATE as clientterminationdate'
-            )
+            // ->select(
+            //     'client.CLIENT_ID',
+            //     'client.CLIENT_NAME',
+            //     'customer.CUSTOMER_NAME as customername',
+            //     'client.CUSTOMER_ID as customer_id',
+            //     'client.EFFECTIVE_DATE as clienteffectivedate',
+            //     'client.TERMINATION_DATE as clientterminationdate'
+            // )
             ->where(DB::raw('UPPER(client.CLIENT_ID)'), 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere(DB::raw('UPPER(client.CLIENT_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('customer.CUSTOMER_ID', strtoupper($request->search) . '%')
-            ->orWhere('customer.CUSTOMER_NAME', strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(customer.CUSTOMER_ID)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->orWhere(DB::raw('UPPER(customer.CUSTOMER_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
+        return $this->respondWithToken($this->token(), 'client loaded', $client);
+    }
 
-
+    public function searchClientNew($customer_id, $client_id)
+    {
+        $client = DB::table('client')
+            // ->select('customer.auth_xfer_ind')
+            ->select('client.*')
+            ->rightjoin('customer', 'client.CUSTOMER_ID', '=', 'customer.CUSTOMER_ID')
+            ->where(DB::raw('Lower(customer.customer_id)'), strtolower($customer_id))
+            ->where(DB::raw('Lower(client.CLIENT_ID)'), strtolower($client_id))
+            ->first();
+        // return $client->auth_xfer_ind;
+        // $client->auth_xfer_ind = ($client->auth_xfer_ind == 'L') ? "1" : $client->auth_xfer_ind;
         return $this->respondWithToken($this->token(), 'client loaded', $client);
     }
 

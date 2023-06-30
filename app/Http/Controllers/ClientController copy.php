@@ -326,6 +326,7 @@ class ClientController extends Controller
             ->orWhere('customer.CUSTOMER_NAME', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
 
+
         return $this->respondWithToken($this->token(), '', $client);
     }
 

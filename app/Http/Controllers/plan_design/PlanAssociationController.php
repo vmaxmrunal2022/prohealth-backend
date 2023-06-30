@@ -155,7 +155,7 @@ class PlanAssociationController extends Controller
         $customers = DB::table('customer')
             ->select('customer_id', 'CUSTOMER_NAME')
             ->where(DB::raw('UPPER(customer_id)'), 'like', '%' . strtoupper($rqeuest->search) . '%')
-            ->orWhere(DB::raw('UPPER(CUSTOMER_NAME)'), 'like', '%' . strtoupper($rqeuest->search) . '%')
+            // ->orWhere(DB::raw('UPPER(CUSTOMER_NAME)'), 'like', '%' . strtoupper($rqeuest->search) . '%')
             //->get();
             ->paginate(100);
         return $this->respondWithToken($this->token(), '', $customers);
