@@ -24,7 +24,7 @@ class UserDefinationController extends Controller
 
     public function addUserDefinition(Request $request)
     {
-        return $request->privs;
+        // return $request->privs;
         $getusersData = DB::table('FE_USERS')
             ->where('user_id', $request->user_id)
             ->first();

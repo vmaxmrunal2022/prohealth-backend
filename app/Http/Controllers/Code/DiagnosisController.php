@@ -43,19 +43,12 @@ class DiagnosisController extends Controller
             return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         } else {
             $benefitcodes = DB::table('DIAGNOSIS_CODES')
-<<<<<<< HEAD
                 // ->where(DB::raw('UPPER(diagnosis_id)'), 'like', '%' . strtoupper($request->search) . '%')
 
                 ->whereRaw('LOWER(DIAGNOSIS_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])                // ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . $request->search . '%')
                 // ->where(DB::raw('UPPER(diagnosis_id)'), 'like', '%' . strtoupper($request->search) . '%')
 
                 ->get();
-=======
-                ->where(DB::raw('UPPER(diagnosis_id)'), 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . $request->search . '%')
-                // ->get();
-                ->paginate(100);
->>>>>>> origin/mrunal
 
             return $this->respondWithToken($this->token(),'', $benefitcodes);
         }
