@@ -215,7 +215,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/ndc/list', [NDCExceptionController::class, 'ndcList'])->name('ndsc.search'); // SEARCH
         Route::get('/ndc/list/new', [NDCExceptionController::class, 'ndcList_New'])->name('ndsc.search'); // SEARCH
 
-
+        Route::get('/ndc/pharmacy-list', [NDCExceptionController::class, 'get_Pharmacy_Lists'])->name('pharmacylists'); // SEARCH
+        Route::get('/ndc/diagnosis-list', [NDCExceptionController::class, 'get_Diagnosis_Lists'])->name('diagnosislists'); // SEARCH
 
         Route::post('/ndc/delete', [NDCExceptionController::class, 'ndcdelete'])->name('ndsc.search'); // add
 
@@ -403,6 +404,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //exception copay Schedule list
         Route::get('copay-schedule/getAll', [CopayScheduleController::class, 'getAll'])->name('exception.getAll.copay');
+        Route::get('copay-schedule/getAll-new', [CopayScheduleController::class, 'getAllNew'])->name('exception.getAll.copaynew');
+        
 
         //exception prescriber list
         Route::get('/prescriber/getAll', [PrescriberController::class, 'getAll'])->name('exception.prescriber.getAll');

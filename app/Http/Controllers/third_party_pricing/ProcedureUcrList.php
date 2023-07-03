@@ -9,14 +9,21 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use SebastianBergmann\CodeUnit\FunctionUnit;
 
+use App\Traits\AuditTrait;
+
+
 class ProcedureUcrList extends Controller
 {
+    use AuditTrait;
+
     public function get(Request $request)
     {
         $ucrName = DB::table('procedure_ucr_names')
             ->where('PROCEDURE_UCR_ID', 'like', '%' . $request->search . '%')
             ->orWhere('PROCEDURE_UCR_ID', 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
+            ->orderBy('PROCEDURE_UCR_ID', 'asc') // Replace 'column_name' with the column you want to order by
+
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ucrName);
@@ -669,7 +676,7 @@ class ProcedureUcrList extends Controller
     public function getProcedureCode(Request $request)
     {
         $procedure_codes = DB::table('procedure_codes')
-            ->get();
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $procedure_codes);
     }
 

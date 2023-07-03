@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Faker\Extension\Helper;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Traits\AuditTrait;
 
 class PriceScheduleController extends Controller
 {
+    use AuditTrait;
+
     public function get(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')
@@ -19,7 +22,6 @@ class PriceScheduleController extends Controller
             ->orWhere('COPAY_SCHEDULE', $request->search)
             ->orWhere('PRICE_SCHEDULE_NAME',$request->search)
             ->orWhere('PRICE_SCHEDULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
-
             ->get();
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }

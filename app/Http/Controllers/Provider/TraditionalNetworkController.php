@@ -227,7 +227,7 @@ class TraditionalNetworkController extends Controller
                     );
                 }
                 $child_recs = DB::table('RX_NETWORKS')->where( 'NETWORK_ID', $request->network_id)->get();
-                if($child_recs){
+                if(!empty($child_recs)){
                     foreach($child_recs as $rec){
                         $record_snapshot = json_encode($rec);
                         $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORKS');
@@ -309,7 +309,7 @@ class TraditionalNetworkController extends Controller
     {
         $ndc = DB::table('RX_NETWORK_NAMES')
             ->select('NETWORK_ID', 'NETWORK_NAME')
-            ->get();
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -337,6 +337,7 @@ class TraditionalNetworkController extends Controller
             ->get();
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }
+
 
 
 
@@ -380,7 +381,7 @@ class TraditionalNetworkController extends Controller
 
             $child_recs = DB::table('RX_NETWORKS')->where( 'NETWORK_ID', $request->network_id)->get();
             if($child_recs){
-                foreach($child_recs as $rec){
+                foreach($child_recs as $rec){   
                     $record_snapshot = json_encode($rec);
                     $save_audit = $this->auditMethod('DE', $record_snapshot, 'RX_NETWORKS');
                 }

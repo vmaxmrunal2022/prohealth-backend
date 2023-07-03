@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\third_party_pricing;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use LDAP\Result;
@@ -11,7 +12,7 @@ use Illuminate\Validation\Rule;
 
 class CopayScheduleController extends Controller
 {
-
+ use AuditTrait;
     public function get(Request $request)
     {
         $copayList = DB::table('COPAY_SCHEDULE')           
@@ -38,6 +39,15 @@ class CopayScheduleController extends Controller
     public function getAll(Request $request)
     {
         $copayList = DB::table('COPAY_SCHEDULE')->get();
+        return $this->respondWithToken($this->token(), '', $copayList);
+    }
+    public function getAllNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $copayList = DB::table('COPAY_SCHEDULE') ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(COPAY_SCHEDULE)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(COPAY_SCHEDULE_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
         return $this->respondWithToken($this->token(), '', $copayList);
     }
 
@@ -295,6 +305,10 @@ class CopayScheduleController extends Controller
                     'gen_copay_modification'=> $request->gen_copay_modification,
                     'bga1_4_daw'=>$request->bga1_4_daw,
                 ]);
+            $parent_record = DB::table('copay_schedule')
+                ->where(DB::raw('UPPER(copay_schedule)'), strtoupper($request->copay_schedule))
+                ->first();
+            $save_audit_parent = $this->auditMethod('IN', json_encode($parent_record), 'COPAY_SCHEDULE');
 
             return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_copay_schedule);
                 
@@ -483,8 +497,11 @@ class CopayScheduleController extends Controller
 
                     
                 ]);
-
-            return $this->respondWithToken($this->token(), 'Record Update Successfully', $update_copay_schedule);
+            $update_copay_schedule_record = DB::table('copay_schedule')
+                ->where('copay_schedule', $request->copay_schedule)
+                ->first();
+            $save_audit = $this->auditMethod('UP', json_encode($update_copay_schedule_record), 'COPAY_SCHEDULE');
+            return $this->respondWithToken($this->token(), 'Update successfully!', $update_copay_schedule);
         }
     }
 

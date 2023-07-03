@@ -3,15 +3,25 @@
 namespace App\Http\Controllers\AccumlatedBenifits;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
 class GpiExclusionController extends Controller
 {
+    use AuditTrait;
     public function GPIS(Request $request)
     {
         $gpis =  DB::table('DRUG_MASTER')->get();
+        return $this->respondWithToken($this->token(), 'data fetched successfully ', $gpis);
+    }
+
+    public function GPISNEW(Request $request)
+    {
+        $gpis =  DB::table('DRUG_MASTER')
+            ->select('generic_product_id as gpi')
+            ->paginate(100);
         return $this->respondWithToken($this->token(), 'data fetched successfully ', $gpis);
     }
 
@@ -51,10 +61,13 @@ class GpiExclusionController extends Controller
                         'DATE_TIME_MODIFIED' => date('Ymd'),
                     ]
                 );
+
+                $getRecord =   DB::table('GPI_EXCLUSIONS')
+                    ->where('gpi_exclusion_list', $request->gpi_exclusion_list)->first();
             }
 
             if ($insert) {
-                return $this->respondWithToken($this->token(), 'Recored Added Successfully', $insert);
+                return $this->respondWithToken($this->token(), 'Recored Added Successfully', $getRecord);
             }
         } else {
             if ($recordCheckGpiList) {
@@ -91,7 +104,7 @@ class GpiExclusionController extends Controller
                             ]
                         );
                     if ($createGpiList) {
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update, true, 201);
                     }
                 } else {
                     return $this->respondWithToken($this->token(), 'Please Select GPI List ID', $recordCheckGpiList, false);
@@ -108,25 +121,27 @@ class GpiExclusionController extends Controller
     public function delete(Request $request)
     {
         if (isset($request->gpi_exclusion_list) && isset($request->generic_product_id)) {
+
+            // if ($all_gpi_exclusions_list == 1) {
+            //     $delete_gpi_exclusions =  DB::table('GPI_EXCLUSIONS')
+            //         ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
+            //         ->delete();
+
+            //     $delete_gpi_exclusions_list =  DB::table('GPI_EXCLUSION_LISTS')
+            //         ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
+            //         ->delete();
+            // } 
+            // else {
             $all_gpi_exclusions_list =  DB::table('GPI_EXCLUSION_LISTS')
                 ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
+                ->where('generic_product_id', $request->generic_product_id)
+                ->delete();
+            $child_count =  DB::table('GPI_EXCLUSION_LISTS')
+                ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
                 ->count();
-            if ($all_gpi_exclusions_list == 1) {
-                $delete_gpi_exclusions =  DB::table('GPI_EXCLUSIONS')
-                    ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
-                    ->delete();
-
-                $delete_gpi_exclusions_list =  DB::table('GPI_EXCLUSION_LISTS')
-                    ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
-                    ->delete();
-            } else {
-                $delete_gpi_exclusions_list =  DB::table('GPI_EXCLUSION_LISTS')
-                    ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
-                    ->where('generic_product_id', $request->generic_product_id)
-                    ->delete();
-            }
-            if ($delete_gpi_exclusions_list) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            // }
+            if ($all_gpi_exclusions_list) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $child_count);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }
@@ -140,7 +155,7 @@ class GpiExclusionController extends Controller
                 ->delete();
 
             if ($delete_gpi_exclusions) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $delete_gpi_exclusions, true, 201);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }
@@ -162,10 +177,14 @@ class GpiExclusionController extends Controller
 
     public function search(Request $request)
     {
+        // $ndc = DB::table('GPI_EXCLUSION_LISTS')
+        //     ->join('GPI_EXCLUSIONS', 'GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST', '=', 'GPI_EXCLUSIONS.GPI_EXCLUSION_LIST')
+        //     ->whereRaw('LOWER(GPI_EXCLUSIONS.GPI_EXCLUSION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+        //     ->orWhere('GPI_EXCLUSIONS.EXCLUSION_NAME', 'like', '%' . $request->search . '%')
+        //     ->get();
         $ndc = DB::table('GPI_EXCLUSIONS')
-            // ->join('GPI_EXCLUSIONS', 'GPI_EXCLUSION_LISTS.GPI_EXCLUSION_LIST', '=', 'GPI_EXCLUSIONS.GPI_EXCLUSION_LIST')
-            ->where(DB::raw('UPPER(GPI_EXCLUSIONS.GPI_EXCLUSION_LIST)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere(DB::raw('UPPER(GPI_EXCLUSIONS.EXCLUSION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('LOWER(GPI_EXCLUSION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orderBy('GPI_EXCLUSION_LIST', 'ASC')
             ->get();
         return $this->respondWithToken($this->token(), '', $ndc);
     }

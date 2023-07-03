@@ -31,6 +31,7 @@ use AuditTrait;
             $accum_benfit_stat_names = DB::table('PROCEDURE_EXCEPTION_NAMES')->insert(
                 [
                     'procedure_exception_list' => strtoupper($request->procedure_exception_list),
+                    'procedure_exception_list' => strtoupper($request->procedure_exception_list),
 
                     'exception_name'=>$request->exception_name,
                     
@@ -717,7 +718,7 @@ use AuditTrait;
     }
 
 
-   
+
 
     public function search(Request $request)
     {
@@ -728,6 +729,7 @@ use AuditTrait;
                 ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
+        return $this->respondWithToken($this->token(), '', $ndc);
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 

@@ -110,7 +110,7 @@ class AccumlatedBenifitController extends Controller
                     ->first();
                 $record_snap = json_encode($accum_bene);
                 $save_audit = $this->auditMethod('IN', $record_snap, 'PLAN_ACCUM_DEDUCT_TABLE');
-                return $this->respondWithToken($this->token(), 'Record Added Succesfully', $accum_benfit_stat);
+                return $this->respondWithToken($this->token(), 'Record Added Succesfully', $accum_bene);
             }
         } else {
 
@@ -190,9 +190,6 @@ class AccumlatedBenifitController extends Controller
                         'ndc_exclusion_list_mop' => $request->ndc_exclusion_list_mop,
                         'DATE_TIME_MODIFIED' => $createddate,
                         'USER_ID' => Cache::get('userId'),
-
-
-
                     ]
                 );
             $accum_bene  = DB::table('PLAN_ACCUM_DEDUCT_TABLE')
@@ -200,13 +197,18 @@ class AccumlatedBenifitController extends Controller
                 ->first();
             $record_snap = json_encode($accum_bene);
             $save_audit = $this->auditMethod('UP', $record_snap, 'PLAN_ACCUM_DEDUCT_TABLE');
-            return $this->respondWithToken($this->token(), 'Record Updated Succesfully', $createddate);
+            return $this->respondWithToken($this->token(), 'Record Updated Succesfully', $accum_bene);
         }
     }
 
     public function delete(Request $request)
     {
         if (isset($request->plan_accum_deduct_id)) {
+            $to_delete =  DB::table('PLAN_ACCUM_DEDUCT_TABLE')
+                ->where('plan_accum_deduct_id', $request->plan_accum_deduct_id)
+                ->first();
+            $save_audit_delete  = $this->auditMethod('DE', json_encode($to_delete), 'PLAN_ACCUM_DEDUCT_TABLE');
+
             $delete_plan_accum_deduct_id =  DB::table('PLAN_ACCUM_DEDUCT_TABLE')
                 ->where('plan_accum_deduct_id', $request->plan_accum_deduct_id)
                 ->delete();
@@ -224,7 +226,7 @@ class AccumlatedBenifitController extends Controller
 
     {
         $ndc = DB::table('PLAN_ACCUM_DEDUCT_TABLE')
-        //     ->where('PLAN_ACCUM_DEDUCT_ID', 'like', '%' . $request->search . '%')
+            //     ->where('PLAN_ACCUM_DEDUCT_ID', 'like', '%' . $request->search . '%')
             ->whereRaw('LOWER(PLAN_ACCUM_DEDUCT_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('PLAN_ACCUM_DEDUCT_NAME', 'like', '%' . $request->search . '%')
             ->paginate(100);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 class ProcedureCrossReferenceController extends Controller
 {
+    use AuditTrait;
     public function ProcedureCodes(Request $request){
 
         $codes = DB::table('PROCEDURE_CODES')

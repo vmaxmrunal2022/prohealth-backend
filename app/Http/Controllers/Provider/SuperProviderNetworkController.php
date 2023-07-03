@@ -18,7 +18,9 @@ class SuperProviderNetworkController extends Controller
 
         $ndclist =  DB::table('SUPER_RX_NETWORK_NAMES')
             ->join('SUPER_RX_NETWORKS', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
-            ->get();
+            ->whereRaw('LOWER(SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            // ->get();
+            ->paginate(100);
         return $this->respondWithToken($this->token(), 'Data Fetched Succssfully', $ndclist);
     }
 

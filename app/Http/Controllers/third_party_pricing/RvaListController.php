@@ -12,26 +12,24 @@ use App\Traits\AuditTrait;
 class RvaListController extends Controller
 {
     use AuditTrait;
+
     public function get(Request $request)
     {
-        // return "hi";
+
         $rvaNames = DB::table('rva_names')
-            // ->when($request->search, function ($query) use ($request) {
-            //     return $query->where('rva_list_id', 'like', "%$request->search%");
-            // })
-            ->where(DB::raw('lower(rva_list_id)'), 'like', '%' . strtolower($request->search) . '%')
-            // ->where('rva_list_id', 'like', "%$request->search%")
+            ->whereRaw('LOWER(RVA_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->get();
 
         return $this->respondWithToken($this->token(), '', $rvaNames);
     }
+    
 
     public function RvaListDropdown(Request $request)
     {
         // return "hi";
         $rvaNames = DB::table('rva_names')
 
-            ->get();
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $rvaNames);
     }

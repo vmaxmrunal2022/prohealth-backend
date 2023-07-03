@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\validationlists;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -10,7 +11,7 @@ use Illuminate\Validation\Rule;
 
 class EligibilityValidationListController extends Controller
 {
-
+    use AuditTrait;
     public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -32,16 +33,14 @@ class EligibilityValidationListController extends Controller
     public function DropDown(Request $request)
     {
 
-        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')->get();
+        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')
+            //->get();
+            ->whereRaw('LOWER(ELIG_VALIDATION_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
     public function DropDownNew(Request $request){
-        $searchQuery = $request->search;
-        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')
-        ->when($searchQuery, function ($query) use ($searchQuery) {
-            $query->where(DB::raw('UPPER(ELIG_VALIDATION_LISTS.ELIG_VALIDATION_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
-            $query->orWhere(DB::raw('UPPER(ELIG_VALIDATION_LISTS.ELIG_VALIDATION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
-        })->paginate(100);
+        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
@@ -100,8 +99,6 @@ class EligibilityValidationListController extends Controller
         } else {
             $elig_list_data->adult_dep_covd = false;
         }
-
-
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
 
@@ -216,8 +213,8 @@ class EligibilityValidationListController extends Controller
 
         $updated_list = DB::table('ELIG_VALIDATION_LISTS')
             ->get();
+        $save_audit  = $this->auditMethod('DE', json_encode($updated_list), 'ELIG_VALIDATION_LISTS');
 
         return $this->respondWithToken($this->token(), 'Record Deleted Successfully', '');
     }
 }
-

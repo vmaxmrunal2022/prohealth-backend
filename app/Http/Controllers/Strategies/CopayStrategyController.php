@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Strategies;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Cache;
 class CopayStrategyController extends Controller
 {
 
+    use AuditTrait;
 
     public function add(Request $request)
     {
@@ -21,6 +23,7 @@ class CopayStrategyController extends Controller
             ->count();
         if ($request->has('new')) {
             if ($checkRecordExits) {
+                return $this->respondWithToken($this->token(), [['Copay Strategy Id already exists']], $checkRecordExits, false);
                 return $this->respondWithToken($this->token(), [['Copay Strategy Id already exists']], $checkRecordExits, false);
             } else {
                 $create_copay_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
@@ -51,6 +54,20 @@ class CopayStrategyController extends Controller
                         'MODULE_EXIT' => $request->module_exit
                     ]
                 );
+
+                $get_parent = DB::table('COPAY_STRATEGY_NAMES')
+                    ->where(DB::raw('UPPER(COPAY_STRATEGY_ID)'), strtoupper($request->copay_strategy_id))
+                    ->first();
+
+                $save_audit_parent = $this->auditMethod('IN', json_encode($get_parent), 'COPAY_STRATEGY_NAMES');
+
+                $get_child = DB::table('COPAY_STRATEGY')
+                    ->where(DB::raw('UPPER(copay_strategy_id)'), strtoupper($request->copay_strategy_id))
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->where('COPAY_SCHEDULE', $request->copay_schedule)
+                    ->first();
+                $to_audit_child  = $this->auditMethod('IN', json_encode($get_child), 'COPAY_STRATEGY');
+
                 if ($create_copay_strategy) {
                     $val = DB::table('COPAY_STRATEGY')
                         ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
@@ -83,6 +100,7 @@ class CopayStrategyController extends Controller
                         ->where(DB::raw('UPPER(COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID)'), 'like', '%' . strtoupper($request->copay_strategy_id) . '%')
                         ->get();
                     return $this->respondWithToken($this->token(), [['Copay Schedule ID already exists']], [$val, $exp], false);
+                    return $this->respondWithToken($this->token(), [['Copay Schedule ID already exists']], [$val, $exp], false);
                 }
                 $update_copay_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
                     ->where(DB::raw('UPPER(copay_strategy_id)'), strtoupper($request->copay_strategy_id))
@@ -110,6 +128,18 @@ class CopayStrategyController extends Controller
                             'MODULE_EXIT' => $request->module_exit
                         ]
                     );
+                $get_parent = DB::table('COPAY_STRATEGY_NAMES')
+                    ->where(DB::raw('UPPER(COPAY_STRATEGY_ID)'), strtoupper($request->copay_strategy_id))
+                    ->first();
+
+                $save_audit_parent = $this->auditMethod('UP', json_encode($get_parent), 'COPAY_STRATEGY_NAMES');
+
+                $get_child = DB::table('COPAY_STRATEGY')
+                    ->where(DB::raw('UPPER(copay_strategy_id)'), strtoupper($request->copay_strategy_id))
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->where('COPAY_SCHEDULE', $request->copay_schedule)
+                    ->first();
+                $to_audit_child  = $this->auditMethod('UP', json_encode($get_child), 'COPAY_STRATEGY');
                 if ($update_copay_strategy) {
                     $val = DB::table('COPAY_STRATEGY')
                         ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.COPAY_STRATEGY_ID', '=', 'COPAY_STRATEGY_NAMES.COPAY_STRATEGY_ID')
@@ -148,6 +178,16 @@ class CopayStrategyController extends Controller
                         'MODULE_EXIT' => $request->module_exit
                     ]
                 );
+                $get_parent = DB::table('COPAY_STRATEGY_NAMES')
+                    ->where(DB::raw('UPPER(COPAY_STRATEGY_ID)'), strtoupper($request->copay_strategy_id))
+                    ->first();
+                $save_audit_parent = $this->auditMethod('UP', json_encode($get_parent), 'COPAY_STRATEGY_NAMES');
+                $get_child = DB::table('COPAY_STRATEGY')
+                    ->where(DB::raw('UPPER(copay_strategy_id)'), strtoupper($request->copay_strategy_id))
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->where('COPAY_SCHEDULE', $request->copay_schedule)
+                    ->first();
+                $to_audit_child  = $this->auditMethod('IN', json_encode($get_child), 'COPAY_STRATEGY');
 
                 if ($create_copay_strategy) {
                     $val = DB::table('COPAY_STRATEGY')
@@ -203,7 +243,7 @@ class CopayStrategyController extends Controller
     public function CopayDropDown(Request $request)
     {
         $ndc = DB::table('COPAY_STRATEGY_NAMES')
-            ->get();
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
     }
@@ -292,11 +332,18 @@ class CopayStrategyController extends Controller
                 ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
                 ->first();
             if ($all_copay_strategy) {
+                $to_audit = DB::table('COPAY_STRATEGY')
+                    ->where(DB::raw('UPPER(COPAY_STRATEGY_ID)'), strtoupper($request->copay_strategy_id))
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->where(DB::raw('UPPER(COPAY_SCHEDULE)'), strtoupper($request->copay_schedule))
+                    ->first();
+                $save_audit = $this->auditMethod('DE', json_encode($to_audit), 'COPAY_STRATEGY');
                 $copay_strategy = DB::table('COPAY_STRATEGY')
                     ->where('copay_strategy_id', $request->copay_strategy_id)
                     ->where('copay_schedule', $request->copay_schedule)
                     ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
                     ->delete();
+
                 if ($copay_strategy) {
                     $val = DB::table('COPAY_STRATEGY')
                         // ->join('COPAY_STRATEGY_NAMES', 'COPAY_STRATEGY.copay_strategy_id', '=', 'COPAY_STRATEGY_NAMES.copay_strategy_id')
@@ -308,6 +355,18 @@ class CopayStrategyController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Not Found', 'false');
             }
         } elseif (isset($request->copay_strategy_id)) {
+            $to_audit = DB::table('COPAY_STRATEGY')
+                ->where(DB::raw('UPPER(COPAY_STRATEGY_ID)'), strtoupper($request->copay_strategy_id))
+                ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                ->where(DB::raw('UPPER(COPAY_SCHEDULE)'), strtoupper($request->copay_schedule))
+                ->first();
+            $save_audit = $this->auditMethod('DE', json_encode($to_audit), 'COPAY_STRATEGY');
+
+            $copay_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
+                ->where(DB::raw('UPPER(copay_strategy_id)'), strtoupper($request->copay_strategy_id))
+                ->first();
+            $to_audit_child = $this->auditMethod('DE', json_encode($copay_strategy_names), 'COPAY_STRATEGY_NAMES');
+
             $all_accum_bene_strategy_names = DB::table('COPAY_STRATEGY_NAMES')
                 ->where('copay_strategy_id', $request->copay_strategy_id)
                 ->delete();

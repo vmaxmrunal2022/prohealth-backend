@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\third_party_pricing;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -11,12 +12,13 @@ use Illuminate\Validation\Rule;
 class TaxScheduleController extends Controller
 {
     //
+    use AuditTrait;
     public function get(Request $request)
     {
         $taxData = DB::table('tax_schedule')
         // ->where('tax_schedule_id', 'like', '%' . $request->search. '%')
         ->whereRaw('LOWER(tax_schedule_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
-        ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->get();
+        ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $taxData);
     }

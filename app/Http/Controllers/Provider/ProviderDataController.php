@@ -3,16 +3,17 @@
 namespace App\Http\Controllers\Provider;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ProviderDataController extends Controller
 {
+    use AuditTrait;
 
 
     public function add(Request $request)
     {
-
 
         // $benefitcode = DB::table('PHARMACY_TABLE')->where('pharmacy_nabp', 'like', $request->pharmacy_nabp)->first();
 

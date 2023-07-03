@@ -176,10 +176,6 @@ class PlanValidationController extends Controller
     $plan_ids = DB::table('PLAN_TABLE_EXTENSIONS')
       ->join('PLAN_BENEFIT_TABLE', 'PLAN_TABLE_EXTENSIONS.PLAN_ID', '=', 'PLAN_BENEFIT_TABLE.PLAN_ID')
       // ->select('id')
-      ->when($searchQuery, function ($query) use ($searchQuery) {
-        $query->where(DB::raw('UPPER(PLAN_BENEFIT_TABLE.PLAN_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
-        $query->orWhere(DB::raw('UPPER(PLAN_BENEFIT_TABLE.PLAN_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
-      })
       ->paginate(100);
     return $this->respondWithToken($this->token(), '', $plan_ids);
   }

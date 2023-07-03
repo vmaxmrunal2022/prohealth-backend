@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\plan_design;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -10,6 +11,7 @@ use Illuminate\Validation\Rule;
 
 class PlanAssociationController extends Controller
 {
+    use AuditTrait;
     public function getDetails($binnumber,$process_control_number,$group_number)
     {
 
@@ -172,7 +174,7 @@ class PlanAssociationController extends Controller
     {
         $pharmacy_chain = DB::table('PHARMACY_CHAIN')
             ->where(DB::raw('UPPER(pharmacy_chain)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->get();
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $pharmacy_chain);
     }
 
@@ -212,7 +214,8 @@ class PlanAssociationController extends Controller
             ->select('customer_id', 'CUSTOMER_NAME','effective_date','termination_date')
             ->where(DB::raw('UPPER(customer_id)'), 'like', '%' . strtoupper($rqeuest->sarch) . '%')
             ->orWhere(DB::raw('UPPER(CUSTOMER_NAME)'), 'like', '%' . strtoupper($rqeuest->sarch) . '%')
-            ->get();
+            //->get();
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $customers);
     }
 
@@ -261,12 +264,16 @@ class PlanAssociationController extends Controller
 
     public function getClientCustomer(Request $request)
     {
-        // dd($request->customerData);
-        $cust_id = strtoupper($request->customerData);
+
+        // return ;
+        // dd($request->all());
+        $cust_id = strtoupper(explode("?", $request->customerData)[0]);
         // dd($cust_id);
         $clients = DB::table('client')
-            ->where(DB::raw('UPPER(customer_id)'), $cust_id)
-            ->get();
+            ->where(DB::raw('UPPER(customer_id)'), strtoupper($cust_id))
+            //->get();
+            ->distinct()
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $clients);
     }
 
@@ -334,7 +341,7 @@ class PlanAssociationController extends Controller
     {
         $planIds = DB::table('plan_table')
             // ->select('id')
-            ->get();
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $planIds);
     }

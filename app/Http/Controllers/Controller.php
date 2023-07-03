@@ -188,12 +188,17 @@ class Controller extends BaseController
         return $this->respondWithToken($this->token(), '', $countries);
     }
 
-    public function ContriesSearch($c_id = '')
+    public function ContriesSearch(Request $c_id)
     {
-        if (!empty($c_id)) {
-            $countries = DB::table('COUNTRY_STATES')->where(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($c_id) . '%')->get();
+        if (!empty($c_id->search)) {
+            $countries = DB::table('COUNTRY_STATES')
+                ->where(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($c_id->search) . '%')
+                ->orWhere(DB::raw('UPPER(country_code)'), 'like', '%' . strtoupper($c_id->search) . '%')
+                ->paginate(100);
         } else {
-            $countries = DB::table('COUNTRY_STATES')->get();
+            $countries = DB::table('COUNTRY_STATES')
+                ->where(DB::raw('UPPER(state_code)'), 'like', '%' . strtoupper($c_id->search) . '%')
+                ->paginate(100);
         }
 
         return $this->respondWithToken($this->token(), '', $countries);
@@ -203,8 +208,10 @@ class Controller extends BaseController
     //public function getStatesOfCountry($countryid)
     public function getStatesOfCountry(Request $request)
     {
-
-        $states = DB::table('COUNTRY_STATES')->whereNot('state_code', '**')->get();
+        $states = DB::table('COUNTRY_STATES')
+            // ->whereNot('state_code', '**')
+            ->whereRaw('LOWER(state_code) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $states);
 
         // $states = DB::table('COUNTRY_STATES')

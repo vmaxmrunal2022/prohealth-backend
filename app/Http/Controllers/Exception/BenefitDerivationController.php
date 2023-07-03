@@ -51,7 +51,6 @@ use AuditTrait;
                     'TERMINATION_DATE' => $request->termination_date,
                     'DATE_TIME_CREATED' => $createddate,
                     'PROC_CODE_LIST_ID' => $request->proc_code_list_id,
-
                 ]
             );
             $benefitcode = DB::table('BENEFIT_DERIVATION')
@@ -59,9 +58,6 @@ use AuditTrait;
                 ->first();
 
             return $this->respondWithToken($this->token(), 'Record Added Successfully', $accum_benfit_stat);
-
-
-
         } else {
 
             $benefitcode = DB::table('BENEFIT_DERIVATION_NAMES')
@@ -105,12 +101,7 @@ use AuditTrait;
 
     public function add(Request $request)
     {
-
-
-
-
         $createddate = date('y-m-d');
-
         $validation = DB::table('BENEFIT_DERIVATION_NAMES')
             ->where('benefit_derivation_id', $request->benefit_derivation_id)
             ->get();
@@ -180,7 +171,6 @@ use AuditTrait;
                     [
                         'benefit_derivation_id' => $request->benefit_derivation_id,
                         'description' => $request->description,
-
                     ]
                 );
 
@@ -220,7 +210,10 @@ use AuditTrait;
                     );
 
 
-                $add = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
+                $add = DB::table('BENEFIT_DERIVATION')
+                    ->where(DB::raw('UPPER(benefit_derivation_id)'), strtoupper($request->benefit_derivation_id))
+                    ->first();
+                $save_audit = $this->auditMethod('IN', json_encode($add), 'BENEFIT_DERIVATION');
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
             }
         } else if ($request->add_new == 0) {
@@ -324,6 +317,7 @@ use AuditTrait;
 
                         );
                     $update = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
+                    $save_audit = $this->auditMethod('UP', json_encode($update), 'BENEFIT_DERIVATION');
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                 } elseif ($request->update_new == 1) {
                     $checkGPI = DB::table('BENEFIT_DERIVATION')
@@ -396,7 +390,10 @@ use AuditTrait;
                             );
 
 
-                        $update = DB::table('BENEFIT_DERIVATION')->where('benefit_derivation_id', 'like', '%' . $request->benefit_derivation_id . '%')->first();
+                        $update = DB::table('BENEFIT_DERIVATION')
+                            ->where('benefit_derivation_id', $request->benefit_derivation_id)
+                            ->first();
+                        $save_audit = $this->auditMethod('UP', json_encode($update), 'BENEFIT_DERIVATION');
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
                     }
                 }
@@ -616,8 +613,12 @@ use AuditTrait;
     }
     public function benefitderivationdelete(Request $request)
     {
-        if (isset($request->benefit_derivation_id) && isset($request->proc_code_list_id) && isset($request->service_type) && isset($request->service_modifier) && isset($request->benefit_code) && isset($request->effective_date)) {
           
+        if (isset($request->benefit_derivation_id) && ($request->proc_code_list_id)) {
+            $to_delete =  DB::table('BENEFIT_DERIVATION')
+                ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                ->first();
+            $save_audit = $this->auditMethod('DE', json_encode($to_delete), 'BENEFIT_DERIVATION');
             $all_exceptions_lists =  DB::table('BENEFIT_DERIVATION')
                                         ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
                                         ->where('service_type',$request->service_type)
@@ -634,6 +635,10 @@ use AuditTrait;
             }
         } elseif(isset($request->benefit_derivation_id)) {
 
+            $to_delete =  DB::table('BENEFIT_DERIVATION_NAMES')
+                ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
+                ->first();
+            $save_audit = $this->auditMethod('DE', json_encode($to_delete), 'BENEFIT_DERIVATION_NAMES');
             $exception_delete =  DB::table('BENEFIT_DERIVATION_NAMES')
                 ->where('BENEFIT_DERIVATION_ID', $request->benefit_derivation_id)
                 ->delete();

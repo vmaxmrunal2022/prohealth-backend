@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -11,12 +12,12 @@ use Illuminate\Support\Facades\Validator;
 class TherapyClassController extends Controller
 {
 
-
-    public function TherapyClassList(Request $request){
+use AuditTrait;
+    public function TherapyClassList(Request $request)
+    {
 
         $ndc = DB::table('TC_EXCEPTIONS')->get();
         return $this->respondWithToken($this->token(), '', $ndc);
-
     }
 
     public function TherapyClassList_New(Request $request){
@@ -31,7 +32,7 @@ class TherapyClassController extends Controller
 
     public function addcopy( Request $request ) {
 
-        $createddate = date( 'y-m-d' );
+        $createddate = date('y-m-d');
 
         $recordcheck = DB::table('TC_EXCEPTIONS')
         ->where('ther_class_exception_list', strtoupper($request->ther_class_exception_list))
@@ -238,17 +239,17 @@ class TherapyClassController extends Controller
 
 
 
-            $accum_benfit_stat = DB::table('TC_EXCEPTIONS' )
-            ->where('ther_class_exception_list', $request->ther_class_exception_list )
-            ->update(
-                [
-                    'ther_class_exception_list' => strtoupper( $request->ther_class_exception_list ),
-                    'exception_name'=>$request->exception_name,
-                   
-                  
+            $accum_benfit_stat = DB::table('TC_EXCEPTIONS')
+                ->where('ther_class_exception_list', $request->ther_class_exception_list)
+                ->update(
+                    [
+                        'ther_class_exception_list' => strtoupper($request->ther_class_exception_list),
+                        'exception_name' => $request->exception_name,
 
-                ]
-            );
+
+
+                    ]
+                );
 
             return $this->respondWithToken( $this->token(), 'Record Updated Successfully',$update);
 
@@ -992,7 +993,7 @@ class TherapyClassController extends Controller
                 ->orWhere('EXCEPTION_NAME', 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 
     public function getTCList($ndcid)

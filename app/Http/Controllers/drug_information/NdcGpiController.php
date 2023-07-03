@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\drug_information;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use DB;
 
 class NdcGpiController extends Controller
 {
+    use AuditTrait;
     /**
      * Display a listing of the resource.
      *
@@ -20,6 +22,7 @@ class NdcGpiController extends Controller
             $data = DB::table('DRUG_MASTER')
             ->where('NDC',$request->ndc)
             ->get();
+            
 
         }
 
@@ -53,7 +56,9 @@ class NdcGpiController extends Controller
     public function GpiDropDown(Request $request){
         $data = DB::table('DRUG_MASTER')
         ->select('NDC','GENERIC_PRODUCT_ID','LABEL_NAME')
-        ->get();
+       ->whereRaw('LOWER(NDC) LIKE ?', ['%' . strtolower($request->search) . '%'])
+       ->orWhereRaw('LOWER(GENERIC_PRODUCT_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+        ->paginate(100);
         return $this->respondWithToken($this->token(),'',$data);
     }
     

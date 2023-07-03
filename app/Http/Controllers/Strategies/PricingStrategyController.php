@@ -8,9 +8,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Cache;
+use App\Traits\AuditTrait;
+
 
 class PricingStrategyController extends Controller
 {
+    use AuditTrait;
+
+
     public function search(Request $request)
     {
         $ndc = DB::table('PRICING_STRATEGY_NAMES')
@@ -26,8 +31,9 @@ class PricingStrategyController extends Controller
     {
         $ndc = DB::table('PRICING_STRATEGY_NAMES')
             ->select('PRICING_STRATEGY_NAMES.pricing_strategy_id', 'PRICING_STRATEGY_NAMES.PRICING_STRATEGY_NAME as pricing_strategy_name')
-            ->where(DB::raw('UPPER(PRICING_STRATEGY_NAMES.pricing_strategy_id)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere(DB::raw('UPPER(PRICING_STRATEGY_NAMES.PRICING_STRATEGY_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
+
+            ->whereRaw('LOWER(PRICING_STRATEGY_NAMES.pricing_strategy_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->whereRaw('LOWER(PRICING_STRATEGY_NAMES.PRICING_STRATEGY_NAME) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $ndc);

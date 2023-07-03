@@ -63,6 +63,10 @@ class AccumlatedController extends Controller
                     ->first();
                 $record_snap = json_encode($acc_beneffit);
                 $save_audit = $this->auditMethod('IN', $record_snap, 'ACCUM_BENEFIT_STRATEGY');
+                $child_table = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                    ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
+                    ->first();
+                $this->auditMethod('IN', json_encode($child_table), 'ACCUM_BENE_STRATEGY_NAMES');
                 if ($add) {
                     $val = DB::table('ACCUM_BENEFIT_STRATEGY')
                         ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
@@ -72,106 +76,9 @@ class AccumlatedController extends Controller
                         ->select('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
                         ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), strtoupper($request->accum_bene_strategy_id))
                         ->get();
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', '');
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully ', [[$val], [$exp]]);
                 }
             }
-
-
-
-            // if ($request->accum_bene_strategy_id && $request->effective_date && $request->plan_accum_deduct_id) {
-            //     $count = DB::table('ACCUM_BENE_STRATEGY_NAMES')
-            //         ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
-            //         ->count();
-            //     if ($count <= 0) {
-            //         $add_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')
-            //             ->insert(
-            //                 [
-            //                     'accum_bene_strategy_id' => strtoupper($request->accum_bene_strategy_id),
-            //                     'accum_bene_strategy_name' => $request->accum_bene_strategy_name,
-            //                     'DATE_TIME_CREATED' => date('Ymd'),
-            //                     'user_id' => Cache::get('userId'),
-            //                     'DATE_TIME_MODIFIED' => date('Ymd'),
-            //                     'form_id' => ''
-            //                 ]
-            //             );
-            //         $add = DB::table('ACCUM_BENEFIT_STRATEGY')
-            //             ->insert([
-            //                 'accum_bene_strategy_id' => strtoupper($request->accum_bene_strategy_id),
-            //                 'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
-            //                 'formulary_variation_ind' => $request->formulary_variation_ind,
-            //                 'network_part_variation_ind' => $request->network_part_variation_ind,
-            //                 'claim_type_variation_ind' => $request->claim_type_variation_ind,
-            //                 'DATE_TIME_CREATED' => date('Ymd'),
-            //                 'user_id' => Cache::get('userId'),
-            //                 'DATE_TIME_MODIFIED' => date('Ymd'),
-            //                 'form_id' => '',
-            //                 'user_id_created' => Cache::get('userId'),
-            //                 'accum_exclusion_flag' => $request->accum_exclusion_flag,
-            //                 'effective_date' => date('Ymd', strtotime($request->effective_date)),
-            //                 'module_exit' => $request->module_exit,
-            //                 'plan_accum_deduct_id' => $request->plan_accum_deduct_id,
-
-            //             ]);
-
-            //         $add = DB::table('ACCUM_BENEFIT_STRATEGY')->where('accum_bene_strategy_id', 'like', '%' . $request->accum_bene_strategy_id . '%')->first();
-            //         return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
-            //     } else {
-            //         $updateProviderExceptionData = DB::table('ACCUM_BENE_STRATEGY_NAMES')
-            //             ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
-            //             ->update([
-            //                 'accum_bene_strategy_name' => $request->accum_bene_strategy_name,
-            //                 'user_id' => Cache::get('userId'),
-            //                 'date_time_modified' => date('Ymd'),
-            //                 'form_id' => ''
-            //             ]);
-
-            //         $eff_date = $request->effective_date;
-            //         $countValidation = DB::table('ACCUM_BENEFIT_STRATEGY')
-            //             // ->select('effective_date')
-            //             ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
-            //             ->whereBetween('effective_date', [$eff_date, $eff_date])
-            //             ->get();
-
-            //         if (count($countValidation) >= 1) {
-            //             return $this->respondWithToken(
-            //                 $this->token(),
-            //                 [['Duplicate Child Record']],
-            //                 [['Duplicate Child Record']],
-            //                 false
-            //             );
-            //         } else {
-
-            //             $addProviderValidationData = DB::table('ACCUM_BENEFIT_STRATEGY')
-            //                 ->insert([
-            //                     'accum_bene_strategy_id' => strtoupper($request->accum_bene_strategy_id),
-            //                     'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
-            //                     'formulary_variation_ind' => $request->formulary_variation_ind,
-            //                     'network_part_variation_ind' => $request->network_part_variation_ind,
-            //                     'claim_type_variation_ind' => $request->claim_type_variation_ind,
-            //                     'DATE_TIME_CREATED' => date('d-M-y'),
-            //                     'user_id' => Cache::get('userId'),
-            //                     'DATE_TIME_MODIFIED' => date('d-M-y'),
-            //                     'form_id' => '',
-            //                     'user_id_created' => '',
-            //                     'accum_exclusion_flag' => $request->accum_exclusion_flag,
-            //                     'effective_date' => date('Ymd', strtotime($request->effective_date)),
-            //                     'module_exit' => $request->module_exit,
-            //                     'plan_accum_deduct_id' => $request->plan_accum_deduct_id,
-
-            //                 ]);
-            //             $reecord = DB::table('ACCUM_BENE_STRATEGY_NAMES')
-            //                 ->join('ACCUM_BENEFIT_STRATEGY', 'ACCUM_BENE_STRATEGY_NAMES.accum_bene_strategy_id', '=', 'ACCUM_BENEFIT_STRATEGY.accum_bene_strategy_id')
-            //                 ->where('ACCUM_BENEFIT_STRATEGY.accum_bene_strategy_id', $request->accum_bene_strategy_id)
-            //                 ->where('ACCUM_BENEFIT_STRATEGY.plan_accum_deduct_id', $request->plan_accum_deduct_id)
-            //                 ->first();
-            //             return $this->respondWithToken(
-            //                 $this->token(),
-            //                 'Record Added successfully',
-            //                 $reecord,
-            //             );
-            //         }
-            //     }
-            // }
         } else {
 
             $existDataStrategy = DB::table('ACCUM_BENEFIT_STRATEGY')
@@ -226,6 +133,10 @@ class AccumlatedController extends Controller
                     ->first();
                 $record_snap = json_encode($acc_beneffit);
                 $save_audit = $this->auditMethod('UP', $record_snap, 'ACCUM_BENEFIT_STRATEGY');
+                $child_table = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                    ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
+                    ->first();
+                $this->auditMethod('UP', json_encode($child_table), 'ACCUM_BENE_STRATEGY_NAMES');
 
                 if ($updateAccstrategy) {
                     $val = DB::table('ACCUM_BENEFIT_STRATEGY')
@@ -236,7 +147,7 @@ class AccumlatedController extends Controller
                         ->select('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
                         ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), strtoupper($request->accum_bene_strategy_id))
                         ->get();
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', [$val, $exp]);
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully ', [$val, $exp]);
                 }
             } else {
                 $add = DB::table('ACCUM_BENEFIT_STRATEGY')
@@ -260,10 +171,13 @@ class AccumlatedController extends Controller
                 $acc_beneffit = DB::table('ACCUM_BENEFIT_STRATEGY')
                     ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
                     ->where('effective_date', $request->effective_date)
-                    ->where('PLAN_ACCUM_DEDUCT_ID', $request->plan_accum_deduct_id)
                     ->first();
                 $record_snap = json_encode($acc_beneffit);
-                $save_audit = $this->auditMethod('UP', $record_snap, 'ACCUM_BENEFIT_STRATEGY');
+                $save_audit = $this->auditMethod('IN', $record_snap, 'ACCUM_BENEFIT_STRATEGY');
+                $child_table = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                    ->where(DB::raw('UPPER(accum_bene_strategy_id)'), strtoupper($request->accum_bene_strategy_id))
+                    ->first();
+                $this->auditMethod('UP', json_encode($child_table), 'ACCUM_BENE_STRATEGY_NAMES');
                 if ($add) {
                     $val = DB::table('ACCUM_BENEFIT_STRATEGY')
                         ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
@@ -273,7 +187,7 @@ class AccumlatedController extends Controller
                         ->select('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
                         ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), strtoupper($request->accum_bene_strategy_id))
                         ->get();
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', [$val, $exp]);
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully ', [$val, $exp]);
                 }
             }
         }
@@ -281,12 +195,14 @@ class AccumlatedController extends Controller
 
     public function search(Request $request)
     {
-        $ndc = DB::table('ACCUM_BENEFIT_STRATEGY')
-            ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID')
-            ->select('ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
-            ->where('ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->distinct()
+        $ndc = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+            // ->leftjoin('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID')
+            ->select('ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
+            // ->where('ACCUM_BENE_STRATEGY_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('LOWER(ACCUM_BENE_STRATEGY_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+
+            // ->orWhere('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            // ->distinct()
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -310,11 +226,11 @@ class AccumlatedController extends Controller
 
     public function getDetails($accum_bene_strategy_id, $effective_date, $plan_accum_deduct_id)
     {
-        $eff_date = date(strtotime('Y-m-d', $effective_date));
+        $eff_date = date('Ymd', strtotime($effective_date));
         $ndc = DB::table('ACCUM_BENEFIT_STRATEGY')
             ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
             ->where('ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', $accum_bene_strategy_id)
-            ->where('ACCUM_BENEFIT_STRATEGY.effective_date', $effective_date)
+            ->where('ACCUM_BENEFIT_STRATEGY.effective_date', $eff_date)
             ->where('ACCUM_BENEFIT_STRATEGY.plan_accum_deduct_id', $plan_accum_deduct_id)
             ->first();
 
@@ -353,14 +269,24 @@ class AccumlatedController extends Controller
     public function deleteold(Request $request)
     {
         if (isset($request->accum_bene_strategy_id) && isset($request->effective_date) && isset($request->plan_accum_deduct_id)) {
+            $add_audit = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                ->where('ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
+                ->first();
             $all_accum_bene_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
                 ->where('accum_bene_strategy_id', $request->accum_bene_strategy_id)
                 ->count();
             if ($all_accum_bene_strategy == 1) {
+                $to_delete = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+                    ->where('ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
+                    ->first();
+                $this->auditMethod('DE', json_encode($to_delete), 'ACCUM_BENE_STRATEGY_NAMES');
                 $all_accum_bene_strategy_names = DB::table('ACCUM_BENE_STRATEGY_NAMES')
                     ->where('ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
                     ->delete();
-
+                $to_delete1 = DB::table('ACCUM_BENEFIT_STRATEGY')
+                    ->where('ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
+                    ->first();
+                $this->auditMethod('DE', json_encode($to_delete1), 'ACCUM_BENEFIT_STRATEGY');
                 $all_accum_bene_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
                     ->where('ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
                     ->delete();
@@ -372,12 +298,15 @@ class AccumlatedController extends Controller
                     ->select('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
                     ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), strtoupper($request->accum_bene_strategy_id))
                     ->get();
-                // $ndclist = DB::table('ACCUM_BENEFIT_STRATEGY')
-                // ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID')
-                // ->where('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', $ndcid)
-                // ->get();
+                // $save_audit = $this->auditMethod('DE', json_encode($add_audit), 'ACCUM_BENEFIT_STRATEGY');
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully', [$exp, $val]);
             } else {
+                $to_delete = DB::table('ACCUM_BENEFIT_STRATEGY')
+                    ->where('ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
+                    ->where('PLAN_ACCUM_DEDUCT_ID', $request->plan_accum_deduct_id)
+                    ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
+                    ->first();
+                $this->auditMethod('DE', json_encode($to_delete), 'ACCUM_BENEFIT_STRATEGY');
                 $all_accum_bene_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
                     ->where('ACCUM_BENE_STRATEGY_ID', $request->accum_bene_strategy_id)
                     ->where('PLAN_ACCUM_DEDUCT_ID', $request->plan_accum_deduct_id)

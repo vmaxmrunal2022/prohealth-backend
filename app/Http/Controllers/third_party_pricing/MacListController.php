@@ -3,18 +3,22 @@
 namespace App\Http\Controllers\third_party_pricing;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 class MacListController extends Controller
 {
+    use AuditTrait;
     public function get(Request $request)
     {
         $macList = DB::table('MAC_LIST')
             ->where('MAC_LIST', 'like', '%' . strtoupper($request->search). '%')
             ->orWhere('MAC_LIST', 'like', '%' . $request->search. '%')
             ->orWhere('MAC_DESC', 'like', '%' . strtoupper($request->search) . '%')
+            ->orderBy('MAC_LIST', 'asc') // Replace 'column_name' with the column you want to order by
+
             ->get();
 
         return $this->respondWithToken($this->token(), '', $macList);

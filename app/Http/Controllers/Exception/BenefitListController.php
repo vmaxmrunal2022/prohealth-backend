@@ -173,8 +173,6 @@ class BenefitListController extends Controller
                             'MAX_BASE_AMOUNT' => $request->max_base_amount,
                             'APPLY_MM_CLAIM_MAX_OPT' => $request->apply_mm_claim_max_opt,
                             'PRESCRIBER_EXCEPTIONS_FLAG' => $request->prescriber_exceptions_flag,
-
-
                         ]
                     );
 
@@ -182,6 +180,11 @@ class BenefitListController extends Controller
                 $add = DB::table('BENEFIT_LIST')->where('benefit_list_id', 'like', '%' . $request->benefit_list_id . '%')->first();
                 $record_snap = json_encode($add);
                 $save_audit = $this->auditMethod('IN', $record_snap, 'BENEFIT_LIST');
+                $benefit_list_names = DB::table('BENEFIT_LIST_NAMES')
+                    ->where(DB::raw('UPPER(benefit_list_id)'), strtoupper($request->benefit_list_id))
+                    ->where(DB::raw('UPPER(BENEFIT_CODE)'), strtoupper($request->benefit_code))
+                    ->first();
+                $save_audit_list_name = $this->auditMethod('IN', json_encode($benefit_list_names), 'BENEFIT_LIST_NAMES');
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
             }
         } else if ($request->add_new == 0) {
@@ -255,7 +258,6 @@ class BenefitListController extends Controller
                         ->update(
                             [
                                 'description' => $request->description,
-
                             ]
                         );
 
@@ -309,7 +311,13 @@ class BenefitListController extends Controller
 
 
                         );
-                    $update = DB::table('BENEFIT_LIST')->where('benefit_list_id', 'like', '%' . $request->benefit_list_id . '%')->first();
+                    $update = DB::table('BENEFIT_LIST_NAMES')->where('benefit_list_id', 'like', '%' . $request->benefit_list_id . '%')->first();
+                    $save_audit = $this->auditMethod('UP', json_encode($update), 'BENEFIT_LIST_NAMES');
+                    $benefit_list_names = DB::table('BENEFIT_LIST')
+                        ->where(DB::raw('UPPER(benefit_list_id)'), strtoupper($request->benefit_list_id))
+                        ->where(DB::raw('UPPER(BENEFIT_CODE)'), strtoupper($request->benefit_code))
+                        ->first();
+                    $save_audit_list_name = $this->auditMethod('UP', json_encode($benefit_list_names), 'BENEFIT_LIST');
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                 } elseif ($request->update_new == 1) {
                     $checkGPI = DB::table('BENEFIT_LIST')
@@ -320,7 +328,6 @@ class BenefitListController extends Controller
                     if (count($checkGPI) >= 1) {
                         return $this->respondWithToken($this->token(), [['For same Benefit Code , dates cannot overlap.']], '', 'false');
                     } else {
-
                         $effectiveDate = $request->effective_date;
                         $terminationDate = $request->termination_date;
                         $overlapExists = DB::table('BENEFIT_LIST')
@@ -339,8 +346,6 @@ class BenefitListController extends Controller
                         if ($overlapExists) {
                             return $this->respondWithToken($this->token(), [['For same Benefit Code , dates cannot overlap.']], '', 'false');
                         }
-
-
                         $update = DB::table('BENEFIT_LIST')
                             ->insert(
                                 [
@@ -383,15 +388,11 @@ class BenefitListController extends Controller
                                     'MAX_BASE_AMOUNT' => $request->max_base_amount,
                                     'APPLY_MM_CLAIM_MAX_OPT' => $request->apply_mm_claim_max_opt,
                                     'PRESCRIBER_EXCEPTIONS_FLAG' => $request->prescriber_exceptions_flag,
-
-
                                 ]
                             );
-
-
-                        $update = DB::table('BENEFIT_LIST')->where('benefit_list_id', 'like', '%' . $request->benefit_list_id . '%')->first();
-                        $record_snap = json_encode($update);
-                        $save_audit = $this->auditMethod('UP', $record_snap, 'BENEFIT_LIST');
+                        $update_record = DB::table('BENEFIT_LIST')->where('benefit_list_id', 'like', '%' . $request->benefit_list_id . '%')->first();
+                        $record_snap = json_encode($update_record);
+                        $save_audit = $this->auditMethod('IN', $record_snap, 'BENEFIT_LIST');
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
                     }
                 }
@@ -535,8 +536,8 @@ class BenefitListController extends Controller
     public function search(Request $request)
     {
         $ndc = DB::table('BENEFIT_LIST_NAMES')
-            // ->where('BENEFIT_LIST_ID', 'like', '%' .$request->search. '%')
-            ->whereRaw('LOWER(BENEFIT_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->where(DB::raw('UPPER(BENEFIT_LIST_ID)'), 'like', '%' . $request->search . '%')
+            // ->whereRaw('LOWER(BENEFIT_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
