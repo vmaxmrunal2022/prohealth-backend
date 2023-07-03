@@ -27,7 +27,7 @@ class UserController extends Controller
     protected $redis;
     public function __construct()
     {
-        $this->middleware("auth:api", ["except" => ["login", "register",'resetPassword']]);
+        $this->middleware("auth:api", ["except" => ["login", "register",'changePassword']]);
         $this->user = new User;
         $this->middleware('throttle:3,1')->only('login');
     }

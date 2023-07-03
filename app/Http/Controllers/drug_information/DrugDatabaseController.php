@@ -211,6 +211,7 @@ class DrugDatabaseController extends Controller
     {
         $data = DB::table('DRUG_MASTER')
             ->where('NDC', 'like', '%' . $request->search . '%')
+            ->orWhere('GENERIC_PRODUCT_ID', 'like', '%' . $request->search . '%')
             ->orWhere('LABEL_NAME', 'like', '%' . $request->search . '%')
             ->orWhere('GENERIC_NAME', 'like', '%' . $request->search . '%')
             ->orWhere('PACKAGE_SIZE', 'like', '%' . $request->search . '%')
