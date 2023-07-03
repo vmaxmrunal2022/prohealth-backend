@@ -56,6 +56,9 @@ class NdcGpiController extends Controller
     public function GpiDropDown(Request $request){
         $data = DB::table('DRUG_MASTER')
         ->select('NDC','GENERIC_PRODUCT_ID','LABEL_NAME')
+       ->whereRaw('LOWER(NDC) LIKE ?', ['%' . strtolower($request->search) . '%'])
+       ->orWhereRaw('LOWER(GENERIC_PRODUCT_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+
         ->paginate(100);
         return $this->respondWithToken($this->token(),'',$data);
     }

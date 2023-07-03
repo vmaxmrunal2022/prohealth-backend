@@ -188,7 +188,7 @@ class Controller extends BaseController
         return $this->respondWithToken($this->token(), '', $countries);
     }
 
-    public function ContriesSearch($c_id)
+    public function ContriesSearch(Request $c_id)
     {
         if (!empty($c_id->search)) {
             $countries = DB::table('COUNTRY_STATES')
