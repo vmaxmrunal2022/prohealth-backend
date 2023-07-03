@@ -683,7 +683,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('plan-validation/get-plan-ids', [PlanValidationController::class, 'getplanIds']);
         Route::get('plan-validation/get-details', [PlanValidationController::class, 'getpgetDetailslanIds']);
         Route::get('plan-validation/get-plan-id', [PlanValidationController::class, 'getPlanId']);
-        Route::get('plan-validation/get-plan-id-new', [PlanValidationController::class, 'getPlanIdNew']);
         Route::post('plan-validation/add-plan-validaion', [PlanValidationController::class, 'addPlanValidation']);
     });
 
