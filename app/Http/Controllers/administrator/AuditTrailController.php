@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\administrator;
 
 use App\Http\Controllers\Controller;
-use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +13,6 @@ use function PHPUnit\Framework\isEmpty;
 
 class AuditTrailController extends Controller
 {
-    use AuditTrait;
     public function getTables(Request $request)
     {
         $validator = Validator::make($request->all(), [
