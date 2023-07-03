@@ -375,7 +375,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         // getDetails
 
-
         Route::get('/prescriber/search', [PrescriberValidationController::class, 'search'])->name('prescriber.search'); // SEARCH
         Route::get('/prescriber/get/{physicain_list}', [PrescriberValidationController::class, 'getProviderValidationList'])->name('prescriber.list.get'); // LIST ITEMS
         Route::get('/prescriber/details/{physicain_list}/{physicain_id}', [PrescriberValidationController::class, 'getProviderDetails'])->name('prescriber.details.get'); // DETAIL
@@ -388,6 +387,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //exception copay Schedule list
         Route::get('copay-schedule/getAll', [CopayScheduleController::class, 'getAll'])->name('exception.getAll.copay');
+        Route::get('copay-schedule/getAll-new', [CopayScheduleController::class, 'getAllNew'])->name('exception.getAll.copaynew');
+        
 
         //exception prescriber list
         Route::get('/prescriber/getAll', [PrescriberController::class, 'getAll'])->name('exception.prescriber.getAll');
@@ -911,6 +912,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::post('benefitlist/derivation/delete', [BenefitDerivationController::class, 'benefitderivationdelete'])->name('benefitderivationdelete');
 
     Route::get('/benifitcodes/list/all', [BenefitListController::class, 'BenefitLists']);
+    Route::get('/benifitcodes/list/all-new', [BenefitListController::class, 'BenefitLists']);
     Route::post('/benefit/list/delete', [BenefitListController::class, 'benefit_list_delete'])->name('benefit_list_delete');
 
 
@@ -1029,6 +1031,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::post('/accumulated/add', [AccumlatedController::class, 'add'])->name('accumulated.add'); // SEARCH
 
     Route::get('/accumulated/all', [AccumlatedController::class, 'getAllAcuumlatedBenefits'])->name('accumulated.all'); // DETAIL
+    Route::get('/accumulated/all-new', [AccumlatedController::class, 'getAllAcuumlatedBenefitsNew'])->name('accumulated.all-new'); // DETAIL
 
 
     Route::get('/accumulated/benifit/search-new', [AccumlatedBenifitController::class, 'searchNew'])->name('accumulated.benifit.search'); // SEARCH

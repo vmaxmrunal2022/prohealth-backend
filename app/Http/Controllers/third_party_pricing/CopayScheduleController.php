@@ -41,6 +41,15 @@ class CopayScheduleController extends Controller
         $copayList = DB::table('COPAY_SCHEDULE')->get();
         return $this->respondWithToken($this->token(), '', $copayList);
     }
+    public function getAllNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $copayList = DB::table('COPAY_SCHEDULE') ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(COPAY_SCHEDULE)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(COPAY_SCHEDULE_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
+        return $this->respondWithToken($this->token(), '', $copayList);
+    }
 
     public function getCopayData(Request $request)
     {

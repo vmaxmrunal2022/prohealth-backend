@@ -20,7 +20,6 @@ class NDCExceptionController extends Controller
 
         $createddate = date('y-m-d');
 
-
         $ndc_exceptions_lists = DB::table('NDC_EXCEPTION_LISTS')
             ->where('ndc_exception_list', $request->ndc_exception_list)
             ->first();
@@ -28,7 +27,6 @@ class NDCExceptionController extends Controller
         $ndc_exception = DB::table('NDC_EXCEPTIONS')
             ->where('ndc_exception_list', $request->ndc_exception_list)
             ->first();
-
         if ($request->has('add_new')) {
 
             $validator = Validator::make($request->all(), [

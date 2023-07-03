@@ -341,6 +341,7 @@ class TraditionalNetworkController extends Controller
 
 
 
+
     public function getList($ndcid)
     {
         $ndc = DB::table('RX_NETWORKS')
@@ -380,7 +381,7 @@ class TraditionalNetworkController extends Controller
 
             $child_recs = DB::table('RX_NETWORKS')->where( 'NETWORK_ID', $request->network_id)->get();
             if($child_recs){
-                foreach($child_recs as $rec){
+                foreach($child_recs as $rec){   
                     $record_snapshot = json_encode($rec);
                     $save_audit = $this->auditMethod('DE', $record_snapshot, 'RX_NETWORKS');
                 }
