@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Code;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -10,6 +11,7 @@ use Illuminate\Validation\Rule;
 
 class ProcedureController extends Controller
 {
+    use AuditTrait;
     public function get(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -32,7 +34,24 @@ class ProcedureController extends Controller
     public function getCodes(Request $request)
     {
 
-        $procedurecodes = DB::table('PROCEDURE_CODES')->get();
+        $procedurecodes = DB::table('PROCEDURE_CODES')->paginate(100);
+
+        if ($procedurecodes) {
+
+            return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $procedurecodes);
+        } else {
+
+            return $this->respondWithToken($this->token(), 'There Was an Error', $procedurecodes);
+        }
+    }
+    public function getCodesNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $procedurecodes = DB::table('PROCEDURE_CODES')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(PROCEDURE_CODE)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
 
         if ($procedurecodes) {
 

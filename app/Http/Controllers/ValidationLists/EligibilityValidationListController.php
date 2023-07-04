@@ -35,13 +35,13 @@ class EligibilityValidationListController extends Controller
 
         $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')
             //->get();
+            ->whereRaw('LOWER(ELIG_VALIDATION_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->paginate(100);
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
-    public function DropDownNew(Request $request)
-    {
-
+    public function DropDownNew(Request $request){
         $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')->paginate(100);
+
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
 

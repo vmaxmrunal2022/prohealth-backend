@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\DB;
 use Faker\Extension\Helper;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Traits\AuditTrait;
 
 class PriceScheduleController extends Controller
 {
+    use AuditTrait;
+
     public function get(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')
@@ -19,8 +22,19 @@ class PriceScheduleController extends Controller
             ->orWhere('COPAY_SCHEDULE', $request->search)
             ->orWhere('PRICE_SCHEDULE_NAME',$request->search)
             ->orWhere('PRICE_SCHEDULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
-
             ->get();
+        return $this->respondWithToken($this->token(), '', $priceShedule);
+    }
+    public function getNew(Request $request)
+    {
+        $priceShedule = DB::table('PRICE_SCHEDULE')
+            // ->where('PRICE_SCHEDULE',  $request->search)
+            ->whereRaw('LOWER(PRICE_SCHEDULE) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhere('COPAY_SCHEDULE', $request->search)
+            ->orWhere('PRICE_SCHEDULE_NAME',$request->search)
+            ->orWhere('PRICE_SCHEDULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
+
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }
     public function getAll(Request $request)
@@ -33,18 +47,26 @@ class PriceScheduleController extends Controller
 
     public function getAllNew(Request $request)
     {
+        $searchQuery = $request->search;
         $priceShedule = DB::table('PRICE_SCHEDULE')
-        ->select('price_schedule','price_schedule_name')
-        ->paginate(100);
+        ->select('price_schedule','price_schedule_name') 
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(PRICE_SCHEDULE)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(PRICE_SCHEDULE_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }
 
 
     public function getAll_New(Request $request)
     {
+        $searchQuery = $request->search;
         $priceShedule = DB::table('PRICE_SCHEDULE')
-        ->select('price_schedule','price_schedule_name')
-        ->paginate(100);
+        ->select('price_schedule','price_schedule_name') 
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(PRICE_SCHEDULE)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(PRICE_SCHEDULE_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
         return $this->respondWithToken($this->token(), '', $priceShedule);
     }
 

@@ -548,6 +548,15 @@ class PlanEditController extends Controller
             ->orWhere('PLAN_BENEFIT_TABLE.PLAN_NAME', 'like', '%' . strtoupper($request->search) . '%')
             ->paginate(100);
 
+            // ->join('plan_table_extensions', 'plan_table_extensions.plan_id', '=', 'PLAN_BENEFIT_TABLE.plan_id')
+            // ->whereRaw('LOWER(PLAN_BENEFIT_TABLE.PLAN_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            // // ->where('PLAN_BENEFIT_TABLE.PLAN_ID', 'like', '%' . strtoupper($request->search) . '%')
+            // ->orWhere('PLAN_BENEFIT_TABLE.PLAN_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            // // ->paginate(100);
+            // ->get();
+            // ->where('PLAN_BENEFIT_TABLE.PLAN_ID', $request->search)
+            // ->get();
+        // return $request->search;
         $system_limits = DB::table('GLOBAL_PARAMS')->select(['sys_date_written_to_first_fill', 'sys_date_filled_to_sub_online', 'sys_date_filled_to_sub_dmr', 'sys_date_sub_to_filled_future', 'sys_days_for_reversals'])->first();
 
         foreach ($planEdit as $key => $plan) {
@@ -694,15 +703,21 @@ class PlanEditController extends Controller
     {
         $super_provider_network = DB::table('SUPER_RX_NETWORKS')
             ->join('SUPER_RX_NETWORK_NAMES', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
-            ->get();
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $super_provider_network);
     }
 
     public function getSuperProviderNetwork_New(Request  $request)
     {
+        $searchQuery = $request->search;
         $super_provider_network = DB::table('SUPER_RX_NETWORKS')
             ->join('SUPER_RX_NETWORK_NAMES', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
-            ->paginate(100);
+
+             ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
+
         return $this->respondWithToken($this->token(), '', $super_provider_network);
     }
 
@@ -724,6 +739,18 @@ class PlanEditController extends Controller
         return $this->respondWithToken($this->token(), '', $procedure_list);
     }
 
+    public function getProcedureException_New(Request $request)
+    {
+        $searchQuery = $request->search;
+        $procedure_list = DB::table('PROCEDURE_EXCEPTION_LISTS')
+            ->join('PROCEDURE_EXCEPTION_NAMES', 'PROCEDURE_EXCEPTION_NAMES.PROCEDURE_EXCEPTION_LIST', '=', 'PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST')
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where(DB::raw('UPPER(PROCEDURE_EXCEPTION_NAMES.PROCEDURE_EXCEPTION_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                $query->orWhere(DB::raw('UPPER(PROCEDURE_EXCEPTION_NAMES.EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+             })->paginate(100);
+           
+        return $this->respondWithToken($this->token(), '', $procedure_list);
+    }
 
     public function planeditDelete(Request $request){
         if(isset($request->plan_id)) {

@@ -76,7 +76,7 @@ class AccumlatedController extends Controller
                         ->select('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
                         ->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), strtoupper($request->accum_bene_strategy_id))
                         ->get();
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully ', [[], []]);
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully ', [[$val], [$exp]]);
                 }
             }
         } else {
@@ -195,12 +195,14 @@ class AccumlatedController extends Controller
 
     public function search(Request $request)
     {
-        $ndc = DB::table('ACCUM_BENEFIT_STRATEGY')
-            ->join('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID')
-            ->select('ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
-            ->where('ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->distinct()
+        $ndc = DB::table('ACCUM_BENE_STRATEGY_NAMES')
+            // ->leftjoin('ACCUM_BENE_STRATEGY_NAMES', 'ACCUM_BENEFIT_STRATEGY.ACCUM_BENE_STRATEGY_ID', '=', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_ID')
+            ->select('ACCUM_BENE_STRATEGY_ID', 'ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME as accum_sat_name')
+            // ->where('ACCUM_BENE_STRATEGY_ID', 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('LOWER(ACCUM_BENE_STRATEGY_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+
+            // ->orWhere('ACCUM_BENE_STRATEGY_NAMES.ACCUM_BENE_STRATEGY_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            // ->distinct()
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -244,8 +246,13 @@ class AccumlatedController extends Controller
 
     public function AccumlatedDropDown_New(Request $request)
     {
+        $searchQuery = $request->search;
         $ndc = DB::table('ACCUM_BENE_STRATEGY_NAMES')
-            ->paginate(100);
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(ACCUM_BENE_STRATEGY_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })
+        ->paginate(100);
         return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
     }
 

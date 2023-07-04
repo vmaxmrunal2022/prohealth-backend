@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class ClientController extends Controller
 {
-
+use AuditTrait;
 
 
     public function add(Request $request)

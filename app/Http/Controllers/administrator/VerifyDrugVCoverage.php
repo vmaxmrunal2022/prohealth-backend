@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\administrator;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,7 @@ use Illuminate\Validation\Rule;
 
 class VerifyDrugVCoverage extends Controller
 {
+    use AuditTrait;
     public function getPharmacyVarInd(Request $request)
     {
         $pharmacy_var_ind = [
@@ -56,13 +58,11 @@ class VerifyDrugVCoverage extends Controller
             // 'group_id' => ['required', Rule::unique('FE_USER_GROUPS')->where(function ($q) {
             //     $q->whereNotNull('group_id');
             // })],
-            'ndc' => ['required','max:10'],
+            'ndc' => ['required'],
             'date_of_service' => ['required'],
             'member_id' => ['required']
         ]);
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        }
+
         //TODO -> functionality not clear
         if ($request->add_new) {
             $add_newVerify_drug = [

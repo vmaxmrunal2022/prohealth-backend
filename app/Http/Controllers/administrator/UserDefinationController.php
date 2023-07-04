@@ -24,7 +24,7 @@ class UserDefinationController extends Controller
 
     public function addUserDefinition(Request $request)
     {
-
+        // return $request->privs;
         $getusersData = DB::table('FE_USERS')
             ->where('user_id', $request->user_id)
             ->first();
@@ -38,13 +38,12 @@ class UserDefinationController extends Controller
                 $addData = DB::table('FE_USERS')
                     ->insert([
                         'user_id' => $request->user_id,
-                        'user_password' => $request->user_password,
+                        'user_password' => Hash::make($request->user_password),
                         'user_first_name' => $request->user_first_name,
                         'user_last_name' => $request->user_last_name,
                         'DATE_TIME_CREATED' => date('d-M-y'),
                         'group_id' => $request->group_id,
                         'application' => $request->application,
-                        'user_password' => $request->user_password,
                         'sql_server_user_id' => $request->sql_server_user_id,
                         'sql_server_user_password' => $request->sql_server_user_password,
                         'privs' => $request->privs,
@@ -67,13 +66,12 @@ class UserDefinationController extends Controller
                 $updateUser = DB::table('FE_USERS')
                     ->where('user_id', $request->user_id)
                     ->update([
-                        'user_password' => $request->user_password,
+                        'user_password' => Hash::make($request->user_password),
                         'user_first_name' => $request->user_first_name,
                         'user_last_name' => $request->user_last_name,
                         'DATE_TIME_CREATED' => date('d-M-y'),
                         'group_id' => $request->group_id,
                         'application' => $request->application,
-                        'user_password' => $request->user_password,
                         'sql_server_user_id' => $request->sql_server_user_id,
                         'sql_server_user_password' => $request->sql_server_user_password,
                         'privs' => $request->privs,
@@ -149,7 +147,11 @@ class UserDefinationController extends Controller
                 'user_id' => ['required', Rule::unique('fe_users')->where(function ($q) {
                     $q->whereNotNull('user_id');
                 })],
-                'user_password' => ['required'],
+                'user_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+            ], [
+
+                'user_password.regex' => 'Password must contain alphanumeric characters and at least one special character, one uppercase letter, and one lowercase letter.'
+
             ]);
             if ($validator->fails()) {
                 return response($validator->errors(), 400);
@@ -161,12 +163,12 @@ class UserDefinationController extends Controller
                     'SQL_SERVER_USER_ID' => 'phi',
                     'SQL_SERVER_USER_PASSWORD' => 'comet',
                     //'user_password' => $request->user_password,
-                    'user_password' => $hashFromThirdParty,
+                    'user_password' => Hash::make($request->user_password),
                     'user_first_name' => $request->user_first_name,
                     'user_last_name' => $request->user_last_name,
                     'group_id' => $request->group_id,
                     'user_id_created' => $request->session()->get('user'),
-                    'privs' => $request->default_system_user,
+                    'privs' => $request->defaultSystemUser,
                     'restrict_security_flag' => $request->restrict_security_flag
                 ]);
 
@@ -194,7 +196,11 @@ class UserDefinationController extends Controller
         } else {
             $validator = Validator::make($request->all(), [
                 'user_id' => ['required'],
-                'user_password' => ['required'],
+                'user_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+            ], [
+
+                'user_password.regex' => 'Password must contain alphanumeric characters and at least one special character, one uppercase letter, and one lowercase letter.'
+
             ]);
             if ($validator->fails()) {
                 return response($validator->errors(), 400);
@@ -202,12 +208,12 @@ class UserDefinationController extends Controller
                 $updateUser = DB::table('FE_USERS')
                     ->where('user_id', $request->user_id)
                     ->update([
-                        'user_password' => $request->user_password,
+                        'user_password' => Hash::make($request->user_password),
                         'user_first_name' => $request->user_first_name,
                         'user_last_name' => $request->user_last_name,
                         'group_id' => $request->group_id,
                         'user_id_created' => $request->session()->get('user'),
-                        'privs' => $request->default_system_user,
+                        'privs' => $request->defaultSystemUser,
                         'restrict_security_flag' => $request->restrict_security_flag
                     ]);
             //TODO
@@ -309,22 +315,27 @@ class UserDefinationController extends Controller
 
     public function submitFormData(Request $request)
     {
-        // dd($request->all());
-        $prefix = '$2y$';
-        $cost = '10';
-        $salt = '$thisisahardcodedsalt$';
-        $blowfishPrefix = $prefix . $cost . $salt;
-        $password = $request->user_password;
-        $hash = crypt($password, $blowfishPrefix);
-        $hashToThirdParty = substr($hash, -32);
-        $hashFromThirdParty = $hashToThirdParty;
+        // return ($request->all());
+        // $prefix = '$2y$';
+        // $cost = '10';
+        // $salt = '$thisisahardcodedsalt$';
+        // $blowfishPrefix = $prefix . $cost . $salt;
+        // $password = $request->user_password;
+        // $hash = crypt($password, $blowfishPrefix);
+        // $hashToThirdParty = substr($hash, -32);
+        // $hashFromThirdParty = $hashToThirdParty;
+
 
         if ($request->new) {
             $validator = Validator::make($request->all(), [
                 'user_id' => ['required', Rule::unique('fe_users')->where(function ($q) {
                     $q->whereNotNull('user_id');
                 })],
-                'user_password' => ['required'],
+                'user_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+            ], [
+
+                'user_password.regex' => 'Password must contain alphanumeric characters and at least one special character, one uppercase letter, and one lowercase letter.'
+
             ]);
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
@@ -401,12 +412,12 @@ class UserDefinationController extends Controller
                     'SQL_SERVER_USER_ID' => 'phi',
                     'SQL_SERVER_USER_PASSWORD' => 'comet',
                     //'user_password' => $request->user_password,
-                    'user_password' => $hashFromThirdParty,
+                    'user_password' => Hash::make($request->user_password),
                     'user_first_name' => $request->user_first_name,
                     'user_last_name' => $request->user_last_name,
                     'group_id' => $request->group_id,
-                    'user_id_created' => $request->session()->get('user'),
-                    'privs' => $request->default_system_user,
+                    'user_id_created' => Cache::get('userId'),
+                    'privs' => $request->defaultSystemUser != null ? $request->defaultSystemUser : "1",
                     'restrict_security_flag' => $request->restrict_security_flag,
                     'user_profile' => $updated_user_profile,
                 ]);
@@ -423,7 +434,11 @@ class UserDefinationController extends Controller
         } else {
             $validator = Validator::make($request->all(), [
                 'user_id' => ['required'],
-                'user_password' => ['required'],
+                // 'user_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/',
+            ], [
+
+                // 'user_password.regex' => 'Password must contain alphanumeric characters and at least one special character, one uppercase letter, and one lowercase letter.'
+
             ]);
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
@@ -489,24 +504,20 @@ class UserDefinationController extends Controller
                 for ($i = 0; $i < count($d); $i++) {
                     $user_profile[$d[$i]] = 'D';
                 }
-
-
                 $updated_user_profile = implode('', $user_profile);
-
                 // dd($updated_user_profile);
                 $updateUser = DB::table('FE_USERS')
                     ->where('user_id', $request->user_id)
                     ->update([
-                        'user_password' => $request->user_password,
+                        // 'user_password' => Hash::make($request->user_password),
                         'user_first_name' => $request->user_first_name,
                         'user_last_name' => $request->user_last_name,
                         'group_id' => $request->group_id,
-                        'user_id_created' => $request->session()->get('user'),
-                        'privs' => $request->default_system_user,
+                        'user_id_created' => Cache::get('userId'),
+                        'privs' => $request->defaultSystemUser != null ? $request->defaultSystemUser : "1",
                         'restrict_security_flag' => $request->restrict_security_flag,
                         'user_profile' => $updated_user_profile,
                     ]);
-
                 $record_snapshot = json_encode($user_data);
                 $save_audit =  $this->auditMethod('UP', $record_snapshot, 'FE_USERS');
                 if ($updateUser) {

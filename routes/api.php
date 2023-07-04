@@ -1265,6 +1265,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
 
     //Tax Schedule
     Route::get('tax-schedule/get', [TaxScheduleController::class, 'get']);
+    Route::get('tax-schedule/get-new', [TaxScheduleController::class, 'getNew']);
     Route::get('tax-schedule/get-calculations', [TaxScheduleController::class, 'getCalculations']);
     Route::get('tax-schedule/get-base-prices', [TaxScheduleController::class, 'getBasePrices']);
     Route::post('tax-schedule/submit', [TaxScheduleController::class, 'submitTaxSchedule']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -10,6 +11,8 @@ use Illuminate\Validation\Rule;
 
 class DrugClassController extends Controller
 {
+
+    use AuditTrait;
 
 
     public function search_old(Request $request)
@@ -83,7 +86,12 @@ class DrugClassController extends Controller
 
     public function DrugCategoryList_New(Request $request)
     {
-        $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')->paginate(100);
+        $searchQuery = $request->search;
+        $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(DRUG_CATGY_EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 

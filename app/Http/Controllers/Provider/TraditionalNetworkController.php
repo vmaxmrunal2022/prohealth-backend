@@ -227,7 +227,7 @@ class TraditionalNetworkController extends Controller
                     );
                 }
                 $child_recs = DB::table('RX_NETWORKS')->where( 'NETWORK_ID', $request->network_id)->get();
-                if($child_recs){
+                if(!empty($child_recs)){
                     foreach($child_recs as $rec){
                         $record_snapshot = json_encode($rec);
                         $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORKS');
@@ -256,6 +256,19 @@ class TraditionalNetworkController extends Controller
 
 
     }
+    public function dropdownNew (Request $request){
+        $searchQuery = $request->search;
+        $data=  DB::table('RX_NETWORK_NAMES')
+                    ->select('NETWORK_ID','NETWORK_NAME')
+                    ->when($searchQuery, function ($query) use ($searchQuery) {
+                        $query->where(DB::raw('UPPER(NETWORK_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                        $query->orWhere(DB::raw('UPPER(NETWORK_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                    })
+                    ->paginate(100);
+
+        return $this->respondWithToken($this->token(), 'Data fetched successfully', $data);
+
+    }
 
 
     public function all(Request $request)
@@ -281,10 +294,10 @@ class TraditionalNetworkController extends Controller
 
     public function search(Request $request)
     {
-        $ndc =  DB::table('RX_NETWORK_NAMES')
+        $ndc =  DB::table('RX_NETWORKS')
         // ->where('NETWORK_ID', 'like', '%' . $request->search . '%')
-        ->where(DB::raw('UPPER(RX_NETWORK_NAMES.NETWORK_ID)'), 'like', '%' . strtoupper($request->search) . '%')
-        ->orWhere('NETWORK_NAME', 'like', '%' . $request->search . '%')
+        ->where(DB::raw('UPPER(RX_NETWORKS.NETWORK_ID)'), 'like', '%' . strtoupper($request->search) . '%')
+        ->orWhere('NETWORK_ID', 'like', '%' . $request->search . '%')
         ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -296,14 +309,25 @@ class TraditionalNetworkController extends Controller
     {
         $ndc = DB::table('RX_NETWORK_NAMES')
             ->select('NETWORK_ID', 'NETWORK_NAME')
-            ->get();
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+    public function TraditionalNetworkIdsDropdwonNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $ndc = DB::table('RX_NETWORK_NAMES')
+            ->select('NETWORK_ID', 'NETWORK_NAME')
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where(DB::raw('UPPER(NETWORK_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                $query->orWhere(DB::raw('UPPER(NETWORK_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+             })
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
-
-
-
+    
     public function ProviderIdsearch(Request $request)
     {
         $priceShedule = DB::table('PRICE_SCHEDULE')

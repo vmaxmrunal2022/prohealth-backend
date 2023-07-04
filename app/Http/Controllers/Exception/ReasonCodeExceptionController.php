@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Exception;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -11,7 +12,7 @@ class ReasonCodeExceptionController extends Controller
 {
 
 
-
+use AuditTrait;
     // public function addcopy(Request $request)
     // {
 
@@ -409,6 +410,8 @@ class ReasonCodeExceptionController extends Controller
 
 
 
+
+
     public function search(Request $request)
     {
         $ndc = DB::table('REASON_CODE_LIST_NAMES')
@@ -418,6 +421,7 @@ class ReasonCodeExceptionController extends Controller
             // ->orWhere('REASON_CODE_LISTS.REASON_CODE_LIST_ID', 'like', '%' . $request->search. '%')
             ->get();
 
+        return $this->respondWithToken($this->token(), '', $ndc);
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 

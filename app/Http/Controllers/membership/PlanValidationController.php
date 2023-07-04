@@ -22,12 +22,21 @@ class PlanValidationController extends Controller
       return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
     } else {
       $planValidation = DB::table('PLAN_VALIDATION_LISTS')
-        ->join('CUSTOMER', 'CUSTOMER.customer_id', '=', 'PLAN_VALIDATION_LISTS.customer_id')
+        ->select('PLAN_VALIDATION_LISTS.*','CUSTOMER.CUSTOMER_NAME','CLIENT.CLIENT_NAME','CLIENT_GROUP.GROUP_NAME')
+        ->leftjoin('CUSTOMER', 'CUSTOMER.customer_id', '=', 'PLAN_VALIDATION_LISTS.customer_id')
+        ->leftJoin('CLIENT', function ($join) {
+          $join->on('CLIENT.CLIENT_ID','=','PLAN_VALIDATION_LISTS.CLIENT_ID')
+              ->on('CLIENT.CUSTOMER_ID','=','PLAN_VALIDATION_LISTS.CUSTOMER_ID');
+         })
+         ->leftJoin('CLIENT_GROUP', function ($join) {
+          $join->on('CLIENT_GROUP.CUSTOMER_ID','=','PLAN_VALIDATION_LISTS.CUSTOMER_ID')
+              ->on('CLIENT_GROUP.CLIENT_ID','=','PLAN_VALIDATION_LISTS.CLIENT_ID')
+              ->on('CLIENT_GROUP.CLIENT_GROUP_ID','=','PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID');
+         })
         // ->where('CUSTOMER.customer_id', 'like', '%' . $request->search. '%')
-        ->whereRaw('LOWER(CUSTOMER.CUSTOMER_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
-
-        //   ->orWhere('PLAN_VALIDATION_LISTS.client_id', 'like', '%'. strtoupper($request->search) .'%')
-        ->orWhere('CUSTOMER.customer_name', 'like', '%' . $request->search . '%')
+        ->whereRaw('LOWER(PLAN_VALIDATION_LISTS.CUSTOMER_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+          ->orWhere('PLAN_VALIDATION_LISTS.client_id', 'like', '%'. strtoupper($request->search) .'%')
+        // ->orWhere('CUSTOMER.customer_name', 'like', '%' . $request->search . '%')
         ->get();
       return $this->respondWithToken($this->token(), '', $planValidation);
     }
@@ -37,6 +46,17 @@ class PlanValidationController extends Controller
   {
 
     $clientList = DB::table('PLAN_VALIDATION_LISTS')
+      ->select('PLAN_VALIDATION_LISTS.*','CUSTOMER.CUSTOMER_NAME','CLIENT.CLIENT_NAME','CLIENT_GROUP.GROUP_NAME')
+      ->leftjoin('CUSTOMER', 'CUSTOMER.customer_id', '=', 'PLAN_VALIDATION_LISTS.customer_id')
+      ->leftJoin('CLIENT', function ($join) {
+        $join->on('CLIENT.CLIENT_ID','=','PLAN_VALIDATION_LISTS.CLIENT_ID')
+            ->on('CLIENT.CUSTOMER_ID','=','PLAN_VALIDATION_LISTS.CUSTOMER_ID');
+      })
+      ->leftJoin('CLIENT_GROUP', function ($join) {
+        $join->on('CLIENT_GROUP.CUSTOMER_ID','=','PLAN_VALIDATION_LISTS.CUSTOMER_ID')
+            ->on('CLIENT_GROUP.CLIENT_ID','=','PLAN_VALIDATION_LISTS.CLIENT_ID')
+            ->on('CLIENT_GROUP.CLIENT_GROUP_ID','=','PLAN_VALIDATION_LISTS.CLIENT_GROUP_ID');
+      })
       ->where('PLAN_VALIDATION_LISTS.customer_id', $request->customer_id)->get();
 
     return $this->respondWithToken($this->token(), '', $clientList);
@@ -152,15 +172,7 @@ class PlanValidationController extends Controller
 
   public function getPlanId(Request $request)
   {
-    $plan_ids = DB::table('PLAN_TABLE_EXTENSIONS')
-      ->join('PLAN_BENEFIT_TABLE', 'PLAN_TABLE_EXTENSIONS.PLAN_ID', '=', 'PLAN_BENEFIT_TABLE.PLAN_ID')
-      // ->select('id')
-      ->get();
-    return $this->respondWithToken($this->token(), '', $plan_ids);
-  }
-
-  public function getPlanIdNew(Request $request)
-  {
+    $searchQuery = $request->search;
     $plan_ids = DB::table('PLAN_TABLE_EXTENSIONS')
       ->join('PLAN_BENEFIT_TABLE', 'PLAN_TABLE_EXTENSIONS.PLAN_ID', '=', 'PLAN_BENEFIT_TABLE.PLAN_ID')
       // ->select('id')

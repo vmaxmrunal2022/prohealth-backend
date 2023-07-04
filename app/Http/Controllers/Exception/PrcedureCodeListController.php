@@ -9,6 +9,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Traits\AuditTrait;
 
+
 class PrcedureCodeListController extends Controller
  {
 
@@ -365,6 +366,11 @@ class PrcedureCodeListController extends Controller
     public function getAll( Request $request )
     {
         $providerCodeList = DB::table( 'PROC_CODE_LIST_NAMES')->get();
+        return $this->respondWithToken( $this->token(), '', $providerCodeList );
+    }
+    public function getAllNew( Request $request )
+    {
+        $providerCodeList = DB::table( 'PROC_CODE_LIST_NAMES')->paginate(100);
         return $this->respondWithToken( $this->token(), '', $providerCodeList );
     }
 

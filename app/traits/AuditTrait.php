@@ -11,6 +11,7 @@ trait AuditTrait
     {
         // Method implementation
         // return $record_action;
+        // return $record_snapshot;
         $save_audit = DB::table('FE_RECORD_LOG')
             ->insert([
                 'user_id' => Cache::get('userId'),

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\third_party_pricing;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use LDAP\Result;
@@ -11,7 +12,7 @@ use Illuminate\Validation\Rule;
 
 class CopayScheduleController extends Controller
 {
-
+ use AuditTrait;
     public function get(Request $request)
     {
         $copayList = DB::table('COPAY_SCHEDULE')           
@@ -20,6 +21,18 @@ class CopayScheduleController extends Controller
             ->whereRaw('LOWER(copay_schedule) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('copay_schedule_name', 'like', '%' . strtoupper($request->search) . '%')
             ->get();
+
+        return $this->respondWithToken($this->token(), '', $copayList);
+    }
+
+    public function getNew(Request $request)
+    {
+        $copayList = DB::table('COPAY_SCHEDULE')           
+            //  ->where('copay_schedule', 'like', '%' . $request->search. '%')
+            // ->where('copay_schedule', 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('LOWER(copay_schedule) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhere('copay_schedule_name', 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $copayList);
     }

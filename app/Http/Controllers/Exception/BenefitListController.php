@@ -18,6 +18,18 @@ class BenefitListController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function indexNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $ndc = DB::table('BENEFIT_CODES')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(BENEFIT_CODE)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
     public function BenefitLists(Request $request){
 
         $ndc = DB::table('BENEFIT_LIST_NAMES')->get();
@@ -524,8 +536,8 @@ class BenefitListController extends Controller
     public function search(Request $request)
     {
         $ndc = DB::table('BENEFIT_LIST_NAMES')
-            // ->where('BENEFIT_LIST_ID', 'like', '%' .$request->search. '%')
-            ->whereRaw('LOWER(BENEFIT_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->where(DB::raw('UPPER(BENEFIT_LIST_ID)'), 'like', '%' . $request->search . '%')
+            // ->whereRaw('LOWER(BENEFIT_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);

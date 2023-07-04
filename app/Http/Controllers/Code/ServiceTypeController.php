@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Code;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -10,6 +11,7 @@ use Illuminate\Validation\Rule;
 
 class ServiceTypeController extends Controller
 {
+    use AuditTrait;
     public function get(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -32,6 +34,22 @@ class ServiceTypeController extends Controller
     {
 
         $service_types_data = DB::table('SERVICE_TYPES')->get();
+
+        if ($service_types_data) {
+            return  $this->respondWithToken($this->token(), 'data Fetched Successfully', $service_types_data);
+        } else {
+            return  $this->respondWithToken($this->token(), 'something went wrong', $service_types_data);
+        }
+    }
+
+    public function getallServicetypesNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $service_types_data = DB::table('SERVICE_TYPES')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(SERVICE_TYPE)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            // $query->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
 
         if ($service_types_data) {
             return  $this->respondWithToken($this->token(), 'data Fetched Successfully', $service_types_data);

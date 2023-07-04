@@ -21,6 +21,8 @@ class GpiExclusionController extends Controller
     {
         $gpis =  DB::table('DRUG_MASTER')
             ->select('generic_product_id as gpi')
+            ->whereRaw('LOWER(GENERIC_PRODUCT_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhereRaw('LOWER(GENERIC_NAME) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->paginate(100);
         return $this->respondWithToken($this->token(), 'data fetched successfully ', $gpis);
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\membership;
 use App\Http\Controllers\Controller;
 use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 // use DB;
 use Illuminate\Support\Facades\DB;
@@ -43,6 +44,7 @@ class MemberController extends Controller
                 'MEMBER.ADDRESS_1',
                 'MEMBER.ADDRESS_2',
                 'MEMBER.CITY',
+                'MEMBER.PERSON_CODE',
                 'MEMBER.COUNTRY',
                 'MEMBER.DATE_OF_BIRTH',
                 'MEMBER.RELATIONSHIP',
@@ -264,14 +266,23 @@ class MemberController extends Controller
     }
 
 
-    public function getMembersDropDownList()
+    public function getMembersDropDownList(Request $request)
     {
-
-        $member_data_list = DB::table('MEMBER')
-            ->select('member_id')->get();
-
+        if(isset($request->client_id) && isset($request->client_group_id) && isset($request->customer_id)){
+            $searchQuery = $request->search;
+            $member_data_list = DB::table('MEMBER')
+            ->select('member_id')
+            ->where('client_id', $request->client_id)
+            ->where('client_group_id',$request->client_group_id)
+            ->where('customer_id',$request->customer_id)
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where(DB::raw('UPPER(member_id)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            })->paginate(100);
+            
+        }else{
+            $member_data_list = DB::table('MEMBER')->select('member_id')->paginate(100);
+        }
         // dd($member_data_list);
-
         return $this->respondWithToken($this->token(), '', $member_data_list);
     }
 
@@ -297,6 +308,24 @@ class MemberController extends Controller
             ['eligibility_id' => '7', 'eligibility_name' => 'Spouse only'],
             ['eligibility_id' => '8', 'eligibility_name' => 'Spouse & childern'],
         ];
+        $perPage = 3; // Number of items per page
+        $currentPage = 1; // Current page number
+
+        // Calculate the offset
+        $offset = ($currentPage - 1) * $perPage;
+
+        // Get the items for the current page
+        $currentPageItems = array_slice($eligibility, $offset, $perPage, true);
+
+        // Create a LengthAwarePaginator instance
+        $paginator = new LengthAwarePaginator($currentPageItems, count($eligibility), $perPage, $currentPage);
+
+        // Optional: Customize the paginator's URL path
+        // $paginator->setPath('/your-custom-path');
+
+        // Access the paginated items using `$paginator->items()`
+        // Access other paginator information using `$paginator->links()`, `$paginator->currentPage()`, etc.
+
         return $this->respondWithToken($this->token(), '', $eligibility);
     }
 
@@ -396,8 +425,12 @@ class MemberController extends Controller
     }
     public function getAccumulatedBenifitStrategyNew(Request $request)
     {
+        $searchQuery = $request->search;
         $acc_beni_strategy = DB::table('ACCUM_BENEFIT_STRATEGY')
-            ->paginate(100);
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+          })
+        ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $acc_beni_strategy);
     }
@@ -578,7 +611,7 @@ class MemberController extends Controller
 
                         'CITY' => $request->city,
                         'STATE' => $request->state,
-                        'ZIP_CODE' => $request->zipcode,
+                        'ZIP_CODE' => $request->zip_code,
                         'PHONE' => $request->phone,
                         'ANNIV_DATE' => $request->anniv_date,
                         'DATE_OF_BIRTH' => $request->date_of_birth,
@@ -634,9 +667,9 @@ class MemberController extends Controller
                         'ACCUM_BENE_EFF_DATE_1' => $request->accum_bene_eff_date_1,
                         'ACCUM_BENE_EFF_DATE_2' => $request->accum_bene_eff_date_2,
                         'ACCUM_BENE_EFF_DATE_3' => $request->accum_bene_eff_date_3,
-                        'ACCUM_BENE_TERM_DATE_1' => $request->ACCUM_BENE_TERM_DATE_1,
-                        'ACCUM_BENE_TERM_DATE_2' => $request->ACCUM_BENE_TERM_DATE_2,
-                        'ACCUM_BENE_TERM_DATE_3' => $request->ACCUM_BENE_TERM_DATE_3,
+                        'ACCUM_BENE_TERM_DATE_1' => $request->accum_bene_term_date_1,
+                        'ACCUM_BENE_TERM_DATE_2' => $request->accum_bene_term_date_2,
+                        'ACCUM_BENE_TERM_DATE_3' => $request->accum_bene_term_date_3,
 
 
                         'ACCUM_ADJMNT_MBR_PAID_AMT_2' => $request->accum_adjmnt_mbr_paid_amt_2,
@@ -655,7 +688,11 @@ class MemberController extends Controller
                         'USER_DEFINED_CODE_1' => $request->user_defined_code_1,
                         'USER_DEFINED_CODE_2' => $request->user_defined_code_2,
                         'COUNTRY' => $request->country,
-                        // 'COUNTRY_CODE'=>$request->country_code,
+                        'COUNTRY_CODE'=>$request->country_code,
+                        // 'accum_bene_term_date_3'=>$request->accum_bene_term_date_3,
+                        // 'accum_bene_term_date_2'=>$request->accum_bene_term_date_2,
+                        // 'accum_bene_plan_ov'=>$request->accum_bene_plan_ov,
+                        'accum_adjmnt_plan_paid_amt'=>$request->accum_adjmnt_plan_paid_amt
 
                     ]);
 
@@ -674,6 +711,7 @@ class MemberController extends Controller
                 if (!empty($request->coverage_form)) {
                     $coverage_list = $coverage_list_array[0];
                     foreach ($coverage_list_array as $key => $coverage_list) {
+
                         $add_member_coverage = DB::table('MEMBER_COVERAGE')
                             ->insert([
                                 'customer_id' => $coverage_list->customer_id,
@@ -723,9 +761,9 @@ class MemberController extends Controller
                                 'MEMBER_ID' => $coverage_history->member_id,
                                 "DATE_TIME_MODIFIED" => date('Y-m-d H:i:s'),
 
-                                // 'PERSON_CODE'=>$coverage_history->person_code,
-                                // 'FROM_EFFECTIVE_DATE'=>$coverage_history->effective_date,
-                                // 'FROM_TERMINATION_DATE'=>$coverage_history->termination_date,
+                                'PERSON_CODE'=>$request->person_code,
+                                'FROM_EFFECTIVE_DATE'=>$coverage_history->effective_date,
+                                'FROM_TERMINATION_DATE'=>$coverage_history->termination_date,
                                 // 'FROM_PLAN_ID'=>$coverage_history->from_plan_id,
                                 'TO_EFFECTIVE_DATE' => $coverage_history->effective_date,
                                 'TO_TERMINATION_DATE' => $coverage_history->termination_date,
@@ -774,6 +812,7 @@ class MemberController extends Controller
 
                     foreach ($diagnosis_list_array as $key => $diagnosis_list) {
 
+
                         $add_diagnosis = DB::table('MEMBER_DIAGNOSIS')
                             ->insert([
                                 'customer_id' => $diagnosis_list->customer_id,
@@ -796,7 +835,7 @@ class MemberController extends Controller
                             ->first();
 
                         $record_snap_mem_diag = json_encode($member_diag);
-                        $save_audit_mem_diag = $this->auditMethod('IN', $member_diag, 'MEMBER_DIAGNOSIS');
+                        $save_audit_mem_diag = $this->auditMethod('IN', $record_snap_mem_diag, 'MEMBER_DIAGNOSIS');
 
 
                         $add_diagnosis_history = DB::table('MEMBER_DIAGNOSIS_HISTORY')
@@ -855,6 +894,8 @@ class MemberController extends Controller
                     'city' => $request->city,
                     'state' => $request->state,
                     'country' => $request->country,
+                    'COUNTRY_CODE'=>$request->country_code,
+                    'ZIP_CODE' => $request->zip_code,
                     'date_of_birth' => $request->date_of_birth,
                     'relationship' => $request->relationship,
                     'anniv_date' => $request->anniv_date,
@@ -870,9 +911,9 @@ class MemberController extends Controller
                     'ACCUM_BENE_EFF_DATE_1' => $request->accum_bene_eff_date_1,
                     'ACCUM_BENE_EFF_DATE_2' => $request->accum_bene_eff_date_2,
                     'ACCUM_BENE_EFF_DATE_3' => $request->accum_bene_eff_date_3,
-                    'ACCUM_BENE_TERM_DATE_1' => $request->ACCUM_BENE_TERM_DATE_1,
-                    'ACCUM_BENE_TERM_DATE_2' => $request->ACCUM_BENE_TERM_DATE_2,
-                    'ACCUM_BENE_TERM_DATE_3' => $request->ACCUM_BENE_TERM_DATE_3,
+                    'ACCUM_BENE_TERM_DATE_1' => $request->accum_bene_term_date_1,
+                    'ACCUM_BENE_TERM_DATE_2' => $request->accum_bene_term_date_2,
+                    'ACCUM_BENE_TERM_DATE_3' => $request->accum_bene_term_date_3,
                     // 'provider_id' => $request->provider_id,
                     'PRIMARY_PRESCRIBER' => $request->prescriber_id,
                     'MISC_GROUPING_1' => $request->misc_grouping_1,
@@ -880,6 +921,9 @@ class MemberController extends Controller
                     'misc_id' => $request->misc_id,
                     'USER_DEFINED_CODE_1' => $request->user_defined_code_1,
                     'USER_DEFINED_CODE_2' => $request->user_defined_code_2,
+
+                    'accum_adjmnt_plan_paid_amt'=>$request->accum_adjmnt_plan_paid_amt
+
                 ]);
 
             //Bellow code is for adding member in audit
@@ -1077,7 +1121,7 @@ class MemberController extends Controller
 
                 if ($add_diagnosis_history) {
                     $new = $add_diagnosis_history;
-                    $new = DB::table('MEMBER_HIST')
+                    $new = DB::table('MEMBER_DIAGNOSIS_HISTORY')
                         ->where('CUSTOMER_ID', $diagnosis_list->customer_id)
                         ->where('CLIENT_ID', $diagnosis_list->client_id)
                         ->where('CLIENT_GROUP_ID', $diagnosis_list->client_group_id)
@@ -1087,8 +1131,8 @@ class MemberController extends Controller
                             "PERSON_CODE" => "0",
                             "CHG_TYPE_IND" => "A",
                             "BATCH_SEQUENCE_NUMBER" => '0',
-                            // 'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
-                            // 'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
+                            'FROM_EFFECTIVE_DATE' =>$diagnosis_list->effective_date,
+                            'FROM_TERMINATION_DATE' =>$diagnosis_list->termination_date,
                             "TO_EFFECTIVE_DATE" => $diagnosis_list->effective_date,
                             "TO_TERMINATION_DATE" => $diagnosis_list->termination_date,
                             "USER_ID_CREATED" => "",
@@ -1141,7 +1185,53 @@ class MemberController extends Controller
         }
     }
 
-   
+    public function memberDetails(Request $request){
+
+        $member_form_data=DB::table('member')
+        ->select('member.*','CUSTOMER.CUSTOMER_NAME','CUSTOMER.EFFECTIVE_DATE as cust_eff_date','CUSTOMER.TERMINATION_DATE as cust_term_date',
+        'CLIENT.CLIENT_NAME as client_name','CLIENT.EFFECTIVE_DATE as client_eff_date','CLIENT.TERMINATION_DATE as client_term_date',
+        'CLIENT_GROUP.GROUP_NAME','CLIENT_GROUP.GROUP_EFFECTIVE_DATE as client_group_eff_date','CLIENT_GROUP.GROUP_TERMINATION_DATE as client_group_term_date')
+        ->join('CUSTOMER','CUSTOMER.CUSTOMER_ID','=','member.CUSTOMER_ID')
+        ->join('CLIENT','CLIENT.CLIENT_ID','=','member.CLIENT_ID')
+        ->join('CLIENT_GROUP','CLIENT_GROUP.CLIENT_GROUP_ID','=','member.CLIENT_GROUP_ID')
+        ->where('member.member_id',$request->member_id)->first();
+
+
+
+
+
+        $member_form_data_effe=DB::table('MEMBER_COVERAGE')->where('member_id',$request->member_id)->get()->last();
+        $member_coverages=DB::table('MEMBER_COVERAGE')->where('member_id',$request->member_id)->get();
+        $member_coverage_history=DB::table('MEMBER_HIST')->where('member_id',$request->member_id)->get();
+        $member_coverage_history=DB::table('MEMBER_HIST')->where('member_id',$request->member_id)->get();
+        $member_diagnosis=DB::table('MEMBER_DIAGNOSIS')->where('member_id',$request->member_id)->get();
+        $prior_authorizations=DB::table('PRIOR_AUTHORIZATIONS')->where('member_id',$request->member_id)->get();
+        $change_log=DB::table('MEMBER_CHANGE_LOG')->where('member_id',$request->member_id)->get();
+        $claim_history=DB::table('RX_TRANSACTION_LOG')->join('RX_TRANSACTION_DETAIL', 'RX_TRANSACTION_DETAIL.PHARMACY_NABP', '=', 'RX_TRANSACTION_LOG.PHARMACY_NABP')
+        ->select('RX_TRANSACTION_LOG.PHARMACY_NABP')
+                        ->where('RX_TRANSACTION_LOG.MEMBER_ID',$request->member_id)
+                        ->get();
+
+        // dd($member_form_data_effe);
+
+
+            $merged = [
+                'member_form_data' => $member_form_data,
+                'member_form_data_effective_dates'=>$member_form_data_effe,
+                "member_coverages"=>$member_coverages,
+                "member_coverage_history"=>$member_coverage_history,
+                "member_diagnosis"=>$member_diagnosis,
+                "prior_authorizations"=>$prior_authorizations,
+                "change_log"=>$change_log,
+                "claim_history"=>$claim_history,
+            ];
+
+          return $this->respondWithToken($this->token(), 'data fetched successfully', $merged);
+
+
+
+    }
+
     public function delete(Request $request){
         
 

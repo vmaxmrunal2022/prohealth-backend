@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Provider;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use DB;
 use Illuminate\Support\Facades\Validator;
 
 class ChainController extends Controller
 {
+
+    use AuditTrait;
     public function search(Request $request)
     {
         $ndc = DB::table('PHARMACY_CHAIN')
                 ->where('PHARMACY_CHAIN', 'like', '%' .strtoupper($request->search). '%')
                 ->orWhere('PHARMACY_CHAIN_NAME', 'like', '%' .strtoupper($request->search). '%')
+                ->orderBy('PHARMACY_CHAIN', 'asc')
                 ->get();
 
          return $this->respondWithToken($this->token(), '', $ndc);
@@ -36,11 +40,15 @@ class ChainController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
-    public function dropdownsNew(){
-
+    public function dropdownsNew(Request $request){
+        
+        $searchQuery = $request->search;
         $ndc =DB::table('PHARMACY_CHAIN')
         ->select('PHARMACY_CHAIN','PHARMACY_CHAIN_NAME')
-        ->paginate(100);
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(PHARMACY_CHAIN)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(PHARMACY_CHAIN_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
         return $this->respondWithToken($this->token(), '', $ndc);
 
     }
@@ -57,7 +65,6 @@ class ChainController extends Controller
                 ->first();
 
                 if($recordcheck){
-
                     return $this->respondWithToken($this->token(), 'Pharmacy Chain Id Already Exists', $recordcheck);
 
 
@@ -95,8 +102,7 @@ class ChainController extends Controller
                             'DATE_TIME_MODIFIED' => '',
                             'FORM_ID' => '',
                             // 'COMPLETE_CODE_IND' => ''
-                        ]
-                    );
+                        ]);
                  return  $this->respondWithToken($this->token(), 'Record Added Successfully', $procedurecode);
                 
 
