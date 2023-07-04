@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\drug_information;
 
 use App\Http\Controllers\Controller;
+use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class NdcGpiController extends Controller
 {
+    use AuditTrait;
     /**
      * Display a listing of the resource.
      *
@@ -15,30 +17,19 @@ class NdcGpiController extends Controller
      */
     public function search(Request $request)
     {
-        if($request->ndc){
+        if ($request->ndc) {
 
             $data = DB::table('DRUG_MASTER')
-            ->where('NDC', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('LABEL_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('GENERIC_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('PACKAGE_SIZE', 'like', '%' . strtoupper($request->search) . '%')
-            ->get();
-
+                ->where('NDC', $request->ndc)
+                ->get();
         }
 
-        if($request->gpi){
+        if ($request->gpi) {
 
             $data = DB::table('DRUG_MASTER')
-            ->where('NDC', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('LABEL_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('GENERIC_NAME', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('PACKAGE_SIZE', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('GENERIC_PRODUCT_ID', 'like', '%' . strtoupper($request->search) . '%')
-            ->get();
-
+                ->Where('GENERIC_PRODUCT_ID', $request->gpi)
+                ->get();
         }
-
-        
 
         return $this->respondWithToken($this->token(), '', $data);
     }
@@ -50,67 +41,22 @@ class NdcGpiController extends Controller
     public function getDetails($ndcid)
     {
 
-        $ndc =DB::table('DRUG_MASTER')
-                ->where('NDC', $ndcid)
-                ->first();
+        $ndc = DB::table('DRUG_MASTER')
+            ->where('NDC', $ndcid)
+            ->first();
 
         return $this->respondWithToken($this->token(), '', $ndc);
-
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function GpiDropDown(Request $request)
     {
-        //
-    }
+        $data = DB::table('DRUG_MASTER')
+            ->select('NDC', 'GENERIC_PRODUCT_ID', 'LABEL_NAME')
+            ->whereRaw('LOWER(NDC) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhereRaw('LOWER(GENERIC_PRODUCT_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+            ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $data);
     }
 }

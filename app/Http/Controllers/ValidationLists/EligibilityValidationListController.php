@@ -35,8 +35,13 @@ class EligibilityValidationListController extends Controller
 
         $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')
             //->get();
-            ->whereRaw('LOWER(ELIG_VALIDATION_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $elig_list_data);
+    }
+    public function DropDownNew(Request $request)
+    {
+
+        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')->paginate(100);
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
 
@@ -94,8 +99,6 @@ class EligibilityValidationListController extends Controller
         } else {
             $elig_list_data->adult_dep_covd = false;
         }
-
-
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
 
@@ -176,6 +179,8 @@ class EligibilityValidationListController extends Controller
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             }
+            $age_limit_mmdd = intval($request->age_limit_mmdd);
+            // $age_limit_mmdd =  intval($age_limit_mmdd);
             $updateData = DB::table('ELIG_VALIDATION_LISTS')
                 ->where('ELIG_VALIDATION_ID', $request->elig_validation_id)
                 ->update([
@@ -195,8 +200,9 @@ class EligibilityValidationListController extends Controller
                     'AGE_LIMIT_MMDD' => $request->age_limit_mmdd
                 ]);
             $updateData_new = DB::table('ELIG_VALIDATION_LISTS')
+                ->where('ELIG_VALIDATION_ID', $request->elig_validation_id)
                 ->get();
-            return $updateData_new;
+            // return $updateData_new;
             return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updateData_new);
         }
     }

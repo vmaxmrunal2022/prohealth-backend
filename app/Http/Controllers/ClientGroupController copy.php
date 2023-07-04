@@ -59,9 +59,8 @@ class ClientGroupController extends Controller
             ]);
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
-                $benefitcode = DB::table('CLIENT_GROUP')->get();
                 // dd($fieldsWithErrorMessagesArray);
-                return $this->respondWithToken($this->token(), $validator->errors(), $benefitcode, false);
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
             } else {
 
                 $accum_benfit_stat_names = DB::table('CLIENT_GROUP')->insert(
@@ -191,9 +190,8 @@ class ClientGroupController extends Controller
             ]);
             if ($validator->fails()) {
                 $fieldsWithErrorMessagesArray = $validator->messages()->get('*');
-                $benefitcode = DB::table('CLIENT_GROUP')->get();
                 // dd($fieldsWithErrorMessagesArray);
-                return $this->respondWithToken($this->token(), $validator->errors(), $benefitcode, false);
+                return $this->respondWithToken($this->token(), $validator->errors(), $fieldsWithErrorMessagesArray, false);
             } else {
                 $accum_benfit_stat = DB::table('CLIENT_GROUP')
                     ->where('CLIENT_GROUP_ID', $request->client_group_id)
@@ -308,7 +306,7 @@ class ClientGroupController extends Controller
                     ]);
             }
         }
-        return $this->respondWithToken($this->token(), 'Added Successfully!', [$benefitcode]);
+        return $this->respondWithToken($this->token(), 'Added Successfully!', $updated);
     }
     public function getClientGroup(Request $request)
     {
@@ -355,12 +353,8 @@ class ClientGroupController extends Controller
 
         // return $this->respondWithToken($this->token(), '', $client);
         $client = DB::table('CLIENT_GROUP')
-            ->join('client', 'client.client_id', '=', 'client_group.client_id')
-            ->where(DB::raw('UPPER(CLIENT_GROUP.CLIENT_GROUP_ID)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->orwhere(DB::raw('UPPER(CLIENT_GROUP.CLIENT_ID)'), 'like', '%' . strtoupper($request->search) . '%')
-            ->orwhere(DB::raw('UPPER(CLIENT_GROUP.customer_id)'), 'like', '%' . strtoupper($request->search) . '%')
+            ->where(DB::raw('UPPER(CLIENT_GROUP_ID)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
-
 
         return $this->respondWithToken($this->token(), '', $client);
     }
@@ -387,6 +381,6 @@ class ClientGroupController extends Controller
             ->where(DB::raw('UPPER(client_group_id)'), 'like', '%' .  strtoupper($request->client_group_id) . '%')
             ->get();
 
-        return $this->respondWithToken($this->token(), "Record Deleted Successfully", [$client_group]);
+        return $this->respondWithToken($this->token(), "Record Deleted Successfully", $updated);
     }
 }

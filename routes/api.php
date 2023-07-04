@@ -869,7 +869,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/eligibility/search', [EligibilityValidationListController::class, 'search']); // SEARCH
     // Route::get('/eligibility/get/{ndcid}', [EligibilityValidationListController::class, 'getSpecialityList'])->name('diagnosis.list.get'); // LIST ITEMS
     // Route::get('/eligibility/details/{elig_lis_id}', [EligibilityValidationListController::class, 'getEligibilityDetails'])->name('eligibility.details.get'); // DETAIL
-    // Route::post('/eligibility/submit-eligiblity-form', [EligibilityValidationListController::class, 'addEligiblityData']);
+    Route::post('/eligibility/submit-eligiblity-form', [EligibilityValidationListController::class, 'addEligiblityData']);
     Route::post('/eligibility/delete-record', [EligibilityValidationListController::class, 'deleteRecord']);
     Route::get('/eligibility/dropdown', [EligibilityValidationListController::class, 'DropDown']);
 
@@ -1023,7 +1023,7 @@ Route::get('/state/search/{stateid?}', [Controller::class, 'getStatesOfCountrySe
 Route::get('/states', [Controller::class, 'getStatesOfCountry'])->name('states');
 Route::get('/member', [Controller::class, 'getMember'])->name('member');
 Route::get('/provider', [Controller::class, 'getProvider']);
-Route::post('/validationlist/eligibility/submit-eligiblity-form', [Controller::class, 'addEligiblityData']);
+// Route::post('/validationlist/eligibility/submit-eligiblity-form', [Controller::class, 'addEligiblityData']);
 Route::get('/validationlist/eligibility/details/{elig_lis_id}', [Controller::class, 'getEligibilityDetails']); // DETAIL
 
 
@@ -1160,6 +1160,7 @@ Route::group(['prefix' => "drug-information/"], function () {
     Route::post('drug-price/add', [DrugDatabaseController::class, 'addDrugPrice']);
     Route::get('ndc-gpi/search', [NdcGpiController::class, 'search']);
     Route::get('ndc-gpi/details/{ndcid}', [NdcGpiController::class, 'getDetails']);
+    Route::get('ndc-gpi/drop-down', [NdcGpiController::class, 'GpiDropDown']);
 
     Route::get('ndc-gpi/drop-down', [NdcGpiController::class, 'GpiDropDown']);
 });
