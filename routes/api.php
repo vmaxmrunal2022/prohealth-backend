@@ -536,6 +536,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('rva-list/get', [RvaListController::class, 'get']);
         Route::get('rva-list/get-rva-list', [RvaListController::class, 'getRvaList']);
         Route::post('rva-list/submit', [RvaListController::class, 'submitRva']);
+        Route::post('rva-list/delete', [RvaListController::class, 'delete_rav']);
     });
 
 
