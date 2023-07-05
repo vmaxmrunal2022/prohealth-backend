@@ -145,4 +145,18 @@ class BenifitController extends Controller
 
         return $this->respondWithToken($this->token(), '', $isExist);
     }
+
+    public function get_allNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $benefitcodes = DB::table('benefit_codes') ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(BENEFIT_CODE)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
+        if ($benefitcodes) {
+            return $this->respondWithToken($this->token(), 'Datafetched Successfully', $benefitcodes);
+        } else {
+            return $this->respondWithToken($this->token(), 'something went wrong', $benefitcodes);
+        }
+    }
 }

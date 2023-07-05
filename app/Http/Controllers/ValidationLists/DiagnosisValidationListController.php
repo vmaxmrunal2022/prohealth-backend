@@ -779,6 +779,19 @@ class DiagnosisValidationListController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
+    public function getAllNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $data = DB::table('DIAGNOSIS_EXCEPTIONS as a')
+            // ->join('DIAGNOSIS_VALIDATIONS as b', 'b.DIAGNOSIS_LIST', '=', 'a.DIAGNOSIS_LIST')
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where(DB::raw('UPPER(a.DIAGNOSIS_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                $query->orWhere(DB::raw('UPPER(a.EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+             })->paginate(100);
+           
+        return $this->respondWithToken($this->token(), '', $data);
+    }
+
     /**  function will remove only limitation row */
     public function deleteLimitation(Request $request)
     {

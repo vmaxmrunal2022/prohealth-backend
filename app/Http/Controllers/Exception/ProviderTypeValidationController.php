@@ -131,7 +131,7 @@ class ProviderTypeValidationController extends Controller
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
             } else {
                 if ($validation->count() > 0) {
-                    return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, true, 200, 1);
+                    return $this->respondWithToken($this->token(), 'NDC Exception Already Exists', $validation, false, 200, 1);
                 }
                 $effectiveDate = $request->effective_date;
                 $terminationDate = $request->termination_date;
@@ -201,7 +201,6 @@ class ProviderTypeValidationController extends Controller
                 "effective_date" => ['max:10'],
                 'termination_date' => ['max:15', 'after:effective_date'],
                 'proc_code_list' => ['max:10'],
-
 
 
             ], [

@@ -23,6 +23,8 @@ class SpecialityController extends Controller
         return $this->respondWithToken($this->token(), '', $data);
     }
 
+    
+
     public function search(Request $request)
     {
         $validator = Validator::make($request->all(), [

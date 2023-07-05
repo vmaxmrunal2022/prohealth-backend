@@ -265,6 +265,19 @@ class AccumlatedController extends Controller
 
 
     }
+    public function getAllAcuumlatedBenefitsNew(Request $request){
+        $searchQuery = $request->search;
+        $existdata = DB::table('accum_bene_strategy_names')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(ACCUM_BENE_STRATEGY_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(ACCUM_BENE_STRATEGY_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
+
+        return $this->respondWithToken($this->token(), 'Successfully added', $existdata);
+
+
+    }
+
 
     public function deleteold(Request $request)
     {

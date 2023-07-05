@@ -42,6 +42,19 @@ class ServiceModifierController extends Controller
             return $this->respondWithToken($this->token(), 'data not found', $modifiers);
         }
     }
+    public function get_allNew(Request $request)
+    {
+        $searchQuery = $request->search;
+        $modifiers = $procedurecodes = DB::table('SERVICE_MODIFIERS') ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(SERVICE_MODIFIER)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
+        if ($modifiers) {
+            return $this->respondWithToken($this->token(), '', $modifiers);
+        } else {
+            return $this->respondWithToken($this->token(), 'data not found', $modifiers);
+        }
+    }
 
     public function add(Request $request)
     {

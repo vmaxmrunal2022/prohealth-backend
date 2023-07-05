@@ -278,7 +278,9 @@ class SuperProviderNetworkController extends Controller
                                 $save_audit = $this->auditMethod('IN', $record_snapshot, 'SUPER_RX_NETWORK_NAMES');
                             }             
                             $child_record = DB::table('SUPER_RX_NETWORKS')
-                                        ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))->first();
+                                                ->where(DB::raw('UPPER(super_rx_network_id)'), strtoupper($request->super_rx_network_id))
+                                                ->where(DB::raw('UPPER(rx_network_id)'), strtoupper($request->rx_network_id))
+                                                ->where('effective_date',$request->effective_date)->first();
                             if($child_record){
                                 $record_snapshot = json_encode($parent_record);
                                 $save_audit = $this->auditMethod('IN', $record_snapshot, 'SUPER_RX_NETWORKS');
