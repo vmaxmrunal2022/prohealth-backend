@@ -34,18 +34,7 @@ class BenefitListController extends Controller
 
         $ndc = DB::table('BENEFIT_LIST_NAMES')->get();
 
-        return $this->respondWithToken($this->token(), '', $ndc);
-
-    }
-
-    public function BenefitListsNew(Request $request){
-        $searchQuery = $request->search;
-        $ndc = DB::table('BENEFIT_LIST_NAMES')->when($searchQuery, function ($query) use ($searchQuery) {
-            $query->where(DB::raw('UPPER(BENEFIT_LIST_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
-            $query->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($searchQuery) . '%');
-         })->paginate(100);
-
-        return $this->respondWithToken($this->token(), '', $ndc);
+    return $this->respondWithToken($this->token(), '', $ndc);
 
     }
 

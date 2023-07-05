@@ -36,6 +36,15 @@ class ReasonsController extends Controller
             ->get();
         return $this->respondWithToken($this->token(), '', $reasoncodes);
     }
+    public function searchDropDown(Request $request)
+    {
+        $reasoncodes = DB::table('REASON_CODES')
+            ->whereRaw('LOWER(REASON_CODE) LIKE ?', ['%' . strtolower($request->search) . '%'])            
+            ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $reasoncodes);
+    }
+    
+    
 
     public function add(Request $request)
     {

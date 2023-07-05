@@ -716,17 +716,6 @@ use AuditTrait;
          return $this->respondWithToken($this->token(), '', $ndc);
 
     }
-    public function AllPhysicainListsNew(Request $request){
-        $searchQuery = $request->search;
-        $ndc = DB::table('PHYSICIAN_EXCEPTIONS')
-        ->select('physician_list','exception_name')
-        ->when($searchQuery, function ($query) use ($searchQuery) {
-            $query->where(DB::raw('UPPER(PHYSICIAN_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
-            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
-         })->paginate(100);
-         return $this->respondWithToken($this->token(), '', $ndc);
-
-    }
 
 
 
@@ -741,7 +730,7 @@ use AuditTrait;
                 ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
-        // return $this->respondWithToken($this->token(), '', $ndc);
+        return $this->respondWithToken($this->token(), '', $ndc);
     }
 
     public function getPCList($ndcid)

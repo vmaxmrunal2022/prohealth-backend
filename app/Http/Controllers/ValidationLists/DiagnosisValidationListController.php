@@ -876,4 +876,13 @@ class DiagnosisValidationListController extends Controller
             }
         }
     }
+
+    public function diagnosisCodeDropDown(Request $request)
+    {
+        $benefitcodes = DB::table('DIAGNOSIS_CODES')
+            ->whereRaw('LOWER(DIAGNOSIS_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhereRaw('LOWER(DESCRIPTION) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $benefitcodes);
+    }
 }

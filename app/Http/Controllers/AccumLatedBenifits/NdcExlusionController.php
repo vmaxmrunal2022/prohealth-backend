@@ -211,7 +211,7 @@ class NdcExlusionController extends Controller
     public function getDetails($ndcid, $ndc_exclusion_list)
     {
         $ndc = DB::table('NDC_EXCLUSION_LISTS')
-            ->select('NDC_EXCLUSION_LISTS.*', 'DRUG_MASTER.LABEL_NAME')
+            ->select('NDC_EXCLUSION_LISTS.*', 'DRUG_MASTER.LABEL_NAME', 'NDC_EXCLUSIONS.EXCLUSION_NAME')
             ->leftjoin('NDC_EXCLUSIONS', 'NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', '=', 'NDC_EXCLUSIONS.NDC_EXCLUSION_LIST')
             ->leftjoin('DRUG_MASTER', 'NDC_EXCLUSION_LISTS.NDC', '=', 'DRUG_MASTER.NDC')
             ->where('NDC_EXCLUSION_LISTS.NDC_EXCLUSION_LIST', $ndcid)

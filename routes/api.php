@@ -127,6 +127,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/reasons/delete', [ReasonsController::class, 'delete'])->name('reasons.delete'); // DELETE
         Route::get('/check-reason-exist', [ReasonsController::class, 'checkReasonExist']);
         Route::get('/reasons/all', [ReasonsController::class, 'all'])->name('reasons.get'); // SEARCH
+        Route::get('/reasons/search-drop-down', [ReasonsController::class, 'searchDropDown'])->name('reasons.get'); // SEARCH
 
 
         // PROCEDURE
@@ -952,8 +953,6 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/diagnosis/details/{ndcid}', [ValidationListsController::class, 'getNDCItemDetails'])->name('ndsc.details.get'); // DETAIL
 
 
-
-
     Route::get('/limitations', [DiagnosisController::class, 'getLimitations'])->name('diagnosis.get'); // SEARCH
 
     Route::get('/speciality/search', [SpecialityController::class, 'search'])->name('speciality.search'); // SEARCH
@@ -996,6 +995,8 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::post('/diagnosisvalidation/submit-diagnosis-validation-form', [DiagnosisValidationListController::class, 'updatePriorityDiagnosisValidation']);
 
     Route::post('/diagnosisvalidation/delete-record', [DiagnosisValidationListController::class, 'deleteRecord']); //delete limitation
+    Route::get('/diagnosisvalidation/diagnosis-code-drop-down', [DiagnosisValidationListController::class, 'diagnosisCodeDropDown']);
+
 
 
 
@@ -1027,6 +1028,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/accumulated/benifit/get/{ndcid}', [AccumlatedBenifitController::class, 'getList'])->name('accumulated.benifit.list.get'); // LIST ITEMS
     Route::get('/accumulated/benifit/details/{ndcid}', [AccumlatedBenifitController::class, 'getDetails'])->name('accumulated.benifit.details.get'); // DETAIL
     Route::post('/accumulated/benifit/add', [AccumlatedBenifitController::class, 'add'])->name('accumulated.benifit.add'); // SEARCH
+    Route::get('/accumulated/price-schedule-drop-down', [AccumlatedBenifitController::class, 'priceScheduleDropDown']);
 
 
     Route::get('/gpiExclusion/search', [GpiExclusionController::class, 'search'])->name('gpiExclusion.search'); // SEARCH

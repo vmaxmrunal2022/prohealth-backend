@@ -370,11 +370,7 @@ class PrcedureCodeListController extends Controller
     }
     public function getAllNew( Request $request )
     {
-        $searchQuery = $request->search;
-        $providerCodeList = DB::table( 'PROC_CODE_LIST_NAMES')->when($searchQuery, function ($query) use ($searchQuery) {
-            $query->where(DB::raw('UPPER(PROC_CODE_LIST_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
-            $query->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($searchQuery) . '%');
-         })->paginate(100);
+        $providerCodeList = DB::table( 'PROC_CODE_LIST_NAMES')->paginate(100);
         return $this->respondWithToken( $this->token(), '', $providerCodeList );
     }
 

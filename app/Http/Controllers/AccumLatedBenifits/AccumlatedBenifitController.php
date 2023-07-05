@@ -287,4 +287,15 @@ class AccumlatedBenifitController extends Controller
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
+
+    public function priceScheduleDropDown(Request $request)
+    {
+        $priceShedule = DB::table('PRICE_SCHEDULE')
+            ->whereRaw('LOWER(PRICE_SCHEDULE) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhere('COPAY_SCHEDULE', $request->search)
+            ->orWhere('PRICE_SCHEDULE_NAME', $request->search)
+            ->orWhere('PRICE_SCHEDULE_NAME', 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $priceShedule);
+    }
 }

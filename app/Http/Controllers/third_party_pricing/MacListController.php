@@ -15,11 +15,9 @@ class MacListController extends Controller
     public function get(Request $request)
     {
         $macList = DB::table('MAC_LIST')
-            ->where('MAC_LIST', 'like', '%' . strtoupper($request->search) . '%')
-            ->orWhere('MAC_LIST', 'like', '%' . $request->search . '%')
-            ->orWhere('MAC_DESC', 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('LOWER(MAC_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhereRaw('LOWER(MAC_DESC) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orderBy('MAC_LIST', 'asc') // Replace 'column_name' with the column you want to order by
-
             ->get();
 
         return $this->respondWithToken($this->token(), '', $macList);
@@ -374,106 +372,6 @@ class MacListController extends Controller
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', $update, true, 201);
                     }
                 }
-
-                //     $mac_list = DB::table('mac_list')
-                //     ->where('mac_list', $request->mac_list )
-                //     ->first();
-
-
-                //   $checkGPI = DB::table('MAC_TABLE')
-                //     ->where('MAC_LIST', $request->mac_list)
-                //     ->where('gpi',$request->gpi)
-                //     ->get()
-                //     ->count();
-
-                //     // dd($checkGPI);
-
-
-                //   $effect_date_check = DB::table('MAC_TABLE')
-                //     ->where('MAC_LIST', $request->mac_list)
-                //     ->where('gpi',$request->gpi)
-                //     ->where('effective_date',$request->effective_date)
-                //     ->get()
-                //     ->count();
-                //     // dd($effective_date);
-                //     // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                //     //if result 0 then add NDC_EXCEPTION_LISTS record
-
-
-                //     if($effect_date_check == 1){
-
-                //         $add_names = DB::table('mac_list')
-                //         ->where('mac_list',$request->mac_list)
-                //         ->update(
-                //             [
-                //                 'mac_desc'=>$request->mac_desc,
-                //             ]
-                //         );
-
-
-                //         $update = DB::table('MAC_TABLE' )
-                //         ->where('MAC_LIST', $request->mac_list)
-                //         ->where('gpi',$request->gpi)
-                //         ->where('effective_date',$request->effective_date) 
-                //         ->where('termination_date',$request->termination_date)      
-
-                //             ->update(
-                //                 [
-                //                     'MAC_AMOUNT'=>$request->mac_amount,
-                //                     'ALLOW_FEE'=>$request->allow_fee,
-                //                     'TERMINATION_DATE'=>$request->termination_date,
-                //                     'PRICE_SOURCE'=>$request->price_source,
-                //                     'PRICE_TYPE'=>$request->price_type,
-
-                //                 ]
-                //             );
-                //             $update = DB::table('MAC_TABLE')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
-                //             return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-
-
-
-
-                //     }else if($checkGPI == 1)
-                //     {
-
-                //         return $this->respondWithToken($this->token(), 'Record already  exists',$checkGPI);
-
-
-                //     }
-                //     else{
-                //         if ($checkGPI <= "0") {
-                //             $update = DB::table('MAC_TABLE')
-                //             ->insert([
-                //                 'MAC_LIST' =>$request->mac_list,
-                //                 'GPI'=>$request->gpi,
-                //                 'MAC_AMOUNT'=>$request->mac_amount,
-                //                 'ALLOW_FEE'=>$request->allow_fee,
-                //                 'EFFECTIVE_DATE'=>$request->effective_date,
-                //                 'TERMINATION_DATE'=>$request->termination_date,
-                //                 'PRICE_SOURCE'=>$request->price_source,
-                //                 'PRICE_TYPE'=>$request->price_type,
-                //             ]);
-
-                //             $add_names = DB::table('mac_list')
-                //             ->where('mac_list',$request->mac_list)
-                //             ->update(
-                //                 [
-                //                     'mac_desc'=>$request->mac_desc,
-
-                //                 ]
-                //             );
-
-                //         $update = DB::table('mac_list')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
-                //         return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-
-                //         } 
-
-                //     }
-
-
-
-
-
             }
         }
     }

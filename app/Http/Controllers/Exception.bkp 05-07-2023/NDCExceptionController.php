@@ -20,6 +20,7 @@ class NDCExceptionController extends Controller
 
         $createddate = date('y-m-d');
 
+
         $ndc_exceptions_lists = DB::table('NDC_EXCEPTION_LISTS')
             ->where('ndc_exception_list', $request->ndc_exception_list)
             ->first();
@@ -27,6 +28,7 @@ class NDCExceptionController extends Controller
         $ndc_exception = DB::table('NDC_EXCEPTIONS')
             ->where('ndc_exception_list', $request->ndc_exception_list)
             ->first();
+
         if ($request->has('add_new')) {
 
             $validator = Validator::make($request->all(), [
@@ -1367,42 +1369,19 @@ class NDCExceptionController extends Controller
     }
 
     public function get_Pharmacy_Lists(Request $request){
-        // dd('test');
         $ndc = DB::table('PHARMACY_EXCEPTIONS')
         ->select('PHARMACY_LIST', 'EXCEPTION_NAME')
         ->get();
- 
-      return $this->respondWithToken($this->token(), '', $ndc);
-    }
 
-    public function get_Pharmacy_ListsNew(Request $request){
-        $searchQuery = $request->search;
-        $ndc = DB::table('PHARMACY_EXCEPTIONS')
-        ->select('PHARMACY_LIST', 'EXCEPTION_NAME')
-        ->when($searchQuery, function ($query) use ($searchQuery) {
-            $query->where(DB::raw('UPPER(PHARMACY_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
-            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
-         })->paginate(100);
- 
-      return $this->respondWithToken($this->token(), '', $ndc);
+    return $this->respondWithToken($this->token(), '', $ndc);
     }
 
     public function get_Physician_Lists(Request $request){
         $ndc = DB::table('PHYSICIAN_EXCEPTIONS')
         ->select('PHYSICIAN_LIST', 'EXCEPTION_NAME')
         ->get();
-       return $this->respondWithToken($this->token(), '', $ndc);
-    }
-    public function get_Physician_ListsNew(Request $request){
-        $searchQuery = $request->search;
-        $ndc = DB::table('PHYSICIAN_EXCEPTIONS')
-        ->select('PHYSICIAN_LIST', 'EXCEPTION_NAME')
-        ->when($searchQuery, function ($query) use ($searchQuery) {
-            $query->where(DB::raw('UPPER(PHYSICIAN_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
-            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
-         })->paginate(100);
 
-       return $this->respondWithToken($this->token(), '', $ndc);
+    return $this->respondWithToken($this->token(), '', $ndc);
     }
 
 
@@ -1411,18 +1390,7 @@ class NDCExceptionController extends Controller
         ->select('DIAGNOSIS_LIST', 'EXCEPTION_NAME')
         ->get();
 
-       return $this->respondWithToken($this->token(), '', $ndc);
-    }
-    public function get_Diagnosis_ListsNew(Request $request){
-        $searchQuery = $request->search;
-        $ndc = DB::table('DIAGNOSIS_EXCEPTIONS')
-        ->select('DIAGNOSIS_LIST', 'EXCEPTION_NAME')
-        ->when($searchQuery, function ($query) use ($searchQuery) {
-            $query->where(DB::raw('UPPER(DIAGNOSIS_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
-            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
-         })->paginate(100);
-
-       return $this->respondWithToken($this->token(), '', $ndc);
+    return $this->respondWithToken($this->token(), '', $ndc);
     }
 
     

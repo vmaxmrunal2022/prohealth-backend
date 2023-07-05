@@ -374,7 +374,7 @@ class CopayStrategyController extends Controller
                 ->where('copay_strategy_id', $request->copay_strategy_id)
                 ->delete();
             if ($all_accum_bene_strategy_names) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$all_accum_bene_strategy_names,true,201);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not found', 'false');
             }

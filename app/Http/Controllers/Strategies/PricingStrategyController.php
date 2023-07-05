@@ -67,13 +67,13 @@ class PricingStrategyController extends Controller
 
     public function get_allNew(Request $request)
     {
-        
+
         $searchQuery = $request->search;
         $pricing_strategies = DB::table('PRICING_STRATEGY_NAMES')
-          ->when($searchQuery, function ($query) use ($searchQuery) {
-            $query->where(DB::raw('UPPER(PRICING_STRATEGY_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
-            $query->orWhere(DB::raw('UPPER(PRICING_STRATEGY_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
-          })->paginate(100);
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where(DB::raw('UPPER(PRICING_STRATEGY_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                $query->orWhere(DB::raw('UPPER(PRICING_STRATEGY_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            })->paginate(100);
 
         if ($pricing_strategies) {
 
@@ -149,12 +149,12 @@ class PricingStrategyController extends Controller
                     );
 
                     $parent  = DB::table('PRICING_STRATEGY_NAMES')
-                                ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))->first();
+                        ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))->first();
 
-                    if($parent){
+                    if ($parent) {
                         $record_snap = json_encode($parent);
                         $save_audit = $this->auditMethod('IN', $record_snap, 'PRICING_STRATEGY_NAMES');
-                    }        
+                    }
 
                     $accum_benfit_stat = DB::table('PRICING_STRATEGY')->insert(
                         [
@@ -172,15 +172,16 @@ class PricingStrategyController extends Controller
                             'module_exit' => $request->module_exit,
                             'price_schedule' => $request->price_schedule,
                             'mac_list' => $request->mac_list,
-                        ]);
+                        ]
+                    );
                     $child = DB::table('PRICING_STRATEGY')
                         ->where('pricing_strategy_id', $request->pricing_strategy_id)
                         ->where('EFFECTIVE_DATE', $request->effective_date)
                         ->where('PRICE_SCHEDULE', $request->price_schedule)->first();
-                    if($child){
+                    if ($child) {
                         $record_snap = json_encode($child);
-                        $save_audit = $this->auditMethod('IN', $record_snap, 'PRICING_STRATEGY'); 
-                    }        
+                        $save_audit = $this->auditMethod('IN', $record_snap, 'PRICING_STRATEGY');
+                    }
                     $val = DB::table('PRICING_STRATEGY')
                         ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
                         ->where('PRICING_STRATEGY.pricing_strategy_id', $request->pricing_strategy_id)
@@ -234,39 +235,39 @@ class PricingStrategyController extends Controller
                     $parent  = DB::table('PRICING_STRATEGY_NAMES')
                         ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))->first();
 
-                    if($parent){
+                    if ($parent) {
                         $record_snap = json_encode($parent);
                         $save_audit = $this->auditMethod('UP', $record_snap, 'PRICING_STRATEGY_NAMES');
-                    }       
+                    }
 
                     $accum_benfit_stat = DB::table('PRICING_STRATEGY')
                         ->where('pricing_strategy_id', $request->pricing_strategy_id)
                         ->where('EFFECTIVE_DATE', $request->effective_date)
                         ->where('PRICE_SCHEDULE', $request->price_schedule)
                         ->update([
-                                // 'pricing_strategy_id' => strtoupper($request->pricing_strategy_id),
-                                'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
-                                'formulary_variation_ind' => $request->formulary_variation_ind,
-                                'network_part_variation_ind' => $request->network_part_variation_ind,
-                                'claim_type_variation_ind' => $request->claim_type_variation_ind,
-                                // 'date_time_created' => $createddate,
-                                'user_id' =>  Cache::get('userId'),
-                                'date_time_modified' => date('Ymd'),
-                                'form_id' => '',
-                                'effective_date' => $request->effective_date,
-                                'module_exit' => $request->module_exit,
-                                'price_schedule' => $request->price_schedule,
-                                'mac_list' => $request->mac_list,
-                            ]);
+                            // 'pricing_strategy_id' => strtoupper($request->pricing_strategy_id),
+                            'pharm_type_variation_ind' => $request->pharm_type_variation_ind,
+                            'formulary_variation_ind' => $request->formulary_variation_ind,
+                            'network_part_variation_ind' => $request->network_part_variation_ind,
+                            'claim_type_variation_ind' => $request->claim_type_variation_ind,
+                            // 'date_time_created' => $createddate,
+                            'user_id' =>  Cache::get('userId'),
+                            'date_time_modified' => date('Ymd'),
+                            'form_id' => '',
+                            'effective_date' => $request->effective_date,
+                            'module_exit' => $request->module_exit,
+                            'price_schedule' => $request->price_schedule,
+                            'mac_list' => $request->mac_list,
+                        ]);
 
                     $child = DB::table('PRICING_STRATEGY')
-                            ->where('pricing_strategy_id', $request->pricing_strategy_id)
-                            ->where('EFFECTIVE_DATE', $request->effective_date)
-                            ->where('PRICE_SCHEDULE', $request->price_schedule)->first();
-                    if($child){
+                        ->where('pricing_strategy_id', $request->pricing_strategy_id)
+                        ->where('EFFECTIVE_DATE', $request->effective_date)
+                        ->where('PRICE_SCHEDULE', $request->price_schedule)->first();
+                    if ($child) {
                         $record_snap = json_encode($child);
-                        $save_audit = $this->auditMethod('UP', $record_snap, 'PRICING_STRATEGY'); 
-                    }     
+                        $save_audit = $this->auditMethod('UP', $record_snap, 'PRICING_STRATEGY');
+                    }
 
                     $val = DB::table('PRICING_STRATEGY')
                         ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
@@ -305,14 +306,15 @@ class PricingStrategyController extends Controller
                             'module_exit' => $request->module_exit,
                             'price_schedule' => $request->price_schedule,
                             'mac_list' => $request->mac_list,
-                        ]);
+                        ]
+                    );
                     $child = DB::table('PRICING_STRATEGY')
                         ->where('pricing_strategy_id', $request->pricing_strategy_id)
                         ->where('EFFECTIVE_DATE', $request->effective_date)
                         ->where('PRICE_SCHEDULE', $request->price_schedule)->first();
-                    if($child){
+                    if ($child) {
                         $record_snap = json_encode($child);
-                        $save_audit = $this->auditMethod('IN', $record_snap, 'PRICING_STRATEGY'); 
+                        $save_audit = $this->auditMethod('IN', $record_snap, 'PRICING_STRATEGY');
                     }
                     $val = DB::table('PRICING_STRATEGY')
                         ->join('PRICING_STRATEGY_NAMES', 'PRICING_STRATEGY.pricing_strategy_id', '=', 'PRICING_STRATEGY_NAMES.pricing_strategy_id')
@@ -392,10 +394,10 @@ class PricingStrategyController extends Controller
                 ->where('price_schedule', $request->price_schedule)
                 ->where('EFFECTIVE_DATE', date('Ymd', strtotime($request->effective_date)))
                 ->first();
-                   
+
             if ($all_pricing_strategy) {
                 $record_snap = json_encode($all_pricing_strategy);
-                $save_audit = $this->auditMethod('DE', $record_snap, 'PRICING_STRATEGY'); 
+                $save_audit = $this->auditMethod('DE', $record_snap, 'PRICING_STRATEGY');
 
                 $pricing_strategy = DB::table('PRICING_STRATEGY')
                     ->where('pricing_strategy_id', $request->pricing_strategy_id)
@@ -414,8 +416,8 @@ class PricingStrategyController extends Controller
             }
         } elseif (isset($request->pricing_strategy_id)) {
             $parent  = DB::table('PRICING_STRATEGY_NAMES')
-                        ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))->first();
-            if($parent){
+                ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))->first();
+            if ($parent) {
                 $record_snap = json_encode($parent);
                 $save_audit = $this->auditMethod('DE', $record_snap, 'PRICING_STRATEGY_NAMES');
             }
@@ -424,20 +426,20 @@ class PricingStrategyController extends Controller
                 ->delete();
 
             $childs = DB::table('PRICING_STRATEGY')
-                     ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))
-                     ->get();
-            if($childs){
-                foreach($childs as $rec){
+                ->where(DB::raw('UPPER(pricing_strategy_id)'), strtoupper($request->pricing_strategy_id))
+                ->get();
+            if ($childs) {
+                foreach ($childs as $rec) {
                     $record_snap = json_encode($rec);
-                    $save_audit = $this->auditMethod('DE', $record_snap, 'PRICING_STRATEGY'); 
-                } 
-            }     
-                
+                    $save_audit = $this->auditMethod('DE', $record_snap, 'PRICING_STRATEGY');
+                }
+            }
+
             $copay_strategy = DB::table('PRICING_STRATEGY')
                 ->where('pricing_strategy_id', $request->pricing_strategy_id)
                 ->delete();
             if ($all_accum_bene_strategy_names) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $all_accum_bene_strategy_names, true, 201);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not found', 'false');
             }
