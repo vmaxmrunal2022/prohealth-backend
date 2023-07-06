@@ -701,9 +701,12 @@ class RvaListController extends Controller
 
             $child_recs = DB::table('RVA_LIST')->where('RVA_LIST_ID', $request->rva_list_id)->get();
             if ($child_recs) {
-                foreach ($child_recs as $rec) {
-                    $record_snapshot = json_encode($rec);
-                    $save_audit = $this->auditMethod('DE', $record_snapshot, 'RVA_LIST');
+                //foreach ($child_recs as $rec) {
+                //     $record_snapshot = json_encode($rec);
+                //     $save_audit = $this->auditMethod('DE', $record_snapshot, 'RVA_LIST');
+                // }
+                for ($i = 0; $i < count($child_recs); $i++) {
+                    $save_audit = $this->auditMethod('DE', json_encode($child_recs[$i]), 'RVA_LIST');
                 }
             }
 

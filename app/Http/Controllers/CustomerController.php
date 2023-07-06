@@ -508,7 +508,7 @@ class CustomerController extends Controller
     {
         $customer = DB::table('customer')
             // ->select('CUSTOMER_ID', 'CUSTOMER_NAME')
-            ->where(DB::raw('UPPER(CUSTOMER_ID)'), 'like', '%' . strtoupper($customerid) . '%')
+            ->where(DB::raw('UPPER(CUSTOMER_ID)'), strtoupper($customerid))
             ->first();
         return $this->respondWithToken($this->token(), '', $customer);
     }
@@ -521,7 +521,7 @@ class CustomerController extends Controller
             ->first();
         //save audit
         $record_snapshot = json_encode($customer);
-        $save_audit = $this->auditMethod('DE', $record_snapshot, 'CUSTOMER');
+        $save_audit = $this->auditMethod('DE', $record_snapshot, 'PH_CUSTOMER');
         $delete_customer = DB::table('customer')
             ->where('customer_id', $request->customer_id)
             ->delete();

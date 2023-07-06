@@ -42,7 +42,8 @@ class AuditTrailController extends Controller
             $table_name = 'CUSTOMER';
         }
         $results = DB::table('PHIDBA.FE_RECORD_LOG')
-            ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 30) . "%'")
+            // ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 100) . "%'")
+            ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 80) . "%'")
             ->where(DB::raw('UPPER(table_name)'), strtoupper($request->table_name))
             ->orderBy(
                 'DATE_CREATED',
@@ -73,15 +74,9 @@ class AuditTrailController extends Controller
         $prov_type_proc_assoc_id = isset(json_decode($request->record_snapshot)->prov_type_proc_assoc_id)  ? json_decode($request->record_snapshot)->prov_type_proc_assoc_id : null;
 
 
-        // return $table_name;
         $record = DB::table($table_name)
             ->when($customer_id, function ($query) use ($customer_id) {
-                return $query->where('customer_id', 'like', '%' . $customer_id . '%');
-            })
-            ->when($customer_id, function ($query) use ($client_id, $customer_id) {
-                $result =  $query->where('customer_id', 'like', '%' . $customer_id . '%');
-                // ->where('client_id', 'like', '%' . $client_id . '%');
-                return $result;
+                return $query->where('customer_id', $customer_id);
             })
             ->when($client_group_id, function ($query) use ($client_group_id, $customer_id, $client_id) {
                 $result =  $query->where('client_group_id', 'like', '%' . $client_group_id . '%');
@@ -94,7 +89,7 @@ class AuditTrailController extends Controller
                 $customer_id,
                 $client_id,
                 $client_group_id,
-                $member_id
+                $member_id,
             ) {
                 $result = $query->where('customer_id', 'like', '%' . $customer_id . '%');
                 $query->where('client_id', 'like', '%' . $client_id . '%');
@@ -140,7 +135,15 @@ class AuditTrailController extends Controller
                 return $query->where('prov_type_proc_assoc_id', 'like', '%' . $prov_type_proc_assoc_id . '%');
             })
             ->get();
+
         // return $results;
+        // return count($results) > 1 ? "greater than 1" : "0";
+
+
+
+
+        // return $record;
+
 
         $old_column_arr = [];
         $old_value_arr = [];
@@ -149,29 +152,30 @@ class AuditTrailController extends Controller
             $arr2 = $key;
             $value = $val;
             array_push($old_column_arr, $arr2);
-            // array_push($old_value_arr, $value);
+            array_push($old_value_arr, $value);
         }
-        if ($request->record_action != 'DE') {
-            $old_value_arr = count($results) > 1 ? json_decode($results[1]->record_snapshot) : null;
-            $new_column_arr = [];
-            $new_value_arr = [];
-            foreach (json_decode($results[0]->record_snapshot) as $key => $val) {
-                $arr2 = $key;
-                $value = $val;
-                array_push($new_column_arr, $arr2);
-                array_push($new_value_arr, $value);
-            }
-        } else {
-            $old_value_arr = count($results) > 1 ? json_decode($results[0]->record_snapshot) : null;
-            $new_column_arr = [];
-            $new_value_arr = [];
-            foreach (json_decode($results[0]->record_snapshot) as $key => $val) {
-                $arr2 = $key;
-                $value = $val;
-                array_push($new_column_arr, $arr2);
-                array_push($new_value_arr, $value);
-            }
-        }
+
+        // if ($request->record_action != 'DE') {
+        //     $old_value_arr = count($results) > 1 ? json_decode($results[1]->record_snapshot) : null;
+        //     $new_column_arr = [];
+        //     $new_value_arr = [];
+        //     foreach (json_decode($results[0]->record_snapshot) as $key => $val) {
+        //         $arr2 = $key;
+        //         $value = $val;
+        //         array_push($new_column_arr, $arr2);
+        //         array_push($new_value_arr, $value);
+        //     }
+        // } else {
+        //     $old_value_arr = count($results) > 1 ? json_decode($results[0]->record_snapshot) : null;
+        //     $new_column_arr = [];
+        //     $new_value_arr = [];
+        //     foreach (json_decode($results[0]->record_snapshot) as $key => $val) {
+        //         $arr2 = $key;
+        //         $value = $val;
+        //         array_push($new_column_arr, $arr2);
+        //         array_push($new_value_arr, $value);
+        //     }
+        // }
 
         /***************************** */
 
@@ -208,8 +212,15 @@ class AuditTrailController extends Controller
 
         // return $column_arr;
         // $data = ['user_record' => $user_record[0], 'record_snapshot' => $current_record, 'old_record' => $old_value_arr, 'columns' => $old_column_arr];
+        // $data = [
+        //     'user_record' => $user_record[0], 'record_snapshot' => $record[0], 'old_record' => $old_value_arr,
+        //     'columns' => $old_column_arr
+        //     // 'columns' => $column_arr
+        // ];
         $data = [
-            'user_record' => $user_record[0], 'record_snapshot' => $record[0], 'old_record' => $old_value_arr,
+            'user_record' => $user_record[0],
+            'record_snapshot' => $record[0],
+            'old_record' => $old_value_arr,
             'columns' => $old_column_arr
             // 'columns' => $column_arr
         ];

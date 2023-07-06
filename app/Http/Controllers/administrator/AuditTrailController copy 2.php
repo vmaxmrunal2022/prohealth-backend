@@ -30,16 +30,19 @@ class AuditTrailController extends Controller
     public function getUserAllRecord(Request $request)
     {
         /***************************** */
+
+        $table_name = $request->table_name;
+
         $user_record = DB::table('FE_RECORD_LOG')
             ->where('user_id', $request->user_id)
-            ->where('table_name', $request->table_name)
+            ->where('table_name', $table_name)
             ->orderBy('date_created', 'desc')
             ->where('date_created', date('Ymd', strtotime($request->date_created)))
             ->get();
 
         $results = DB::table('PHIDBA.FE_RECORD_LOG')
             ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 30) . "%'")
-            ->where(DB::raw('UPPER(table_name)'), strtoupper($request->table_name))
+            ->where(DB::raw('UPPER(table_name)'), strtoupper($table_name))
             ->orderBy(
                 'DATE_CREATED',
                 'DESC'
@@ -48,8 +51,7 @@ class AuditTrailController extends Controller
             ->take(2000)
             ->get();
         return $results;
-        exit();
-        $table_name = $request->table_name;
+
         $customer_id = isset(json_decode($request->record_snapshot)->customer_id) ? json_decode($request->record_snapshot)->customer_id : null;
         $client_id = isset(json_decode($request->record_snapshot)->client_id)  ? json_decode($request->record_snapshot)->client_id : null;
         $client_group_id = isset(json_decode($request->record_snapshot)->client_group_id)  ? json_decode($request->record_snapshot)->client_group_id : null;
