@@ -14,7 +14,7 @@ class UserAccessControl extends Controller
             ['47' => 'Accumulated benfit'],
             ['42' => 'Audit trail maintenance'],
             ['100' => 'Benefit codes'],
-            ['111' => 'Benefit derivation exclusion listv'],
+            ['111' => 'Benefit derivation exclusion list'],
             ['110' => 'benefit exception list'],
             ['82' => 'Billing codes'],
             ['22' => 'Billing schedule'],
