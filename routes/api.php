@@ -1222,6 +1222,7 @@ Route::group(['prefix' => 'administrator/'], function () {
     //User Defination
     Route::get('user-defination/get', [UserDefinationController::class, 'get']);
     Route::get('user-defination/get-group-data', [UserDefinationController::class, 'getGroupData']);
+    Route::get('user-defination/get-group/{group_id}', [UserDefinationController::class, 'getGroupAccess']);
     Route::get('user-defination/get-security-options', [UserDefinationController::class, 'getSecurityOptions']);
     Route::get('user-defination/validate-group', [UserDefinationController::class, 'validateGroup']);
     Route::post('user-defination/submit', [UserDefinationController::class, 'submitFormData']);
