@@ -315,6 +315,7 @@ class UserDefinationController extends Controller
 
     public function submitFormData(Request $request)
     {
+        // return $request->all();
         if ($request->new) {
             $validator = Validator::make($request->all(), [
                 'user_id' => ['required', Rule::unique('fe_users')->where(function ($q) {
@@ -441,7 +442,7 @@ class UserDefinationController extends Controller
                 $record_snapshot = json_encode($user_data);
                 $save_audit =  $this->auditMethod('UP', $record_snapshot, 'FE_USERS');
                 if ($addUser) {
-                    return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addUser);
+                    return $this->respondWithToken($this->token(), 'Added Successfully !!!', $user_data);
                 }
             }
         } else {
@@ -468,6 +469,28 @@ class UserDefinationController extends Controller
                     ->where('user_id', $request->user_id)
                     ->first();
                 //if group
+
+                // if (!empty($request->group_id)) {
+                //     $group = DB::table('FE_USER_GROUPS')
+                //         ->where(
+                //             DB::raw('LOWER(group_id)'),
+                //             strtolower($request->group_id)
+                //         )
+                //         ->first();
+
+                //     if ($group) {
+                //         $user_profile =
+                //             str_split($group->user_profile);
+                //     }
+                // } else {
+                //     $user_data = DB::table('fe_users')
+                //         ->where('user_id', $request->user_id)
+                //         ->first();
+                //     $user_profile = str_split($user_data->user_profile);
+                //     // $user_profile = [];
+                // }
+                $coun = "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDADDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDAAAAAAAAADDDDDDDDDDDDDDDDDDDDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+                $A = [];
                 if (!empty($request->group_id)) {
                     $group = DB::table('FE_USER_GROUPS')
                         ->where(
@@ -475,17 +498,19 @@ class UserDefinationController extends Controller
                             strtolower($request->group_id)
                         )
                         ->first();
-
                     if ($group) {
-                        $user_profile =
-                            str_split($group->user_profile);
+                        $A = str_split($group->user_profile);
                     }
                 } else {
-                    $user_data = DB::table('fe_users')
-                        ->where('user_id', $request->user_id)
-                        ->first();
-                    $user_profile = str_split($user_data->user_profile);
+                    // $A = [];
+                    $key1 = [];
+                    foreach (str_split($coun) as $key => $val) {
+                        array_push($A, 'A');
+                        array_push($key1, $key);
+                    }
                 }
+                $user_profile = str_split(implode('', $A));
+
                 //A->None
                 $a = [];
                 foreach ($request->A as $key => $val) {
@@ -548,10 +573,13 @@ class UserDefinationController extends Controller
                         'restrict_security_flag' => $request->restrict_security_flag,
                         'user_profile' => $updated_user_profile,
                     ]);
-                $record_snapshot = json_encode($user_data);
+                $user_data_update = DB::table('fe_users')
+                    ->where('user_id', $request->user_id)
+                    ->first();
+                $record_snapshot = json_encode($user_data_update);
                 $save_audit =  $this->auditMethod('UP', $record_snapshot, 'FE_USERS');
                 if ($updateUser) {
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $user_data);
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $user_data_update);
                 }
             }
         }
