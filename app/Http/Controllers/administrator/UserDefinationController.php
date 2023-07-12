@@ -470,27 +470,6 @@ class UserDefinationController extends Controller
                     ->first();
                 //if group
 
-                // if (!empty($request->group_id)) {
-                //     $group = DB::table('FE_USER_GROUPS')
-                //         ->where(
-                //             DB::raw('LOWER(group_id)'),
-                //             strtolower($request->group_id)
-                //         )
-                //         ->first();
-
-                //     if ($group) {
-                //         $user_profile =
-                //             str_split($group->user_profile);
-                //     }
-                // } else {
-                //     $user_data = DB::table('fe_users')
-                //         ->where('user_id', $request->user_id)
-                //         ->first();
-                //     $user_profile = str_split($user_data->user_profile);
-                //     // $user_profile = [];
-                // }
-                $coun = "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDADDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDAAAAAAAAADDDDDDDDDDDDDDDDDDDDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-                $A = [];
                 if (!empty($request->group_id)) {
                     $group = DB::table('FE_USER_GROUPS')
                         ->where(
@@ -498,19 +477,17 @@ class UserDefinationController extends Controller
                             strtolower($request->group_id)
                         )
                         ->first();
+
                     if ($group) {
-                        $A = str_split($group->user_profile);
+                        $user_profile = str_split($group->user_profile);
                     }
                 } else {
-                    // $A = [];
-                    $key1 = [];
-                    foreach (str_split($coun) as $key => $val) {
-                        array_push($A, 'A');
-                        array_push($key1, $key);
-                    }
+                    $user_data = DB::table('fe_users')
+                        ->where('user_id', $request->user_id)
+                        ->first();
+                    $user_profile = str_split($user_data->user_profile);
+                    // $user_profile = [];
                 }
-                $user_profile = str_split(implode('', $A));
-
                 //A->None
                 $a = [];
                 foreach ($request->A as $key => $val) {
