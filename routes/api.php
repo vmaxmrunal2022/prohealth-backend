@@ -1235,6 +1235,8 @@ Route::group(['prefix' => 'administrator/'], function () {
     Route::get('user-defination/get-group-all-access', [UserDefinationController::class, 'getGroupAllAccess']);
     Route::get('user-defination/get-group-access-details', [UserDefinationController::class, 'getGroupAccessDetails']);
     Route::get('user-defination/get-profile/{user_id}', [UserDefinationController::class, 'getUserProfile']);
+    Route::post("user-definition/delete-user", [UserDefinationController::class, 'deleteUser']);
+    Route::post("user-definition/delete-group", [UserDefinationController::class, 'deleteGroup']);
 
     //Search Audit Trail
     Route::get('search-audit-trial/get-tables', [AuditTrailController::class, 'getTables'])->name('getAllTables');

@@ -708,11 +708,11 @@ class UserDefinationController extends Controller
                     ]);
 
                 $get_add_fe_group = DB::table('FE_USER_GROUPS')
-                    ->where('group_id', $request->group_id)
+                    ->whereRaw('LOWER(group_id) = ?', [strtolower($request->group_id)])
                     ->first();
                 $record_snap_group = json_encode($get_add_fe_group);
                 $save_audit_group = $this->auditMethod('IN', $record_snap_group, 'FE_USER_GROUPS');
-                return $this->respondWithToken($this->token(), 'Added Successfully!', $add_fe_group);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_fe_group);
             }
         } else {
             $user_data = DB::table('FE_USER_GROUPS')
@@ -783,12 +783,12 @@ class UserDefinationController extends Controller
                     ]);
 
 
-                $get_update_fe_group = DB::table('FE_USER_GROUPS')
-                    ->where(DB::raw('UPPER(group_id)'), strtoupper($request->group_id))
+                $get_add_fe_group = DB::table('FE_USER_GROUPS')
+                    ->whereRaw('LOWER(group_id) = ?', [strtolower($request->group_id)])
                     ->first();
-                $record_snap_group = json_encode($get_update_fe_group);
-                $save_audit_group = $this->auditMethod('UP', $record_snap_group, 'FE_USER_GROUPS');
-                return $this->respondWithToken($this->token(), 'Updated Successfully!', $update_fe_group);
+                $record_snap_group = json_encode($get_add_fe_group);
+                $save_audit_group = $this->auditMethod('IN', $record_snap_group, 'FE_USER_GROUPS');
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $get_add_fe_group);
             }
         }
     }
@@ -856,5 +856,31 @@ class UserDefinationController extends Controller
         } else {
             return $this->respondWithToken($this->token(), 'No Group Found', '', false);
         }
+    }
+
+    public function deleteUser(Request $request)
+    {
+        $record = DB::table('fe_users')
+            ->whereRaw('LOWER(user_id) = ?', [strtolower($request->user_id)])
+            ->first();
+        $save_audit = $this->auditMethod('DE', json_encode($record), 'FE_USERS');
+        $record = DB::table('fe_users')
+            ->whereRaw('LOWER(user_id) = ?', [strtolower($request->user_id)])
+            ->delete();
+
+        return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $record);
+    }
+
+    public function deleteGroup(Request $request)
+    {
+        $record = DB::table('FE_USER_GROUPS')
+            ->whereRaw('LOWER(group_id) = ?', [strtolower($request->group_id)])
+            ->first();
+        $save_audit = $this->auditMethod('DE', json_encode($record), 'FE_USER_GROUPS');
+        $record = DB::table('FE_USER_GROUPS')
+            ->whereRaw('LOWER(group_id) = ?', [strtolower($request->group_id)])
+            ->delete();
+
+        return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $record);
     }
 }
