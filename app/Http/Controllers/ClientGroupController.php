@@ -17,25 +17,18 @@ class ClientGroupController extends Controller
 
     public function add(Request $request)
     {
-        $client_Data = DB::table('Client')
-            ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
+        $customer_data = DB::table('CUSTOMER')
+            ->where(DB::raw('UPPER(CUSTOMER_ID)'), strtoupper($request->customer_id))
             ->first();
-        $errorMsg = ["Client group effective date must be greater than client effective date"];
-        // if ($client_Data && (date('Y-m-d', strtotime($request->group_effective_date))) < (date('Y-m-d', strtotime($client_Data->effective_date)))) {
-        //     return $this->respondWithToken(
-        //         $this->token(),
-        //         [$errorMsg],
-        //         '',
-        //         false
-        //     );
-        // } else {
-        //     return $this->respondWithToken(
-        //         $this->token(),
-        //         [$errorMsg],
-        //         '',
-        //         false
-        //     );
-        // }
+        $errorMsg = ["Group effective date must be greater than customer effective date"];
+        if ((date('Y-m-d', strtotime($request->group_effective_date))) < (date('Y-m-d', strtotime($customer_data->effective_date)))) {
+            return $this->respondWithToken(
+                $this->token(),
+                [$errorMsg],
+                '',
+                false
+            );
+        }
 
         $createddate = date('y-m-d');
         if ($request->add_new) {
@@ -367,6 +360,7 @@ class ClientGroupController extends Controller
 
     public function deleteRecord(Request $request)
     {
+        // return $request->all();
         $client_group = DB::table('CLIENT_GROUP')
             ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
             ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
@@ -380,7 +374,7 @@ class ClientGroupController extends Controller
             ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
             ->where(DB::raw('UPPER(client_group_id)'), strtoupper($request->client_group_id))
             ->delete();
-
+// return $client_group;
         $updated = DB::table('CLIENT_GROUP')
             ->where(DB::raw('UPPER(customer_id)'), 'like', '%' . strtoupper($request->customer_id) . '%')
             ->where(DB::raw('UPPER(client_id)'), 'like', '%' . strtoupper($request->client_id) . '%')

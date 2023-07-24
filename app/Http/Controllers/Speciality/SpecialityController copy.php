@@ -19,7 +19,7 @@ class SpecialityController extends Controller
         $data = DB::table('SPECIALTY_EXCEPTIONS')
             // ->join('SPECIALTY_EXCEPTIONS', 'SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', '=', 'SPECIALTY_VALIDATIONS.SPECIALTY_LIST')
             ->select('SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', 'SPECIALTY_EXCEPTIONS.EXCEPTION_NAME')
-            ->get();
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $data);
     }
 

@@ -581,11 +581,18 @@ class SuperProviderNetworkController extends Controller
         //     ->distinct()
         //     ->get();
 
-        $ndc = DB::table('SUPER_RX_NETWORK_NAMES')
+        if($request->search == 'undefined'){
+            $ndc = DB::table('SUPER_RX_NETWORK_NAMES')
+            ->get();
+        }else{
+            $ndc = DB::table('SUPER_RX_NETWORK_NAMES')
             // ->join('SUPER_RX_NETWORKS', 'SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', '=', 'SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
             ->where(DB::raw('UPPER(SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID)'), 'like', '%' . strtoupper($request->search) . '%')
             ->distinct()
             ->get();
+        }
+
+      
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -683,7 +690,7 @@ class SuperProviderNetworkController extends Controller
                                         ->delete();
 
             if($exception_delete){
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$exception_delete,true,201);
             }else{
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

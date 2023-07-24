@@ -15,21 +15,20 @@ class RvaListController extends Controller
 
     public function get(Request $request)
     {
-
         $rvaNames = DB::table('rva_names')
             ->whereRaw('LOWER(RVA_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->get();
 
         return $this->respondWithToken($this->token(), '', $rvaNames);
     }
-    
+
 
     public function RvaListDropdown(Request $request)
     {
         // return "hi";
         $rvaNames = DB::table('rva_names')
-
-            ->paginate(100);
+        ->whereRaw('LOWER(RVA_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+        ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $rvaNames);
     }
@@ -49,7 +48,6 @@ class RvaListController extends Controller
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $rvaLists);
-
         } elseif (isset($request->rva_list_id) && isset($request->effective_date)) {
 
             $rvaLists = DB::table('rva_list')
@@ -63,11 +61,7 @@ class RvaListController extends Controller
                 ->first();
 
             return $this->respondWithToken($this->token(), '', $rvaLists);
-
         }
-
-
-
     }
 
 
@@ -217,11 +211,7 @@ class RvaListController extends Controller
                     ]);
                 $add = DB::table('PROCEDURE_UCR_LIST')->where('procedure_ucr_id', 'like', '%' . $request->procedure_ucr_id . '%')->first();
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
-
             }
-
-
-
         } else if ($request->add_new == 0) {
 
             $validator = Validator::make($request->all(), [
@@ -296,7 +286,6 @@ class RvaListController extends Controller
                     } else {
                         return $this->respondWithToken($this->token(), [["Record Not found to update"]], '', 'false');
                     }
-
                 } elseif ($request->update_new == 1) {
                     $checkGPI = DB::table('PROCEDURE_UCR_LIST')
                         ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
@@ -348,108 +337,7 @@ class RvaListController extends Controller
                         return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
                     }
                 }
-
-                // $procedure_ucr_names = DB::table('procedure_ucr_names')
-                // ->where('procedure_ucr_id', $request->procedure_ucr_id )
-                // ->first();
-
-
-                // $checkGPI = DB::table('PROCEDURE_UCR_LIST')
-                //     ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
-                //     ->where('PROCEDURE_CODE',$request->procedure_code)
-                //     ->get()
-                //     ->count();
-
-                //     // dd($checkGPI);
-
-
-                // $effect_date_check = DB::table('PROCEDURE_UCR_LIST')
-                // ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
-                // ->where('PROCEDURE_CODE',$request->procedure_code)
-                // ->where('EFFECTIVE_DATE',$request->effective_date)
-                // ->where('TERMINATION_DATE',$request->termination_date)
-
-                //     ->get()
-                //     ->count();
-                //     // dd($effective_date);
-                //     // if result >=1 then update NDC_EXCEPTION_LISTS table record
-                //     //if result 0 then add NDC_EXCEPTION_LISTS record
-
-
-                // if($effect_date_check == 1){
-
-                //     $add_names = DB::table('procedure_ucr_names')
-                //     ->where('procedure_ucr_id',$request->procedure_ucr_id)
-                //     ->update(
-                //         [
-                //             'description'=>$request->description,
-
-                //         ]
-                //     );
-
-
-                //     $update = DB::table('PROCEDURE_UCR_LIST' )
-                //     ->where('PROCEDURE_UCR_ID', $request->procedure_ucr_id)
-                //     ->where('PROCEDURE_CODE',$request->procedure_code)
-                //     ->where('EFFECTIVE_DATE',$request->effective_date)    
-
-                //     ->update([
-                //         // 'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
-                //         // 'procedure_code' => $request->procedure_code,
-                //         'effective_date' => $request->effective_date,
-                //         'termination_date' => $request->termination_date,
-                //         'unit_value' => $request->unit_value,
-                //         'UCR_CURRENCY' => $request->ucr_currency,
-                //     ]);
-                //     $update = DB::table('PROCEDURE_UCR_LIST')->where('procedure_ucr_id', 'like', '%' . $request->procedure_ucr_id . '%')->first();
-                //     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-
-
-
-
-                // }else if($checkGPI == 1)
-                // {
-
-                //     return $this->respondWithToken($this->token(), 'Record already  exists',$checkGPI);
-
-
-                // }
-                // else{
-                //     if ($checkGPI <= "0") {
-                //         $update = DB::table('PROCEDURE_UCR_LIST')
-                //         ->insert([
-                //             'PROCEDURE_UCR_ID' => $request->procedure_ucr_id,
-                //             'procedure_code'   => $request->procedure_code,
-                //             'effective_date'   => $request->effective_date,
-                //             'termination_date' => $request->termination_date,
-                //             'unit_value'       => $request->unit_value,
-                //             'UCR_CURRENCY'     => $request->ucr_currency,
-                //         ]);
-
-
-                //         $add_names = DB::table('procedure_ucr_names')
-                //         ->where('procedure_ucr_id',$request->procedure_ucr_id)
-                //         ->update(
-                //             [
-                //                 'description'=>$request->description,
-
-                //             ]
-                //         );
-
-                //     $update = DB::table('procedure_ucr_names')->where('procedure_ucr_id', 'like', '%' . $request->procedure_ucr_id . '%')->first();
-                //     return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
-
-                //     } 
-
-                // }
-
-
-
-
-
             }
-
-
         }
     }
 
@@ -475,8 +363,8 @@ class RvaListController extends Controller
                 'termination_date' => ['required', 'after:effective_date'],
 
             ], [
-                    'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
-                ]);
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
+            ]);
 
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -515,9 +403,9 @@ class RvaListController extends Controller
                     'FORM_ID' => $request->form_id,
                 ]);
             $child_rec =    DB::table('RVA_LIST')->where('RVA_LIST_ID', $request->rva_list_id)->where('EFFECTIVE_DATE', $effective_date)->first();
-            if($child_rec){
+            if ($child_rec) {
                 $record_snapshot = json_encode($child_rec);
-                $save_audit = $this->auditMethod('IN', $record_snapshot, 'RVA_LIST'); 
+                $save_audit = $this->auditMethod('IN', $record_snapshot, 'RVA_LIST');
             }
 
             $add1 = DB::table('RVA_NAMES')
@@ -529,10 +417,10 @@ class RvaListController extends Controller
                 ]);
 
             $parent_rec = DB::table('RVA_NAMES')->where('RVA_LIST_ID', $request->rva_list_id)->first();
-            if($parent_rec){
+            if ($parent_rec) {
                 $record_snapshot = json_encode($parent_rec);
                 $save_audit = $this->auditMethod('IN', $record_snapshot, 'RVA_NAMES');
-            }    
+            }
 
             // $add = DB::table('mac_table')->where('mac_list', 'like', '%' . $request->mac_list . '%')->first();
             return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
@@ -548,8 +436,8 @@ class RvaListController extends Controller
                 'termination_date' => ['required', 'after:effective_date'],
 
             ], [
-                    'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
-                ]);
+                'termination_date.after' => 'Effective Date cannot be greater or equal to Termination date'
+            ]);
 
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -564,24 +452,9 @@ class RvaListController extends Controller
 
                 if ($checkGPI) {
 
-                    $effectiveDate=$request->effective_date;
-                    $terminationDate=$request->termination_date;
-                    // $overlapExists = DB::table('RVA_LIST')
-                    // ->where('RVA_LIST_ID', $request->rva_list_id)
-                    // // ->where('RVA_VALUE', $request->rva_value)
-                    // ->where('EFFECTIVE_DATE','!=',$request->effective_date)
-                    // ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                    //     $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                    //         ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                    //         ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                    //             $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                    //                 ->where('TERMINATION_DATE', '>=', $terminationDate);
-                    //         });
-                    // })
-                    // ->exists();
-                    // if ($overlapExists) {
-                    //     return $this->respondWithToken($this->token(), [["For Same RVA Value, dates cannot overlap."]], '', 'false');
-                    // }
+                    $effectiveDate = $request->effective_date;
+                    $terminationDate = $request->termination_date;
+
 
 
                     $updatecode = DB::table('RVA_LIST')
@@ -598,10 +471,10 @@ class RvaListController extends Controller
                             ]
                         );
                     $child_rec =    DB::table('RVA_LIST')->where('RVA_LIST_ID', $request->rva_list_id)->where('EFFECTIVE_DATE', $effective_date)->first();
-                    if($child_rec){
+                    if ($child_rec) {
                         $record_snapshot = json_encode($child_rec);
-                        $save_audit = $this->auditMethod('UP', $record_snapshot, 'RVA_LIST'); 
-                    }    
+                        $save_audit = $this->auditMethod('UP', $record_snapshot, 'RVA_LIST');
+                    }
                     $update1 = DB::table('RVA_NAMES')->where('RVA_LIST_ID', $request->rva_list_id)
                         ->update([
                             // 'RVA_LIST_ID' => strtoupper($request->rva_list_id),
@@ -610,16 +483,15 @@ class RvaListController extends Controller
                             'FORM_ID' => $request->form_id,
                         ]);
                     $parent_rec = DB::table('RVA_NAMES')->where('RVA_LIST_ID', $request->rva_list_id)->first();
-                    if($parent_rec){
+                    if ($parent_rec) {
                         $record_snapshot = json_encode($parent_rec);
                         $save_audit = $this->auditMethod('UP', $record_snapshot, 'RVA_NAMES');
-                    }      
+                    }
 
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updatecode);
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $updatecode, true, 201);
                 } else {
                     return $this->respondWithToken($this->token(), [["Record Not found to update"]], '', 'false');
                 }
-
             } elseif ($request->update_new == 1) {
                 $checkGPI = DB::table('RVA_LIST')
                     ->where('RVA_LIST_ID', $request->rva_list_id)
@@ -630,19 +502,19 @@ class RvaListController extends Controller
                 if (count($checkGPI) >= 1) {
                     return $this->respondWithToken($this->token(), [["Effective Date  already exists"]], '', 'false');
                 } else {
-                    $effectiveDate=$request->effective_date;
-                    $terminationDate=$request->termination_date;
+                    $effectiveDate = $request->effective_date;
+                    $terminationDate = $request->termination_date;
                     $overlapExists = DB::table('RVA_LIST')
-                    ->where('RVA_LIST_ID', $request->rva_list_id)
-                    // ->where('RVA_VALUE', $request->rva_value)
-                    ->where(function ($query) use ($effectiveDate, $terminationDate) {
-                        $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
-                            ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
-                            ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
-                                $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
-                                    ->where('TERMINATION_DATE', '>=', $terminationDate);
-                            });
-                    }) ->exists();
+                        ->where('RVA_LIST_ID', $request->rva_list_id)
+                        // ->where('RVA_VALUE', $request->rva_value)
+                        ->where(function ($query) use ($effectiveDate, $terminationDate) {
+                            $query->whereBetween('EFFECTIVE_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhereBetween('TERMINATION_DATE', [$effectiveDate, $terminationDate])
+                                ->orWhere(function ($query) use ($effectiveDate, $terminationDate) {
+                                    $query->where('EFFECTIVE_DATE', '<=', $effectiveDate)
+                                        ->where('TERMINATION_DATE', '>=', $terminationDate);
+                                });
+                        })->exists();
                     if ($overlapExists) {
                         return $this->respondWithToken($this->token(), [["For Same RVA Value , dates cannot overlap."]], '', 'false');
                     }
@@ -663,11 +535,9 @@ class RvaListController extends Controller
                             'USER_ID' => $request->user_id,
                             'FORM_ID' => $request->form_id,
                         ]);
-                    return $this->respondWithToken($this->token(), 'Record Added Successfully', '');
-
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update1, true, 201);
                 }
             }
-
         }
     }
 
@@ -678,33 +548,33 @@ class RvaListController extends Controller
         if (isset($request->rva_list_id) && isset($request->effective_date)) {
 
             $child_rec =    DB::table('RVA_LIST')->where('RVA_LIST_ID', $request->rva_list_id)
-                           ->where('EFFECTIVE_DATE', $request->effective_date)->first();
-            if($child_rec){
+                ->where('EFFECTIVE_DATE', $request->effective_date)->first();
+            if ($child_rec) {
                 $record_snapshot = json_encode($child_rec);
-                $save_audit = $this->auditMethod('DE', $record_snapshot, 'RVA_LIST'); 
-            } 
+                $save_audit = $this->auditMethod('DE', $record_snapshot, 'RVA_LIST');
+            }
 
             $all_exceptions_lists = DB::table('RVA_LIST')
                 ->where('RVA_LIST_ID', $request->rva_list_id)
                 ->where('EFFECTIVE_DATE', $request->effective_date)
                 ->delete();
 
-                  
+
 
             if ($all_exceptions_lists) {
 
                 $val = DB::table('RVA_LIST')
-                ->where('RVA_LIST_ID', $request->rva_list_id)
-                ->count();
+                    ->where('RVA_LIST_ID', $request->rva_list_id)
+                    ->count();
 
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$val);
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $val);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         } else if (isset($request->rva_list_id)) {
 
             $parent_rec = DB::table('RVA_NAMES')->where('RVA_LIST_ID', $request->rva_list_id)->first();
-            if($parent_rec){
+            if ($parent_rec) {
                 $record_snapshot = json_encode($parent_rec);
                 $save_audit = $this->auditMethod('DE', $record_snapshot, 'RVA_NAMES');
             }
@@ -715,12 +585,12 @@ class RvaListController extends Controller
 
 
             $child_recs = DB::table('RVA_LIST')->where('RVA_LIST_ID', $request->rva_list_id)->get();
-            if($child_recs){
-                foreach($child_recs as $rec){
+            if ($child_recs) {
+                foreach ($child_recs as $rec) {
                     $record_snapshot = json_encode($rec);
                     $save_audit = $this->auditMethod('DE', $record_snapshot, 'RVA_LIST');
                 }
-            }    
+            }
 
             $all_exceptions_lists = DB::table('RVA_LIST')
                 ->where('RVA_LIST_ID', $request->rva_list_id)
@@ -728,7 +598,7 @@ class RvaListController extends Controller
                 ->delete();
 
             if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $exception_delete, true, 201);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

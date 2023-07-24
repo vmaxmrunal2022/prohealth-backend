@@ -14,11 +14,17 @@ class ChainController extends Controller
     use AuditTrait;
     public function search(Request $request)
     {
-        $ndc = DB::table('PHARMACY_CHAIN')
+        // return $request->search;
+        if($request->search == 'undefined'){
+            $ndc = DB::table('PHARMACY_CHAIN')->get();
+        }else{
+            $ndc = DB::table('PHARMACY_CHAIN')
                 ->where('PHARMACY_CHAIN', 'like', '%' .strtoupper($request->search). '%')
                 ->orWhere('PHARMACY_CHAIN_NAME', 'like', '%' .strtoupper($request->search). '%')
                 ->orderBy('PHARMACY_CHAIN', 'asc')
                 ->get();
+        }
+        
 
          return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -65,7 +71,7 @@ class ChainController extends Controller
                 ->first();
 
                 if($recordcheck){
-                    return $this->respondWithToken($this->token(), 'Pharmacy Chain Id Already Exists', $recordcheck);
+                    return $this->respondWithToken($this->token(), [['Pharmacy Chain Id Already Exists']], $recordcheck,false);
 
 
                 }

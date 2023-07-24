@@ -16,12 +16,12 @@ class BenifitController extends Controller
     public function get(Request $request)
     {
         // dd($request->all());
-        $validator = Validator::make($request->all(), [
-            "search" => ['required']
-        ]);
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        } else {
+        // $validator = Validator::make($request->all(), [
+        //     "search" => ['required']
+        // ]);
+        // if ($validator->fails()) {
+        //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        // } else {
             $benefitcodes = DB::table('benefit_codes')
 
                 ->whereRaw('LOWER(benefit_code) LIKE ?', ['%' . strtolower($request->search) . '%'])
@@ -30,13 +30,26 @@ class BenifitController extends Controller
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $benefitcodes);
-        }
+        // }
     }
 
     public function get_all(Request $request)
     {
 
         $benefitcodes = DB::table('benefit_codes')->get();
+        if ($benefitcodes) {
+
+            return $this->respondWithToken($this->token(), 'Datafetched Successfully', $benefitcodes);
+        } else {
+            return $this->respondWithToken($this->token(), 'something went wrong', $benefitcodes);
+        }
+    }
+
+    public function dropdown(Request $request)
+    {
+        $benefitcodes = DB::table('benefit_codes')
+        ->whereRaw('LOWER(benefit_code) LIKE ?',['%'.strtolower($request->search).'%'])
+        ->paginate(100);
         if ($benefitcodes) {
 
             return $this->respondWithToken($this->token(), 'Datafetched Successfully', $benefitcodes);
@@ -58,7 +71,7 @@ class BenifitController extends Controller
                 'benefit_code' => ['required', 'max:10', Rule::unique('benefit_codes')->where(function ($q) {
                     $q->whereNotNull('benefit_code');
                 })],
-                "description" => ['max:36']
+                "description" => ['max:35']
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -78,9 +91,9 @@ class BenifitController extends Controller
                     ->where(DB::raw('UPPER(benefit_code)'), strtoupper($request->benefit_code))
                     ->first();
                 $save_audit = $this->auditMethod('IN', json_encode($benefitcode_get), 'BENEFIT_CODES');
-                return $this->respondWithToken($this->token(), 'Record Added Successfully 1', $benefitcode_get);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $benefitcode_get);
             }
-            return $this->respondWithToken($this->token(), 'Record Added Successfully ', $benefitcode);
+            // return $this->respondWithToken($this->token(), 'Record Added Successfully ', $benefitcode_get);
 
             // } else if ($request->has('new')) {
         } else {

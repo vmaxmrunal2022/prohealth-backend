@@ -336,6 +336,17 @@ class AccumlatedController extends Controller
         }
     }
 
+    public function getAllAcuumlatedBenefitsNew(Request $request){
+
+        $existdata = DB::table('accum_bene_strategy_names')
+        ->whereRaw('LOWER(ACCUM_BENE_STRATEGY_ID) LIKE ?',['%'.strtolower($request->search).'%'])
+        ->paginate(100);
+
+        return $this->respondWithToken($this->token(), 'Successfully added', $existdata);
+
+
+    }
+    
     public function delete(Request $request)
 
     {
@@ -373,7 +384,7 @@ class AccumlatedController extends Controller
                 ->where('accum_bene_strategy_id', $request->accum_bene_strategy_id)
                 ->delete();
             if ($all_accum_bene_strategy_names) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$all_accum_bene_strategy_names,true,201);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not found', 'false');
             }

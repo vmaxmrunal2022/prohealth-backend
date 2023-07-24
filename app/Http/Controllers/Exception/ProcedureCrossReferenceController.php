@@ -532,6 +532,43 @@ class ProcedureCrossReferenceController extends Controller
         }
     }
 
+    public function ndcdelete(Request $request){
+        
+        // return $request->all();
+
+        if(isset($request->ndc_exception_list) && ($request->ndc) && ($request->effective_date)) {
+
+            $exception_delete = DB::table('NDC_EXCEPTION_LISTS')
+                                ->where('NDC', $request->ndc)
+                                ->where('ndc_exception_list', $request->ndc_exception_list)
+                                ->where('effective_date', $request->effective_date)
+                                ->delete();
+            $childcount = DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', $request->ndc_exception_list)->count();
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+
+        }
+        elseif(isset($request->ndc_exception_list)){
+
+            $Exception = DB::table('NDC_EXCEPTIONS')
+                            ->where('ndc_exception_list', $request->ndc_exception_list)
+                            ->delete();
+
+            $exception_delete = DB::table('NDC_EXCEPTION_LISTS')
+                                ->where('ndc_exception_list', $request->ndc_exception_list)
+                                ->delete();
+            if ($Exception) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+    }
+
+
     public function delete(Request $request)
     {
        
@@ -544,9 +581,11 @@ class ProcedureCrossReferenceController extends Controller
                                         ->where('EFFECTIVE_DATE', str_replace('-', '', $request->effective_date))
                                         ->where('TERMINATION_DATE',str_replace('-', '', $request->termination_date))
                                         ->delete();
+              $childcount = DB::table('PROCEDURE_XREF')->where('procedure_xref_id', $request->procedure_xref_id)->count();
+
            
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
@@ -560,7 +599,7 @@ class ProcedureCrossReferenceController extends Controller
                                         ->delete();
 
             if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$exception_delete,true,201);
             }else{
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

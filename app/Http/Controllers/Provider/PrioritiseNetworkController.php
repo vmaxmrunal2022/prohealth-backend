@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Provider;
 use App\Http\Controllers\Controller;
 use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\DB;
 class PrioritiseNetworkController extends Controller
 {
 use AuditTrait;
@@ -78,13 +78,23 @@ use AuditTrait;
     }
     
     public function search(Request $request)
+
     {
-        $ndc = DB::table('SUPER_RX_NETWORK_NAMES')
 
-                ->where('SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($request->search) . '%')
-                ->orWhere('SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID_NAME', 'like', '%' . strtoupper($request->search) . '%')
+        if($request->search == 'undefined'){
+            $ndc = DB::table('SUPER_RX_NETWORK_NAMES')->get();
+        }
+        else{
 
-                ->get();
+
+            $ndc = DB::table('SUPER_RX_NETWORK_NAMES')
+            ->whereRaw('LOWER(SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orwhereRaw('LOWER(SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID_NAME) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                    // ->where('SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($request->search) . '%')
+                    // ->orWhere('SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID_NAME', 'like', '%' . strtoupper($request->search) . '%')
+             ->get();
+        }
+       
 
 
 
@@ -97,17 +107,20 @@ use AuditTrait;
 
          $data=  DB::table('SUPER_RX_NETWORK_NAMES')
         ->join('SUPER_RX_NETWORKS','SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID','=','SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
-        ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($ndcid) . '%')  
+        ->whereRaw('LOWER(SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID) LIKE ?', ['%' . strtolower($ndcid) . '%'])
+
+        // ->where('SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID', 'like', '%' . strtoupper($ndcid) . '%')  
         ->get();
        
         return $this->respondWithToken($this->token(), '', $data);
     }
 
-    public function getDetails($ndcid,$ncdid2,$id3){
+    public function getDetails($id1,$ndcid,$ncdid2,$id3){
 
         $data=  DB::table('SUPER_RX_NETWORK_NAMES')
-        ->join('SUPER_RX_NETWORKS','SUPER_RX_NETWORKS.RX_NETWORK_ID','=','SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
-        ->where('SUPER_RX_NETWORKS.RX_NETWORK_ID', $ndcid)  
+        ->join('SUPER_RX_NETWORKS','SUPER_RX_NETWORKS.SUPER_RX_NETWORK_ID','=','SUPER_RX_NETWORK_NAMES.SUPER_RX_NETWORK_ID')
+        ->where('SUPER_RX_NETWORKS.super_rx_network_id', $id1)  
+        ->where('SUPER_RX_NETWORKS.rx_network_id', $ndcid)  
         ->where('SUPER_RX_NETWORKS.EFFECTIVE_DATE', $ncdid2)  
         ->where('SUPER_RX_NETWORKS.super_rx_network_priority',$id3)
         ->first();

@@ -58,12 +58,28 @@ class DrugClassController extends Controller
 
     public function search(Request $request)
     {
-        $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+
+
+        if($request->search=='undefined' || $request->search == '%'){
+
+            $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+            ->select('DRUG_CATGY_EXCEPTION_LIST', 'DRUG_CATGY_EXCEPTION_NAME')
+            ->get();
+
+
+        }else{
+
+            $ndc = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
             ->select('DRUG_CATGY_EXCEPTION_LIST', 'DRUG_CATGY_EXCEPTION_NAME')
             // ->where('DRUG_CATGY_EXCEPTION_LIST', 'like', '%' . $request->search . '%')
             ->whereRaw('LOWER(DRUG_CATGY_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('DRUG_CATGY_EXCEPTION_NAME', 'like', '%' . $request->search . '%')
             ->get();
+
+        }
+
+
+     
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
@@ -1271,7 +1287,7 @@ class DrugClassController extends Controller
                                         ->delete();
 
             if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$all_exceptions_lists,true,201);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

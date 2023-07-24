@@ -152,7 +152,7 @@ class ClientController extends Controller
                         // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
                         'record_snapshot' => $record_snapshot,
                     ]);
-                return $this->respondWithToken($this->token(), 'Added Successfully!', $update_code);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $update_code);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -275,7 +275,7 @@ class ClientController extends Controller
                         'record_snapshot' => $record_snapshot,
                     ]);
 
-                return $this->respondWithToken($this->token(), 'Updated Successfully!', [$benefitcode_audit]);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', [$benefitcode_audit]);
             }
         }
     }
@@ -336,6 +336,7 @@ class ClientController extends Controller
             ->orWhere(DB::raw('UPPER(customer.CUSTOMER_ID)'), 'like', '%' . strtoupper($request->search) . '%')
             ->orWhere(DB::raw('UPPER(customer.CUSTOMER_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
             ->get();
+            // return $client;
         return $this->respondWithToken($this->token(), 'client loaded', $client);
     }
 

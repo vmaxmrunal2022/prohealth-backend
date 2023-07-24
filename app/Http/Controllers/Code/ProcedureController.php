@@ -33,8 +33,10 @@ class ProcedureController extends Controller
 
     public function getCodes(Request $request)
     {
-
-        $procedurecodes = DB::table('PROCEDURE_CODES')->paginate(100);
+        $procedurecodes = DB::table('PROCEDURE_CODES')
+        ->whereRaw('LOWER(PROCEDURE_CODE) LIKE ?',['%'.strtolower($request->search).'%'])
+        ->paginate(100);
+        // dd($procedurecodes);
 
         if ($procedurecodes) {
 
@@ -96,7 +98,7 @@ class ProcedureController extends Controller
                 // ->orWhere('DESCRIPTION', 'like', '%' . strtoupper($request->search) . '%')
                 // ->first();
 
-                return $this->respondWithToken($this->token(), 'Record Added successfully!', $procedurecode);
+                return $this->respondWithToken($this->token(), 'Record Added successfully', $procedurecode);
             }
         } else {
             $validator = Validator::make($request->all(), [
@@ -123,7 +125,7 @@ class ProcedureController extends Controller
                     $record_snap = json_encode($record);
                     $save_audit = $this->auditMethod('UP', $record_snap, 'PROCEDURE_CODES');
                 }       
-                return $this->respondWithToken($this->token(), 'Record Updated successfully !', $procedurecode);
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $procedurecode);
             }
         }
     }

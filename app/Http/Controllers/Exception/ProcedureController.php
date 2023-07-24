@@ -717,6 +717,27 @@ use AuditTrait;
 
     }
 
+    public function dropdown(Request $request)
+    {
+        $ndc = DB::table('PHYSICIAN_EXCEPTIONS')
+        ->select('physician_list','exception_name')
+        ->whereRaw('LOWER(physician_list) LIKE ? ',['%'.strtolower($request->search).'%'])
+        ->paginate(100);
+
+         return $this->respondWithToken($this->token(), '', $ndc);
+    }
+    public function AllPhysicainListsNew(Request $request){
+        $searchQuery = $request->search;
+        $ndc = DB::table('PHYSICIAN_EXCEPTIONS')
+        ->select('physician_list','exception_name')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(PHYSICIAN_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
+         return $this->respondWithToken($this->token(), '', $ndc);
+
+    }
+
 
 
 
@@ -730,7 +751,7 @@ use AuditTrait;
                 ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
-        return $this->respondWithToken($this->token(), '', $ndc);
+        // return $this->respondWithToken($this->token(), '', $ndc);
     }
 
     public function getPCList($ndcid)
@@ -782,7 +803,7 @@ use AuditTrait;
                     ->where('PROCEDURE_EXCEPTION_LISTS.PROCEDURE_EXCEPTION_LIST', $request->procedure_exception_list)  
                     ->where('PROCEDURE_EXCEPTION_LISTS.PROC_CODE_LIST_ID', $request->procedure_code_list_id)  
 
-                    // ->where('PROCEDURE_EXCEPTION_LISTS.PROC_CODE_LIST_ID', 'like', '%' . strtoupper($ndcid2). '%')
+                    ->where('PROCEDURE_EXCEPTION_LISTS.EFFECTIVE_DATE', $request->effective_date)  
                     // ->Where('PROCEDURE_EXCEPTION_LISTS.','like','%'.$ndcid2)
 
                     
@@ -859,11 +880,24 @@ use AuditTrait;
             
             
             if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$exception_delete,true,201);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
              }
             
         }
+    }
+
+    public function diagnosis_validation_lists(Request $request){
+
+        $ndc = DB::table('DIAGNOSIS_EXCEPTIONS')
+                ->select('diagnosis_list', 'exception_name')
+                ->whereRaw('LOWER(DIAGNOSIS_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                // ->where('PROCEDURE_EXCEPTION_LIST', 'like', '%' . strtoupper($request->search) . '%')
+                ->orWhere('exception_name', 'like', '%' . strtoupper($request->search) . '%')
+                ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+
     }
 }

@@ -81,20 +81,69 @@ class PriorAuthController extends Controller
         if ($request->add_new == 1) {
 
             $validator = Validator::make($request->all(), [
+
+                'member_id'=> ['required','max:18'],
+                'person_code' => ['required','max:3'],
                 'prior_auth_code_num' => ['required', 'max:18', Rule::unique('PRIOR_AUTHORIZATIONS')->where(function ($q) {
                     $q->whereNotNull('PRIOR_AUTH_CODE_NUM');
                 })],
-                'person_code' => ['required'],
-                'customer_id' => ['required', 'max:10'],
-                'client_id' => ['required', 'max:15'],
-                'client_group_id' => ['required','max:15'],
-                'effective_date' => ['required'],
-                'termination_date' => ['required', 'after:effective_date'],
-                'prior_auth_type'=> ['required'],
-                'relationship'=> ['required'],
-                // 'max_daily_dose'=>['required','max:2'],
-                'member_id'=> ['required'],
-                'ndc' => ['nullable',
+                
+
+                       'customer_id' =>['nullable','max:10'],
+                        'client_id' => ['nullable','max:15'],
+                        'client_group_id' =>['nullable','max:15'],
+                        'prior_auth_type' =>['nullable','max:1'],
+                        'patient_pin_number' => ['nullable','max:22'],
+                        'effective_date' => ['nullable','max:10'],
+                        'termination_date' =>   ['nullable','max:10'],
+                        'birth_date' =>  ['nullable','max:10'],
+                        'relationship' =>['numeric:digits:8','nullable'],
+                        'plan_id' =>['nullable','max:15'],
+                        'all_oth_error_cat_ovr' => ['nullable','max:1'],
+                        'generic_product_id' =>['nullable','max:14'],
+                        'generic_indicator' => ['nullable','max:1'],
+                        //Authorization Tab Ends
+                        //Pricing/ Misc tab start
+                        'prescriber_id' =>['nullable','max:10'],
+                        'prescriber_status_override' => ['nullable','max:1'],
+                        'copay_sched_ovr_mail' => ['nullable','max:10'],
+                        'brand_copay_amt_mail' => ['numeric:digits:10','nullable'],
+                        'generic_copay_amt_mail' => ['numeric:digits:10','nullable'],
+                        'price_sched_ovr' => ['nullable','max:10'],
+                        'copay_sched_ovr' =>['nullable','max:10'],
+                        'accum_bene_exclude_flag' => ['nullable','max:1'],
+                        'provider_type' => ['nullable','max:2'],
+                        'accum_bene_error_cat_ovr' => ['nullable','max:10'],
+                        'benefit_code' => ['nullable','max:10'],
+                        'brand_copay_amt' => ['numeric:digits:10','nullable'],
+                        'days_supply_error_cat_ovr' => ['nullable','max:10'],
+                        'diagnosis_id' => ['nullable','max:8'],
+                        'drug_error_cat_ovr' => ['nullable','max:10'],
+                        'elig_error_cat_ovr' => ['nullable','max:10'],
+                        'generic_copay_amt' => ['numeric:digits:10','nullable'],
+                        'max_daily_dose' => ['numeric:digits:6','nullable'],
+                        'max_days' => ['numeric:digits:6','nullable'],
+                        'max_dollar_amt' =>['numeric:digits:10','nullable'],
+                        'max_num_fills' => ['numeric:digits:2','nullable'],
+                        'max_quantity' => ['numeric:digits:6','nullable'],
+                        'num_fills_used' => ['numeric:digits:2','nullable'],
+                        'oltp_date_used' => ['numeric:digits:8','nullable'],
+                        'patient_paid_diff_flag' =>  ['nullable','max:1'],
+                        'pharm_error_cat_ovr' => ['nullable','max:1'],
+                        'pharmacy_nabp' => ['nullable','max:12'],
+                        'pharmacy_status_override' => ['nullable','max:1'],
+                        'phy_error_cat_ovr' =>['nullable','max:1'],
+                        'prior_auth_basis_type' => ['numeric:digits:6','nullable'],
+                        'prior_auth_note' => ['nullable','max:2000'],
+                        'procedure_code' => ['nullable','max:10'],
+                        'qty_error_cat_ovr' => ['nullable','max:1'],
+                        'refill_error_cat_ovr' => ['nullable','max:1'],
+                        'service_type' => ['nullable','max:12'],
+
+
+                
+
+                'ndc' => ['nullable','max:11',
                     function ($attribute, $value, $fail) use ($request) {
                         if (!empty($value) && !empty($request->generic_product_id)) {
                             $fail('Only one option should be selected between NDC and GPI.');
@@ -102,7 +151,7 @@ class PriorAuthController extends Controller
                     }
                     
                 ],
-                'generic_product_id' => ['nullable',
+                'generic_product_id' => ['nullable','max:14',
                     function ($attribute, $value, $fail) use ($request) {
                         if (!empty($value) && !empty($request->ndc)) {
                             $fail('Only one option should be selected between NDC and GPI.');
@@ -327,7 +376,7 @@ class PriorAuthController extends Controller
                 $record_snap = json_encode($inserted_record);
                 $save_audit = $this->auditMethod('UP', $record_snap, 'PRIOR_AUTHORIZATIONS');
             }  
-            return $this->respondWithToken($this->token(), 'Record Updated Successfully!', $inserted_record);
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $inserted_record);
         }
     }
 

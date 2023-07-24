@@ -16,9 +16,9 @@ class TaxScheduleController extends Controller
     public function get(Request $request)
     {
         $taxData = DB::table('tax_schedule')
-        // ->where('tax_schedule_id', 'like', '%' . $request->search. '%')
-        ->whereRaw('LOWER(tax_schedule_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
-        ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->paginate(100);
+            // ->where('tax_schedule_id', 'like', '%' . $request->search. '%')
+            ->whereRaw('LOWER(tax_schedule_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $taxData);
     }
@@ -26,14 +26,11 @@ class TaxScheduleController extends Controller
     {
         $searchQuery = $request->search;
         $taxData = DB::table('tax_schedule')
-        // ->where('tax_schedule_id', 'like', '%' . $request->search. '%')
-        // ->whereRaw('LOWER(tax_schedule_id) LIKE ?', ['%' . strtolower($request->search) . '%'])
-        // ->orWhere('tax_schedule_name', 'like', '%' . strtoupper($request->search) . '%')->get();
-        ->when($searchQuery, function ($query) use ($searchQuery) {
-            $query->where(DB::raw('UPPER(tax_schedule_id)'), 'like', '%' . strtoupper($searchQuery) . '%');
-            $query->orWhere(DB::raw('UPPER(tax_schedule_name)'), 'like', '%' . strtoupper($searchQuery) . '%');
-         })
-        ->paginate(100);
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where(DB::raw('UPPER(tax_schedule_id)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                $query->orWhere(DB::raw('UPPER(tax_schedule_name)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            })
+            ->get();
 
         return $this->respondWithToken($this->token(), '', $taxData);
     }
@@ -72,7 +69,7 @@ class TaxScheduleController extends Controller
                     $q->whereNotNull('tax_schedule_id');
                 })],
                 'tax_schedule_name' => ['required', 'max:36'],
-                
+
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -93,17 +90,17 @@ class TaxScheduleController extends Controller
             return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_tax_schedule);
         } else if ($request->add_new == 0) {
 
-           
+
             if ($validation->count() < 1) {
                 return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
             }
             $validator = Validator::make($request->all(), [
-                'tax_schedule_id' => ['required', 'max:10', Rule::unique('tax_schedule')->where(function ($q) use($request) {
+                'tax_schedule_id' => ['required', 'max:10', Rule::unique('tax_schedule')->where(function ($q) use ($request) {
                     $q->whereNotNull('tax_schedule_id');
-                    $q->where('tax_schedule_id','!=', $request->tax_schedule_id);
+                    $q->where('tax_schedule_id', '!=', $request->tax_schedule_id);
                 })],
                 'tax_schedule_name' => ['required', 'max:36'],
-                
+
             ]);
             if ($validator->fails()) {
                 return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
@@ -122,17 +119,17 @@ class TaxScheduleController extends Controller
                     'OTC_TAX_CALCULATION' => $request->otc_tax_calculation,
                     'OTC_TAX_BASE_PRICE' => $request->otc_tax_base_price,
                 ]);
-            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_tax_schedule);
+            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_tax_schedule, true, 201);
         }
     }
 
 
     public function tax_schedule_delete(Request $request)
     {
-        if(isset($request->tax_schedule_id)){
+        if (isset($request->tax_schedule_id)) {
             $all_exceptions_lists =  DB::table('tax_schedule')
-                                        ->where('TAX_SCHEDULE_ID', $request->tax_schedule_id)
-                                        ->delete();
+                ->where('TAX_SCHEDULE_ID', $request->tax_schedule_id)
+                ->delete();
 
             if ($all_exceptions_lists) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
@@ -140,6 +137,5 @@ class TaxScheduleController extends Controller
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
         }
-        
     }
 }

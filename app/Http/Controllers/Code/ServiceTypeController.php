@@ -14,26 +14,26 @@ class ServiceTypeController extends Controller
     use AuditTrait;
     public function get(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "search" => ['required']
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     "search" => ['required']
+        // ]);
 
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        } else {
+        // if ($validator->fails()) {
+        //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        // } else {
             $procedurecodes = DB::table('SERVICE_TYPES')
                 // ->where(DB::raw('UPPER(SERVICE_TYPE)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->whereRaw('LOWER(SERVICE_TYPE) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere(DB::raw('UPPER(description)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
             return  $this->respondWithToken($this->token(), '', $procedurecodes);
-        }
+        // }
     }
 
     public function getallServicetypes(Request $request)
     {
 
-        $service_types_data = DB::table('SERVICE_TYPES')->get();
+        $service_types_data = DB::table('SERVICE_TYPES')->paginate(100);
 
         if ($service_types_data) {
             return  $this->respondWithToken($this->token(), 'data Fetched Successfully', $service_types_data);

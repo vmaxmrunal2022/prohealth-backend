@@ -648,7 +648,7 @@ use AuditTrait;
                                     ->delete();    
 
             if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$exception_delete,true,201);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

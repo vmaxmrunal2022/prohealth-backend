@@ -760,12 +760,23 @@ use AuditTrait;
 
     public function search(Request $request)
     {
-        $ndc = DB::table('GPI_EXCEPTIONS')
+
+        if($request->search=='undefined' || $request->search == '%'){
+            $ndc = DB::table('GPI_EXCEPTIONS')
+          
+            ->get();
+        }else{
+
+            $ndc = DB::table('GPI_EXCEPTIONS')
             ->select('GPI_EXCEPTION_LIST', 'EXCEPTION_NAME')
             // ->where('GPI_EXCEPTION_LIST', 'like', '%' . $request->search . '%')
             ->whereRaw('LOWER(GPI_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
             ->get();
+
+        }
+
+       
 
         return $this->respondWithToken($this->token(), '', $ndc);
     }
@@ -854,7 +865,7 @@ use AuditTrait;
                                 ->where('GPI_EXCEPTION_LIST', $request->gpi_exception_list)
                                 ->delete();
             if ($Exception) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$Exception,true,201);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

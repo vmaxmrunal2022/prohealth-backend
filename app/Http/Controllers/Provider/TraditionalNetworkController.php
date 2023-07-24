@@ -94,7 +94,7 @@ class TraditionalNetworkController extends Controller
                 $record = DB::table('RX_NETWORK_NAMES')->where('network_id', $request->network_id)->first();
                 if($record){
                     $record_snapshot = json_encode($record);
-                    $save_audit = $this->auditMethod('IN', $record_snapshot, 'RX_NETWORK_NAMES');
+                    // $save_audit = $this->auditMethod('IN', $record_snapshot, 'RX_NETWORK_NAMES');
                 }
 
                 $traditional_list_obj = json_decode(json_encode($request->traditional_form, true));
@@ -121,7 +121,7 @@ class TraditionalNetworkController extends Controller
                     if($child_recs){
                          foreach($child_recs as $rec){
                             $record_snapshot = json_encode($rec);
-                            $save_audit = $this->auditMethod('IN', $record_snapshot, 'RX_NETWORKS');
+                            // $save_audit = $this->auditMethod('IN', $record_snapshot, 'RX_NETWORKS');
                          }
                     }
                     
@@ -198,7 +198,7 @@ class TraditionalNetworkController extends Controller
             $record = DB::table('RX_NETWORK_NAMES')->where('network_id', $request->network_id)->first();
             if($record){
                 $record_snapshot = json_encode($record);
-                $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORK_NAMES');
+                // $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORK_NAMES');
             }
 
 
@@ -230,7 +230,7 @@ class TraditionalNetworkController extends Controller
                 if(!empty($child_recs)){
                     foreach($child_recs as $rec){
                         $record_snapshot = json_encode($rec);
-                        $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORKS');
+                        // $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORKS');
                     }
                 }
 
@@ -294,10 +294,10 @@ class TraditionalNetworkController extends Controller
 
     public function search(Request $request)
     {
-        $ndc =  DB::table('RX_NETWORKS')
+        $ndc =  DB::table('RX_NETWORK_NAMES')
         // ->where('NETWORK_ID', 'like', '%' . $request->search . '%')
-        ->where(DB::raw('UPPER(RX_NETWORKS.NETWORK_ID)'), 'like', '%' . strtoupper($request->search) . '%')
-        ->orWhere('NETWORK_ID', 'like', '%' . $request->search . '%')
+        ->where(DB::raw('UPPER(RX_NETWORK_NAMES.NETWORK_ID)'), 'like', '%' . strtoupper($request->search) . '%')
+        ->orWhere('RX_NETWORK_NAMES.NETWORK_ID', 'like', '%' . $request->search . '%')
         ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -383,7 +383,7 @@ class TraditionalNetworkController extends Controller
             if($child_recs){
                 foreach($child_recs as $rec){   
                     $record_snapshot = json_encode($rec);
-                    $save_audit = $this->auditMethod('DE', $record_snapshot, 'RX_NETWORKS');
+                    // $save_audit = $this->auditMethod('DE', $record_snapshot, 'RX_NETWORKS');
                 }
             }
 

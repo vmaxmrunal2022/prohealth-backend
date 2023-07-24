@@ -54,7 +54,14 @@ class DiagnosisController extends Controller
         }
     }
 
-
+    public function dropdown(Request $request)
+    {
+        $daignosis = DB::table('DIAGNOSIS_CODES')
+                            ->select('diagnosis_id','description')
+                            ->whereRaw('LOWER(diagnosis_id) LIKE ?',['%'.strtolower($request->search).'%'])
+                            ->paginate(100);
+        return $this->respondWithToken($this->token(), '', $daignosis);
+    }
 
 
 

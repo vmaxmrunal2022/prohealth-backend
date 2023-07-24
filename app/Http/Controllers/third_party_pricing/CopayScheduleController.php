@@ -25,6 +25,35 @@ class CopayScheduleController extends Controller
         return $this->respondWithToken($this->token(), '', $copayList);
     }
 
+    public function dropdown(Request $request){
+        $copayList = DB::table('COPAY_SCHEDULE')           
+            //  ->where('copay_schedule', 'like', '%' . $request->search. '%')
+            // ->where('copay_schedule', 'like', '%' . strtoupper($request->search) . '%')
+            ->whereRaw('LOWER(copay_schedule) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhere('copay_schedule_name', 'like', '%' . strtoupper($request->search) . '%')
+            ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $copayList);
+    }
+
+    public function CopayDropDownMatrix(Request $request)
+    {
+        $ndc = DB::table('COPAY_LIST')
+    ->select('COPAY_LIST.COPAY_LIST')
+    ->leftJoin('COPAY_MATRIX', 'COPAY_MATRIX.COPAY_LIST', '=', 'COPAY_LIST.COPAY_LIST')
+    ->where('COPAY_MATRIX.COST_MAX', '!=', 0)
+    ->whereRaw('LOWER(COPAY_LIST.COPAY_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+    ->groupBy('COPAY_LIST.COPAY_LIST') // Group by copay value
+    ->paginate(100);
+
+        // ->leftJoin('COPAY_LIST','=','COPAY_MATRIX')->get();
+        // ->whereRaw('LOWER(COPAY_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+        // ->where('COST_MAX', '!=', 0)
+        // ->paginate(100);
+
+        return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
+    }
+
     public function getNew(Request $request)
     {
         $copayList = DB::table('COPAY_SCHEDULE')           
@@ -38,9 +67,23 @@ class CopayScheduleController extends Controller
     }
     public function getAll(Request $request)
     {
-        $copayList = DB::table('COPAY_SCHEDULE')->get();
+        $copayList = DB::table('COPAY_SCHEDULE')
+        ->whereRaw('LOWER(copay_schedule) LIKE ?', ['%' . strtolower($request->search) . '%'])
+        ->paginate(100);
         return $this->respondWithToken($this->token(), '', $copayList);
     }
+
+
+
+    public function with_out_paginate(Request $request)
+    {
+        $copayList = DB::table('COPAY_SCHEDULE')
+        ->whereRaw('LOWER(copay_schedule) LIKE ?', ['%' . strtolower($request->search) . '%'])
+        ->get();
+        return $this->respondWithToken($this->token(), '', $copayList);
+    }
+
+
     public function getAllNew(Request $request)
     {
         $searchQuery = $request->search;
@@ -501,7 +544,7 @@ class CopayScheduleController extends Controller
                 ->where('copay_schedule', $request->copay_schedule)
                 ->first();
             $save_audit = $this->auditMethod('UP', json_encode($update_copay_schedule_record), 'COPAY_SCHEDULE');
-            return $this->respondWithToken($this->token(), 'Update successfully!', $update_copay_schedule);
+            return $this->respondWithToken($this->token(), 'Record Update Successfully', $update_copay_schedule);
         }
     }
 

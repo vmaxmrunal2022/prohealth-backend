@@ -1367,38 +1367,73 @@ class NDCExceptionController extends Controller
     }
 
     public function get_Pharmacy_Lists(Request $request){
+        // dd('test');
         $ndc = DB::table('PHARMACY_EXCEPTIONS')
         ->select('PHARMACY_LIST', 'EXCEPTION_NAME')
-        ->get();
+        ->paginate(100);
+ 
+      return $this->respondWithToken($this->token(), '', $ndc);
+    }
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+    public function get_Pharmacy_ListsNew(Request $request){
+        $searchQuery = $request->search;
+        $ndc = DB::table('PHARMACY_EXCEPTIONS')
+        ->select('PHARMACY_LIST', 'EXCEPTION_NAME')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(PHARMACY_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
+ 
+      return $this->respondWithToken($this->token(), '', $ndc);
     }
 
     public function get_Physician_Lists(Request $request){
         $ndc = DB::table('PHYSICIAN_EXCEPTIONS')
         ->select('PHYSICIAN_LIST', 'EXCEPTION_NAME')
-        ->get();
+        ->paginate(100);
+       return $this->respondWithToken($this->token(), '', $ndc);
+    }
+    public function get_Physician_ListsNew(Request $request){
+        $searchQuery = $request->search;
+        $ndc = DB::table('PHYSICIAN_EXCEPTIONS')
+        ->select('PHYSICIAN_LIST', 'EXCEPTION_NAME')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(PHYSICIAN_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+       return $this->respondWithToken($this->token(), '', $ndc);
     }
 
 
     public function get_Diagnosis_Lists(Request $request){
         $ndc = DB::table('DIAGNOSIS_EXCEPTIONS')
         ->select('DIAGNOSIS_LIST', 'EXCEPTION_NAME')
-        ->get();
+        ->paginate(100);
 
-    return $this->respondWithToken($this->token(), '', $ndc);
+       return $this->respondWithToken($this->token(), '', $ndc);
+    }
+    public function get_Diagnosis_ListsNew(Request $request){
+        $searchQuery = $request->search;
+        $ndc = DB::table('DIAGNOSIS_EXCEPTIONS')
+        ->select('DIAGNOSIS_LIST', 'EXCEPTION_NAME')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(DIAGNOSIS_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
+
+       return $this->respondWithToken($this->token(), '', $ndc);
     }
 
     
 
     
 
-    public function getAllNDCSNew()
+    public function getAllNDCSNew(Request $request)
     {
         $ndc = DB::table('DRUG_MASTER')
             ->select('NDC', 'LABEL_NAME')
+            ->whereRaw('LOWER(ndc) LIKE ? ',['%'.strtolower($request->search).'%'])
             ->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -1408,31 +1443,62 @@ class NDCExceptionController extends Controller
         
         // return $request->all();
 
-        if(isset($request->ndc_exception_list) && isset($request->ndc) && isset($request->effective_date)){
+        if(isset($request->ndc_exception_list) && ($request->ndc) && ($request->effective_date)) {
 
-            $get_exceptions_lists =  DB::table('NDC_EXCEPTION_LISTS')
-                ->where('ndc_exception_list', $request->ndc_exception_list)
-                ->where('ndc', $request->ndc)
-                ->where('effective_date', $request->effective_date)
-                ->first();
-            $save_audit_delete = $this->auditMethod('DE', json_encode($get_exceptions_lists), 'NDC_EXCEPTION_LISTS');
-
-            $all_exceptions_lists =  DB::table('NDC_EXCEPTION_LISTS')
-                ->where('ndc_exception_list', $request->ndc_exception_list)
-                ->where('ndc', $request->ndc)
-                ->where('effective_date', $request->effective_date)
-                ->delete();
-            $childcount =  DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', $request->ndc_exception_list)->count();
-            if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $childcount);
+            $exception_delete = DB::table('NDC_EXCEPTION_LISTS')
+                                ->where('NDC', $request->ndc)
+                                ->where('ndc_exception_list', $request->ndc_exception_list)
+                                ->where('effective_date', $request->effective_date)
+                                ->delete();
+            $childcount = DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', $request->ndc_exception_list)->count();
+            if ($exception_delete) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }
 
-
-
-
         }
+        elseif(isset($request->ndc_exception_list)){
+
+            $Exception = DB::table('NDC_EXCEPTIONS')
+                            ->where('ndc_exception_list', $request->ndc_exception_list)
+                            ->delete();
+
+            $exception_delete = DB::table('NDC_EXCEPTION_LISTS')
+                                ->where('ndc_exception_list', $request->ndc_exception_list)
+                                ->delete();
+            if ($Exception) {
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$Exception,true,201);
+            } else {
+                return $this->respondWithToken($this->token(), 'Record Not Found');
+            }
+        }
+
+        // if(isset($request->ndc_exception_list) && isset($request->ndc) && isset($request->effective_date)){
+
+        //     $get_exceptions_lists =  DB::table('NDC_EXCEPTION_LISTS')
+        //         ->where('ndc_exception_list', $request->ndc_exception_list)
+        //         ->where('ndc', $request->ndc)
+        //         ->where('effective_date', $request->effective_date)
+        //         ->first();
+        //     $save_audit_delete = $this->auditMethod('DE', json_encode($get_exceptions_lists), 'NDC_EXCEPTION_LISTS');
+
+        //     $all_exceptions_lists =  DB::table('NDC_EXCEPTION_LISTS')
+        //         ->where('ndc_exception_list', $request->ndc_exception_list)
+        //         ->where('ndc', $request->ndc)
+        //         ->where('effective_date', $request->effective_date)
+        //         ->delete();
+        //     $childcount =  DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', $request->ndc_exception_list)->count();
+        //     if ($all_exceptions_lists) {
+        //         return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $childcount);
+        //     } else {
+        //         return $this->respondWithToken($this->token(), 'Record Not Found');
+        //     }
+
+
+
+
+        // }
     }
 
 
@@ -1475,13 +1541,28 @@ class NDCExceptionController extends Controller
         //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
         // } else {
 
-            $ndc = DB::table('NDC_EXCEPTIONS')
+            if($request->search=='undefined' || $request->search == '%'){
+
+                $ndc = DB::table('NDC_EXCEPTIONS')
+                // ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
+                // // ->where('NDC_EXCEPTION_LIST', 'like', '%' .$request->search. '%')
+                // ->whereRaw('LOWER(NDC_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                // ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
+                // // ->paginate(10);
+                ->get();
+
+            }else{
+                $ndc = DB::table('NDC_EXCEPTIONS')
                 ->select('NDC_EXCEPTION_LIST', 'EXCEPTION_NAME')
                 // ->where('NDC_EXCEPTION_LIST', 'like', '%' .$request->search. '%')
                 ->whereRaw('LOWER(NDC_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
                 // ->paginate(10);
                 ->get();
+
+            }
+
+            
 
             if ($ndc->count() < 1) {
                 return $this->respondWithToken($this->token(), 'No Data Found', $ndc);
@@ -1502,9 +1583,10 @@ class NDCExceptionController extends Controller
                 // ->where('NDC_EXCEPTION_LIST', 'like', '%' .$request->search. '%')
                 ->whereRaw('LOWER(NDC_EXCEPTION_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
                 ->orWhere('EXCEPTION_NAME', 'like', '%' . $request->search . '%')
-                ->paginate(2);
+                ->paginate(100);
 
-            if ($ndc->count() < 1) {
+            //if ($ndc->count() < 1) {
+                if (count($ndc) < 1) {
                 return $this->respondWithToken($this->token(), 'Data Fetched Successfully', $ndc);
             } else {
                 return $this->respondWithToken($this->token(), 'No Data Found', $ndc);

@@ -24,7 +24,7 @@ class UserDefinationController extends Controller
 
     public function addUserDefinition(Request $request)
     {
-        // return $request->privs;
+        return $request->privs;
         $getusersData = DB::table('FE_USERS')
             ->where('user_id', $request->user_id)
             ->first();
@@ -315,17 +315,7 @@ class UserDefinationController extends Controller
 
     public function submitFormData(Request $request)
     {
-        // return ($request->all());
-        // $prefix = '$2y$';
-        // $cost = '10';
-        // $salt = '$thisisahardcodedsalt$';
-        // $blowfishPrefix = $prefix . $cost . $salt;
-        // $password = $request->user_password;
-        // $hash = crypt($password, $blowfishPrefix);
-        // $hashToThirdParty = substr($hash, -32);
-        // $hashFromThirdParty = $hashToThirdParty;
-
-
+        // return $request->all();
         if ($request->new) {
             $validator = Validator::make($request->all(), [
                 'user_id' => ['required', Rule::unique('fe_users')->where(function ($q) {
@@ -343,21 +333,41 @@ class UserDefinationController extends Controller
             } else {
                 //$addUser = DB::table('FE_USERS')->insert([
                 //E->Ready Only
-                $check_group = DB::table('fe_user_groups')
-                    ->where('group_id', $request->group_id)
-                    ->get()
-                    ->count();
-                if ($request->group_id && $check_group == 0) {
-                    return $this->respondWithToken($this->token(), "Please select valid group", [["Please select valid group"]], false);
-                }
                 $coun = "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDADDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDAAAAAAAAADDDDDDDDDDDDDDDDDDDDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+                $user_data = DB::table('fe_users')
+                    ->where('user_id', $request->user_id)
+                    ->first();
+                //if group
                 $A = [];
-                $key1 = [];
-                foreach (str_split($coun) as $key => $val) {
-                    array_push($A, 'A');
-                    array_push($key1, $key);
+                if (!empty($request->group_id)) {
+                    $group = DB::table('FE_USER_GROUPS')
+                        ->where(
+                            DB::raw('LOWER(group_id)'),
+                            strtolower($request->group_id)
+                        )
+                        ->first();
+                    if ($group) {
+                        $A = str_split($group->user_profile);
+                    }
+                } else {
+                    // $A = [];
+                    $key1 = [];
+                    foreach (str_split($coun) as $key => $val) {
+                        array_push($A, 'A');
+                        array_push($key1, $key);
+                    }
                 }
+
+                // $A = [];
+                // $key1 = [];
+                // foreach (str_split($coun) as $key => $val) {
+                //     array_push($A, 'A');
+                //     array_push($key1, $key);
+                // }
+
                 $user_profile = str_split(implode('', $A));
+                // return $user_profile;
+
                 $e = [];
                 foreach ($request->E as $key => $val) {
                     if ($val == 'true') {
@@ -406,6 +416,9 @@ class UserDefinationController extends Controller
                     $user_profile[$a[$i]] = 'A';
                 }
                 $updated_user_profile = implode('', $user_profile);
+
+                // return $request->group_id;
+
                 $addUser = UserDefinition::insert([
                     'user_id' => $request->user_id,
                     'application' => 'PBM',
@@ -419,6 +432,7 @@ class UserDefinationController extends Controller
                     'user_id_created' => Cache::get('userId'),
                     'privs' => $request->defaultSystemUser != null ? $request->defaultSystemUser : "1",
                     'restrict_security_flag' => $request->restrict_security_flag,
+                    //'user_profile' => $updated_user_profile,
                     'user_profile' => $updated_user_profile,
                 ]);
 
@@ -428,7 +442,7 @@ class UserDefinationController extends Controller
                 $record_snapshot = json_encode($user_data);
                 $save_audit =  $this->auditMethod('UP', $record_snapshot, 'FE_USERS');
                 if ($addUser) {
-                    return $this->respondWithToken($this->token(), 'Added Successfully !!!', $addUser);
+                    return $this->respondWithToken($this->token(), 'Added Successfully !!!', $user_data);
                 }
             }
         } else {
@@ -454,8 +468,26 @@ class UserDefinationController extends Controller
                 $user_data = DB::table('fe_users')
                     ->where('user_id', $request->user_id)
                     ->first();
-                $user_profile = str_split($user_data->user_profile);
+                //if group
 
+                if (!empty($request->group_id)) {
+                    $group = DB::table('FE_USER_GROUPS')
+                        ->where(
+                            DB::raw('LOWER(group_id)'),
+                            strtolower($request->group_id)
+                        )
+                        ->first();
+
+                    if ($group) {
+                        $user_profile = str_split($group->user_profile);
+                    }
+                } else {
+                    $user_data = DB::table('fe_users')
+                        ->where('user_id', $request->user_id)
+                        ->first();
+                    $user_profile = str_split($user_data->user_profile);
+                    // $user_profile = [];
+                }
                 //A->None
                 $a = [];
                 foreach ($request->A as $key => $val) {
@@ -518,10 +550,13 @@ class UserDefinationController extends Controller
                         'restrict_security_flag' => $request->restrict_security_flag,
                         'user_profile' => $updated_user_profile,
                     ]);
-                $record_snapshot = json_encode($user_data);
+                $user_data_update = DB::table('fe_users')
+                    ->where('user_id', $request->user_id)
+                    ->first();
+                $record_snapshot = json_encode($user_data_update);
                 $save_audit =  $this->auditMethod('UP', $record_snapshot, 'FE_USERS');
                 if ($updateUser) {
-                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $user_data);
+                    return $this->respondWithToken($this->token(), 'Record Updated Successfully', $user_data_update);
                 }
             }
         }
@@ -673,11 +708,11 @@ class UserDefinationController extends Controller
                     ]);
 
                 $get_add_fe_group = DB::table('FE_USER_GROUPS')
-                    ->where('group_id', $request->group_id)
+                    ->whereRaw('LOWER(group_id) = ?', [strtolower($request->group_id)])
                     ->first();
                 $record_snap_group = json_encode($get_add_fe_group);
                 $save_audit_group = $this->auditMethod('IN', $record_snap_group, 'FE_USER_GROUPS');
-                return $this->respondWithToken($this->token(), 'Added Successfully!', $add_fe_group);
+                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add_fe_group);
             }
         } else {
             $user_data = DB::table('FE_USER_GROUPS')
@@ -748,12 +783,12 @@ class UserDefinationController extends Controller
                     ]);
 
 
-                $get_update_fe_group = DB::table('FE_USER_GROUPS')
-                    ->where(DB::raw('UPPER(group_id)'), strtoupper($request->group_id))
+                $get_add_fe_group = DB::table('FE_USER_GROUPS')
+                    ->whereRaw('LOWER(group_id) = ?', [strtolower($request->group_id)])
                     ->first();
-                $record_snap_group = json_encode($get_update_fe_group);
-                $save_audit_group = $this->auditMethod('UP', $record_snap_group, 'FE_USER_GROUPS');
-                return $this->respondWithToken($this->token(), 'Updated Successfully!', $update_fe_group);
+                $record_snap_group = json_encode($get_add_fe_group);
+                $save_audit_group = $this->auditMethod('IN', $record_snap_group, 'FE_USER_GROUPS');
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $get_add_fe_group);
             }
         }
     }
@@ -807,5 +842,45 @@ class UserDefinationController extends Controller
         $user_data = DB::table('fe_users')->where('user_id', $user_id)->first();
         $user_profile = str_split($user_data->user_profile);
         return $this->respondWithToken($this->token(), $user_profile, $user_profile);
+    }
+
+    public function getGroupAccess($group_id)
+    {
+        $user_data = DB::table('fe_user_groups')->where('group_id', $group_id)->first();
+        // $user_profile = str_split($user_data->user_profile);
+        // $position = $access_code;
+        // $updated_user_profile = implode('', $user_profile);
+        if (!empty($user_data)) {
+            $user_profile = str_split($user_data->user_profile);
+            return $this->respondWithToken($this->token(), '', $user_profile);
+        } else {
+            return $this->respondWithToken($this->token(), 'No Group Found', '', false);
+        }
+    }
+
+    public function deleteUser(Request $request)
+    {
+        $record = DB::table('fe_users')
+            ->whereRaw('LOWER(user_id) = ?', [strtolower($request->user_id)])
+            ->first();
+        $save_audit = $this->auditMethod('DE', json_encode($record), 'FE_USERS');
+        $record = DB::table('fe_users')
+            ->whereRaw('LOWER(user_id) = ?', [strtolower($request->user_id)])
+            ->delete();
+
+        return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $record);
+    }
+
+    public function deleteGroup(Request $request)
+    {
+        $record = DB::table('FE_USER_GROUPS')
+            ->whereRaw('LOWER(group_id) = ?', [strtolower($request->group_id)])
+            ->first();
+        $save_audit = $this->auditMethod('DE', json_encode($record), 'FE_USER_GROUPS');
+        $record = DB::table('FE_USER_GROUPS')
+            ->whereRaw('LOWER(group_id) = ?', [strtolower($request->group_id)])
+            ->delete();
+
+        return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $record);
     }
 }

@@ -25,7 +25,7 @@ class DrugDatabaseController extends Controller
 
             if ($getData) {
 
-                return $this->respondWithToken($this->token(), 'NDC ID Already Exists', $getData, false);
+                return $this->respondWithToken($this->token(), [['NDC ID Already Exists']], $getData, false);
             } else {
                 $addData = DB::table('DRUG_MASTER')
                     ->insert([

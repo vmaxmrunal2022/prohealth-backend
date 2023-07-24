@@ -5,15 +5,18 @@ namespace App\Http\Controllers\AccumlatedBenifits;
 use App\Http\Controllers\Controller;
 use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+
 
 class GpiExclusionController extends Controller
 {
     use AuditTrait;
     public function GPIS(Request $request)
     {
-        $gpis =  DB::table('DRUG_MASTER')->get();
+        $gpis =  DB::table('DRUG_MASTER')->paginate(100);
         return $this->respondWithToken($this->token(), 'data fetched successfully ', $gpis);
     }
 
@@ -21,6 +24,8 @@ class GpiExclusionController extends Controller
     {
         $gpis =  DB::table('DRUG_MASTER')
             ->select('generic_product_id as gpi')
+            ->whereRaw('LOWER(GENERIC_PRODUCT_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            ->orWhereRaw('LOWER(GENERIC_NAME) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->paginate(100);
         return $this->respondWithToken($this->token(), 'data fetched successfully ', $gpis);
     }
@@ -38,42 +43,85 @@ class GpiExclusionController extends Controller
             ->where('GENERIC_PRODUCT_ID', $request->generic_product_id)
             ->first();
 
-        if ($request->has('new')) {
-            if ($recordcheck) {
-                return $this->respondWithToken($this->token(), 'GPI Exclusion List ID already exists', $recordcheck, false);
-            } else {
-                $accum_benfit_stat = DB::table('GPI_EXCLUSION_LISTS')->insert(
+
+
+            $validator = Validator::make($request->all(), [
+
+                'gpi_exclusion_list' =>['required','string','max:10'],
+                'generic_product_id' => ['string','max:14'],
+                'exclusion_name' => ['required','max:35'],
+               
+                
+
+          ]);
+
+
+if ($validator->fails()) {
+    return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+
+}
+else{
+
+    if ($request->has('new')) {
+
+        $recordcheck = DB::table('GPI_EXCLUSIONS')
+        ->where(DB::raw('UPPER(GPI_EXCLUSION_LIST)'), strtoupper($request->gpi_exclusion_list))
+        ->first();
+        if ($recordcheck) {
+            return $this->respondWithToken($this->token(), 'GPI Exclusion List ID already exists', $recordcheck, false);
+        } else {
+            $accum_benfit_stat = DB::table('GPI_EXCLUSION_LISTS')->insert(
+                [
+                    'generic_product_id' => $request->generic_product_id,
+                    'gpi_exclusion_list' => $request->gpi_exclusion_list,
+                    'DATE_TIME_CREATED' => $createddate,
+                    'DATE_TIME_MODIFIED' => $createddate,
+                    'USER_ID' => Cache::get('userId'),
+                ]
+            );
+
+            $insert = DB::table('GPI_EXCLUSIONS')->insert(
+                [
+                    'gpi_exclusion_list' => $request->gpi_exclusion_list,
+                    'exclusion_name' => $request->exclusion_name,
+                    'USER_ID' => Cache::get('userId'),
+                    'DATE_TIME_CREATED' => date('Ymd'),
+                    'DATE_TIME_MODIFIED' => date('Ymd'),
+                ]
+            );
+
+            $getRecord =   DB::table('GPI_EXCLUSIONS')
+                ->where('gpi_exclusion_list', $request->gpi_exclusion_list)->first();
+        }
+
+        if ($insert) {
+            return $this->respondWithToken($this->token(), 'Recored Added Successfully', $getRecord);
+        }
+    } else {
+        if ($recordCheckGpiList) {
+            if ($request->addUpdate == 0) {
+                return $this->respondWithToken($this->token(), 'GPI ID already exists', $recordCheckGpiList, false);
+            }
+            $update = DB::table('GPI_EXCLUSIONS')
+                ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
+                ->update(
                     [
-                        'generic_product_id' => $request->generic_product_id,
-                        'gpi_exclusion_list' => $request->gpi_exclusion_list,
-                        'DATE_TIME_CREATED' => $createddate,
-                        'DATE_TIME_MODIFIED' => $createddate,
+                        'exclusion_name' => $request->exclusion_name,
+                        'DATE_TIME_MODIFIED' => date('Ymd'),
                         'USER_ID' => Cache::get('userId'),
                     ]
                 );
-
-                $insert = DB::table('GPI_EXCLUSIONS')->insert(
+        } else {
+            if ($request->generic_product_id) {
+                $createGpiList = DB::table('GPI_EXCLUSION_LISTS')->insert(
                     [
+                        'generic_product_id' => $request->generic_product_id,
                         'gpi_exclusion_list' => $request->gpi_exclusion_list,
-                        'exclusion_name' => $request->exclusion_name,
                         'USER_ID' => Cache::get('userId'),
                         'DATE_TIME_CREATED' => date('Ymd'),
                         'DATE_TIME_MODIFIED' => date('Ymd'),
                     ]
                 );
-
-                $getRecord =   DB::table('GPI_EXCLUSIONS')
-                    ->where('gpi_exclusion_list', $request->gpi_exclusion_list)->first();
-            }
-
-            if ($insert) {
-                return $this->respondWithToken($this->token(), 'Recored Added Successfully', $getRecord);
-            }
-        } else {
-            if ($recordCheckGpiList) {
-                if ($request->addUpdate == 0) {
-                    return $this->respondWithToken($this->token(), 'GPI ID already exists', $recordCheckGpiList, false);
-                }
                 $update = DB::table('GPI_EXCLUSIONS')
                     ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
                     ->update(
@@ -83,38 +131,23 @@ class GpiExclusionController extends Controller
                             'USER_ID' => Cache::get('userId'),
                         ]
                     );
-            } else {
-                if ($request->generic_product_id) {
-                    $createGpiList = DB::table('GPI_EXCLUSION_LISTS')->insert(
-                        [
-                            'generic_product_id' => $request->generic_product_id,
-                            'gpi_exclusion_list' => $request->gpi_exclusion_list,
-                            'USER_ID' => Cache::get('userId'),
-                            'DATE_TIME_CREATED' => date('Ymd'),
-                            'DATE_TIME_MODIFIED' => date('Ymd'),
-                        ]
-                    );
-                    $update = DB::table('GPI_EXCLUSIONS')
-                        ->where('gpi_exclusion_list', $request->gpi_exclusion_list)
-                        ->update(
-                            [
-                                'exclusion_name' => $request->exclusion_name,
-                                'DATE_TIME_MODIFIED' => date('Ymd'),
-                                'USER_ID' => Cache::get('userId'),
-                            ]
-                        );
-                    if ($createGpiList) {
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update, true, 201);
-                    }
-                } else {
-                    return $this->respondWithToken($this->token(), 'Please Select GPI List ID', $recordCheckGpiList, false);
+                if ($createGpiList) {
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update, true, 201);
                 }
+            } else {
+                return $this->respondWithToken($this->token(), 'Please Select GPI List ID', $recordCheckGpiList, false);
             }
         }
+    }
 
-        if ($update) {
-            return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
-        }
+    if ($update) {
+        return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+    }
+
+}
+
+
+        
     }
 
 

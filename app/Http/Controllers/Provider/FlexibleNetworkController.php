@@ -103,7 +103,7 @@ class FlexibleNetworkController extends Controller
                              ->where('rx_network_rule_id', $request->rx_network_rule_id)->first();
                 if($record){
                     $record_snapshot = json_encode($record);
-                    $save_audit = $this->auditMethod('IN', $record_snapshot, 'RX_NETWORK_RULE_NAMES');
+                    // $save_audit = $this->auditMethod('IN', $record_snapshot, 'RX_NETWORK_RULE_NAMES');
                 }            
 
 
@@ -143,7 +143,7 @@ class FlexibleNetworkController extends Controller
                     if($child_records){
                         foreach($child_records as $rec){
                             $record_snapshot = json_encode($rec);
-                            $save_audit = $this->auditMethod('IN', $record_snapshot, 'RX_NETWORK_RULES');
+                            // $save_audit = $this->auditMethod('IN', $record_snapshot, 'RX_NETWORK_RULES');
                         }
                     }
                 }
@@ -232,7 +232,7 @@ class FlexibleNetworkController extends Controller
                         ->where('rx_network_rule_id', $request->rx_network_rule_id)->first();
                 if($record){
                     $record_snapshot = json_encode($record);
-                    $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORK_RULE_NAMES');
+                    // $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORK_RULE_NAMES');
                 } 
                 
                 $data = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID', $request->rx_network_rule_id)->delete();
@@ -269,7 +269,7 @@ class FlexibleNetworkController extends Controller
                     if($child_records){
                         foreach($child_records as $rec){
                             $record_snapshot = json_encode($rec);
-                            $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORK_RULES');
+                            // $save_audit = $this->auditMethod('UP', $record_snapshot, 'RX_NETWORK_RULES');
                         }
                     }
                 }
@@ -301,7 +301,7 @@ class FlexibleNetworkController extends Controller
             if($child_records){
                 foreach($child_records as $rec){
                     $record_snapshot = json_encode($rec);
-                    $save_audit = $this->auditMethod('DE', $record_snapshot, 'RX_NETWORK_RULES');
+                    // $save_audit = $this->auditMethod('DE', $record_snapshot, 'RX_NETWORK_RULES');
                 }
             }
             $Network_rules = DB::table('RX_NETWORK_RULES')->where('RX_NETWORK_RULE_ID'  ,$request->rx_network_rule_id)->delete();
@@ -387,17 +387,25 @@ class FlexibleNetworkController extends Controller
 
     public function search(Request $request)
     {
-        $ndc = DB::table('RX_NETWORK_RULE_NAMES')
-        ->whereRaw('LOWER(RX_NETWORK_RULE_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
-            ->orwhereRaw('LOWER(RX_NETWORK_RULE_NAME) LIKE ?', ['%' . strtolower($request->search) . '%'])
 
-            // ->where('RX_NETWORK_RULE_ID', 'like', '%' . $request->search . '%')
-            // ->whereRaw('LOWER(RX_NETWORK_RULE_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
-            // ->whereRaw('LOWER(RX_NETWORK_RULE_NAME) LIKE ?', ['%' . strtolower($request->search) . '%'])
+        if($request->search == 'undefined'){
+            $ndc = DB::table('RX_NETWORK_RULE_NAMES')
+            ->get(); 
+        }else{
+            $ndc = DB::table('RX_NETWORK_RULE_NAMES')
+            ->whereRaw('LOWER(RX_NETWORK_RULE_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                ->orwhereRaw('LOWER(RX_NETWORK_RULE_NAME) LIKE ?', ['%' . strtolower($request->search) . '%'])
+    
+                // ->where('RX_NETWORK_RULE_ID', 'like', '%' . $request->search . '%')
+                // ->whereRaw('LOWER(RX_NETWORK_RULE_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+                // ->whereRaw('LOWER(RX_NETWORK_RULE_NAME) LIKE ?', ['%' . strtolower($request->search) . '%'])
+    
+                // ->orWhere('RX_NETWORK_RULE_NAME', 'like', '%' . $request->search . '%')
+                ->get();
+    
 
-            // ->orWhere('RX_NETWORK_RULE_NAME', 'like', '%' . $request->search . '%')
-            ->get();
-
+        }
+      
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 

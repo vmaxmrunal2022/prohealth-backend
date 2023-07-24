@@ -14,19 +14,19 @@ class EligibilityValidationListController extends Controller
     use AuditTrait;
     public function search(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "search" => ['required'],
-        ]);
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        } else {
+        // $validator = Validator::make($request->all(), [
+        //     "search" => ['required'],
+        // ]);
+        // if ($validator->fails()) {
+        //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        // } else {
             $data = DB::table('ELIG_VALIDATION_LISTS')
                 ->where(DB::raw('UPPER(ELIG_VALIDATION_LISTS.ELIG_VALIDATION_ID)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->orWhere(DB::raw('UPPER(ELIG_VALIDATION_LISTS.ELIG_VALIDATION_NAME)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $data);
-        }
+        // }
     }
 
 
@@ -40,7 +40,12 @@ class EligibilityValidationListController extends Controller
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
     public function DropDownNew(Request $request){
-        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')->paginate(100);
+        $searchQuery = $request->search;
+        $elig_list_data = DB::table('ELIG_VALIDATION_LISTS')
+        ->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(ELIG_VALIDATION_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(ELIG_VALIDATION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
 
         return $this->respondWithToken($this->token(), '', $elig_list_data);
     }
@@ -109,7 +114,7 @@ class EligibilityValidationListController extends Controller
                 "elig_validation_id" => ['required', 'max:10', Rule::unique('ELIG_VALIDATION_LISTS')->where(function ($q) {
                     $q->whereNotNull('elig_validation_id');
                 })],
-                // "elig_validation_name" => ['required','max:25'],
+                "elig_validation_name" => ['required','max:25'],
                 // "age_limit_opt" => ['required_if:age_limit_opt,1'],
                 // "agelimit_month" => ['max:12'],
                 // "age_limit_day" => ['max:99'],

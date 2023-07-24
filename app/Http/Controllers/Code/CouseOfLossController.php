@@ -16,12 +16,12 @@ class CouseOfLossController extends Controller
     use AuditTrait;
     public function get(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "search" => ['required']
-        ]);
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        } else {
+        // $validator = Validator::make($request->all(), [
+        //     "search" => ['required']
+        // ]);
+        // if ($validator->fails()) {
+        //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        // } else {
             $procedurecodes = DB::table('CAUSE_OF_LOSS_CODES')
 
                 ->whereRaw('LOWER(CAUSE_OF_LOSS_CODE) LIKE ?', ['%' . strtolower($request->search) . '%'])
@@ -30,7 +30,7 @@ class CouseOfLossController extends Controller
                 ->get();
 
             return  $this->respondWithToken($this->token(), '', $procedurecodes);
-        }
+        // }
     }
 
     public function add(Request $request)

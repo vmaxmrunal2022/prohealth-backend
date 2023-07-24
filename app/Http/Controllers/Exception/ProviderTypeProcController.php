@@ -243,7 +243,7 @@ class ProviderTypeProcController extends Controller
                 // ],
 
                 "description" => ['required', 'max:36'],
-                "provider_type" => ['required', 'max:2'],
+                "provider_type" => ['required', 'max:10'],
                 "service_modifier" => ['required', 'max:2'],
                 'ucr' => ['nullable', 'max:10'],
                 'effective_date' => ['required', 'max:10'],
@@ -356,7 +356,7 @@ class ProviderTypeProcController extends Controller
 
                 'prov_type_proc_assoc_id' => ['required', 'max:10',],
                 "description" => ['required', 'max:36'],
-                "provider_type" => ['required', 'max:2'],
+                "provider_type" => ['required', 'max:10'],
                 "service_modifier" => ['required', 'max:2'],
                 'ucr' => ['nullable', 'max:10'],
                 'effective_date' => ['required', 'max:10'],
@@ -622,7 +622,7 @@ class ProviderTypeProcController extends Controller
                                         ->where('PROV_TYPE_PROC_ASSOC_ID', $request->prov_type_proc_assoc_id)
                                         ->delete();
             if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$exception_delete,true,201);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

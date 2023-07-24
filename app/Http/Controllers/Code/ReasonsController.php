@@ -14,12 +14,12 @@ class ReasonsController extends Controller
     use AuditTrait;
     public function get(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "search" => ['required']
-        ]);
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        } else {
+        // $validator = Validator::make($request->all(), [
+        //     "search" => ['required']
+        // ]);
+        // if ($validator->fails()) {
+        //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        // } else {
             $procedurecodes = DB::table('REASON_CODES')
                 // ->where('REASON_CODE', 'like', '%' . strtoupper($request->search) . '%')
                 ->whereRaw('LOWER(REASON_CODE) LIKE ?', ['%' . strtolower($request->search) . '%'])
@@ -27,13 +27,20 @@ class ReasonsController extends Controller
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $procedurecodes);
-        }
-    }
+        // }
+    }   
 
     public function all(Request $request)
     {
         $reasoncodes = DB::table('REASON_CODES')
             ->get();
+        return $this->respondWithToken($this->token(), '', $reasoncodes);
+    }
+    public function searchDropDown(Request $request)
+    {
+        $reasoncodes = DB::table('REASON_CODES')
+            ->whereRaw('LOWER(REASON_CODE) LIKE ?', ['%' . strtolower($request->search) . '%'])            
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $reasoncodes);
     }
 

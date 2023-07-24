@@ -30,6 +30,15 @@ class BenefitListController extends Controller
         return $this->respondWithToken($this->token(), '', $ndc);
     }
 
+    public function getDropdown(Request $request)
+    {
+        $ndc = DB::table('BENEFIT_LIST_NAMES')
+        ->whereRaw('LOWER(benefit_list_id) LIKE ? ',['%'.strtolower($request->search).'%'])
+        ->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $ndc);
+    }
+
     public function BenefitLists(Request $request){
 
         $ndc = DB::table('BENEFIT_LIST_NAMES')->get();
@@ -65,42 +74,46 @@ class BenefitListController extends Controller
                 'benefit_list_id' => ['required', 'max:10', Rule::unique('BENEFIT_LIST_NAMES')->where(function ($q) {
                     $q->whereNotNull('benefit_list_id');
                 })],
-                // 'ndc' => ['required', 'max:11', Rule::unique('BENEFIT_LIST')->where(function ($q) {
-                //     $q->whereNotNull('NDC');
-                // })],
-
-                // 'effective_date' => ['required', 'max:10', Rule::unique('BENEFIT_LIST')->where(function ($q) {
-                //     $q->whereNotNull('effective_date');
-                // })],
-
-                // 'benefit_list_id' => ['required', 'max:10', Rule::unique('BENEFIT_LIST')->where(function ($q) {
-                //     $q->whereNotNull('benefit_list_id');
-                // })],
-
+                
                 "description" => ['required', 'max:20'],
                 "effective_date" => ['required', 'max:10'],
                 'termination_date' => ['required', 'after:effective_date'],
-                // 'module_exit'=>['max:10'],
-                // 'pricing_strategy_id'=>['max:10'],
-                // 'accum_bene_strategy_id'=>['max:10'],
-                // 'copay_strategy_id'=>['max:10'],
-                // 'min_price'=>['max:11'],
-                // 'max_price'=>['max:11'],
-                'min_age' => ['nullable',],
-                'max_age' => ['nullable', 'gt:min_age'],
-                // 'coverage_start_days'=>['max:40'],
-                // 'max_qty_over_time'=>['max:10'],
-                // 'days_per_disability'=>['max:6'],
-                // 'max_price_per_day'=>['max:6'],
-                // 'max_price_per_diag'=>['nullable','max:6'],
-                // 'max_base_amount'=>['nullable','max:6'],
-                // 'base_apply_percent'=>['nullable','max:6'],
-                // 'base_apply_percent_opt'=>['nullable','max:6'],
-                // 'apply_mm_claim_max_opt'=>['nullable','max:6'],
-                // 'message'=>['nullable','max:6'],
-                // 'message_stop_date'=>['nullable','max:10'],
-                // 'reject_only_msg_flag'=>['nullable','max:6'],
-                // 'valid_relation_code'=>['nullable','max:6'],
+                "benefit_code" => ['required', 'max:10'],
+
+                'module_exit'=>['max:1'],
+                'pricing_strategy_id'=>['max:10'],
+                'accum_bene_strategy_id'=>['max:10'],
+                'copay_strategy_id'=>['max:10'],
+                'min_price'=>['max:8'],
+                'max_price'=>['max:8'],
+                'min_age' => ['nullable','max:10'],
+                'max_age' => ['nullable','gt:min_age'],
+                'coverage_start_days'=>['max:6'],
+                'max_qty_over_time'=>['max:6'],
+                'max_rx_qty_opt'=>['max:1'],
+                'rx_qty_opt_multiplier'=>['max:6'],
+
+
+
+                'days_per_disability'=>['max:3'],
+                'max_price_per_day'=>['nullable','max:10'],
+                'max_price_per_diag'=>['nullable','max:10','min:10'],
+                'max_price_per_diag_opt'=>['nullable','max:1'],
+                'days_per_disability_opt'=>['max:1'],
+
+
+                'max_base_amount'=>['nullable','max:12'],
+                'base_apply_percent'=>['nullable','max:3','min:3'],
+                'base_apply_percent_opt'=>['nullable','max:1'],
+                'apply_mm_claim_max_opt'=>['nullable','max:1'],
+                'message'=>['nullable','max:40'],
+                'message_stop_date'=>['nullable','max:10'],
+                'reject_only_msg_flag'=>['nullable','max:1'],
+                'valid_relation_code'=>['nullable','max:1'],
+                'min_price_opt'=>['max:1'],
+                'max_price_opt'=>['max:1'],
+                'sex_restriction'=>['max:6'],
+                
 
 
 
@@ -193,7 +206,7 @@ class BenefitListController extends Controller
                 $save_audit = $this->auditMethod('IN', $record_snap, 'BENEFIT_LIST');
                 $benefit_list_names = DB::table('BENEFIT_LIST_NAMES')
                     ->where(DB::raw('UPPER(benefit_list_id)'), strtoupper($request->benefit_list_id))
-                    ->where(DB::raw('UPPER(BENEFIT_CODE)'), strtoupper($request->benefit_code))
+                    // ->where(DB::raw('UPPER(BENEFIT_CODE)'), strtoupper($request->benefit_code))
                     ->first();
                 $save_audit_list_name = $this->auditMethod('IN', json_encode($benefit_list_names), 'BENEFIT_LIST_NAMES');
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
@@ -547,8 +560,8 @@ class BenefitListController extends Controller
     public function search(Request $request)
     {
         $ndc = DB::table('BENEFIT_LIST_NAMES')
-            ->where(DB::raw('UPPER(BENEFIT_LIST_ID)'), 'like', '%' . $request->search . '%')
-            // ->whereRaw('LOWER(BENEFIT_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
+            // ->where(DB::raw('UPPER(BENEFIT_LIST_ID)'), 'like', '%' . $request->search . '%')
+            ->whereRaw('LOWER(BENEFIT_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
             ->get();
 
         return $this->respondWithToken($this->token(), '', $ndc);
@@ -621,7 +634,7 @@ class BenefitListController extends Controller
                                     ->delete();
 
             if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$exception_delete,true,201);
             } else {
                 return $this->respondWithToken($this->token(), 'Record Not Found');
             }

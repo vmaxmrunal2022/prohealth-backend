@@ -324,6 +324,8 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/copay/delete', [CopayStrategyController::class, 'delete'])->name('copay.delete');
         Route::get('/copay/drop-down/new', [CopayStrategyController::class, 'CopayDropDownNew'])->name('copay.dropdown');
 
+        Route::get('/copay/drop-down/copaymatrix', [CopayScheduleController::class, 'CopayDropDownMatrix'])->name('copay.dropdown'); // SEARCH
+
 
 
         Route::get('/accumulated/search', [AccumlatedController::class, 'search'])->name('accumulated.search'); // SEARCH
@@ -655,7 +657,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('memberdata/view-limitations-new', [MemberController::class, 'getViewLimitationsNew']);
         Route::get('memberdata/form-submit', [MemberController::class, 'submitMemberForm']);
         Route::get('memberdata/dropdown', [MemberController::class, 'getMembersDropDownList']);
-        Route::get('memberdata/delete', [MemberController::class, 'delete']);
+        Route::post('memberdata/delete', [MemberController::class, 'delete']);
         
         
         //tab table routes

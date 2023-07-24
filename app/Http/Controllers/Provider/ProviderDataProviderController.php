@@ -326,8 +326,8 @@ use AuditTrait;
                         $get_child = DB::table('RX_NETWORK_NAMES')
                             ->where('network_id', $traditional_list->network_id)
                             ->first();
-                        $save_audit_parent = $this->auditMethod('IN', json_encode($get_parent), 'RX_NETWORK_NAMES');
-                        $save_audit_child = $this->auditMethod('UP', json_encode($get_child), 'RX_NETWORKS');
+                        // $save_audit_parent = $this->auditMethod('IN', json_encode($get_parent), 'RX_NETWORK_NAMES');
+                        // $save_audit_child = $this->auditMethod('UP', json_encode($get_child), 'RX_NETWORKS');
                     }
                 }
             }

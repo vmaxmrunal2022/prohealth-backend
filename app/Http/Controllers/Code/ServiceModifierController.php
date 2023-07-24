@@ -16,13 +16,13 @@ class ServiceModifierController extends Controller
     use AuditTrait;
     public function get(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "search" => ['required']
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     "search" => ['required']
+        // ]);
 
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        } else {
+        // if ($validator->fails()) {
+        //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        // } else {
             $procedurecodes = DB::table('SERVICE_MODIFIERS')
                 // ->where(DB::raw('UPPER(SERVICE_MODIFIER)'), 'like', '%' . strtoupper($request->search) . '%')
                 ->whereRaw('LOWER(SERVICE_MODIFIER) LIKE ?', ['%' . strtolower($request->search) . '%'])
@@ -30,12 +30,23 @@ class ServiceModifierController extends Controller
                 ->get();
 
             return $this->respondWithToken($this->token(), '', $procedurecodes);
-        }
+        // }
     }
 
     public function get_all(Request $request)
     {
-        $modifiers = $procedurecodes = DB::table('SERVICE_MODIFIERS')->get();
+        $modifiers = $procedurecodes = DB::table('SERVICE_MODIFIERS')->paginate();
+        if ($modifiers) {
+            return $this->respondWithToken($this->token(), '', $modifiers);
+        } else {
+            return $this->respondWithToken($this->token(), 'data not found', $modifiers);
+        }
+    }
+
+    public function getDropdown(Request $request){
+        $modifiers = $procedurecodes = DB::table('SERVICE_MODIFIERS')
+        ->whereRaw('LOWER(SERVICE_MODIFIER) LIKE ?',['%'.strtolower($request->search).'%'])
+        ->paginate(100);
         if ($modifiers) {
             return $this->respondWithToken($this->token(), '', $modifiers);
         } else {

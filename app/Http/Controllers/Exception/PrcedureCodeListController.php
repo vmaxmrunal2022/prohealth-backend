@@ -359,7 +359,7 @@ class PrcedureCodeListController extends Controller
         // ->where( 'PROC_CODE_LIST_ID', 'like', '%'.$request->search.'%' )
         ->whereRaw('LOWER(PROC_CODE_LIST_ID) LIKE ?', ['%' . strtolower($request->search) . '%'])
         ->orWhere( 'DESCRIPTION', 'like', '%'.$request->search.'%' )
-        ->get();
+        ->paginate(100);
         return $this->respondWithToken( $this->token(), '', $providerCodeList );
     }
 
@@ -370,7 +370,11 @@ class PrcedureCodeListController extends Controller
     }
     public function getAllNew( Request $request )
     {
-        $providerCodeList = DB::table( 'PROC_CODE_LIST_NAMES')->paginate(100);
+        $searchQuery = $request->search;
+        $providerCodeList = DB::table( 'PROC_CODE_LIST_NAMES')->when($searchQuery, function ($query) use ($searchQuery) {
+            $query->where(DB::raw('UPPER(PROC_CODE_LIST_ID)'), 'like', '%' . strtoupper($searchQuery) . '%');
+            $query->orWhere(DB::raw('UPPER(DESCRIPTION)'), 'like', '%' . strtoupper($searchQuery) . '%');
+         })->paginate(100);
         return $this->respondWithToken( $this->token(), '', $providerCodeList );
     }
 
@@ -417,57 +421,88 @@ class PrcedureCodeListController extends Controller
 
     public function produrecodelistdelete(Request $request)
     {
-        // return $request->all();
-        if (isset($request->proc_code_list_id) && isset($request->procedure_code)  && isset($request->effective_date) ) {
-            $child =  DB::table('PROC_CODE_LISTS')
-                                        ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
-                                        ->where('procedure_code',$request->procedure_code)
-                                        ->where('effective_date',$request->effective_date)->first();
-            if($child){
-                $record_snap = json_encode($child);
-                $save_audit = $this->auditMethod('DE', $record_snap, 'PROC_CODE_LISTS');
-            }                           
-            $all_exceptions_lists =  DB::table('PROC_CODE_LISTS')
-                                        ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
-                                        ->where('procedure_code',$request->procedure_code)
-                                        ->where('effective_date',$request->effective_date)
-                                        ->delete();
-           $childcount = DB::table('PROC_CODE_LISTS')->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)->count();
+    //     // return $request->all();
+    //     if (isset($request->proc_code_list_id) && isset($request->procedure_code)  && isset($request->effective_date) ) {
+    //         $child =  DB::table('PROC_CODE_LISTS')
+    //                                     ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+    //                                     ->where('procedure_code',$request->procedure_code)
+    //                                     ->where('effective_date',$request->effective_date)->first();
+    //         // if($child){
+    //         //     $record_snap = json_encode($child);
+    //         //     $save_audit = $this->auditMethod('DE', $record_snap, 'PROC_CODE_LISTS');
+    //         // }                           
+    //         $all_exceptions_lists =  DB::table('PROC_CODE_LISTS')
+    //                                     ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+    //                                     ->where('procedure_code',$request->procedure_code)
+    //                                     ->where('effective_date',$request->effective_date)
+    //                                     ->delete();
+    //        $childcount = DB::table('PROC_CODE_LISTS')->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)->count();
 
-            if ($all_exceptions_lists) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
-            }
-        } elseif(isset($request->proc_code_list_id)) {
+    //         if ($all_exceptions_lists) {
+    //             return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
+    //         } else {
+    //             return $this->respondWithToken($this->token(), 'Record Not Found');
+    //         }
+    //     } elseif(isset($request->proc_code_list_id)) {
 
-            $parent = DB::table('PROC_CODE_LIST_NAMES')->where('proc_code_list_id',$request->proc_code_list_id)->first();
-            if($parent){
-                $record_snap = json_encode($parent);
-                $save_audit = $this->auditMethod('DE', $record_snap, 'PROC_CODE_LIST_NAMES'); 
-            }
+    //         $parent = DB::table('PROC_CODE_LIST_NAMES')->where('proc_code_list_id',$request->proc_code_list_id)->first();
+    //         if($parent){
+    //             $record_snap = json_encode($parent);
+    //             $save_audit = $this->auditMethod('DE', $record_snap, 'PROC_CODE_LIST_NAMES'); 
+    //         }
 
-            $exception_delete =  DB::table('PROC_CODE_LIST_NAMES')
-                                    ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
-                                    ->delete();
+    //         $exception_delete =  DB::table('PROC_CODE_LIST_NAMES')
+    //                                 ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+    //                                 ->delete();
 
-            $childs =  DB::table('PROC_CODE_LISTS')->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)->get();
-            if($childs){
-                foreach($childs as $rec){
-                    $record_snap = json_encode($rec);
-                    $save_audit = $this->auditMethod('DE', $record_snap, 'PROC_CODE_LISTS');
-                }
-            }                             
-            $all_exceptions_lists =  DB::table('PROC_CODE_LISTS')
-                                    ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
-                                    ->delete();
+    //         $childs =  DB::table('PROC_CODE_LISTS')->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)->get();
+    //         // if($childs){
+    //         //     foreach($childs as $rec){
+    //         //         $record_snap = json_encode($rec);
+    //         //         $save_audit = $this->auditMethod('DE', $record_snap, 'PROC_CODE_LISTS');
+    //         //     }
+    //         // }                             
+    //         $all_exceptions_lists =  DB::table('PROC_CODE_LISTS')
+    //                                 ->where('PROC_CODE_LIST_ID', $request->proc_code_list_id)
+    //                                 ->delete();
 
-            if ($exception_delete) {
-                return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
-            } else {
-                return $this->respondWithToken($this->token(), 'Record Not Found');
-            }
+    //         if ($exception_delete) {
+    //             return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
+    //         } else {
+    //             return $this->respondWithToken($this->token(), 'Record Not Found');
+    //         }
+    //     }
+
+    if(isset($request->proc_code_list_id) && ($request->procedure_code) && ($request->effective_date)) {
+
+        $exception_delete = DB::table('PROC_CODE_LISTS')
+                            ->where('proc_code_list_id', $request->proc_code_list_id)
+                            ->where('procedure_code',$request->procedure_code)
+                            ->where('effective_date',$request->effective_date)
+                            ->delete();
+        $childcount = DB::table('PROC_CODE_LISTS')->where('proc_code_list_id', $request->proc_code_list_id)->count();
+        if ($exception_delete) {
+            return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
+        }
+
+    }
+    elseif(isset($request->proc_code_list_id)){
+
+        $Exception = DB::table('PROC_CODE_LIST_NAMES')
+                        ->where('proc_code_list_id', $request->proc_code_list_id)
+                        ->delete();
+
+        $exception_delete = DB::table('PROC_CODE_LISTS')
+                            ->where('proc_code_list_id', $request->proc_code_list_id)
+                            ->delete();
+        if ($Exception) {
+            return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$Exception,true,201);
+        } else {
+            return $this->respondWithToken($this->token(), 'Record Not Found');
         }
     }
+     }
     
 }

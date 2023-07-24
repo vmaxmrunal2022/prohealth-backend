@@ -415,19 +415,8 @@ class CustomerController extends Controller
                 $benefitcode_audit = DB::table('CUSTOMER')
                     ->where('customer_id', 'like', '%' . $request->customer_id . '%')->first();
                 $record_snapshot = json_encode($benefitcode_audit);
-                // $save_audit = $this->auditMethod('UP', $record_snapshot, 'CUSTOMER');
-                $save_audit = DB::table('FE_RECORD_LOG')
-                    ->insert([
-                        'user_id' => Cache::get('userId'),
-                        'date_created' => date('Ymd'),
-                        'time_created' => date('gisA'),
-                        'table_name' => 'PH_CUSTOMER',
-                        'record_action' => 'UP',
-                        'application' => 'ProPBM',
-                        // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
-                        'record_snapshot' => $record_snapshot,
-                    ]);
-
+                $save_audit = $this->auditMethod('UP', $record_snapshot, 'PH_CUSTOMER');
+                
                 return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_data);
                 // return $this->respondWithToken($this->token(), auth('web')->user(), $benefitcode);
             }
@@ -453,7 +442,8 @@ class CustomerController extends Controller
             ->where(DB::raw('UPPER(CUSTOMER_ID)'), 'like', '%' . strtoupper($request->customerid) . '%')
             // ->orWhere(DB::raw('UPPER(CUSTOMER_NAME)'), 'like', '%' . strtoupper($request->customerid) . '%')
             ->get();
-
+            // return $customer;
+// return "hello";
         return $this->respondWithToken($this->token(), '', $customer);
     }
 
@@ -521,7 +511,7 @@ class CustomerController extends Controller
             ->first();
         //save audit
         $record_snapshot = json_encode($customer);
-        $save_audit = $this->auditMethod('DE', $record_snapshot, 'CUSTOMER');
+        $save_audit = $this->auditMethod('DE', $record_snapshot, 'PH_CUSTOMER');
         $delete_customer = DB::table('customer')
             ->where('customer_id', $request->customer_id)
             ->delete();

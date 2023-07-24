@@ -16,13 +16,13 @@ class PrescriberValidationController extends Controller
     use AuditTrait;
     public function search(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            "search" => ['required'],
-        ]);
+        // $validator = Validator::make($request->all(), [
+        //     "search" => ['required'],
+        // ]);
 
-        if ($validator->fails()) {
-            return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
-        } else {
+        // if ($validator->fails()) {
+        //     return $this->respondWithToken($this->token(), $validator->errors(), $validator->errors(), "false");
+        // } else {
             $physicianExceptionData = DB::table('PHYSICIAN_EXCEPTIONS')
                 // ->where('PHYSICIAN_LIST', 'like', '%' . $request->search . '%')
                 ->whereRaw('LOWER(PHYSICIAN_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
@@ -32,7 +32,7 @@ class PrescriberValidationController extends Controller
                 ->orderBy('PHYSICIAN_LIST', 'ASC')
                 ->get();
             return $this->respondWithToken($this->token(), '', $physicianExceptionData);
-        }
+        // }
     }
 
     public function getProviderValidationList($physician_list)

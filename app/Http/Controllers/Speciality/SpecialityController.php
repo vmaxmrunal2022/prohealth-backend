@@ -18,9 +18,33 @@ class SpecialityController extends Controller
 
         $data = DB::table('SPECIALTY_EXCEPTIONS')
             // ->join('SPECIALTY_EXCEPTIONS', 'SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', '=', 'SPECIALTY_VALIDATIONS.SPECIALTY_LIST')
-            ->select('SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', 'SPECIALTY_EXCEPTIONS.EXCEPTION_NAME')
-            ->get();
+            ->select('SPECIALTY_EXCEPTIONS.SPECIALTY_LIST as physician_specialty_list', 'SPECIALTY_EXCEPTIONS.EXCEPTION_NAME as physician_specialty_name ')
+            ->whereRaw('LOWER(SPECIALTY_EXCEPTIONS.SPECIALTY_LIST) LIKE ?', ['%' . strtolower($request->search) . '%'])
+
+            ->paginate(100);
         return $this->respondWithToken($this->token(), '', $data);
+    }
+
+
+    public function getAllNew(Request $request)
+
+    {
+
+        $searchQuery = $request->search;
+
+        $data = DB::table('SPECIALTY_EXCEPTIONS')
+
+            // ->join('SPECIALTY_EXCEPTIONS', 'SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', '=', 'SPECIALTY_VALIDATIONS.SPECIALTY_LIST')
+
+            ->select('SPECIALTY_EXCEPTIONS.SPECIALTY_LIST', 'SPECIALTY_EXCEPTIONS.EXCEPTION_NAME as speciality_name')
+            ->when($searchQuery, function ($query) use ($searchQuery) {
+                $query->where(DB::raw('UPPER(SPECIALTY_LIST)'), 'like', '%' . strtoupper($searchQuery) . '%');
+                $query->orWhere(DB::raw('UPPER(EXCEPTION_NAME)'), 'like', '%' . strtoupper($searchQuery) . '%');
+
+             })->paginate(100);
+
+        return $this->respondWithToken($this->token(), '', $data);
+
     }
 
     public function search(Request $request)
