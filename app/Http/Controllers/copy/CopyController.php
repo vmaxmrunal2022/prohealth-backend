@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
 
 class CopyController extends Controller
 {
@@ -278,15 +280,147 @@ class CopyController extends Controller
         $record = DB::table($request->table_name)
             ->where($uniqueColumns->column_name, $sourceCustomer)
             ->first();
+// dd($request->description);
 
 
-        $newRecord = (array) $record;
-        $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
-        $newRecord['form_id'] = 'COPY';
-        $newRecord['date_time_modified'] = date('d-F-y');
-        $newRecord['date_time_created'] = date('d-F-y');
+                            $tableName = $request->table_name;
+                            $columns1 = ['exception_name'];
+                            $existingColumns1 = Schema::getColumnListing($tableName);
+                            $columnsExist1 = true;
+                            foreach ($columns1 as $column1) {
+                                if (!in_array($column1, $existingColumns1)) {
+                                    $columnsExist1 = false;
+                                    break;
+                                }
+                            }
+
+
+                            $tableName = $request->table_name;
+                            $columns2 = ['customer_name','effective_date','termination_date'];
+                            $existingColumns2 = Schema::getColumnListing($tableName);
+                            $columnsExist2 = true;
+                            foreach ($columns2 as $column2) {
+                                if (!in_array($column2, $existingColumns2)) {
+                                    $columnsExist2 = false;
+                                    break;
+                                }
+                            }
+
+
+                            $tableName = $request->table_name;
+                            $columns3= ['client_name','effective_date','termination_date'];
+                            $existingColumns3 = Schema::getColumnListing($tableName);
+                            $columnsExist3 = true;
+                            foreach ($columns3 as $column3) {
+                                if (!in_array($column3, $existingColumns3)) {
+                                    $columnsExist3 = false;
+                                    break;
+                                }
+                            }
+
+
+                           
+                            $tableName = $request->table_name;
+                            $columns4= ['group_name','effective_date','termination_date'];
+                            $existingColumns4 = Schema::getColumnListing($tableName);
+                            $columnsExist4 = true;
+                            foreach ($columns4 as $column4) {
+                             if (!in_array($column4, $existingColumns4)) {
+                                    $columnsExist4 = false;
+                                    break;
+                                    }
+                                }
+
+
+                                $tableName = $request->table_name;
+                            $columns4= ['effective_date','termination_date'];
+                            $existingColumns4= Schema::getColumnListing($tableName);
+                            $columnsExist4 = true;
+                            foreach ($columns4 as $column4) {
+                             if (!in_array($column4, $existingColumns4)) {
+                                    $columnsExist4 = false;
+                                    break;
+                                    }
+                                }
+
+                   
+                if ($columnsExist1) {
+                
+                    $newRecord = (array) $record;
+                    $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+                    $newRecord['form_id'] = 'COPY';
+                    $newRecord['date_time_modified'] = date('d-F-y');
+                    $newRecord['date_time_created'] = date('d-F-y');
+                    $newRecord['exception_name']=$request->description;
+                } 
+                
+                else if($columnsExist2){
+
+                    
+                    $newRecord = (array) $record;
+                    $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+                    $newRecord['form_id'] = 'COPY';
+                    $newRecord['date_time_modified'] = date('d-F-y');
+                    $newRecord['date_time_created'] = date('d-F-y');
+                    $newRecord['customer_name'] = $request->description;
+
+                    $newRecord['effective_date']=$request->effective_date;
+                    $newRecord['termination_date']=$request->termination_date;
+
+                   
+
+                }
+
+                else if($columnsExist3){
+
+                    
+                    $newRecord = (array) $record;
+                    $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+                    $newRecord['form_id'] = 'COPY';
+                    $newRecord['date_time_modified'] = date('d-F-y');
+                    $newRecord['date_time_created'] = date('d-F-y');
+                    $newRecord['client_name'] = $request->description;
+                    $newRecord['effective_date']=$request->effective_date;
+                    $newRecord['termination_date']=$request->termination_date;
+
+                   
+
+                }
+                
+                else if($columnsExist4){
+
+                    $newRecord = (array) $record;
+                    $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+                    $newRecord['form_id'] = 'COPY';
+                    $newRecord['date_time_modified'] = date('d-F-y');
+                    $newRecord['date_time_created'] = date('d-F-y');
+                    // $newRecord['group_name']=$request->description;
+                    $newRecord['effective_date']=$request->effective_date;
+                    $newRecord['termination_date']=$request->termination_date;
+
+
+                }
+                
+                else{
+
+                    $newRecord = (array) $record;
+                    $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+                    $newRecord['form_id'] = 'COPY';
+                    $newRecord['date_time_modified'] = date('d-F-y');
+                    $newRecord['date_time_created'] = date('d-F-y');
+                   
+
+                }
+
+
+
+
 
         // return $newRecord;
+
+
+
+
         $excludedColumns = [
             $uniqueColumns->column_name, 'form_id' => 'COPY', 'date_time_modified' => date('d-F-y'),
             'date_time_created' => date('d-F-y')
@@ -321,17 +455,59 @@ class CopyController extends Controller
             $child_records = DB::table($child_table_name)
                 ->where(DB::raw('UPPER(' . $uniqueColumns->column_name . ')'), strtoupper($sourceCustomer))
                 ->get();
-            foreach ($child_records as $child) {
-                $newRecord = (array)$child;
-                $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
 
-                $excludedColumns = [$uniqueColumns->column_name];
-                $columns = array_diff(array_keys($newRecord), [strtolower($excludedColumns[0])]);
 
-                // to insert data  into db PARENT
-                $copy_source_to_dest = DB::table($child_table_name)
-                    ->insert(array_intersect_key($newRecord, array_flip($columns)));
-            }
+
+                    $tableName = $request->table_name;
+                    $columns = ['effective_date', 'termination_date'];
+
+                    $existingColumns = Schema::getColumnListing($tableName);
+
+                    $columnsExist = true;
+                    foreach ($columns as $column) {
+                        if (!in_array($column, $existingColumns)) {
+                            $columnsExist = false;
+                            break;
+                        }
+                    }
+
+                    if ($columnsExist) {
+                        // All the columns exist in the table.
+                        // Your logic here...
+
+                        foreach ($child_records as $child) {
+                            $newRecord = (array)$child;
+                            $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+                            $newRecord['effective_date']=$request->effective_date;
+                            $newRecord['termination_date']=$request->termination_date;
+            
+                            $excludedColumns = [$uniqueColumns->column_name,'effective_date','termination_date'];
+                            $columns = array_diff(array_keys($newRecord), [strtolower($excludedColumns[0])]);
+            
+                            // to insert data  into db PARENT
+                            $copy_source_to_dest = DB::table($child_table_name)
+                                ->insert(array_intersect_key($newRecord, array_flip($columns)));
+                        }
+                    } else {
+
+                        foreach ($child_records as $child) {
+                            $newRecord = (array)$child;
+                            $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+                           
+            
+                            $excludedColumns = [$uniqueColumns->column_name];
+                            $columns = array_diff(array_keys($newRecord), [strtolower($excludedColumns[0])]);
+            
+                            // to insert data  into db PARENT
+                            $copy_source_to_dest = DB::table($child_table_name)
+                                ->insert(array_intersect_key($newRecord, array_flip($columns)));
+                        }
+                        // One or more columns do not exist in the table.
+                        // Your logic here...
+                    }
+
+
+           
 
             //for audit 
             foreach ($child_records as $child) {
