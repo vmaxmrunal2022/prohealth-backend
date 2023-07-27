@@ -281,8 +281,6 @@ class CopyController extends Controller
             ->where($uniqueColumns->column_name, $sourceCustomer)
             ->first();
 
-
-
             $tableName = $request->table_name;
             $columns1 = ['effective_date', 'termination_date'];
             $existingColumns1 = Schema::getColumnListing($tableName);
@@ -296,18 +294,6 @@ class CopyController extends Controller
                     }
 
 
-
-                    $columns2 = ['effective_date', 'termination_date'];
-                    $existingColumns2 = Schema::getColumnListing($tableName);
-        
-                            $columnsExist2= true;
-                            foreach ($columns2 as $column2) {
-                                if (!in_array($column2, $existingColumns2)) {
-                                    $columnsExist2 = false;
-                                    break;
-                                }
-                            }
-
                 if ($columnsExist1) {
                 
                     $newRecord = (array) $record;
@@ -317,17 +303,8 @@ class CopyController extends Controller
                     $newRecord['date_time_created'] = date('d-F-y');
                     $newRecord['effective_date']=$request->effective_date;
                     $newRecord['termination_date']=$request->termination_date;
-                    $newRecord['customer_name']=$request->description;
-                } else if($columnsExist2){
-                    $newRecord = (array) $record;
-                    $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
-                    $newRecord['form_id'] = 'COPY';
-                    $newRecord['date_time_modified'] = date('d-F-y');
-                    $newRecord['date_time_created'] = date('d-F-y');
-                    $newRecord['effective_date']=$request->effective_date;
-                    $newRecord['termination_date']=$request->termination_date;
-                    $newRecord['customer_name']=$request->description;
-                }else{
+                    // $newRecord['customer_name']=$request->description;
+                } else{
 
                     $newRecord = (array) $record;
                     $newRecord[$uniqueColumns->column_name] = $destinationCustomer;

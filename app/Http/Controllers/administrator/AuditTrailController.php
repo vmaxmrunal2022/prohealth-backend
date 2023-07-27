@@ -43,7 +43,7 @@ class AuditTrailController extends Controller
         }
         $results = DB::table('PHIDBA.FE_RECORD_LOG')
             // ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 100) . "%'")
-            ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 60) . "%'")
+            // ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 60) . "%'")
             ->where(DB::raw('UPPER(table_name)'), strtoupper($request->table_name))
             ->orderBy(
                 'DATE_CREATED',
