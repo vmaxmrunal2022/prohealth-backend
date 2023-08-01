@@ -1001,9 +1001,9 @@ class NDCExceptionController extends Controller
 
 
                     
-                            if (count($get_exceptions_lists1) === 0)                            {
-                                return $this->respondWithToken($this->token(), 'Data Not Found',true,200);
-                            } else {
+                            // if (count($get_exceptions_lists1) === 0)                            {
+                            //     return $this->respondWithToken($this->token(), 'Data Not Found',true,200);
+                            // } else {
 
 
                                 foreach ($get_exceptions_lists1 as $excption) {
@@ -1016,7 +1016,7 @@ class NDCExceptionController extends Controller
                                 }
 
 
-                            }
+                            // }
 
 
 
@@ -1033,9 +1033,6 @@ class NDCExceptionController extends Controller
                                 ->delete();
 
 
-                              
-
-
         // dd(json_encode($get_exceptions_lists2));
             $save_audit_delete2 = $this->auditMethod('DE', json_encode($get_exceptions_lists2), 'NDC_EXCEPTIONS');
             // dd($save_audit_delete2);
@@ -1048,31 +1045,7 @@ class NDCExceptionController extends Controller
             }
         }
 
-        // if(isset($request->ndc_exception_list) && isset($request->ndc) && isset($request->effective_date)){
-
-        //     $get_exceptions_lists =  DB::table('NDC_EXCEPTION_LISTS')
-        //         ->where('ndc_exception_list', $request->ndc_exception_list)
-        //         ->where('ndc', $request->ndc)
-        //         ->where('effective_date', $request->effective_date)
-        //         ->first();
-        //     $save_audit_delete = $this->auditMethod('DE', json_encode($get_exceptions_lists), 'NDC_EXCEPTION_LISTS');
-
-        //     $all_exceptions_lists =  DB::table('NDC_EXCEPTION_LISTS')
-        //         ->where('ndc_exception_list', $request->ndc_exception_list)
-        //         ->where('ndc', $request->ndc)
-        //         ->where('effective_date', $request->effective_date)
-        //         ->delete();
-        //     $childcount =  DB::table('NDC_EXCEPTION_LISTS')->where('ndc_exception_list', $request->ndc_exception_list)->count();
-        //     if ($all_exceptions_lists) {
-        //         return $this->respondWithToken($this->token(), 'Record Deleted Successfully', $childcount);
-        //     } else {
-        //         return $this->respondWithToken($this->token(), 'Record Not Found');
-        //     }
-
-
-
-
-        // }
+        
     }
 
 
