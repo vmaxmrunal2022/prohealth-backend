@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Cache;
+
 
 class DrugClassController extends Controller
 {
@@ -637,6 +639,9 @@ class DrugClassController extends Controller
                     [
                         'drug_catgy_exception_list' => $request->drug_catgy_exception_list,
                         'drug_catgy_exception_name'=>$request->drug_catgy_exception_name,
+                        'DATE_TIME_CREATED'=>$createddate,
+                        'DATE_TIME_MODIFIED'=>$createddate,
+                        'USER_ID' => Cache::get('userId'),
                         
                     ]
                 );
@@ -715,13 +720,29 @@ class DrugClassController extends Controller
                         'BNG_MULTI_INC_EXC_IND' => $request->bng_multi_inc_exc_ind,
                         'BGA_INC_EXC_IND' => $request->bga_inc_exc_ind,
                         'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
+                        'DATE_TIME_CREATED'=>$createddate,
+                        'DATE_TIME_MODIFIED'=>$createddate,
+                        'USER_ID' => Cache::get('userId'),
                     ]
                 );
 
-                    
-    
-                $add = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->where('PLAN_ID', 'like', '%' . $request->plan_id . '%')->first();
+                // $add = DB::table('NDC_EXCEPTION_LISTS')->where('NDC_EXCEPTION_LIST', 'like', '%' . $request->ndc_exception_list . '%')->first();
+                $add = DB::table('DRUG_CATGY_EXCEPTION_NAMES')
+                    ->where(DB::raw('UPPER(drug_catgy_exception_list)'), 'like', '%' . strtoupper($request->drug_catgy_exception_list) . '%')
+                    // ->where(DB::raw('UPPER(ndc)'), 'like', '%' . strtoupper($request->ndc) . '%')
+                    ->first();
+                $record_snapshot = json_encode($add);
+                $save_audit = $this->auditMethod('IN', $record_snapshot, 'DRUG_CATGY_EXCEPTION_NAMES');
+                $add_parent = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')
+                ->where('DRUG_CATGY_EXCEPTION_LIST', $request->drug_catgy_exception_list)
+                ->where('SCATEGORY', $request->scategory)
+                ->where('STYPE', $request->stype)
+                ->where('EFFECTIVE_DATE', $request->effective_date)->first();
+                $save_audit_parent = $this->auditMethod('IN', json_encode($add_parent), 'PLAN_DRUG_CATGY_EXCEPTIONS');
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
+                // $add = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->where('PLAN_ID', 'like', '%' . $request->plan_id . '%')->first();
+                // return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
 
             }
 
@@ -800,13 +821,7 @@ class DrugClassController extends Controller
 
             else{
 
-                // dd($request->add_new);
-
-                // if ($validation->count() < 1) {
-                //     return $this->respondWithToken($this->token(), 'Record Not Found', $validation, false, 404, 0);
-                // }
-                
-
+               
                 
 
                 if($request->update_new == 0){
@@ -836,6 +851,9 @@ class DrugClassController extends Controller
                     ->update(
                         [
                             'drug_catgy_exception_name'=>$request->drug_catgy_exception_name,
+                            'DATE_TIME_CREATED'=>$createddate,
+                            'DATE_TIME_MODIFIED'=>$createddate,
+                            'USER_ID' => Cache::get('userId'),
                             
                         ]
                     );
@@ -920,6 +938,19 @@ class DrugClassController extends Controller
                         'GEN_INC_EXC_IND' => $request->gen_inc_exc_ind,
                         'MESSAGE_STOP_DATE' => $request->message_stop_date,
                     ]);
+
+
+                    $update = DB::table('NDC_EXCEPTION_LISTS')
+                    ->where('ndc_exception_list',$request->ndc_exception_list)
+                    ->first();
+                $record_snapshot = json_encode($update);
+                $save_audit = $this->auditMethod('UP', $record_snapshot, 'NDC_EXCEPTION_LISTS');
+                $get_names = DB::table('NDC_EXCEPTIONS')
+                    ->where(DB::raw('UPPER(ndc_exception_list)'), strtoupper($request->ndc_exception_list))
+                    ->first();
+
+                $save_audit_child = $this->auditMethod('UP', json_encode($get_names), 'NDC_EXCEPTIONS');
+                return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
                     $update = DB::table('PLAN_DRUG_CATGY_EXCEPTIONS')->where('plan_id', 'like', '%' . $request->plan_id . '%')->first();
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update_names);
 
