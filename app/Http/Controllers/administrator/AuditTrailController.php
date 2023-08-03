@@ -65,6 +65,9 @@ class AuditTrailController extends Controller
         $prov_type_list_id = isset(json_decode($request->record_snapshot)->prov_type_list_id)  ? json_decode($request->record_snapshot)->prov_type_list_id : null;
         $prov_type_proc_assoc_id = isset(json_decode($request->record_snapshot)->prov_type_proc_assoc_id)  ? json_decode($request->record_snapshot)->prov_type_proc_assoc_id : null;
 
+        $ther_class_exception_list = isset(json_decode($request->record_snapshot)->ther_class_exception_list)  ? json_decode($request->record_snapshot)->ther_class_exception_list : null;
+
+        
 
 
 
@@ -132,6 +135,14 @@ class AuditTrailController extends Controller
                 return $query->where('prov_type_proc_assoc_id', 'like', '%' . $prov_type_proc_assoc_id . '%');
             })
 
+
+
+            ->when($ther_class_exception_list, function ($query) use ($ther_class_exception_list) {
+                return $query->where('ther_class_exception_list', 'like', '%' . $ther_class_exception_list . '%');
+            })
+
+
+            
 
 
             ->get();
