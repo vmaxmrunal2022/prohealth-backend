@@ -708,10 +708,10 @@ use AuditTrait;
         if (isset($request->ther_class_exception_list) && isset($request->therapy_class)&& isset($request->effective_date)) {
 
 
-            $get_exceptions_lists =  DB::table('NDC_EXCEPTION_LISTS')
-            ->where('ndc_exception_list', $request->ndc_exception_list)
-            ->where('ndc', $request->ndc)
-            ->where('effective_date', $request->effective_date)
+            $get_exceptions_lists =  DB::table('TC_EXCEPTION_LISTS')
+            ->where('ther_class_exception_list', $request->ther_class_exception_list)
+            ->where('therapy_class',$request->therapy_class)
+            ->where('effective_date',$request->effective_date)
             ->first();
 
 

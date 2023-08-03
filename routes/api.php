@@ -120,6 +120,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/check-benifit-exist', [BenifitController::class, 'checkBenifitCodeExist']);
 
         Route::get('/benefits/all_codes', [BenifitController::class, 'get_all'])->name('benefit.all.get'); // SEARCH
+        Route::get('/benefits/all_codes-new', [BenifitController::class, 'dropdown']);
 
 
         // REASON CODES
@@ -128,6 +129,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/reasons/delete', [ReasonsController::class, 'delete'])->name('reasons.delete'); // DELETE
         Route::get('/check-reason-exist', [ReasonsController::class, 'checkReasonExist']);
         Route::get('/reasons/all', [ReasonsController::class, 'all'])->name('reasons.get'); // SEARCH
+        Route::get('/reasons/search-drop-down', [ReasonsController::class, 'searchDropDown'])->name('reasons.get'); // SEARCH
 
 
         // PROCEDURE
@@ -173,6 +175,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('/service-modifier/delete', [ServiceModifierController::class, 'delete'])->name('servicemodifier.delete'); // DELETE
         Route::get('/check-service-modifier-exist', [ServiceModifierController::class, 'checkServiceExist']);
         Route::get('/service-modifier-all', [ServiceModifierController::class, 'get_all'])->name('servicemodifier.get.all');  // SEARCH
+        Route::get('/service-modifier-all-new', [ServiceModifierController::class, 'getDropdown'])->name('servicemodifier.get.all');  // SEARCH
 
 
         // COUSE OF LOSS
@@ -249,15 +252,17 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
         //exception speciality list
         Route::get('/speciality/getAll', [SpecialityController::class, 'getAll'])->name('exception.speciality.getAll');
-
+        Route::get('/speciality/getAll-new', [SpecialityController::class, 'getAllNew'])->name('exception.speciality.getAll-new');
         //exception copay Schedule list
         Route::get('copay-schedule/getAll', [CopayScheduleController::class, 'getAll'])->name('exception.getAll.copay');
+        Route::get('copay-schedule/getAll/without-paginate', [CopayScheduleController::class, 'with_out_paginate'])->name('exception.getAll.copay');
 
         //exception prescriber list
         Route::get('/prescriber/getAll', [PrescriberController::class, 'getAll'])->name('exception.prescriber.getAll');
 
         //exception diagnosis list
         Route::get('/diagnosis/all', [DiagnosisController::class, 'all'])->name('exception.diagnosis.get');
+        
         Route::get('/diagnosis/all-new', [DiagnosisController::class, 'allNew'])->name('exception.diagnosis.get');
 
         //exception copay Schedule list
@@ -323,7 +328,6 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::get('/copay/drop-down-new', [CopayStrategyController::class, 'CopayDropDownNew'])->name('copay.dropdown');
         Route::post('/copay/delete', [CopayStrategyController::class, 'delete'])->name('copay.delete');
         Route::get('/copay/drop-down/new', [CopayStrategyController::class, 'CopayDropDownNew'])->name('copay.dropdown');
-
         Route::get('/copay/drop-down/copaymatrix', [CopayScheduleController::class, 'CopayDropDownMatrix'])->name('copay.dropdown'); // SEARCH
 
 
@@ -372,7 +376,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
         Route::post('major/medical/add', [MajorMedicalController::class, 'add']);
         Route::post('clientgroup/add', [ClientGroupController::class, 'add']);
         Route::post('/major-medical/delete', [MajorMedicalController::class, 'delete'])->name('major.medical.delete'); // delete
-
+        
 
 
         // getDetails
@@ -457,7 +461,7 @@ Route::group(['middleware' => 'apisession'], function ($router) {
 
     Route::get('clientgroup/get', [ClientGroupController::class, 'searchClientgroup']);
     Route::get('clientgroup/get/{clientgrpid}', [ClientGroupController::class, 'GetOneClientGroup']);
-
+    Route::post('clientgroup/delete-client-group', [ClientGroupController::class, 'deleteRecord']);
 
 
 
@@ -797,6 +801,9 @@ Route::group(['prefix' => 'codes'], function ($router) {
     Route::post('/diagnosis/delete', [DiagnosisController::class, 'delete'])->name('diagnosis.delete'); // DELETE
     // Route::get('/diagnosis/all', [DiagnosisController::class, 'get'])->name('diagnosis.get'); // SEARCH
     Route::get('/check-diagnosis-exist', [DiagnosisController::class, 'checkDiagnosisCodeExist']);
+    /**bellow route is created by MRUNAL */
+    Route::get('/diagnosis/get-dropdown', [DiagnosisController::class, 'dropdown']);
+    /** */
 
 
     // SERVICE TYPES
@@ -893,7 +900,10 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/procedure/details', [ExceptionProcedureController::class, 'getPCItemDetails'])->name('procedure.details.get'); // DETAILS
     Route::post('/procedure/add', [ExceptionProcedureController::class, 'add'])->name('procedure.add'); // SEARCH
     Route::get('/allphysicain_lists', [ExceptionProcedureController::class, 'AllPhysicainLists'])->name('allphysicians'); // SEARCH
+    Route::get('/allphysicain_lists-new', [ExceptionProcedureController::class, 'dropdown']); // SEARCH
     Route::post('/delete/procedure/code', [ExceptionProcedureController::class, 'delete_procedure_code'])->name('delete_procedure_code');
+
+    Route::get('/diagnosis_validation_lists/dropdown', [ExceptionProcedureController::class, 'diagnosis_validation_lists'])->name('delete_procedure_code');
 
 
     // BENEFIT LIST EXCEPTION
@@ -915,6 +925,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
 
     Route::get('/benifitcodes/list/all', [BenefitListController::class, 'BenefitLists']);
     Route::get('/benifitcodes/list/all-new', [BenefitListController::class, 'BenefitLists']);
+    Route::get('/benifitcodes/list/all-new-dropdown', [BenefitListController::class, 'getDropdown']);
     Route::post('/benefit/list/delete', [BenefitListController::class, 'benefit_list_delete'])->name('benefit_list_delete');
 
 
@@ -925,7 +936,7 @@ Route::group(['prefix' => 'exception'], function ($router) {
     Route::get('/provider-type-validation/getList/{ncdid}', [ProviderTypeValidationController::class, 'getList'])->name('provider-type-validation-get');
     Route::post('/provider-type-validation/add', [ProviderTypeValidationController::class, 'add'])->name('provider-type-validation-get');
     Route::get('/provider-type-validation/getDetails', [ProviderTypeValidationController::class, 'getNDCItemDetails'])->name('provider-type-validation-getFormData');
-    Route::get('/provider-type-validation-association-names/list', [ProviderTypeValidationController::class, 'getAllNames'])->name('provider-type-validation-get');
+    // Route::get('/provider-type-validation-association-names/list', [ProviderTypeValidationController::class, 'getAllNames'])->name('provider-type-validation-get');
     Route::get('/provider-type-validation-association-names/list/new', [ProviderTypeValidationController::class, 'getAllNames_New'])->name('provider-type-validation-get');
 
     Route::post('/providertype/validation/delete', [ProviderTypeValidationController::class, 'provider_type_validation_delete'])->name('provider_type_validation_delete');
@@ -1006,6 +1017,7 @@ Route::group(['prefix' => 'validationlist'], function ($router) {
     Route::get('/diagnosisvalidation/validation-list/{diagnosis_list}', [DiagnosisValidationListController::class, 'getDiagnosisValidations']);
     Route::get('/diagnosisvalidation/details/{diagnosis_list}/{diagnosis_id}', [DiagnosisValidationListController::class, 'getDiagnosisDetails']);
     Route::get('/diagnosisvalidation/getAll', [DiagnosisValidationListController::class, 'getAll']);
+    Route::get('/diagnosisvalidation/getAll-new', [DiagnosisValidationListController::class, 'dropdown']);
     Route::post('/diagnosisvalidation/submit-diagnosis-validation-form', [DiagnosisValidationListController::class, 'updatePriorityDiagnosisValidation']);
 
     Route::post('/diagnosisvalidation/delete-record', [DiagnosisValidationListController::class, 'deleteRecord']); //delete limitation
@@ -1216,7 +1228,7 @@ Route::group(['prefix' => 'providerdata'], function ($router) {
 
     Route::get('prioritize/get/{ndcid}', [PrioritiseNetworkController::class, 'networkList']);
     Route::post('prioritize/add', [PrioritiseNetworkController::class, 'add']);
-    Route::get('prioritize/details/{ndcid}/{ncdid2}/{id3}', [PrioritiseNetworkController::class, 'getDetails']);
+    Route::get('prioritize/details/{id}/{ndcid}/{ncdid2}/{id3}', [PrioritiseNetworkController::class, 'getDetails']);
 });
 
 
@@ -1242,6 +1254,7 @@ Route::group(['prefix' => 'third-party-pricing/'], function () {
 
     //Copay Schedule
     Route::get('copay-schedule/get', [CopayScheduleController::class, 'get'])->name('get.copay');
+    Route::get('copay-schedule/dropdown', [CopayScheduleController::class, 'dropdown'])->name('get.copay');
     Route::get('copay-schedule/get-new', [CopayScheduleController::class, 'getNew'])->name('get.copay.new');
     Route::get('copay-schedule/get-copay-data', [CopayScheduleController::class, 'getCopayData'])->name('get.copay.single');
     Route::get('copay-schedule/get-source', [CopayScheduleController::class, 'getSourceOptions']);
@@ -1413,6 +1426,7 @@ Route::group(['prefix' => 'administrator/'], function () {
     //User Defination
     Route::get('user-defination/get', [UserDefinationController::class, 'get']);
     Route::get('user-defination/get-group-data', [UserDefinationController::class, 'getGroupData']);
+    Route::get('user-defination/get-group/{group_id}', [UserDefinationController::class, 'getGroupAccess']);
     Route::get('user-defination/get-security-options', [UserDefinationController::class, 'getSecurityOptions']);
     Route::get('user-defination/validate-group', [UserDefinationController::class, 'validateGroup']);
     Route::post('user-defination/submit', [UserDefinationController::class, 'submitFormData']);
@@ -1425,6 +1439,8 @@ Route::group(['prefix' => 'administrator/'], function () {
     Route::get('user-defination/get-group-all-access', [UserDefinationController::class, 'getGroupAllAccess']);
     Route::get('user-defination/get-group-access-details', [UserDefinationController::class, 'getGroupAccessDetails']);
     Route::get('user-defination/get-profile/{user_id}', [UserDefinationController::class, 'getUserProfile']);
+    Route::post("user-definition/delete-user", [UserDefinationController::class, 'deleteUser']);
+    Route::post("user-definition/delete-group", [UserDefinationController::class, 'deleteGroup']);
 
     //Search Audit Trail
     Route::get('search-audit-trial/get-tables', [AuditTrailController::class, 'getTables'])->name('getAllTables');

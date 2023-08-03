@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Cache;
+
 
 use App\Traits\AuditTrait;
 
@@ -243,6 +245,9 @@ use AuditTrait;
                     [
                         'procedure_exception_list' => $request->procedure_exception_list,
                         'exception_name'=>$request->exception_name,
+                        'DATE_TIME_CREATED'=>$createddate,
+                        'DATE_TIME_MODIFIED'=>$createddate,
+                        'USER_ID' => Cache::get('userId'),
                         
                     ]
                 );
@@ -287,6 +292,9 @@ use AuditTrait;
                         'min_age'=>$request->min_age,
                         'max_qty_over_time'=>$request->max_qty_over_time,
                         'ucr'=>$request->ucr,
+                        'DATE_TIME_CREATED'=>$createddate,
+                        'DATE_TIME_MODIFIED'=>$createddate,
+                        'USER_ID' => Cache::get('userId'),
                     ]);
                 $child = DB::table('PROCEDURE_EXCEPTION_LISTS' )
                         ->where('procedure_exception_list',$request->procedure_exception_list)
@@ -406,6 +414,9 @@ use AuditTrait;
                     ->update(
                         [
                             'exception_name'=>$request->exception_name,
+                            'DATE_TIME_CREATED'=>$createddate,
+                            'DATE_TIME_MODIFIED'=>$createddate,
+                            'USER_ID' => Cache::get('userId'),
                             
                         ]
                     );
@@ -452,6 +463,9 @@ use AuditTrait;
                             'min_age'=>$request->min_age,
                             'max_qty_over_time'=>$request->max_qty_over_time,
                             'ucr'=>$request->ucr,
+                            'DATE_TIME_CREATED'=>$createddate,
+                            'DATE_TIME_MODIFIED'=>$createddate,
+                            'USER_ID' => Cache::get('userId'),
                             
                         ]
                     );
@@ -550,6 +564,9 @@ use AuditTrait;
                                 'min_age'=>$request->min_age,
                                 'max_qty_over_time'=>$request->max_qty_over_time,
                                 'ucr'=>$request->ucr,
+                                'DATE_TIME_CREATED'=>$createddate,
+                                'DATE_TIME_MODIFIED'=>$createddate,
+                                'USER_ID' => Cache::get('userId'),
                             ]);
 
                         $child = DB::table('PROCEDURE_EXCEPTION_LISTS' )

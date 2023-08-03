@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Cache;
+
 class ReasonCodeExceptionController extends Controller
 {
 
@@ -184,6 +186,9 @@ use AuditTrait;
                     [
                         'reason_code_list_id' => $request->reason_code_list_id,
                         'reason_code_name' => $request->reason_code_name,
+                        'DATE_TIME_CREATED'=>$createddate,
+                        'DATE_TIME_MODIFIED'=>$createddate,
+                        'USER_ID' => Cache::get('userId'),
 
                     ]
                 );
@@ -201,8 +206,22 @@ use AuditTrait;
                     ]
                 );
                     
-                $add = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
-                return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
+
+                $add = DB::table('REASON_CODE_LISTS')
+                ->where(DB::raw('UPPER(reason_code_list_id)'), 'like', '%' . strtoupper($request->reason_code_list_id) . '%')
+                // ->where(DB::raw('UPPER(ndc)'), 'like', '%' . strtoupper($request->ndc) . '%')
+                ->first();
+            $record_snapshot = json_encode($add);
+            $save_audit = $this->auditMethod('IN', $record_snapshot, 'REASON_CODE_LISTS');
+            $add_parent = DB::table('REASON_CODE_LIST_NAMES')
+                ->where(DB::raw('UPPER(reason_code_list_id)'), strtoupper($request->reason_code_list_id))
+                ->first();
+            $save_audit_parent = $this->auditMethod('IN', json_encode($add_parent), 'REASON_CODE_LIST_NAMES');
+            return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
+
+                // $add = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
+                // return $this->respondWithToken($this->token(), 'Record Added Successfully', $add);
 
             }
 
@@ -259,6 +278,9 @@ use AuditTrait;
                         ->update(
                             [
                                 'reason_code_name' => $request->reason_code_name,
+                                'DATE_TIME_CREATED'=>$createddate,
+                                'DATE_TIME_MODIFIED'=>$createddate,
+                                'USER_ID' => Cache::get('userId'),
 
                             ]
                         );
@@ -271,11 +293,31 @@ use AuditTrait;
                         ->update(
                             [
                                 'TERMINATION_DATE'=>$request->termination_date,
+                                'DATE_TIME_CREATED'=>$createddate,
+                                'DATE_TIME_MODIFIED'=>$createddate,
+                                'USER_ID' => Cache::get('userId'),
 
                             ]
                         );
-                    $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
+
+
+                        $update = DB::table('REASON_CODE_LISTS')
+                        ->where('reason_code_list_id',$request->reason_code_list_id)
+                        ->first();
+
+                    $record_snapshot = json_encode($update);
+                    $save_audit = $this->auditMethod('UP', $record_snapshot, 'REASON_CODE_LISTS');
+                    $get_names = DB::table('REASON_CODE_LIST_NAMES')
+                        ->where(DB::raw('UPPER(reason_code_list_id)'), strtoupper($request->reason_code_list_id))
+                        ->first();
+
+                    $save_audit_child = $this->auditMethod('UP', json_encode($get_names), 'REASON_CODE_LIST_NAMES');
                     return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
+
+
+
+                    // $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
+                    // return $this->respondWithToken($this->token(), 'Record Updated Successfully', $update);
 
                 }elseif($request->update_new == 1){
                     
@@ -316,6 +358,9 @@ use AuditTrait;
                         ->update(
                             [
                                 'reason_code_name' => $request->reason_code_name,
+                                'DATE_TIME_CREATED'=>$createddate,
+                                'DATE_TIME_MODIFIED'=>$createddate,
+                                'USER_ID' => Cache::get('userId'),
 
                             ]
                         );
@@ -328,13 +373,27 @@ use AuditTrait;
                                 'reason_code' => $request->reason_code,
                                 'effective_date' => $request->effective_date,
                                 'termination_date' => $request->termination_date,
-                                'date_time_created' => $createddate,
-                                'date_time_modified' => $createddate,
+                                'DATE_TIME_CREATED'=>$createddate,
+                                'DATE_TIME_MODIFIED'=>$createddate,
+                                'USER_ID' => Cache::get('userId'),
                             ]
                         );
+
+
+                        $update_child = DB::table('REASON_CODE_LISTS')
+                        ->where(DB::raw('UPPER(reason_code_list_id)'), strtoupper($request->reason_code_list_id))
+                        // ->where(DB::raw('UPPER(ndc)'), strtoupper($request->ndc))
+                        ->first();
+                    $record_snapshot = json_encode($update_child);
+                    $save_audit = $this->auditMethod('IN', $record_snapshot, 'REASON_CODE_LISTS');
+                    $get_parent = DB::table('REASON_CODE_LIST_NAMES')
+                        ->where(DB::raw('UPPER(reason_code_list_id)'), strtoupper($request->reason_code_list_id))
+                        ->first();
+                    $save_audit_parent = $this->auditMethod('UP', json_encode($get_parent), 'REASON_CODE_LIST_NAMES');
+                    return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
                             
-                        $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
-                        return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
+                        // $update = DB::table('REASON_CODE_LISTS')->where('reason_code_list_id', 'like', '%' . $request->reason_code_list_id . '%')->first();
+                        // return $this->respondWithToken($this->token(), 'Record Added Successfully', $update);
         
                     }
 
@@ -457,6 +516,17 @@ use AuditTrait;
     public function delete(Request $request)
     {
         if (isset($request->reason_code_list_id) && isset($request->reason_code) && isset($request->reject_code) && isset($request->effective_date)) {
+
+
+            $get_exceptions_lists =  DB::table('REASON_CODE_LISTS')
+            ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
+            ->where('REJECT_CODE', $request->reject_code)
+            ->where('REASON_CODE', $request->reason_code)
+            ->where('EFFECTIVE_DATE',$request->effective_date)
+            ->first();
+
+
+
             $all_exceptions_lists =  DB::table('REASON_CODE_LISTS')
                                         ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
                                         ->where('REJECT_CODE', $request->reject_code)
@@ -465,6 +535,9 @@ use AuditTrait;
                                         ->delete();
                                         
             $childcount =   DB::table('REASON_CODE_LISTS')->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)->count();
+
+            $save_audit_delete = $this->auditMethod('DE', json_encode($get_exceptions_lists), 'REASON_CODE_LISTS');
+
             if ($all_exceptions_lists) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully',$childcount);
             }else{
@@ -472,12 +545,36 @@ use AuditTrait;
             }
         }elseif (isset($request->reason_code_list_id)) {
 
+  
+            $get_exceptions_lists1=  DB::table('REASON_CODE_LISTS')
+            ->select('reason_code_list_id')
+           ->where('reason_code_list_id', $request->reason_code_list_id)
+          
+           ->get();
+
+            $get_exceptions_lists2=  DB::table('REASON_CODE_LIST_NAMES')
+           ->where('reason_code_list_id', $request->reason_code_list_id)
+           ->first();
+
+
+           foreach ($get_exceptions_lists1 as $excption) {
+            // Access properties of each object
+            $save_audit_delete1 = $this->auditMethod('DE', json_encode($excption), 'REASON_CODE_LISTS');
+           }
+
+
+
             $exception_delete =  DB::table('REASON_CODE_LIST_NAMES')
                                     ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
                                     ->delete();
             $all_exceptions_lists =  DB::table('REASON_CODE_LISTS')
                                         ->where('REASON_CODE_LIST_ID', $request->reason_code_list_id)
                                         ->delete();
+
+            $save_audit_delete2 = $this->auditMethod('DE', json_encode($get_exceptions_lists2), 'REASON_CODE_LIST_NAMES');
+
+
+
             if ($exception_delete) {
                 return $this->respondWithToken($this->token(), 'Record Deleted Successfully');
             }else{
