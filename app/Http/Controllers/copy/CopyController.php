@@ -282,27 +282,63 @@ class CopyController extends Controller
             ->first();
 
             $tableName = $request->table_name;
+
+            $column=['effective_date'];
+
+
+            $existingColumns0 = Schema::getColumnListing($tableName);
+
+            $columnsExist1 = true;
+            foreach ($column as $column1) {
+                if (!in_array($column1, $existingColumns0)) {
+                    $columnsExist1 = false;
+                    break;
+                }
+            }
+
+
+
             $columns1 = ['effective_date', 'termination_date'];
+
+
             $existingColumns1 = Schema::getColumnListing($tableName);
 
-                    $columnsExist1 = true;
+                    $columnsExist0 = true;
                     foreach ($columns1 as $column1) {
                         if (!in_array($column1, $existingColumns1)) {
-                            $columnsExist1 = false;
+                            $columnsExist0 = false;
                             break;
                         }
                     }
 
 
-                if ($columnsExist1) {
+                    if($columnsExist0){
+
+                        $newRecord = (array) $record;
+
+                        $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+                        $newRecord['form_id'] = 'COPY';
+                        $newRecord['date_time_modified'] = date('d-F-y');
+                        $newRecord['date_time_created'] = date('d-F-y');
+                        $newRecord['effective_date']=$request->effective_date;
+                        // $newRecord['termination_date']=$request->termination_date;
+
+                    }
+
+
+               else if ($columnsExist1) {
                 
                     $newRecord = (array) $record;
+
                     $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
                     $newRecord['form_id'] = 'COPY';
                     $newRecord['date_time_modified'] = date('d-F-y');
                     $newRecord['date_time_created'] = date('d-F-y');
                     $newRecord['effective_date']=$request->effective_date;
                     $newRecord['termination_date']=$request->termination_date;
+                    // $newRecord = (array) $record;
+                    // dd($destinationCustomer);
+
                     // $newRecord['customer_name']=$request->description;
                 } else{
 
@@ -311,10 +347,171 @@ class CopyController extends Controller
                     $newRecord['form_id'] = 'COPY';
                     $newRecord['date_time_modified'] = date('d-F-y');
                     $newRecord['date_time_created'] = date('d-F-y');
+                    // $newRecord['effective_date']=$request->effective_date;
+                    // $newRecord['termination_date']=$request->termination_date;
+
+
+                }
+
+// dd($newRecord);
+                
+
+                $existing_customer_Columns1 = Schema::getColumnListing($tableName);
+
+                $existing_client_columns1=Schema::getColumnListing($tableName);
+
+                $customerName_check=['customer_name'];
+                $clientName_check=['client_name'];
+                $groupName_check=['group_name'];
+                $exception_check=['exception_name'];
+                $description_check=['description'];
+                $limitation_check=['limitations_list_name'];
+                $pricing_strategy_name_check=['pricing_strategy_name'];
+                $label_name_check=['label_name'];
+                $copay_strategy_name_check=['copay_strategy_name'];
+
+                
+
+                
+
+                $columns_customer_Exist1 = true;
+                foreach ($customerName_check as $column1) {
+                    if (!in_array($column1, $existing_customer_Columns1)) {
+                        $columns_customer_Exist1 = false;
+                        break;
+                    }
+                }
+
+                $columns_client_Exist1 = true;
+                foreach ($clientName_check as $column2) {
+                    if (!in_array($column2, $existing_client_columns1)) {
+                        $columns_client_Exist1 = false;
+                        break;
+                    }
+                }
+
+                $columns_group_Exist1 = true;
+                foreach ($groupName_check as $column2) {
+                    if (!in_array($column2, $existing_client_columns1)) {
+                        $columns_group_Exist1 = false;
+                        break;
+                    }
+                }
+
+
+                $columns_exception_Exist1 = true;
+                foreach ($exception_check as $column3) {
+                    if (!in_array($column3, $existing_client_columns1)) {
+                        $columns_exception_Exist1 = false;
+                        break;
+                    }
+                }
+
+
+
+                $columns_description_Exist1 = true;
+                foreach ($description_check as $column3) {
+                    if (!in_array($column3, $existing_client_columns1)) {
+                        $columns_description_Exist1 = false;
+                        break;
+                    }
+                }
+
+
+                $columns_limitation_Exist1 = true;
+                foreach ($limitation_check as $column3) {
+                    if (!in_array($column3, $existing_client_columns1)) {
+                        $columns_limitation_Exist1 = false;
+                        break;
+                    }
+                }
+
+
+
+                $columns_pricing_Exist1 = true;
+                foreach ($pricing_strategy_name_check as $column) {
+                    if (!in_array($column, $existing_client_columns1)) {
+                        $columns_pricing_Exist1 = false;
+                        break;
+                    }
+                }
+
+
+                $columns_label_name_Exist1 = true;
+                foreach ($label_name_check as $column) {
+                    if (!in_array($column, $existing_client_columns1)) {
+                        $columns_label_name_Exist1 = false;
+                        break;
+                    }
+                }
+
+
+                $columns_copay_Exist1 = true;
+                foreach ($copay_strategy_name_check as $column) {
+                    if (!in_array($column, $existing_client_columns1)) {
+                        $columns_copay_Exist1 = false;
+                        break;
+                    }
+                }
+
+
+                
+
+
+
+
+                if ($columns_customer_Exist1) {
+                    $newRecord['customer_name']=$request->description;
+
+                }else if($columns_client_Exist1){
+                    $newRecord['client_name']=$request->description;
+                }else if($columns_group_Exist1){
+                    $newRecord['group_name']=$request->description;
+
+                }else if($columns_exception_Exist1){
+                    $newRecord['exception_name']=$request->description;
+
+                }else if($columns_description_Exist1){
+
+                    $newRecord['description']=$request->description;
+
+                }
+
+                else if($columns_pricing_Exist1){
+
+                    $newRecord['pricing_strategy_name']=$request->description;
 
                 }
 
 
+                else if($columns_copay_Exist1){
+
+                    $newRecord['copay_strategy_name']=$request->description;
+
+                }
+
+                
+
+
+                else if($columns_label_name_Exist1){
+
+                    $newRecord['label_name']=$request->description;
+
+                }
+
+                else if($columns_limitation_Exist1){
+                    $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+                    $newRecord['EFFECTIVE']=$request->effective_date;
+                    $newRecord['termination_date']=$request->termination_date;
+
+                    $newRecord['limitations_list']=$request->destination_id;
+                    $newRecord['limitations_list_name']=$request->description;
+
+                   
+                }
+
+
+                
 
 
 
@@ -328,8 +525,10 @@ class CopyController extends Controller
 
         $columns = array_diff(array_keys($newRecord), [
             strtolower($excludedColumns[0]), $excludedColumns['form_id'],
-            $excludedColumns['date_time_modified'], $excludedColumns['date_time_created']
+            $excludedColumns['date_time_modified'], $excludedColumns['date_time_created'],
         ]);
+
+        // dd($newRecord);
 
         // to insert data  into db PARENT
         $copy_source_to_dest = DB::table($request->table_name)
@@ -354,17 +553,151 @@ class CopyController extends Controller
                 ->where(DB::raw('UPPER(' . $uniqueColumns->column_name . ')'), strtoupper($sourceCustomer))
                 ->get();
             foreach ($child_records as $child) {
-                $newRecord = (array)$child;
-                $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
-                $newRecord['effective_date']=$request->effective_date;
-                $newRecord['termination_date']=$request->termination_date;
 
-                $excludedColumns = [$uniqueColumns->column_name,'effective_date','termination_date'];
-                $columns = array_diff(array_keys($newRecord), [strtolower($excludedColumns[0])]);
 
-                // to insert data  into db PARENT
-                $copy_source_to_dest = DB::table($child_table_name)
-                    ->insert(array_intersect_key($newRecord, array_flip($columns)));
+                $columns0 = ['termination_date'];
+
+
+                $existingColumns0 = Schema::getColumnListing($tableName);
+    
+                $columnsExist0 = true;
+                foreach ($columns1 as $column1) {
+                $existingColumns0 = Schema::getColumnListing($tableName);
+                    if (!in_array($column1, $existingColumns0)) {
+                        $columnsExist0 = false;
+                        break;
+                    }
+                }
+
+
+
+                $columns1 = ['effective_date', 'termination_date'];
+                $existingColumns1 = Schema::getColumnListing($tableName);
+    
+                        $columnsExist1 = true;
+                        foreach ($columns1 as $column1) {
+                            if (!in_array($column1, $existingColumns1)) {
+                                $columnsExist1 = false;
+                                break;
+                            }
+                        }
+
+                        
+
+                        if($columnsExist0){
+
+                            $newRecord = (array)$child;
+                            $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+            
+                            // if(!empty($request->effective_date && $request->termination_date)){
+                                $newRecord['effective_date']=$request->effective_date;
+                                // $newRecord['termination_date']=$request->termination_date;
+                
+                            // }
+
+                           
+                            $excludedColumns = [$uniqueColumns->column_name,'effective_date'];
+                            $columns = array_diff(array_keys($newRecord), [strtolower($excludedColumns[0])]);
+            
+                            // to insert data  into db PARENT
+                            $copy_source_to_dest = DB::table($child_table_name)
+                                ->insert(array_intersect_key($newRecord, array_flip($columns)));
+
+                        }
+
+                       else if ($columnsExist1 ) {
+                
+                            $newRecord = (array)$child;
+                            $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+            
+
+                            // if(!empty($request->effective_date && $request->termination_date)){
+                                $newRecord['effective_date']=$request->effective_date;
+                                $newRecord['termination_date']=$request->termination_date;
+                
+                            // }
+
+                           
+                            $excludedColumns = [$uniqueColumns->column_name,'effective_date','termination_date'];
+                            $columns = array_diff(array_keys($newRecord), [strtolower($excludedColumns[0])]);
+            
+                            // to insert data  into db PARENT
+                            $copy_source_to_dest = DB::table($child_table_name)
+                                ->insert(array_intersect_key($newRecord, array_flip($columns)));
+                            // $newRecord['customer_name']=$request->description;
+                        } 
+                        
+                        
+                        else{
+        
+                            $newRecord = (array)$child;
+                            $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+
+                            
+                            // $columns1 = ['effective_date'];
+                            // $existingColumns1 = Schema::getColumnListing($tableName);
+                
+                            //         $columnsExist1 = true;
+                            //         foreach ($columns1 as $column1) {
+                            //             if (!in_array($column1, $existingColumns1)) {
+                            //                 $columnsExist1 = false;
+                            //                 break;
+                            //             }
+                            //         }
+
+
+
+                            //         if($columnsExist1){
+                            //             $newRecord['effective_date']=$request->effective_date;
+
+                            //         }
+
+                                    
+
+
+
+                            //         $columns2 = ['effective_date','termination_date'];
+                            //         $existingColumns2 = Schema::getColumnListing($tableName);
+                        
+                            //                 $columnsExist2 = true;
+                            //                 foreach ($columns2 as $column1) {
+                            //                     if (!in_array($column1, $existingColumns2)) {
+                            //                         $columnsExist2 = false;
+                            //                         break;
+                            //                     }
+                            //                 }
+
+
+                            //  if($columnsExist2){
+
+                            //          $newRecord['effective_date']=$request->effective_date;
+                            //         $newRecord['termination_date']=$request->termination_date;
+
+                            //  }
+
+
+                             if(!empty($request->effective_date && $request->termination_date)){
+                                        $newRecord['effective_date']=$request->effective_date;
+                                        // $newRecord['termination_date']=$request->termination_date;
+                                    }
+
+                                      
+
+                            
+            
+                            
+            
+                            $excludedColumns = [$uniqueColumns->column_name,'effective_date','termination_date'];
+                            $columns = array_diff(array_keys($newRecord), [strtolower($excludedColumns[0])]);
+            
+                            // to insert data  into db PARENT
+                            $copy_source_to_dest = DB::table($child_table_name)
+                                ->insert(array_intersect_key($newRecord, array_flip($columns)));
+        
+                        }
+
+
+               
             }
 
             //for audit 

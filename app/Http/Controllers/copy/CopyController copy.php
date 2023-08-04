@@ -33,9 +33,10 @@ class CopyController extends Controller
             // ->latest()
             ->first();
         // return $unsiqueColumns;
-        if (empty($uniqueColumns)) {
-            return $this->respondWithToken($this->token(), 'Unique Source ID Not Found', '', false);
-        }
+
+        // if (empty($uniqueColumns)) {
+        //     return $this->respondWithToken($this->token(), 'Unique Source ID Not Found', '', false);
+        // }
         // return $uniqueColumns;
         // $selectedColumns = [];
         // $selectedColumns[] = DB::raw($column->column_name . ' AS `' . $column->column_name . '`');
