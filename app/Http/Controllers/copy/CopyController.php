@@ -312,7 +312,7 @@ class CopyController extends Controller
                     }
 
 
-                    if($columnsExist0){
+                    if($columnsExist0 && !empty($request->effective_date &&  $request->termination_date )){
 
                         $newRecord = (array) $record;
 
@@ -321,12 +321,12 @@ class CopyController extends Controller
                         $newRecord['date_time_modified'] = date('d-F-y');
                         $newRecord['date_time_created'] = date('d-F-y');
                         $newRecord['effective_date']=$request->effective_date;
-                        // $newRecord['termination_date']=$request->termination_date;
+                        $newRecord['termination_date']=$request->termination_date;
 
                     }
 
 
-               else if ($columnsExist1) {
+               else if ($columnsExist1 && !empty($request->effective_date &&  $request->termination_date)) {
                 
                     $newRecord = (array) $record;
 
@@ -335,7 +335,7 @@ class CopyController extends Controller
                     $newRecord['date_time_modified'] = date('d-F-y');
                     $newRecord['date_time_created'] = date('d-F-y');
                     $newRecord['effective_date']=$request->effective_date;
-                    $newRecord['termination_date']=$request->termination_date;
+                    // $newRecord['termination_date']=$request->termination_date;
                     // $newRecord = (array) $record;
                     // dd($destinationCustomer);
 
@@ -467,6 +467,8 @@ class CopyController extends Controller
                     $newRecord['client_name']=$request->description;
                 }else if($columns_group_Exist1){
                     $newRecord['group_name']=$request->description;
+                    // $newRecord['effective_date']=$request->effective_date;
+
 
                 }else if($columns_exception_Exist1){
                     $newRecord['exception_name']=$request->description;
@@ -506,7 +508,7 @@ class CopyController extends Controller
 
                     $newRecord['limitations_list']=$request->destination_id;
                     $newRecord['limitations_list_name']=$request->description;
-
+// dd($newRecord);
                    
                 }
 
@@ -584,13 +586,15 @@ class CopyController extends Controller
 
                         
 
-                        if($columnsExist0){
+                        if($columnsExist0 ){
 
                             $newRecord = (array)$child;
                             $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
-            
+            if(isset($request->effective_date)){
+                $newRecord['effective_date']=$request->effective_date;
+
+            }
                             // if(!empty($request->effective_date && $request->termination_date)){
-                                $newRecord['effective_date']=$request->effective_date;
                                 // $newRecord['termination_date']=$request->termination_date;
                 
                             // }
@@ -606,14 +610,20 @@ class CopyController extends Controller
                         }
 
                        else if ($columnsExist1 ) {
+
+                        // dd($newRecord);
                 
                             $newRecord = (array)$child;
                             $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
-            
+            if(isset($request->effective_date) && isset($request->termination_date)){
+
+
+                $newRecord['effective_date']=$request->effective_date;
+                                $newRecord['termination_date']=$request->termination_date;
+            }
 
                             // if(!empty($request->effective_date && $request->termination_date)){
-                                $newRecord['effective_date']=$request->effective_date;
-                                $newRecord['termination_date']=$request->termination_date;
+                                
                 
                             // }
 
@@ -629,64 +639,43 @@ class CopyController extends Controller
                         
                         
                         else{
+
+                            
         
                             $newRecord = (array)$child;
                             $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
 
                             
-                            // $columns1 = ['effective_date'];
-                            // $existingColumns1 = Schema::getColumnListing($tableName);
+                            $columns1 = ['termination_date'];
+                            $existingColumns1 = Schema::getColumnListing($tableName);
                 
-                            //         $columnsExist1 = true;
-                            //         foreach ($columns1 as $column1) {
-                            //             if (!in_array($column1, $existingColumns1)) {
-                            //                 $columnsExist1 = false;
-                            //                 break;
-                            //             }
-                            //         }
-
-
-
-                            //         if($columnsExist1){
-                            //             $newRecord['effective_date']=$request->effective_date;
-
-                            //         }
+                                    $columnsExist1 = true;
+                                    foreach ($columns1 as $column1) {
+                                        if (!in_array($column1, $existingColumns1)) {
+                                            $columnsExist1 = false;
+                                            break;
+                                        }
+                                    }
 
                                     
 
+                                    if (property_exists($child, 'termination_date')) {
 
+                                        if(!empty($request->effective_date &&  $request->termination_date)){
+                                            $newRecord['effective_date']=$request->effective_date;
+                                            $newRecord['termination_date']=$request->termination_date;
+                                        }
+                                     
 
-                            //         $columns2 = ['effective_date','termination_date'];
-                            //         $existingColumns2 = Schema::getColumnListing($tableName);
-                        
-                            //                 $columnsExist2 = true;
-                            //                 foreach ($columns2 as $column1) {
-                            //                     if (!in_array($column1, $existingColumns2)) {
-                            //                         $columnsExist2 = false;
-                            //                         break;
-                            //                     }
-                            //                 }
+                                } else {
+                                    // dd($newRecord);
 
+                                    if(!empty($request->effective_date)){
+                                        $newRecord['effective_date']=$request->effective_date;                                    }
 
-                            //  if($columnsExist2){
-
-                            //          $newRecord['effective_date']=$request->effective_date;
-                            //         $newRecord['termination_date']=$request->termination_date;
-
-                            //  }
-
-
-                             if(!empty($request->effective_date && $request->termination_date)){
-                                        $newRecord['effective_date']=$request->effective_date;
-                                        // $newRecord['termination_date']=$request->termination_date;
                                     }
 
-                                      
 
-                            
-            
-                            
-            
                             $excludedColumns = [$uniqueColumns->column_name,'effective_date','termination_date'];
                             $columns = array_diff(array_keys($newRecord), [strtolower($excludedColumns[0])]);
             
@@ -701,10 +690,10 @@ class CopyController extends Controller
             }
 
             //for audit 
-            foreach ($child_records as $child) {
-                // $record_snapshot = json_encode($child);
-                // $save_audit = $this->auditMethod('IN', json_encode($child), $child_table_name);
-            }
+            // foreach ($child_records as $child) {
+            //     // $record_snapshot = json_encode($child);
+            //     // $save_audit = $this->auditMethod('IN', json_encode($child), $child_table_name);
+            // }
         }
 
         // To redirect URL to Modify
