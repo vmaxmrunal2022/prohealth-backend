@@ -22,6 +22,16 @@ class UserDefinationController extends Controller
 {
     use AuditTrait;
 
+    // public function profileUpload(Request $request)
+    // {
+    //     return view('FileUpload');
+    // }
+
+    // public function storeFile(Request $request)
+    // {
+    //     echo $request->file('file')->store('uplods');
+    // }
+
     public function addUserDefinition(Request $request)
     {
         return $request->privs;

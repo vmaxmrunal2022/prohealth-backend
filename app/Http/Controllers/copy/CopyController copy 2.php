@@ -6,8 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Traits\AuditTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-
 
 class CopyController extends Controller
 {
@@ -281,39 +279,12 @@ class CopyController extends Controller
             ->where($uniqueColumns->column_name, $sourceCustomer)
             ->first();
 
-        $tableName = $request->table_name;
-        $columns1 = ['effective_date', 'termination_date'];
-        $existingColumns1 = Schema::getColumnListing($tableName);
 
-        $columnsExist1 = true;
-        foreach ($columns1 as $column1) {
-            if (!in_array($column1, $existingColumns1)) {
-                $columnsExist1 = false;
-                break;
-            }
-        }
-
-
-        if ($columnsExist1) {
-            $newRecord = (array) $record;
-            $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
-            $newRecord['form_id'] = 'COPY';
-            $newRecord['date_time_modified'] = date('d-F-y');
-            $newRecord['date_time_created'] = date('d-F-y');
-            $newRecord['effective_date'] = $request->effective_date;
-            $newRecord['termination_date'] = $request->termination_date;
-            // $newRecord['customer_name']=$request->description;
-        } else {
-            $newRecord = (array) $record;
-            $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
-            $newRecord['form_id'] = 'COPY';
-            $newRecord['date_time_modified'] = date('d-F-y');
-            $newRecord['date_time_created'] = date('d-F-y');
-        }
-
-
-
-
+        $newRecord = (array) $record;
+        $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
+        $newRecord['form_id'] = 'COPY';
+        $newRecord['date_time_modified'] = date('d-F-y');
+        $newRecord['date_time_created'] = date('d-F-y');
 
         // return $newRecord;
         $excludedColumns = [
@@ -353,14 +324,8 @@ class CopyController extends Controller
             foreach ($child_records as $child) {
                 $newRecord = (array)$child;
                 $newRecord[$uniqueColumns->column_name] = $destinationCustomer;
-                $newRecord['effective_date'] = $request->effective_date;
-                $newRecord['termination_date'] = $request->termination_date;
-                /** TODO 
-                 * need to add description also
-                 */
-                // $newRecord['']
 
-                $excludedColumns = [$uniqueColumns->column_name, 'effective_date', 'termination_date'];
+                $excludedColumns = [$uniqueColumns->column_name];
                 $columns = array_diff(array_keys($newRecord), [strtolower($excludedColumns[0])]);
 
                 // to insert data  into db PARENT

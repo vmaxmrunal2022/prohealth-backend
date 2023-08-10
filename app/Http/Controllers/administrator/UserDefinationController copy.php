@@ -22,6 +22,8 @@ class UserDefinationController extends Controller
 {
     use AuditTrait;
 
+
+
     public function addUserDefinition(Request $request)
     {
         return $request->privs;
@@ -315,7 +317,7 @@ class UserDefinationController extends Controller
 
     public function submitFormData(Request $request)
     {
-       
+
         if ($request->new) {
             $validator = Validator::make($request->all(), [
                 'user_id' => ['required', Rule::unique('fe_users')->where(function ($q) {
@@ -339,7 +341,7 @@ class UserDefinationController extends Controller
                     ->count();
                 if ($request->group_id && $check_group == 0) {
                     return $this->respondWithToken($this->token(), "Please select valid group", [["Please select valid group"]], false);
-                } 
+                }
                 $coun = "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDADDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDAAAAAAAAADDDDDDDDDDDDDDDDDDDDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
                 $A = [];
                 $key1 = [];

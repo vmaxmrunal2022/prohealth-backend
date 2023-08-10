@@ -1217,6 +1217,7 @@ Route::group(['prefix' => 'membership/'], function () {
 
 
 
+
 //Administrator
 Route::group(['prefix' => 'administrator/'], function () {
     //User Defination
