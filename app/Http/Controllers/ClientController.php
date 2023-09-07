@@ -148,6 +148,7 @@ class ClientController extends Controller
                         'time_created' => date('gisA'),
                         'table_name' => 'CLIENT',
                         'record_action' => 'IN',
+                        'primary_key' => $request->client_id,
                         'application' => 'ProPBM',
                         // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
                         'record_snapshot' => $record_snapshot,
@@ -270,6 +271,7 @@ class ClientController extends Controller
                         'time_created' => date('gisA'),
                         'table_name' => 'CLIENT',
                         'record_action' => 'UP',
+                        'primary_key' => $request->client_id,
                         'application' => 'ProPBM',
                         // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
                         'record_snapshot' => $record_snapshot,
@@ -361,7 +363,7 @@ class ClientController extends Controller
             ->first();
 
         $record_snapshot = json_encode($client);
-        $save_audit = $this->auditMethod('DE', $record_snapshot, 'CLIENT');
+        $save_audit = $this->auditMethod('DE', $record_snapshot, $request->client_id, 'CLIENT');
         $client = DB::table('CLIENT')
             ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))
             ->delete();
@@ -372,7 +374,7 @@ class ClientController extends Controller
             ->get();
         for ($i = 0; $i < count($client_group); $i++) {
             // $record_snapshot = json_encode($client_group[$i]);
-            $save_audit = $this->auditMethod('DE', json_encode($client_group[$i]), 'CLIENT_GROUP');
+            $save_audit = $this->auditMethod('DE', json_encode($client_group[$i]), $request->client_id, 'CLIENT_GROUP');
         }
         $client_group_delete = DB::table('CLIENT_GROUP')
             ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))

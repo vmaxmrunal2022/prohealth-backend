@@ -297,7 +297,7 @@ class CustomerController extends Controller
                 //Audit 
                 // $record_snapshot = implode('|', (array) $benefitcode);
                 $record_snapshot = json_encode($benefitcode);
-                $save_audit = $this->auditMethod('IN', $record_snapshot, 'PH_CUSTOMER');
+                $save_audit = $this->auditMethod('IN', $record_snapshot, $request->customer_id, 'PH_CUSTOMER');
                 return $this->respondWithToken($this->token(), 'Record Added Successfully', $updated_data);
             }
         } else {
@@ -425,6 +425,7 @@ class CustomerController extends Controller
                         'record_action' => 'UP',
                         'application' => 'ProPBM',
                         // 'record_snapshot' => $request->client_id . '-' . $record_snapshot,
+                        'primary_key' => $request->customer_id,
                         'record_snapshot' => $record_snapshot,
                     ]);
 
@@ -521,7 +522,7 @@ class CustomerController extends Controller
             ->first();
         //save audit
         $record_snapshot = json_encode($customer);
-        $save_audit = $this->auditMethod('DE', $record_snapshot, 'PH_CUSTOMER');
+        $save_audit = $this->auditMethod('DE', $record_snapshot, $request->customer_id, 'PH_CUSTOMER');
         $delete_customer = DB::table('customer')
             ->where('customer_id', $request->customer_id)
             ->delete();
@@ -532,7 +533,7 @@ class CustomerController extends Controller
             ->get();
         for ($i = 0; $i < count($client); $i++) {
             $record_snapshot_client = json_encode($client[$i]);
-            $save_audit = $this->auditMethod('DE', $record_snapshot_client, 'CLIENT');
+            $save_audit = $this->auditMethod('DE', $record_snapshot_client, $request->customer_id, 'CLIENT');
         }
         $delete_client  = DB::table('CLIENT')
             ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
@@ -544,7 +545,7 @@ class CustomerController extends Controller
             ->get();
         for ($i = 0; $i < count($client_group); $i++) {
             $record_snapshot = json_encode($client_group[$i]);
-            $save_audit = $this->auditMethod('DE', $record_snapshot, 'CLIENT_GROUP');
+            $save_audit = $this->auditMethod('DE', $record_snapshot, $request->customer_id, 'CLIENT_GROUP');
         }
         $delete_client_group  = DB::table('CLIENT_GROUP')
             ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))

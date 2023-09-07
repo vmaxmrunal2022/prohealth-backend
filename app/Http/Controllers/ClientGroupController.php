@@ -165,6 +165,7 @@ class ClientGroupController extends Controller
                         'date_created' => date('Ymd'),
                         'time_created' => date('gisA'),
                         'table_name' => 'CLIENT_GROUP',
+                        'primary_key' => $request->client_group_id,
                         'record_action' => 'IN',
                         'application' => 'ProPBM',
                         'record_snapshot' => $record_snapshot,
@@ -302,6 +303,7 @@ class ClientGroupController extends Controller
                         'time_created' => date('gisA'),
                         'table_name' => 'CLIENT_GROUP',
                         'record_action' => 'UP',
+                        'primary_key' => $request->client_group_id,
                         'application' => 'ProPBM',
                         'record_snapshot' => $record_snapshot,
                         // 'record_snapshot' => $record_snapshot,
@@ -374,7 +376,7 @@ class ClientGroupController extends Controller
             ->first();
 
         $record_snapshot = json_encode($client_group);
-        $save_audit = $this->auditMethod('DE', $record_snapshot, 'CLIENT_GROUP');
+        $save_audit = $this->auditMethod('DE', $record_snapshot, $request->client_group_id, 'CLIENT_GROUP');
         $client_group = DB::table('CLIENT_GROUP')
             ->where(DB::raw('UPPER(customer_id)'), strtoupper($request->customer_id))
             ->where(DB::raw('UPPER(client_id)'), strtoupper($request->client_id))

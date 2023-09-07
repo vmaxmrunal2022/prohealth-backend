@@ -34,6 +34,7 @@ class AuditTrailController extends Controller
             ->where('user_id', $request->user_id)
             ->where('table_name', $request->table_name)
             ->orderBy('date_created', 'desc')
+            ->where('primary_key', $request->primary_key)
             ->where('date_created', date('Ymd', strtotime($request->date_created)))
             ->get();
 
@@ -53,7 +54,7 @@ class AuditTrailController extends Controller
             ->orderBy('TIME_CREATED', 'DESC')
             ->take(2000)
             ->get();
-        // return $results;
+        // return $resu lts;
 
 
         $customer_id = isset(json_decode($request->record_snapshot)->customer_id) ? json_decode($request->record_snapshot)->customer_id : null;
@@ -73,9 +74,17 @@ class AuditTrailController extends Controller
         $plan_accum_deduct_id = isset(json_decode($request->record_snapshot)->plan_accum_deduct_id)  ? json_decode($request->record_snapshot)->plan_accum_deduct_id : null;
         $prov_type_list_id = isset(json_decode($request->record_snapshot)->prov_type_list_id)  ? json_decode($request->record_snapshot)->prov_type_list_id : null;
         $prov_type_proc_assoc_id = isset(json_decode($request->record_snapshot)->prov_type_proc_assoc_id)  ? json_decode($request->record_snapshot)->prov_type_proc_assoc_id : null;
-
+        //Codes
+        $benefit_code = isset(json_decode($request->record_snapshot)->benefit_code) ? json_decode($request->record_snapshot)->benefit_code : null;
+        $cause_of_loss_code = isset(json_decode($request->record_snapshot)->cause_of_loss_code) ? json_decode($request->record_snapshot)->cause_of_loss_code : null;
 
         $record = DB::table($table_name)
+            ->when($cause_of_loss_code, function ($query) use ($cause_of_loss_code) {
+                return $query->where('cause_of_loss_code', $cause_of_loss_code);
+            })
+            ->when($benefit_code, function ($query) use ($benefit_code) {
+                return $query->where('benefit_code', $benefit_code);
+            })
             ->when($customer_id, function ($query) use ($customer_id) {
                 return $query->where('customer_id', $customer_id);
             })
@@ -157,9 +166,10 @@ class AuditTrailController extends Controller
         }
         if ($request->record_action != "IN") {
             $old_value_arr = $old_value_arr;
-        } else {
-            $old_value_arr = ["New Record Entry"];
         }
+        // else {
+        //     $old_value_arr = ["New Record Entry"];
+        // }
 
         // if ($request->record_action != 'DE') {
         //     $old_value_arr = count($results) > 1 ? json_decode($results[1]->record_snapshot) : null;

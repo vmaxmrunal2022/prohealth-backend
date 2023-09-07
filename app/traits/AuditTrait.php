@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 trait AuditTrait
 {
-    public function auditMethod($record_action, $record_snapshot, $table_name)
+    public function auditMethod($record_action, $record_snapshot, $primary_key, $table_name)
     {
         // Method implementation
         // return $record_action;
@@ -19,6 +19,7 @@ trait AuditTrait
                 'table_name' => $table_name,
                 'record_action' => $record_action,
                 'application' => 'ProPBM',
+                'primary_key' => $primary_key,
                 'record_snapshot' => $record_snapshot,
             ]);
         return $save_audit;
