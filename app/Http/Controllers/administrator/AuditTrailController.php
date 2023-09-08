@@ -43,18 +43,33 @@ class AuditTrailController extends Controller
             $table_name = 'CUSTOMER';
         }
 
+        // $results = DB::table('PHIDBA.FE_RECORD_LOG')
+        //     ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) LIKE '%" . substr($request->record_snapshot, 0, 60) . "%'")
+        //     ->where(DB::raw('UPPER(table_name)'), strtoupper($request->table_name))
+        //     ->where(DB::raw('UPPER(primary_key)'), strtoupper($request->primary_key))
+        //     ->orderBy(
+        //         'DATE_CREATED',
+        //         'DESC'
+        //     )
+        //     ->orderBy('TIME_CREATED', 'DESC')
+        //     ->orderByRaw("LENGTH(get_record_snapshot_from_fe_record_log(rowid)) DESC")
+        //     ->take(2000)
+        //     ->get();
+
         $results = DB::table('PHIDBA.FE_RECORD_LOG')
-            // ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 100) . "%'")
-            ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) like '%" . substr($request->record_snapshot, 0, 60) . "%'")
+            // ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) LIKE ? ", ['%' . substr($request->record_snapshot, 0, 60) . '%'])
+            // ->whereRaw("get_record_snapshot_from_fe_record_log(rowid) LIKE '%" . substr($request->record_snapshot, 0, 60) . "%'")
             ->where(DB::raw('UPPER(table_name)'), strtoupper($request->table_name))
-            ->orderBy(
-                'DATE_CREATED',
-                'DESC'
-            )
+            ->where(DB::raw('UPPER(primary_key)'), strtoupper($request->primary_key))
+            ->where('id', '<=', $request->id)
+            ->orderBy('DATE_CREATED', 'DESC')
             ->orderBy('TIME_CREATED', 'DESC')
+            ->orderBy('ID', 'DESC')
             ->take(2000)
             ->get();
 
+        // return strlen($request->record_snapshot);
+        // return $results;
 
 
         //Customer/client/client Group
@@ -105,64 +120,64 @@ class AuditTrailController extends Controller
         $procedure_ucr_id = isset(json_decode($request->record_snapshot)->procedure_ucr_id) ? json_decode($request->record_snapshot)->procedure_ucr_id : null;
         $rva_list_id = isset(json_decode($request->record_snapshot)->rva_list_id) ? json_decode($request->record_snapshot)->rva_list_id : null;
 
-        
+
         $record = DB::table($table_name)
-        //Third Oarty Pricing
-        ->when($rva_list_id, function ($query) use ($rva_list_id) { 
-            return $query->where('rva_list_id', $rva_list_id);
-        })
-        ->when($procedure_ucr_id, function ($query) use ($procedure_ucr_id) { 
-            return $query->where('procedure_ucr_id', $procedure_ucr_id);
-        })
-        ->when($price_schedule, function ($query) use ($price_schedule) { 
-            return $query->where('price_schedule', $price_schedule);
-        })
-        //Prescriber 
-        ->when($physician_id, function ($query) use ($physician_id) { 
-            return $query->where('physician_id', $physician_id);
-        })
-        //Proider Data
-        ->when($rx_network_rule_id, function ($query) use ($rx_network_rule_id) { 
-            return $query->where('rx_network_rule_id', $rx_network_rule_id);
-        })
-        ->when($super_rx_network_id, function ($query) use ($super_rx_network_id) { 
-            return $query->where('super_rx_network_id', $super_rx_network_id);
-        })
-        ->when($network_id, function ($query) use ($network_id) { 
-            return $query->where('network_id', $network_id);
-        })
-        //Validation Lists
-        ->when($physician_list, function ($query) use ($physician_list) { 
-            return $query->where('physician_list', $physician_list);
-        })
-        ->when($elig_validation_id, function ($query) use ($elig_validation_id) { 
-            return $query->where('elig_validation_id', $elig_validation_id);
-        })
-        //codes
-        ->when($service_type, function ($query) use ($service_type) { 
-            return $query->where('service_type', $service_type);
-        })
-        ->when($service_modifier, function ($query) use ($service_modifier) { 
-            return $query->where('service_modifier', $service_modifier);
-        })
-        ->when($reason_code, function ($query) use ($reason_code) { 
-            return $query->where('reason_code', $reason_code);
-        })
-        ->when($provider_type, function ($query) use ($provider_type) { 
-            return $query->where('provider_type', $provider_type);
-        })
-        ->when($procedure_code, function ($query) use ($procedure_code) { 
-            return $query->where('procedure_code', $procedure_code);
-        })
-        ->when($diagnosis_id, function ($query) use ($diagnosis_id) { 
-            return $query->where('diagnosis_id', $diagnosis_id);
-        })
-        ->when($cause_of_loss_code, function ($query) use ($cause_of_loss_code) { 
-            return $query->where('cause_of_loss_code', $cause_of_loss_code);
-        })
-        ->when($benefit_code, function ($query) use ($benefit_code) { 
-            return $query->where('benefit_code', $benefit_code);
-        })
+            //Third Oarty Pricing
+            ->when($rva_list_id, function ($query) use ($rva_list_id) {
+                return $query->where('rva_list_id', $rva_list_id);
+            })
+            ->when($procedure_ucr_id, function ($query) use ($procedure_ucr_id) {
+                return $query->where('procedure_ucr_id', $procedure_ucr_id);
+            })
+            ->when($price_schedule, function ($query) use ($price_schedule) {
+                return $query->where('price_schedule', $price_schedule);
+            })
+            //Prescriber 
+            ->when($physician_id, function ($query) use ($physician_id) {
+                return $query->where('physician_id', $physician_id);
+            })
+            //Proider Data
+            ->when($rx_network_rule_id, function ($query) use ($rx_network_rule_id) {
+                return $query->where('rx_network_rule_id', $rx_network_rule_id);
+            })
+            ->when($super_rx_network_id, function ($query) use ($super_rx_network_id) {
+                return $query->where('super_rx_network_id', $super_rx_network_id);
+            })
+            ->when($network_id, function ($query) use ($network_id) {
+                return $query->where('network_id', $network_id);
+            })
+            //Validation Lists
+            ->when($physician_list, function ($query) use ($physician_list) {
+                return $query->where('physician_list', $physician_list);
+            })
+            ->when($elig_validation_id, function ($query) use ($elig_validation_id) {
+                return $query->where('elig_validation_id', $elig_validation_id);
+            })
+            //codes
+            ->when($service_type, function ($query) use ($service_type) {
+                return $query->where('service_type', $service_type);
+            })
+            ->when($service_modifier, function ($query) use ($service_modifier) {
+                return $query->where('service_modifier', $service_modifier);
+            })
+            ->when($reason_code, function ($query) use ($reason_code) {
+                return $query->where('reason_code', $reason_code);
+            })
+            ->when($provider_type, function ($query) use ($provider_type) {
+                return $query->where('provider_type', $provider_type);
+            })
+            ->when($procedure_code, function ($query) use ($procedure_code) {
+                return $query->where('procedure_code', $procedure_code);
+            })
+            ->when($diagnosis_id, function ($query) use ($diagnosis_id) {
+                return $query->where('diagnosis_id', $diagnosis_id);
+            })
+            ->when($cause_of_loss_code, function ($query) use ($cause_of_loss_code) {
+                return $query->where('cause_of_loss_code', $cause_of_loss_code);
+            })
+            ->when($benefit_code, function ($query) use ($benefit_code) {
+                return $query->where('benefit_code', $benefit_code);
+            })
             ->when($customer_id, function ($query) use ($customer_id) {
                 return $query->where('customer_id', $customer_id);
             })
@@ -226,7 +241,7 @@ class AuditTrailController extends Controller
             ->when($accum_bene_strategy_id, function ($query) use ($accum_bene_strategy_id) {
                 return $query->where('accum_bene_strategy_id', 'like', '%' . $accum_bene_strategy_id . '%');
             })
-            
+
             ->when($plan_accum_deduct_id, function ($query) use ($plan_accum_deduct_id) {
                 return $query->where('plan_accum_deduct_id', 'like', '%' . $plan_accum_deduct_id . '%');
             })
@@ -244,7 +259,6 @@ class AuditTrailController extends Controller
 
 
 
-        // return $record;
 
 
         $old_column_arr = [];
@@ -259,6 +273,17 @@ class AuditTrailController extends Controller
         if ($request->record_action != "IN") {
             $old_value_arr = $old_value_arr;
         }
+
+        $new_record = [];
+        foreach (json_decode($results[0]->record_snapshot)  as $key => $val) {
+            $arr2 = $key;
+            $value = $val;
+            array_push($new_record, $value);
+        }
+        // if ($request->record_action != "IN") {
+        //     $old_value_arr = $old_value_arr;
+        // }
+
         // else {
         //     $old_value_arr = ["New Record Entry"];
         // }
@@ -318,16 +343,17 @@ class AuditTrailController extends Controller
         //     array_push($current_record, $ar);
         // }
 
-        // return $column_arr;
-        // $data = ['user_record' => $user_record[0], 'record_snapshot' => $current_record, 'old_record' => $old_value_arr, 'columns' => $old_column_arr];
+
         // $data = [
-        //     'user_record' => $user_record[0], 'record_snapshot' => $record[0], 'old_record' => $old_value_arr,
+        //     'user_record' => $user_record[0],
+        //     'record_snapshot' => $record[0],
+        //     'old_record' => $old_value_arr,
         //     'columns' => $old_column_arr
         //     // 'columns' => $column_arr
         // ];
         $data = [
             'user_record' => $user_record[0],
-            'record_snapshot' => $record[0],
+            'record_snapshot' => $new_record,
             'old_record' => $old_value_arr,
             'columns' => $old_column_arr
             // 'columns' => $column_arr
