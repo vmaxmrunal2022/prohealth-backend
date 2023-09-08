@@ -54,15 +54,19 @@ class AuditTrailController extends Controller
             ->orderBy('TIME_CREATED', 'DESC')
             ->take(2000)
             ->get();
-        // return $resu lts;
 
 
+
+        //Customer/client/client Group
         $customer_id = isset(json_decode($request->record_snapshot)->customer_id) ? json_decode($request->record_snapshot)->customer_id : null;
         $client_id = isset(json_decode($request->record_snapshot)->client_id)  ? json_decode($request->record_snapshot)->client_id : null;
         $client_group_id = isset(json_decode($request->record_snapshot)->client_group_id)  ? json_decode($request->record_snapshot)->client_group_id : null;
         $user_id = isset(json_decode($request->record_snapshot)->user_id)  ? json_decode($request->record_snapshot)->user_id : null;
+        //Member
         $member_id = isset(json_decode($request->record_snapshot)->member_id)  ? json_decode($request->record_snapshot)->member_id : null;
         $prior_auth_code_num = isset(json_decode($request->record_snapshot)->prior_auth_code_num)  ? json_decode($request->record_snapshot)->prior_auth_code_num : null;
+        //Plan Design
+        $bin_number = isset(json_decode($request->record_snapshot)->bin_number)  ? json_decode($request->record_snapshot)->bin_number : null;
         $plan_id = isset(json_decode($request->record_snapshot)->plan_id)  ? json_decode($request->record_snapshot)->plan_id : null;
         $pharmacy_nabp = isset(json_decode($request->record_snapshot)->pharmacy_nabp)  ? json_decode($request->record_snapshot)->pharmacy_nabp : null;
         $benefit_derivation_id = isset(json_decode($request->record_snapshot)->benefit_derivation_id)  ? json_decode($request->record_snapshot)->benefit_derivation_id : null;
@@ -70,21 +74,95 @@ class AuditTrailController extends Controller
         $benefit_list_id = isset(json_decode($request->record_snapshot)->benefit_list_id)  ? json_decode($request->record_snapshot)->benefit_list_id : null;
         $super_benefit_list_id = isset(json_decode($request->record_snapshot)->super_benefit_list_id)  ? json_decode($request->record_snapshot)->super_benefit_list_id : null;
         $ndc_exception_list = isset(json_decode($request->record_snapshot)->ndc_exception_list)  ? json_decode($request->record_snapshot)->ndc_exception_list : null;
+        //Strategies
+        $pricing_strategy_id = isset(json_decode($request->record_snapshot)->pricing_strategy_id)  ? json_decode($request->record_snapshot)->pricing_strategy_id : null;
         $accum_bene_strategy_id = isset(json_decode($request->record_snapshot)->accum_bene_strategy_id)  ? json_decode($request->record_snapshot)->accum_bene_strategy_id : null;
+        $copay_strategy_id = isset(json_decode($request->record_snapshot)->copay_strategy_id)  ? json_decode($request->record_snapshot)->copay_strategy_id : null;
+        $copay_schedule = isset(json_decode($request->record_snapshot)->copay_strategy_id)  ? json_decode($request->record_snapshot)->copay_strategy_id : null;
+        //Accumulated Benefit
         $plan_accum_deduct_id = isset(json_decode($request->record_snapshot)->plan_accum_deduct_id)  ? json_decode($request->record_snapshot)->plan_accum_deduct_id : null;
         $prov_type_list_id = isset(json_decode($request->record_snapshot)->prov_type_list_id)  ? json_decode($request->record_snapshot)->prov_type_list_id : null;
-        $prov_type_proc_assoc_id = isset(json_decode($request->record_snapshot)->prov_type_proc_assoc_id)  ? json_decode($request->record_snapshot)->prov_type_proc_assoc_id : null;
+        $prov_type_proc_assoc_id = isset(json_decode($request->record_snapshot)->copay_schedule)  ? json_decode($request->record_snapshot)->copay_schedule : null;
         //Codes
         $benefit_code = isset(json_decode($request->record_snapshot)->benefit_code) ? json_decode($request->record_snapshot)->benefit_code : null;
         $cause_of_loss_code = isset(json_decode($request->record_snapshot)->cause_of_loss_code) ? json_decode($request->record_snapshot)->cause_of_loss_code : null;
+        $diagnosis_id = isset(json_decode($request->record_snapshot)->diagnosis_id) ? json_decode($request->record_snapshot)->diagnosis_id : null;
+        $procedure_code = isset(json_decode($request->record_snapshot)->procedure_code) ? json_decode($request->record_snapshot)->procedure_code : null;
+        $provider_type = isset(json_decode($request->record_snapshot)->provider_type) ? json_decode($request->record_snapshot)->provider_type : null;
+        $reason_code = isset(json_decode($request->record_snapshot)->reason_code) ? json_decode($request->record_snapshot)->reason_code : null;
+        $service_modifier = isset(json_decode($request->record_snapshot)->service_modifier) ? json_decode($request->record_snapshot)->service_modifier : null;
+        $service_type = isset(json_decode($request->record_snapshot)->service_type) ? json_decode($request->record_snapshot)->service_type : null;
+        //validation Lists
+        $elig_validation_id = isset(json_decode($request->record_snapshot)->elig_validation_id) ? json_decode($request->record_snapshot)->elig_validation_id : null;
+        $physician_list = isset(json_decode($request->record_snapshot)->physician_list) ? json_decode($request->record_snapshot)->physician_list : null;
+        //Provider
+        $network_id = isset(json_decode($request->record_snapshot)->network_id) ? json_decode($request->record_snapshot)->network_id : null;
+        $super_rx_network_id = isset(json_decode($request->record_snapshot)->super_rx_network_id) ? json_decode($request->record_snapshot)->super_rx_network_id : null;
+        $rx_network_rule_id = isset(json_decode($request->record_snapshot)->rx_network_rule_id) ? json_decode($request->record_snapshot)->rx_network_rule_id : null;
+        $physician_id = isset(json_decode($request->record_snapshot)->physician_id) ? json_decode($request->record_snapshot)->physician_id : null;
+        //Third Oarty Pricing
+        $price_schedule = isset(json_decode($request->record_snapshot)->price_schedule) ? json_decode($request->record_snapshot)->price_schedule : null;
+        $procedure_ucr_id = isset(json_decode($request->record_snapshot)->procedure_ucr_id) ? json_decode($request->record_snapshot)->procedure_ucr_id : null;
+        $rva_list_id = isset(json_decode($request->record_snapshot)->rva_list_id) ? json_decode($request->record_snapshot)->rva_list_id : null;
 
+        
         $record = DB::table($table_name)
-            ->when($cause_of_loss_code, function ($query) use ($cause_of_loss_code) {
-                return $query->where('cause_of_loss_code', $cause_of_loss_code);
-            })
-            ->when($benefit_code, function ($query) use ($benefit_code) {
-                return $query->where('benefit_code', $benefit_code);
-            })
+        //Third Oarty Pricing
+        ->when($rva_list_id, function ($query) use ($rva_list_id) { 
+            return $query->where('rva_list_id', $rva_list_id);
+        })
+        ->when($procedure_ucr_id, function ($query) use ($procedure_ucr_id) { 
+            return $query->where('procedure_ucr_id', $procedure_ucr_id);
+        })
+        ->when($price_schedule, function ($query) use ($price_schedule) { 
+            return $query->where('price_schedule', $price_schedule);
+        })
+        //Prescriber 
+        ->when($physician_id, function ($query) use ($physician_id) { 
+            return $query->where('physician_id', $physician_id);
+        })
+        //Proider Data
+        ->when($rx_network_rule_id, function ($query) use ($rx_network_rule_id) { 
+            return $query->where('rx_network_rule_id', $rx_network_rule_id);
+        })
+        ->when($super_rx_network_id, function ($query) use ($super_rx_network_id) { 
+            return $query->where('super_rx_network_id', $super_rx_network_id);
+        })
+        ->when($network_id, function ($query) use ($network_id) { 
+            return $query->where('network_id', $network_id);
+        })
+        //Validation Lists
+        ->when($physician_list, function ($query) use ($physician_list) { 
+            return $query->where('physician_list', $physician_list);
+        })
+        ->when($elig_validation_id, function ($query) use ($elig_validation_id) { 
+            return $query->where('elig_validation_id', $elig_validation_id);
+        })
+        //codes
+        ->when($service_type, function ($query) use ($service_type) { 
+            return $query->where('service_type', $service_type);
+        })
+        ->when($service_modifier, function ($query) use ($service_modifier) { 
+            return $query->where('service_modifier', $service_modifier);
+        })
+        ->when($reason_code, function ($query) use ($reason_code) { 
+            return $query->where('reason_code', $reason_code);
+        })
+        ->when($provider_type, function ($query) use ($provider_type) { 
+            return $query->where('provider_type', $provider_type);
+        })
+        ->when($procedure_code, function ($query) use ($procedure_code) { 
+            return $query->where('procedure_code', $procedure_code);
+        })
+        ->when($diagnosis_id, function ($query) use ($diagnosis_id) { 
+            return $query->where('diagnosis_id', $diagnosis_id);
+        })
+        ->when($cause_of_loss_code, function ($query) use ($cause_of_loss_code) { 
+            return $query->where('cause_of_loss_code', $cause_of_loss_code);
+        })
+        ->when($benefit_code, function ($query) use ($benefit_code) { 
+            return $query->where('benefit_code', $benefit_code);
+        })
             ->when($customer_id, function ($query) use ($customer_id) {
                 return $query->where('customer_id', $customer_id);
             })
@@ -110,7 +188,10 @@ class AuditTrailController extends Controller
             ->when($prior_auth_code_num, function ($query) use ($prior_auth_code_num) {
                 return $query->where('prior_auth_code_num', 'like', '%' . $prior_auth_code_num . '%');
             })
-
+            //Plan Design            
+            ->when($bin_number, function ($query) use ($bin_number) {
+                return $query->where('bin_number', 'like', '%' . $bin_number . '%');
+            })
             ->when($plan_id, function ($query) use ($plan_id) {
                 return $query->where('plan_id', 'like', '%' . $plan_id . '%');
             })
@@ -132,9 +213,20 @@ class AuditTrailController extends Controller
             ->when($ndc_exception_list, function ($query) use ($ndc_exception_list) {
                 return $query->where('ndc_exception_list', 'like', '%' . $ndc_exception_list . '%');
             })
+            //Strategies
+            ->when($copay_schedule, function ($query) use ($copay_schedule) {
+                return $query->where('copay_schedule', 'like', '%' . $copay_schedule . '%');
+            })
+            ->when($copay_strategy_id, function ($query) use ($copay_strategy_id) {
+                return $query->where('copay_strategy_id', 'like', '%' . $copay_strategy_id . '%');
+            })
+            ->when($pricing_strategy_id, function ($query) use ($pricing_strategy_id) {
+                return $query->where('pricing_strategy_id', 'like', '%' . $pricing_strategy_id . '%');
+            })
             ->when($accum_bene_strategy_id, function ($query) use ($accum_bene_strategy_id) {
                 return $query->where('accum_bene_strategy_id', 'like', '%' . $accum_bene_strategy_id . '%');
             })
+            
             ->when($plan_accum_deduct_id, function ($query) use ($plan_accum_deduct_id) {
                 return $query->where('plan_accum_deduct_id', 'like', '%' . $plan_accum_deduct_id . '%');
             })
